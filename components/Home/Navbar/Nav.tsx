@@ -22,7 +22,7 @@ const Nav = ({ openNav }: Props) => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      setNavBg(currentScrollY > 50); 
+      setNavBg(currentScrollY > 50);
       prevScrollY.current = currentScrollY;
     };
 
@@ -34,16 +34,20 @@ const Nav = ({ openNav }: Props) => {
     <nav className="fixed w-full z-[1000] top-0">
       <TopBar />
 
-      <div className={`relative bg-white transition-all duration-300 ${navBg ? "shadow-md" : ""}`}>
-        
+      <div
+        className={`relative bg-white transition-all duration-300 ${
+          navBg ? "shadow-md" : ""
+        }`}
+      >
         {/* MAIN NAV CONTAINER */}
-        <div className="relative h-[80px] flex items-stretch"> 
-          
+        <div className="relative h-[80px] flex items-stretch">
           {/* Logo Section */}
-          <div className="bg-gray-800 flex items-center justify-center h-full relative z-10 
+          <div
+            className="bg-gray-800 flex items-center justify-center h-full relative z-10 
                           px-4 sm:px-8 
                           w-auto 
-                          lg:w-[350px]">
+                          lg:w-[350px]"
+          >
             <div className="text-white">
               <div className="flex items-center">
                 <span className="text-2xl font-bold tracking-wide">
@@ -65,10 +69,10 @@ const Nav = ({ openNav }: Props) => {
           </div>
 
           {/* Links & Buttons Section */}
-          <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8"> 
-            
+          <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
             {/* Nav Links */}
-            <div className="hidden lg:flex items-center space-x-8 mr-auto">
+            {/* INAYOS: Tinanggal ang hindi gumaganang 'ml-100' class. */}
+            <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <Link href={link.url} key={link.id} className="group relative">
                   <span className="text-gray-700 hover:text-red-600 font-medium text-sm uppercase tracking-wide transition-colors">
@@ -80,7 +84,8 @@ const Nav = ({ openNav }: Props) => {
             </div>
 
             {/* Right Icons & Hamburger */}
-            <div className="flex items-center space-x-4">
+            {/* INAYOS: Pinalitan ang 'ml-10 w-full' ng 'ml-auto' para itulak ito sa kanan at ayusin ang layout. */}
+            <div className="flex items-center space-x-8 ml-auto">
               {/* Desktop Icons */}
               <div className="hidden lg:flex items-center space-x-3">
                 <button className="text-red-600 hover:text-red-700 transition">
@@ -94,13 +99,17 @@ const Nav = ({ openNav }: Props) => {
                 </button>
               </div>
 
-              {/* Get Started button */}
+              {/* Contact Us Button */}
               <button className="hidden lg:block bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-medium transition-colors">
-                Get Started
+                Contact Us
               </button>
 
-              {/* Hamburger Menu Button */}
-              <button onClick={openNav} className="lg:hidden text-gray-700 p-2">
+              {/* Hamburger Menu Button (small devices only) */}
+              {/* INAYOS: Tinanggal ang 'ml-auto' dito dahil ginamit na ito sa parent div. */}
+              <button
+                onClick={openNav}
+                className="lg:hidden text-gray-700 p-2"
+              >
                 <HiBars3BottomRight className="w-6 h-6" />
               </button>
             </div>
