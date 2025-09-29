@@ -7,10 +7,8 @@ import { HiLocationMarker } from "react-icons/hi";
 
 const TopBar: React.FC = () => {
   return (
-    // === 1. TOP RED BAR ===
-    // This section is only visible on medium screens (md) and up
     <div className="bg-red-600 text-white text-xs hidden md:flex items-center justify-between px-4 xl:px-8 py-2 h-[40px]">
-      {/* Left Info (Hours and Phone) */}
+      {/* Left Info */}
       <div className="flex items-center space-x-6">
         <span className="flex items-center">
           <FaRegClock className="w-3 h-3 mr-2" />
@@ -22,7 +20,7 @@ const TopBar: React.FC = () => {
         </span>
       </div>
 
-      {/* Right Info (Address and Social Links) */}
+      {/* Right Info */}
       <div className="flex items-center space-x-6">
         <span className="flex items-center">
           <HiLocationMarker className="w-4 h-4 mr-2" />

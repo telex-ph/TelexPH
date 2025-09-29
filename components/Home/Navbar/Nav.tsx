@@ -1,5 +1,3 @@
-// Nav.tsx - Revised Code for Height and Mobile Gap Fix
-
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -24,7 +22,6 @@ const Nav = ({ openNav }: Props) => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      // Set nav background when scrolling past 50px
       setNavBg(currentScrollY > 50); 
       prevScrollY.current = currentScrollY;
     };
@@ -39,17 +36,16 @@ const Nav = ({ openNav }: Props) => {
 
       <div className={`relative bg-white transition-all duration-300 ${navBg ? "shadow-md" : ""}`}>
         
-        {/* MAIN NAV CONTAINER - Increased height to h-[80px] */}
-        <div className="relative h-[80px] flex items-stretch"> {/* Used h-[80px] for slightly longer bar and items-stretch */}
+        {/* MAIN NAV CONTAINER */}
+        <div className="relative h-[80px] flex items-stretch"> 
           
-          {/* Logo Section (Flexible Width, max width for desktop) */}
+          {/* Logo Section */}
           <div className="bg-gray-800 flex items-center justify-center h-full relative z-10 
                           px-4 sm:px-8 
                           w-auto 
                           lg:w-[350px]">
             <div className="text-white">
               <div className="flex items-center">
-                {/* Adjusted text size for the new height, if necessary */}
                 <span className="text-2xl font-bold tracking-wide">
                   TELEX<span className="text-red-500">PH</span>
                 </span>
@@ -60,8 +56,7 @@ const Nav = ({ openNav }: Props) => {
             </div>
           </div>
 
-          {/* Red Diagonal Strip (Attached via Negative Margin) */}
-          {/* Maintained h-full to stretch the full 80px height. */}
+          {/* Red Diagonal Strip */}
           <div className="h-full z-30 w-10 -ml-5 sm:w-16 sm:-ml-8 lg:w-[60px] lg:-ml-[30px] relative">
             <div
               className="absolute top-0 left-0 w-full h-full bg-red-600"
@@ -69,10 +64,10 @@ const Nav = ({ openNav }: Props) => {
             />
           </div>
 
-          {/* Links & Buttons Section (Takes up remaining space) */}
+          {/* Links & Buttons Section */}
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8"> 
             
-            {/* Nav Links - visible only lg+ */}
+            {/* Nav Links */}
             <div className="hidden lg:flex items-center space-x-8 mr-auto">
               {navLinks.map((link) => (
                 <Link href={link.url} key={link.id} className="group relative">
@@ -84,7 +79,7 @@ const Nav = ({ openNav }: Props) => {
               ))}
             </div>
 
-            {/* Right Icons & Hamburger (Far Right) */}
+            {/* Right Icons & Hamburger */}
             <div className="flex items-center space-x-4">
               {/* Desktop Icons */}
               <div className="hidden lg:flex items-center space-x-3">
@@ -99,12 +94,12 @@ const Nav = ({ openNav }: Props) => {
                 </button>
               </div>
 
-              {/* Get Started button visible only lg+ */}
+              {/* Get Started button */}
               <button className="hidden lg:block bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-medium transition-colors">
                 Get Started
               </button>
 
-              {/* Hamburger Menu Button - visible only below lg */}
+              {/* Hamburger Menu Button */}
               <button onClick={openNav} className="lg:hidden text-gray-700 p-2">
                 <HiBars3BottomRight className="w-6 h-6" />
               </button>

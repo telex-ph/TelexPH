@@ -1,13 +1,11 @@
 import React from "react";
 import SearchBox from "../../Helper/SearchBox";
 import Link from "next/link"; 
-import Image from "next/image"; // Idagdag para sa plane image
+import Image from "next/image";
 
 const Hero = () => {
   return (
-    // Pinalitan ang height at kulay ng background
     <div className="relative w-full h-[100vh] bg-red-800 pt-[10vh] lg:pt-[10vh]">
-      {/* Walang Overlay at Video */}
 
       {/* Text Content at Images */}
       <div className="relative z-[100] w-full h-full">
@@ -15,7 +13,7 @@ const Hero = () => {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">
             
-            {/* Left Content (Text) */}
+            {/* Left Content */}
             <div>
                 <p className="text-lg text-white mb-2">Innovate, Grow, and Transform Your World</p>
                 <h1 className="text-[35px] md:text-[55px] lg:text-[70px] text-white font-bold leading-tight mb-6">
@@ -26,7 +24,7 @@ const Hero = () => {
                     We embrace the latest construction technologies and sustainable practices to deliver modern and eco-friendly solutions.
                 </p>
 
-                {/* Buttons - Pinalitan ang SearchBox ng Request/Learn More buttons */}
+                {/* Buttons  */}
                 <div className="flex space-x-4">
                     <Link
                         href="#"
@@ -46,7 +44,7 @@ const Hero = () => {
                 
                 {/* Reviews at Avatars */}
                 <div className="flex items-center mt-6 space-x-3">
-                    {/* Placeholder for Avatars (Use actual images or icons here) */}
+                    {/* Placeholder for Avatars */}
                     <div className="flex -space-x-2">
                         <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-red-600"></div>
                         <div className="w-8 h-8 bg-gray-400 rounded-full border-2 border-red-600"></div>
@@ -60,19 +58,10 @@ const Hero = () => {
 
             </div>
 
-            {/* Right Content (Plane Image at Info Boxes) */}
+            {/* Right Content */}
             <div className="relative h-full hidden lg:block">
-                {/* Placeholder for the Plane Image - **IMPORTANT: Dapat may plane image ka na ilalagay dito** */}
-                {/* I assume ang plane image ay ilalagay mo sa isang folder */}
-                {/* <Image 
-                    src="/images/plane.png" // Palitan ito ng actual path ng image mo
-                    alt="Cargo Plane"
-                    layout="fill"
-                    objectFit="contain"
-                    className="absolute z-10 bottom-0 left-0" 
-                /> */}
                 
-                {/* Right-side Info Boxes - Use position absolute or similar layout */}
+                {/* Right-side Info Boxes  */}
                 <div className="absolute right-0 top-1/4 z-20 space-y-4">
                     {/* 30-Years Experience Box */}
                     <div className="bg-white p-4 rounded-lg shadow-xl w-64">
