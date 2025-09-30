@@ -71,7 +71,6 @@ const Nav = ({ openNav }: Props) => {
           {/* Links & Buttons Section */}
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
             {/* Nav Links */}
-            {/* INAYOS: Tinanggal ang hindi gumaganang 'ml-100' class. */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <Link href={link.url} key={link.id} className="group relative">
@@ -84,7 +83,6 @@ const Nav = ({ openNav }: Props) => {
             </div>
 
             {/* Right Icons & Hamburger */}
-            {/* INAYOS: Pinalitan ang 'ml-10 w-full' ng 'ml-auto' para itulak ito sa kanan at ayusin ang layout. */}
             <div className="flex items-center space-x-8 ml-auto">
               {/* Desktop Icons */}
               <div className="hidden lg:flex items-center space-x-3">
@@ -104,8 +102,7 @@ const Nav = ({ openNav }: Props) => {
                 Contact Us
               </button>
 
-              {/* Hamburger Menu Button (small devices only) */}
-              {/* INAYOS: Tinanggal ang 'ml-auto' dito dahil ginamit na ito sa parent div. */}
+              {/* Hamburger Menu Button */}
               <button
                 onClick={openNav}
                 className="lg:hidden text-gray-700 p-2"
