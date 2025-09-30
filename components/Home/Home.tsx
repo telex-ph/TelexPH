@@ -1,6 +1,6 @@
 import React from "react";
 import Hero from "./Hero/Hero";
-import Hotel from "@/components/Hotel/Hotel";
+import Choose from "@/components/Choose/Choose";
 import Footer from "@/components/Footer/Footer";
 import About from "../About/About";
 
@@ -9,7 +9,7 @@ const Home = () => {
     <div className="overflow-hidden">
       <Hero />
       <About />
-      <Hotel />
+      <Choose />
       <Footer />
     </div>
   );
