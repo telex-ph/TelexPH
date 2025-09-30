@@ -28,8 +28,8 @@ const DestinationSlider = () => {
       autoPlay
       autoPlaySpeed={5000}
       keyBoardControl
-      itemClass="px-2" // ✅ gap between slides
-      containerClass="py-2" // optional top-bottom spacing
+      itemClass="px-2"
+      containerClass="py-2" 
     >
       {destinationData.map((data) => (
         <div
@@ -38,7 +38,7 @@ const DestinationSlider = () => {
         >
           {/* Image */}
           <Image
-            src={`/${data.image}`} // ✅ kukunin yung nasa data
+            src={`/${data.image}`} 
             alt={data.country}
             width={500}
             height={500}

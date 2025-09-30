@@ -1,14 +1,16 @@
 import React from "react";
 import Hero from "./Hero/Hero";
-import Destination from "./Destination/Destination";
-import Hotel from "@/components/Hotel/Hotel";
+import Choose from "@/components/Choose/Choose";
+import Footer from "@/components/Footer/Footer";
+import About from "../About/About";
 
 const Home = () => {
   return (
     <div className="overflow-hidden">
       <Hero />
-      <Destination />
-      <Hotel />
+      <About />
+      <Choose />
+      <Footer />
     </div>
   );
 };
