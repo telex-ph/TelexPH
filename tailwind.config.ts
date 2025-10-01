@@ -1,7 +1,9 @@
-import type { Config } from "tailwindcss";
+// tailwind.config.ts
 
-// Import the required function from Tailwind's utility
-const plugin = require("tailwindcss/plugin");
+import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
+import defaultTheme from "tailwindcss/defaultTheme";
+// ------------------------
 
 const config: Config = {
   content: [
@@ -11,35 +13,43 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // 1. Define the stroke values for the custom utility
+      // define ang font families
+      fontFamily: {
+        // Poppins (Default/Google Font)
+        poppins: ['var(--font-poppins)', ...defaultTheme.fontFamily.sans], 
+        // Open Sans (Local Font)
+        opensans: ['var(--font-open-sans)', ...defaultTheme.fontFamily.sans],
+        // Rubik (Local Font)
+        rubik: ['var(--font-rubik)', ...defaultTheme.fontFamily.sans],
+      },
+      
+      // Iyong text-outline configuration
       textOutline: {
-        "red-thin": "1px #ff4500",
-        "red-thick": "2px #ff4500",
+        "thin": "1px #ff4500", 
+        "thick": "2px #ff4500", 
+        "white-2": "2px white", 
       },
     },
   },
-  // 2. Add the custom plugin to generate the CSS utilities
+
   plugins: [
-    plugin(function ({ addUtilities, theme, e }: any) {
+    // Iyong text-outline plugin (FINALLY FIXED)
+    plugin(function ({ addUtilities, theme }) {
       const textOutline = theme("textOutline", {});
+      
+      // I-define ang type: Array of objects na may string keys
+      const strokeUtilities: Record<string, any>[] = []; 
 
-      // Make utilities array with safe typing
-      const utilities: Record<string, any>[] = Object.entries(textOutline).map(
-        ([key, value]) => ({
-          [`.text-outline-${e(key)}`]: {
-            "-webkit-text-stroke": value,
+      for (const [key, value] of Object.entries(textOutline)) {
+        strokeUtilities.push({
+          [`.text-outline-${key}`]: {
+            "-webkit-text-stroke": value, 
+            "color": "transparent", 
           },
-        })
-      );
+        });
+      }
 
-      // Add text fill transparent utility
-      utilities.push({
-        ".text-fill-transparent": {
-          color: "transparent",
-        },
-      });
-
-      addUtilities(utilities, ["responsive", "hover"]);
+      addUtilities(strokeUtilities, ["responsive", "hover"]);
     }),
   ],
 };

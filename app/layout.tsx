@@ -1,12 +1,51 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins } from "next/font/google"; // Para sa Google Font (Poppins)
+import localFont from "next/font/local"; // Para sa Local Fonts (Open Sans & Rubik)
 import "./globals.css";
 import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
 
+// --- POPPINS (Google Font - Default) ---
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
+  variable: "--font-poppins", 
 });
+
+// --- OPEN SANS (Local Font) ---
+const openSans = localFont({
+  src: [
+    {
+      // Aayusin natin ang path para pumasok sa Open_Sans folder
+      path: '../public/fonts/Open_Sans/OpenSans-VariableFont_wdth,wght.ttf', 
+      style: 'normal',
+      weight: '300 900', 
+    },
+    {
+      path: '../public/fonts/Open_Sans/OpenSans-Italic-VariableFont_wdth,wght.ttf',
+      style: 'italic',
+      weight: '300 900', 
+    },
+  ],
+  variable: '--font-open-sans', 
+});
+
+// --- RUBIK (Local Font) ---
+// Ipagpalagay ko na mayroon kang Rubik font file sa loob ng Rubik folder
+const rubik = localFont({
+  src: [
+    {
+      // I-adjust ang path para sa Rubik folder
+      path: '../public/fonts/Rubik/Rubik-VariableFont_wght.ttf', 
+      style: 'normal',
+      weight: '300 900', // Halimbawa lang ng weight range
+    },
+    // Idagdag ang iba pang Rubik files kung meron (e.g., italic)
+  ],
+  variable: '--font-rubik', 
+});
+
 
 export const metadata: Metadata = {
   title: "Telex PH",
@@ -20,7 +59,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} antialiased`}>
+      {/* I-apply ang LAHAT ng font variables sa body */}
+      <body 
+        className={`${poppins.variable} ${openSans.variable} ${rubik.variable} font-poppins antialiased`}
+        // Ginawa kong default ang 'font-poppins'
+      >
         <ResponsiveNav />
         {children}
       </body>
