@@ -5,7 +5,7 @@ import HeroClients from "./HeroClients";
 const Hero = () => {
   return (
     <>
-      <div className="relative w-full h-[90vh] md:h-[100vh] bg-red-950 pt-[10vh] lg:pt-[10vh] flex flex-col justify-center">
+      <div id="home" className="relative w-full h-[90vh] md:h-[100vh] bg-red-950 pt-[10vh] lg:pt-[10vh] flex flex-col justify-center">
         <div className="relative z-[100] w-full h-full flex items-center">
           <div className="w-full px-4 xl:w-[88%] mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">

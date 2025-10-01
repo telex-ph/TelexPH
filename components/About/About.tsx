@@ -5,7 +5,7 @@ import CompanyDetails from './CompanyDetails';
 
 const About = () => {
   return (
-    <div className="pt-20 pb-20 bg-white relative overflow-hidden"> 
+    <div id="about" className="pt-20 pb-20 bg-white relative overflow-hidden"> 
       <div 
         className="absolute bottom-[-10%] left-[-5%] right-0 text-[10rem] md:text-[14rem] lg:text-[18rem] 
                    text-red-500 opacity-10 font-extrabold select-none pointer-events-none 
