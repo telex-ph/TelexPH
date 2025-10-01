@@ -20,7 +20,7 @@ export const navLinks = [
     },
     {
         id:3,
-        url:"#services",
+        url:"#choose",
         label:"Services"
     },
     {
@@ -33,9 +33,4 @@ export const navLinks = [
         url:"#careers",
         label:"Careers"
     },
-    {
-        id:6,
-        url:"#choose",
-        label:"Why Choose Us" 
-    }
 ]
