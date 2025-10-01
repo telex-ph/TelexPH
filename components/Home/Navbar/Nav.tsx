@@ -70,15 +70,41 @@ const Nav = ({ openNav }: Props) => {
 
           {/* Links & Buttons Section */}
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
-            {/* Nav Links */}
+            {/* Nav Links - Updated for word highlight and dropdown */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
-                <Link href={link.url} key={link.id} className="group relative">
-                  <span className="text-gray-700 hover:text-red-600 font-medium text-sm uppercase tracking-wide transition-colors">
-                    {link.label}
-                  </span>
-                  <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-red-600 scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
-                </Link>
+                // Parent div with 'group' for hover effect and dropdown visibility
+                <div key={link.id} className="relative h-full flex items-center group"> 
+                  <Link 
+                    href={link.url} 
+                    className="relative py-[30px] scroll-smooth" // Added scroll-smooth for anchor links
+                  > 
+                    {/* Text highlight on group hover, replacing the red line */}
+                    <span className="text-gray-700 font-medium text-sm uppercase tracking-wide transition-colors group-hover:text-red-600">
+                      {link.label}
+                    </span>
+                  </Link>
+
+                  {/* Dropdown Menu - Position Adjusted (pt-1) */}
+                  {link.dropdown && (
+                    <div
+                      className="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 
+                                 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50"
+                    >
+                      <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-red-600 py-2 rounded-b-md">
+                        {link.dropdown.map((subLink) => (
+                          <Link
+                            key={subLink.id}
+                            href={subLink.url}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                          >
+                            {subLink.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
