@@ -1,8 +1,7 @@
 import React from "react";
 import Image from "next/image";
-
-// Tandaan: Ginagamit na ng component na ito ang full path ng image, 
-// hindi na ang imported variable (imageOne/imageTwo).
+import imageOne from "../../../public/images/gg.png";
+import imageTwo from "../../../public/images/zz.png";
 
 export default function CompanyOverview() {
   return (
@@ -10,7 +9,7 @@ export default function CompanyOverview() {
       <div className="w-[90%] mx-auto max-w-[1300px]">
         <div className="grid md:grid-cols-2 gap-16 items-start">
           
-          {/* Left: Text Content and Stats */}
+          {/* Left: Text Content */}
           <div>
             <span className="text-red-600 font-bold text-base uppercase tracking-[0.2em]">
               — OUR STORY
@@ -52,7 +51,7 @@ export default function CompanyOverview() {
               {/* Main Image (Image 1) */}
               <div className="absolute top-0 left-0 w-[80%] h-[400px] rounded-xl overflow-hidden shadow-2xl">
                   <Image 
-                      src={"/assets/image_22fed6.png"} 
+                      src={"/images/gg.png"} 
                       alt="Company team working" 
                       fill
                       objectFit="cover" 
@@ -62,7 +61,7 @@ export default function CompanyOverview() {
               {/* Secondary Image (Image 2 - Overlap) */}
               <div className="absolute bottom-0 right-0 w-[70%] h-[350px] rounded-xl overflow-hidden shadow-2xl border-4 border-white">
                   <Image 
-                      src={"/assets/image_230258.png"} 
+                      src={"/images/zz.png"} 
                       alt="Logistics solutions" 
                       fill
                       objectFit="cover" 
