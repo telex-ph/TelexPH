@@ -3,18 +3,18 @@ import { url } from "inspector";
 export const navLinks = [
     {
         id:1,
-        url:"#home", // Anchor Link: Home section (gagamitin natin ito sa mobile para mag-scroll sa taas)
+        url:"/", // Home page URL (not anchor)
         label:"Home"
     },
     {
         id:2,
-        url:"#about", // Anchor Link: About section sa homepage
+        url:"#about", // **FIXED**: Anchor link na ito para sa About section sa HOMEPAGE
         label:"About",
-        // Idinagdag ang dropdown
+        // Dropdown para sa About Overview Page
         dropdown: [
             {
                 id: 201,
-                url: "/about", // Ito ang magli-link sa app/about/page.tsx (About Overview)
+                url: "/about", // Ito ang magli-link sa app/about/page.tsx (Overview Page)
                 label: "About Overview"
             }
         ]
@@ -36,7 +36,7 @@ export const navLinks = [
     },
     {
         id:6,
-        url:"#choose", // Anchor Link: Why Choose Us section
+        url:"#choose", // Anchor Link para sa Choose section
         label:"Why Choose Us" 
     }
 ]
