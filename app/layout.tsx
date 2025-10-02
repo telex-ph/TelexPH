@@ -1,51 +1,25 @@
-// app/layout.tsx
-
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google"; // Para sa Google Font (Poppins)
-import localFont from "next/font/local"; // Para sa Local Fonts (Open Sans & Rubik)
 import "./globals.css";
 import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
+import { Poppins, Open_Sans, Rubik } from "next/font/google";
 
-// --- POPPINS (Google Font - Default) ---
 const poppins = Poppins({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-  variable: "--font-poppins", 
+  weight: ["400", "500", "600", "700", "900"], 
+  variable: "--font-poppins",
 });
 
-// --- OPEN SANS (Local Font) ---
-const openSans = localFont({
-  src: [
-    {
-      // Aayusin natin ang path para pumasok sa Open_Sans folder
-      path: '../public/fonts/Open_Sans/OpenSans-VariableFont_wdth,wght.ttf', 
-      style: 'normal',
-      weight: '300 900', 
-    },
-    {
-      path: '../public/fonts/Open_Sans/OpenSans-Italic-VariableFont_wdth,wght.ttf',
-      style: 'italic',
-      weight: '300 900', 
-    },
-  ],
-  variable: '--font-open-sans', 
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-open-sans",
 });
 
-// --- RUBIK (Local Font) ---
-// Ipagpalagay ko na mayroon kang Rubik font file sa loob ng Rubik folder
-const rubik = localFont({
-  src: [
-    {
-      // I-adjust ang path para sa Rubik folder
-      path: '../public/fonts/Rubik/Rubik-VariableFont_wght.ttf', 
-      style: 'normal',
-      weight: '300 900', // Halimbawa lang ng weight range
-    },
-    // Idagdag ang iba pang Rubik files kung meron (e.g., italic)
-  ],
-  variable: '--font-rubik', 
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-rubik",
 });
-
 
 export const metadata: Metadata = {
   title: "Telex PH",
@@ -58,11 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      {/* I-apply ang LAHAT ng font variables sa body */}
+    <html lang="en" className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}> 
+      {/* Set ang default font at antialiasing sa body */}
       <body 
-        className={`${poppins.variable} ${openSans.variable} ${rubik.variable} font-poppins antialiased`}
-        // Ginawa kong default ang 'font-poppins'
+        className={`font-rubik antialiased`} 
       >
         <ResponsiveNav />
         {children}
