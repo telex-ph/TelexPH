@@ -1,68 +1,134 @@
 import React from "react";
+import { Clock, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
-// Icons
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaInstagram,
-  FaYoutube,
-  FaRegClock,
-} from "react-icons/fa";
-import { IoCallOutline } from "react-icons/io5";
-import { HiLocationMarker } from "react-icons/hi";
-
-const TopBar: React.FC = () => {
+const TopBar = () => {
   return (
     <>
-      {/* ✅ Desktop / Tablet */}
-      <div className="bg-red-600 text-white text-xs hidden md:flex items-center justify-between h-[40px] pl-9">
-        <div className="flex items-center justify-between w-full max-w-[1400px] mx-auto px-4 xl:px-8">
-          {/* Left Info */}
-          <div className="flex items-center space-x-6 lg:w-[350px]">
-            <span className="flex items-center">
-              <FaRegClock className="w-3 h-3 mr-2" />
-              Sun - Fri (7:00 - 18:00)
-            </span>
-            <span className="flex items-center">
-              <IoCallOutline className="w-3 h-3 mr-2" />
-              +0044 9922299
-            </span>
-          </div>
+      {/* Desktop / Tablet - Large screens (lg and up) */}
+      <div className="hidden lg:block text-white" style={{backgroundColor: '#a10000'}}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-10 text-sm">
+            {/* Left Info */}
+            <div className="flex items-center gap-6 flex-1">
+              <span className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="whitespace-nowrap">Sun - Fri (7:00 - 18:00)</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span className="whitespace-nowrap">+0044 9922299</span>
+              </span>
+            </div>
 
-          {/* Right Info */}
-          <div className="flex items-center space-x-2">
-            <span className="hidden lg:flex items-center">
-              <HiLocationMarker className="w-4 h-4 mr-2" />
-              22 Sterling Close, Winchester, M23 4FD
-            </span>
-            <div className="flex space-x-3">
-              <FaFacebookF className="w-3 h-3 cursor-pointer hover:text-gray-200 transition" />
-              <FaTwitter className="w-3 h-3 cursor-pointer hover:text-gray-200 transition" />
-              <FaInstagram className="w-3 h-3 cursor-pointer hover:text-gray-200 transition" />
-              <FaYoutube className="w-3 h-3 cursor-pointer hover:text-gray-200 transition" />
+            {/* Right Info */}
+            <div className="flex items-center gap-6 flex-1 justify-end">
+              <span className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span className="whitespace-nowrap">22 Sterling Close, Winchester, M23 4FD</span>
+              </span>
+              <div className="flex items-center gap-3">
+                <Facebook className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Twitter className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Instagram className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Youtube className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ✅ Mobile */}
-      <div className="bg-red-600 text-white text-xs flex flex-col items-center justify-center py-3 space-y-2 md:hidden">
-        {/* Line 1: Time + Phone */}
-        <div className="flex items-center justify-center space-x-6">
-          <span className="flex items-center">
-            <FaRegClock className="w-3 h-3 mr-2" />
-            Sun - Fri (7:00 - 18:00)
-          </span>
-          <span className="flex items-center">
-            <IoCallOutline className="w-3 h-3 mr-2" />
-            +0044 9922299
-          </span>
+      {/* Tablet - Medium screens (md to lg) */}
+      <div className="hidden md:block lg:hidden text-white" style={{backgroundColor: '#a10000'}}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col py-2 text-sm space-y-2">
+            {/* First Row */}
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="whitespace-nowrap">Sun - Fri (7:00 - 18:00)</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span className="whitespace-nowrap">+0044 9922299</span>
+              </span>
+            </div>
+            
+            {/* Second Row */}
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span className="text-xs sm:text-sm">22 Sterling Close, Winchester, M23 4FD</span>
+              </span>
+              <div className="flex items-center gap-3">
+                <Facebook className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Twitter className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Instagram className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Youtube className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Line 2: Address */}
-        <div className="flex items-center justify-center text-center px-4">
-          <HiLocationMarker className="w-4 h-4 mr-2" />
-          22 Sterling Close, Winchester, M23 4FD
+      {/* Mobile - Small screens (sm to md) */}
+      <div className="hidden sm:block md:hidden text-white" style={{backgroundColor: '#a10000'}}>
+        <div className="px-4 py-2.5 text-sm space-y-2">
+          {/* Time + Phone */}
+          <div className="flex items-center justify-center gap-6">
+            <span className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span className="text-xs">Sun - Fri (7:00 - 18:00)</span>
+            </span>
+            <span className="flex items-center gap-2">
+              <Phone className="w-4 h-4" />
+              <span className="text-xs">+0044 9922299</span>
+            </span>
+          </div>
+
+          {/* Address + Social */}
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2 flex-1">
+              <MapPin className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs">22 Sterling Close, Winchester, M23 4FD</span>
+            </span>
+            <div className="flex items-center gap-3 ml-4">
+              <Facebook className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+              <Twitter className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+              <Instagram className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+              <Youtube className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Extra Small Mobile - Below 640px */}
+      <div className="block sm:hidden text-white" style={{backgroundColor: '#a10000'}}>
+        <div className="px-3 py-3 text-xs space-y-2.5">
+          {/* Time + Phone */}
+          <div className="flex items-center justify-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Sun - Fri (7:00 - 18:00)</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5" />
+              <span>+0044 9922299</span>
+            </span>
+          </div>
+
+          {/* Address */}
+          <div className="flex items-center justify-center gap-1.5 text-center">
+            <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>22 Sterling Close, Winchester, M23 4FD</span>
+          </div>
+
+          {/* Social Icons */}
+          <div className="flex items-center justify-center gap-4 pt-1">
+            <Facebook className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+            <Twitter className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+            <Instagram className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+            <Youtube className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
+          </div>
         </div>
       </div>
     </>
