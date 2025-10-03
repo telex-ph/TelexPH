@@ -1,45 +1,24 @@
-import React from 'react';
-import Link from 'next/link';
-import { FaArrowRight } from 'react-icons/fa';
-import CompanyDetails from './CompanyDetails'; 
+import React from "react";
+import Link from "next/link";
+import { FaArrowRight } from "react-icons/fa";
+import CompanyDetails from "./CompanyDetails";
 
 const About = () => {
   return (
-    <div id="about" className="pt-20 pb-20 bg-white relative overflow-hidden"> 
-      <div 
+    <div id="about" className="pt-20 pb-20 bg-[#f8f8f8] relative overflow-hidden scroll-mt-[120px]">
+      <div
         className="absolute bottom-[-10%] left-[-5%] right-0 text-[10rem] md:text-[14rem] lg:text-[18rem] 
                    text-red-500 opacity-10 font-extrabold select-none pointer-events-none 
                    leading-none z-0"
       >
         <span className="text-fill-transparent text-outline-red-thin">
           GROW WITH TELEXPH
-        </span> 
+        </span>
       </div>
 
-      <div className="w-[85%] mx-auto relative z-10"> 
-        
-        {/* Subtitle */}
-        <p className="text-red-500 text-sm font-semibold tracking-widest uppercase mb-2">
-          — ABOUT COMPANY
-        </p>
-        
-        <div className="flex justify-between items-start mb-12">
-            {/* Main Heading */}
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-                Powering Your Business <br className="hidden md:block" /> the Smart Way
-            </h2>
+      <div className="w-[85%] mx-auto relative z-10">
+        <div className="flex justify-between items-start mb-12"></div>
 
-             {/* View About Us Button with Link */}
-            <Link href="/about" className="hidden lg:flex items-center text-gray-900 font-semibold mt-4 group cursor-pointer">
-                <div className="bg-red-500 w-12 h-12 rounded-full flex items-center justify-center mr-3 transform transition duration-300 group-hover:scale-110 shadow-xl">
-                    <FaArrowRight className="text-white text-xl" />
-                </div>
-                <span className="group-hover:text-red-500 transition-colors duration-300">
-                  View About Us
-                </span>
-            </Link>
-        </div>
-        
         {/* Content Section */}
         <CompanyDetails />
       </div>
