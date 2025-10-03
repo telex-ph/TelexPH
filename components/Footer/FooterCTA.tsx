@@ -7,10 +7,13 @@ const FooterCTA = () => {
 
         {/* Text Content - Left Side */}
         <div className="z-10 flex-1 max-w-lg">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-            Join the Future of Innovation:
+          <h2 className="text-2xl sm:text-3xl font-poppins-black mb-2">
+            Ready to Scale Smarter?
           </h2>
-          <p className="text-lg sm:text-xl">Contact Us Now</p>
+          <p className="text-lg sm:text-xl font-rubik">
+            Partner with Telex Philippines and discover smarter
+            outsourcing solutions for you business.
+          </p>
         </div>
 
         {/* Image - Right Side */}
@@ -30,8 +33,8 @@ const FooterCTA = () => {
         </div>
 
         {/* Button - Right Side */}
-        <button className="z-20 ml-auto bg-white text-red-600 font-semibold px-6 py-3 rounded shadow hover:bg-gray-100 transition whitespace-nowrap">
-          GET A QUOTE
+        <button className="z-20 ml-auto bg-white text-red-600 font-open-sans-bold px-6 py-3 rounded shadow hover:bg-gray-100 transition whitespace-nowrap">
+          CONTACT US NOW
         </button>
 
       </div>
