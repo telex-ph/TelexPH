@@ -4,7 +4,11 @@ import Image from "next/image";
 const FooterPosts = () => {
   return (
     <div>
-      <h3 className="font-poppins-black mb-4 text-white">Popular Post</h3>
+      <div className="mb-6">
+        <h3 className="font-poppins-black mb-2 text-white">Popular Post</h3>
+        {/* Red line sa baba ng heading */}
+        <div className="w-12 h-1 bg-red-600"></div>
+      </div>
       
       {/* Gamitin ang Grid para sa 2x2 layout */}
       <div className="grid grid-cols-2 gap-3">

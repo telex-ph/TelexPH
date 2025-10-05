@@ -3,7 +3,12 @@ import React from "react";
 const FooterSubscribe = () => {
   return (
     <div>
-      <h3 className="font-semibold mb-4">Subscribe Now</h3>
+      <div className="mb-6">
+        <h3 className="font-poppins-black mb-2 text-white">Subscribe Now</h3>
+        {/* Red line sa baba ng heading */}
+        <div className="w-12 h-1 bg-red-600"></div>
+      </div>
+      
       <p className="text-sm text-gray-300 mb-4">
         Subscribe our newsletter to get the latest news and updates!
       </p>
