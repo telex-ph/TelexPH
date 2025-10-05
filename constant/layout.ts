@@ -2,7 +2,7 @@
 
 // Container max width
 export const DEFAULT_MAX_WIDTH_CLASS =
-  "w-full max-w-[2600px] mx-auto px-4 sm:px-6 lg:px-8";
+  "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8";
 
 // Section height constraints
 export const SECTION_HEIGHT = {
