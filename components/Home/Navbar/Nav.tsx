@@ -4,12 +4,34 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
+import { Poppins, Open_Sans, Rubik } from "next/font/google";
 
 // Icons
 import { HiBars3BottomRight } from "react-icons/hi2";
 import { FaRegUser } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
 import { BsThreeDotsVertical } from "react-icons/bs";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["700", "900"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-open-sans",
+  display: "swap",
+});
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-rubik",
+  display: "swap",
+});
 
 type Props = {
   openNav: () => void;
@@ -31,7 +53,9 @@ const Nav = ({ openNav }: Props) => {
   }, []);
 
   return (
-    <nav className="fixed w-full z-[1000] top-0">
+    <nav
+      className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+    >
       <TopBar />
 
       <div
@@ -50,11 +74,11 @@ const Nav = ({ openNav }: Props) => {
           >
             <div className="text-white">
               <div className="flex items-center">
-                <span className="text-2xl font-bold tracking-wide">
-                  TELEX<span className="text-red-500">PH</span>
+                <span className="text-2xl font-poppins-black tracking-wide">
+                  TELEX<span className="text-[#a10000]">PH</span>
                 </span>
               </div>
-              <div className="text-red-500 text-[10px] font-medium tracking-widest mt-1">
+              <div className="text-[#a10000] text-[10px] font-open-sans-bold tracking-widest mt-1">
                 DELIVERY & TRANSPORT
               </div>
             </div>
@@ -63,7 +87,7 @@ const Nav = ({ openNav }: Props) => {
           {/* Red Diagonal Strip */}
           <div className="h-full z-30 w-10 -ml-5 sm:w-16 sm:-ml-8 lg:w-[60px] lg:-ml-[30px] relative">
             <div
-              className="absolute top-0 left-0 w-full h-full bg-red-600"
+              className="absolute top-0 left-0 w-full h-full bg-[#a10000]"
               style={{ clipPath: "polygon(50% 0, 100% 0, 50% 100%, 0 100%)" }}
             />
           </div>
@@ -73,30 +97,31 @@ const Nav = ({ openNav }: Props) => {
             {/* Nav Links - Updated for word highlight and dropdown */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
-                // Parent div with 'group' for hover effect and dropdown visibility
-                <div key={link.id} className="relative h-full flex items-center group"> 
-                  <Link 
-                    href={link.url} 
-                    className="relative py-[30px] scroll-smooth" // Added scroll-smooth for anchor links
-                  > 
-                    {/* Text highlight on group hover, replacing the red line */}
-                    <span className="text-gray-700 font-medium text-sm uppercase tracking-wide transition-colors group-hover:text-red-600">
+                <div
+                  key={link.id}
+                  className="relative h-full flex items-center group"
+                >
+                  <Link
+                    href={link.url}
+                    className="relative py-[30px] scroll-smooth"
+                  >
+                    <span className="text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors group-hover:text-[#a10000]">
                       {link.label}
                     </span>
                   </Link>
 
-                  {/* Dropdown Menu - Position Adjusted (pt-1) */}
+                  {/* Dropdown Menu */}
                   {link.dropdown && (
                     <div
                       className="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 
                                  group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50"
                     >
-                      <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-red-600 py-2 rounded-b-md">
+                      <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-[#a10000] py-2 rounded-b-md">
                         {link.dropdown.map((subLink) => (
                           <Link
                             key={subLink.id}
                             href={subLink.url}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                            className="block px-4 py-2 text-sm font-rubik text-gray-700 hover:bg-gray-100 hover:text-[#a10000] transition-colors duration-200"
                           >
                             {subLink.label}
                           </Link>
@@ -112,27 +137,24 @@ const Nav = ({ openNav }: Props) => {
             <div className="flex items-center space-x-8 ml-auto">
               {/* Desktop Icons */}
               <div className="hidden lg:flex items-center space-x-3">
-                <button className="text-red-600 hover:text-red-700 transition">
+                <button className="text-[#a10000] hover:text-red-700 transition">
                   <FaRegUser className="w-4 h-4" />
                 </button>
-                <button className="text-gray-600 hover:text-red-600 transition">
+                <button className="text-gray-600 hover:text-[#a10000] transition">
                   <IoSearchOutline className="w-5 h-5" />
                 </button>
-                <button className="text-gray-600 hover:text-red-600 transition">
+                <button className="text-gray-600 hover:text-[#a10000] transition">
                   <BsThreeDotsVertical className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Contact Us Button */}
-              <button className="hidden lg:block bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-medium transition-colors">
-                Contact Us
+              <button className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded">
+                Get Started
               </button>
 
               {/* Hamburger Menu Button */}
-              <button
-                onClick={openNav}
-                className="lg:hidden text-gray-700 p-2"
-              >
+              <button onClick={openNav} className="lg:hidden text-gray-700 p-2">
                 <HiBars3BottomRight className="w-6 h-6" />
               </button>
             </div>
