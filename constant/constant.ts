@@ -3,27 +3,34 @@ import { url } from "inspector";
 export const navLinks = [
     {
         id:1,
-        url:"#",
+        url:"/",
         label:"Home"
     },
     {
         id:2,
-        url:"#",
-        label:"About"
+        url:"#about",
+        label:"About",
+        dropdown: [
+            {
+                id: 201,
+                url: "/about", 
+                label: "About Overview"
+            }
+        ]
     },
     {
         id:3,
-        url:"#",
+        url:"#choose",
         label:"Services"
     },
     {
         id:4,
-        url:"#",
+        url:"#industry",
         label:"Industry"
     },
     {
         id:5,
-        url:"#",
+        url:"#careers",
         label:"Careers"
-    }
+    },
 ]

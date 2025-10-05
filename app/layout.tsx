@@ -1,11 +1,27 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import "./globals.css";
 import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
+import { Poppins, Open_Sans, Rubik } from "next/font/google";
 
 const poppins = Poppins({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "900"], 
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-open-sans",
+  display: "swap",
+});
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-rubik",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -19,8 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.className} antialiased`}>
+    <html lang="en" className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}> 
+      {/* Set ang default font at antialiasing sa body */}
+      <body 
+        className={`font-rubik antialiased`} 
+      >
         <ResponsiveNav />
         {children}
       </body>

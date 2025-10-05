@@ -1,88 +1,181 @@
 import React from "react";
 import Link from "next/link";
 import HeroClients from "./HeroClients";
+import { RESPONSIVE_HEIGHT } from "@/constant/layout";
+import { Poppins, Open_Sans, Rubik } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["900"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-open-sans",
+  display: "swap",
+});
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["500"],
+  variable: "--font-rubik",
+  display: "swap",
+});
+
+const HERO_BG_IMAGE = "/images/background.jpg"; 
 
 const Hero = () => {
   return (
     <>
-      <div className="relative w-full h-[90vh] md:h-[100vh] bg-red-950 pt-[10vh] lg:pt-[10vh] flex flex-col justify-center">
-        <div className="relative z-[100] w-full h-full flex items-center">
-          <div className="w-full px-4 xl:w-[88%] mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">
-              
-              {/* Left Content (Text and Buttons) */}
-              <div className="py-10 lg:py-0">
-                <p className="text-base md:text-lg text-white mb-2">
-                  Innovate, Grow, and Transform Your World
-                </p>
-                <h1 className="text-[35px] sm:text-[45px] md:text-[55px] lg:text-[70px] text-white font-bold leading-tight mb-6">
-                  We're Global <br />
-                  Logistic Provider
-                </h1>
-                <p className="text-white text-base max-w-lg mb-8">
-                  We embrace the latest construction technologies and
-                  sustainable practices to deliver modern and eco-friendly
-                  solutions.
+      <div
+        id="home"
+        className={`relative w-full ${RESPONSIVE_HEIGHT.hero} bg-cover bg-center overflow-hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+        style={{
+          backgroundImage: `url(${HERO_BG_IMAGE})`,
+        }}
+      >
+        {/* Background Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-red-950 via-red-900 to-red-950 opacity-45"></div>
+
+        {/* Content Container */}
+        <div className="relative z-10 w-full h-full flex items-center pb-0">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left Content - Takes 5 columns */}
+              <div className="lg:col-span-5 pt-30 sm:pt-28 lg:pt-25 lg:pl-20 px-4 sm:px-0">
+                {/* Subheading */}
+                <p className="text-sm sm:text-base text-white mb-2 font-open-sans-bold">
+                  Your trusted partner in Business Process Outsourcing
                 </p>
 
-                {/* Buttons */}
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                {/* Main Title */}
+                <h1 className="text-[35px] sm:text-[40px] md:text-[48px] lg:text-[55px] text-white font-poppins-black leading-tight mb-4 sm:mb-5">
+                  Your Partner to<br />
+                  Scale Smarter
+                </h1>
+
+                {/* Body Text */}
+                <p className="text-white text-xs sm:text-sm leading-relaxed max-w-lg mb-5 sm:mb-6 font-rubik">
+                  We deliver world-class business support services designed to
+                  optimize efficiency, reduce costs, and empower your growth.
+                  Together, let's build smarter, scalable solutions for your
+                  success.
+                </p>
+
+                {/* Button */}
+                <div className="mb-5 sm:mb-6">
                   <Link
                     href="#"
-                    className="rounded px-8 py-3 text-sm font-semibold text-center overflow-hidden group bg-red-700 relative
-                      hover:bg-red-800 text-white transition-all ease-out duration-300 border border-white"
+                    className="inline-block rounded px-6 sm:px-7 py-2 sm:py-2.5 text-xs font-open-sans-bold uppercase tracking-wide bg-white hover:bg-gray-100 text-[#a10000] transition-all ease-out duration-300"
                   >
                     REQUEST A QUOTE
-                  </Link>
-                  <Link
-                    href="#"
-                    className="rounded px-8 py-3 text-sm font-semibold text-center overflow-hidden group bg-transparent relative
-                      hover:bg-red-500 text-white transition-all ease-out duration-300 border border-white"
-                  >
-                    LEARN MORE
                   </Link>
                 </div>
 
                 {/* Reviews and Avatars */}
-                <div className="flex items-center mt-6 space-x-3">
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-red-600"></div>
-                    <div className="w-8 h-8 bg-gray-400 rounded-full border-2 border-red-600"></div>
-                    <div className="w-8 h-8 bg-gray-500 rounded-full border-2 border-red-600"></div>
+                <div className="flex items-center">
+                  <div className="flex -space-x-2 mr-4">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-300">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-500"></div>
+                    </div>
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-400">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-500 to-gray-600"></div>
+                    </div>
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-500">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-700"></div>
+                    </div>
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-600">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800"></div>
+                    </div>
                   </div>
                   <div className="text-white">
-                    <div className="text-amber-400 text-sm">★★★★★</div>
-                    <p className="text-sm">5.5K Review</p>
+                    <div className="text-amber-400 text-xs sm:text-sm mb-0">★★★★★</div>
+                    <p className="text-[10px] sm:text-xs font-open-sans-bold">5.5K Review</p>
                   </div>
                 </div>
               </div>
 
-              {/* Right Content (Floating Cards) */}
-              <div className="relative h-full hidden lg:block min-h-[400px]">
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20 space-y-4">
-                  <div className="bg-white p-4 rounded-lg shadow-xl w-64 transform translate-x-0 transition duration-500 hover:translate-x-2">
-                    <p className="text-red-600 font-bold text-xl">
-                      30-Years Experience
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      A warranty extending up to 30 years provides.
-                    </p>
+              {/* Right Content - Takes 7 columns */}
+              <div className="lg:col-span-7 relative hidden lg:flex items-end justify-start h-full">
+                <div className="absolute left-0 right-0 flex items-end justify-start" style={{ bottom: '-130px' }}>
+                  <img 
+                    src="/images/hpic.png" 
+                    alt="Customer Service Representatives" 
+                    className="w-auto h-auto object-contain object-bottom"
+                    style={{ 
+                      display: 'block',
+                      marginLeft: '-30px',
+                      maxHeight: '80vh'
+                    }}
+                  />
+                </div>
+                
+                {/* Floating Cards Container */}
+                <div className="absolute -right-8 xl:-right-16 top-[60%] -translate-y-1/2 space-y-3 w-[240px] xl:w-[280px]">
+                  {/* Card 1 - Seamless Transactions */}
+                  <div className="bg-white p-3 xl:p-4 rounded-xl shadow-2xl">
+                    <div className="flex items-start space-x-2">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 xl:w-10 xl:h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 xl:w-5 xl:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-gray-900 font-open-sans-bold text-sm xl:text-base mb-1">
+                          Seamless Transactions
+                        </h3>
+                        <p className="text-[9px] xl:text-[10px] text-gray-600 leading-relaxed font-rubik">
+                          Multi-channel support that keeps customers connected.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg shadow-xl w-64 transform translate-x-0 transition duration-500 hover:translate-x-2">
-                    <p className="text-red-600 font-bold text-lg">
-                      Transport by Road
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Solar panels can be installed very easy and simple.
-                    </p>
+
+                  {/* Card 2 - Smart Operations */}
+                  <div className="bg-white p-3 xl:p-4 rounded-xl shadow-2xl">
+                    <div className="flex items-start space-x-2">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 xl:w-10 xl:h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 xl:w-5 xl:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-gray-900 font-open-sans-bold text-sm xl:text-base mb-1">
+                          Smart Operations
+                        </h3>
+                        <p className="text-[9px] xl:text-[10px] text-gray-600 leading-relaxed font-rubik">
+                          Streamlined workflows for maximum efficiency.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg shadow-xl w-64 transform translate-x-0 transition duration-500 hover:translate-x-2">
-                    <p className="text-red-600 font-bold text-lg">
-                      Transport By Air
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Solar panels can be installed very easy and simple.
-                    </p>
+
+                  {/* Card 3 - Scalable Solutions */}
+                  <div className="bg-white p-3 xl:p-4 rounded-xl shadow-2xl">
+                    <div className="flex items-start space-x-2">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 xl:w-10 xl:h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 xl:w-5 xl:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-gray-900 font-open-sans-bold text-sm xl:text-base mb-1">
+                          Scalable Solutions
+                        </h3>
+                        <p className="text-[9px] xl:text-[10px] text-gray-600 leading-relaxed font-rubik">
+                          Flexible solutions that grow with your business.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -90,16 +183,13 @@ const Hero = () => {
           </div>
 
           {/* Slider Dots */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            <div className="w-2 h-2 bg-white rounded-full opacity-50"></div>
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            <div className="w-2 h-2 bg-white rounded-full opacity-50"></div>
+          <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
+            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full opacity-40"></div>
+            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></div>
+            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full opacity-40"></div>
           </div>
         </div>
       </div>
-
-      {/* Client Logos Section */}
-      <HeroClients />
     </>
   );
 };

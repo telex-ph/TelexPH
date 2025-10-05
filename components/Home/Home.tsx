@@ -7,9 +7,21 @@ import About from "../About/About";
 const Home = () => {
   return (
     <div className="overflow-hidden">
-      <Hero />
-      <About />
-      <Choose />
+      {/* 1. Hero Section - ID: home */}
+      <div id="home">
+        <Hero />
+      </div>
+      
+      {/* 2. About Section - ID: about */}
+      {/* <div id="about">
+        <About />
+      </div> */}
+      
+      {/* 3. Choose Section - ID: choose */}
+      {/* <div id="choose">
+        <Choose />
+      </div> */}
+      
       <Footer />
     </div>
   );

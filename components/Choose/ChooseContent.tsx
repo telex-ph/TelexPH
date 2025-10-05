@@ -3,7 +3,6 @@ import { ArrowUpRight } from 'lucide-react';
 import FeaturesSection from "./FeaturesSection";
 import CenterGrid from "./CenterGrid";
 
-// --- ChooseHeader Content (Dati ay ChooseHeader.tsx) ---
 const ChooseHeader = () => {
   return (
     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-8">
@@ -27,7 +26,6 @@ const ChooseHeader = () => {
   );
 };
 
-// --- ChooseGrid Content (Dati ay ChooseGrid.tsx) ---
 const ChooseGrid = () => {
   const leftFeatures = [
     {
@@ -72,7 +70,6 @@ const ChooseGrid = () => {
   ];
 
   return (
-    // Grid adjusted for better responsiveness:
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <FeaturesSection features={leftFeatures} />
       <CenterGrid />
@@ -81,7 +78,6 @@ const ChooseGrid = () => {
   );
 };
 
-// --- Main ChooseContent Component ---
 const ChooseContent = () => {
     return (
         <>

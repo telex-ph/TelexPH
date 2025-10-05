@@ -1,10 +1,11 @@
 import React from 'react';
+import Link from 'next/link';
 import { FaArrowRight } from 'react-icons/fa';
 import CompanyDetails from './CompanyDetails'; 
 
 const About = () => {
   return (
-    <div className="pt-20 pb-20 bg-white relative overflow-hidden"> 
+    <div id="about" className="pt-20 pb-20 bg-white relative overflow-hidden"> 
       <div 
         className="absolute bottom-[-10%] left-[-5%] right-0 text-[10rem] md:text-[14rem] lg:text-[18rem] 
                    text-red-500 opacity-10 font-extrabold select-none pointer-events-none 
@@ -28,13 +29,15 @@ const About = () => {
                 Powering Your Business <br className="hidden md:block" /> the Smart Way
             </h2>
 
-             {/* View About Us Button (Moved here for better top alignment) */}
-            <button className="hidden lg:flex items-center text-gray-900 font-semibold mt-4">
-                <div className="bg-red-500 w-12 h-12 rounded-full flex items-center justify-center mr-3 transform transition duration-300 hover:scale-110 shadow-xl">
+             {/* View About Us Button with Link */}
+            <Link href="/about" className="hidden lg:flex items-center text-gray-900 font-semibold mt-4 group cursor-pointer">
+                <div className="bg-red-500 w-12 h-12 rounded-full flex items-center justify-center mr-3 transform transition duration-300 group-hover:scale-110 shadow-xl">
                     <FaArrowRight className="text-white text-xl" />
                 </div>
-                View About Us
-            </button>
+                <span className="group-hover:text-red-500 transition-colors duration-300">
+                  View About Us
+                </span>
+            </Link>
         </div>
         
         {/* Content Section */}
