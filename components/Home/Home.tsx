@@ -13,14 +13,14 @@ const Home = () => {
       </div>
       
       {/* 2. About Section - ID: about */}
-      <div id="about">
+      {/* <div id="about">
         <About />
-      </div>
+      </div> */}
       
       {/* 3. Choose Section - ID: choose */}
-      <div id="choose">
+      {/* <div id="choose">
         <Choose />
-      </div>
+      </div> */}
       
       <Footer />
     </div>
