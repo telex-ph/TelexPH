@@ -25,7 +25,7 @@ const rubik = Rubik({
   display: "swap",
 });
 
-const HERO_BG_IMAGE = "/images/background.jpg"; 
+const HERO_BG_IMAGE = "/images/background.jpg";
 
 const Hero = () => {
   return (
@@ -40,12 +40,12 @@ const Hero = () => {
         {/* Background Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-red-950 via-red-900 to-red-950 opacity-45"></div>
 
-        {/* Content Container */}
-        <div className="relative z-10 w-full h-full flex items-center pb-0">
+        {/* Content Container - Ibinaba ng kaunti */}
+        <div className="relative z-10 w-full h-full flex items-center pb-0 -mt-12">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Content - Takes 5 columns */}
-              <div className="lg:col-span-5 pt-30 sm:pt-28 lg:pt-25 lg:pl-20 px-4 sm:px-0">
+              <div className="lg:col-span-5 pt-40 sm:pt-28 lg:pt-25 lg:pl-20 px-4 sm:px-0">
                 {/* Subheading */}
                 <p className="text-sm sm:text-base text-white mb-2 font-open-sans-bold">
                   Your trusted partner in Business Process Outsourcing
@@ -53,7 +53,8 @@ const Hero = () => {
 
                 {/* Main Title */}
                 <h1 className="text-[35px] sm:text-[40px] md:text-[48px] lg:text-[55px] text-white font-poppins-black leading-tight mb-4 sm:mb-5">
-                  Your Partner to<br />
+                  Your Partner to
+                  <br />
                   Scale Smarter
                 </h1>
 
@@ -92,36 +93,53 @@ const Hero = () => {
                     </div>
                   </div>
                   <div className="text-white">
-                    <div className="text-amber-400 text-xs sm:text-sm mb-0">★★★★★</div>
-                    <p className="text-[10px] sm:text-xs font-open-sans-bold">5.5K Review</p>
+                    <div className="text-amber-400 text-xs sm:text-sm mb-0">
+                      ★★★★★
+                    </div>
+                    <p className="text-[10px] sm:text-xs font-open-sans-bold">
+                      5.5K Review
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Right Content - Takes 7 columns */}
               <div className="lg:col-span-7 relative hidden lg:flex items-end justify-start h-full">
-                <div className="absolute left-0 right-0 flex items-end justify-start" style={{ bottom: '-130px' }}>
-                  <img 
-                    src="/images/hpic.png" 
-                    alt="Customer Service Representatives" 
+                <div
+                  className="absolute left-0 right-0 flex items-end justify-start"
+                  style={{ bottom: "-260px" }}
+                >
+                  <img
+                    src="/images/hpic.png"
+                    alt="Customer Service Representatives"
                     className="w-auto h-auto object-contain object-bottom"
-                    style={{ 
-                      display: 'block',
-                      marginLeft: '-30px',
-                      maxHeight: '80vh'
+                    style={{
+                      display: "block",
+                      marginLeft: "-100px",
+                      maxHeight: "100vh",
                     }}
                   />
                 </div>
-                
-                {/* Floating Cards Container */}
-                <div className="absolute -right-8 xl:-right-16 top-[60%] -translate-y-1/2 space-y-3 w-[240px] xl:w-[280px]">
+
+                {/* Floating Cards Container - Ibinaba ng kaunti */}
+                <div className="absolute -right-8 xl:-right-16 top-[65%] -translate-y-1/2 space-y-3 w-[240px] xl:w-[280px]">
                   {/* Card 1 - Seamless Transactions */}
                   <div className="bg-white p-3 xl:p-4 rounded-xl shadow-2xl">
                     <div className="flex items-start space-x-2">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 xl:w-10 xl:h-10 bg-red-50 rounded-lg flex items-center justify-center">
-                          <svg className="w-4 h-4 xl:w-5 xl:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          <svg
+                            className="w-4 h-4 xl:w-5 xl:h-5 text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
                           </svg>
                         </div>
                       </div>
@@ -141,8 +159,18 @@ const Hero = () => {
                     <div className="flex items-start space-x-2">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 xl:w-10 xl:h-10 bg-red-50 rounded-lg flex items-center justify-center">
-                          <svg className="w-4 h-4 xl:w-5 xl:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          <svg
+                            className="w-4 h-4 xl:w-5 xl:h-5 text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                            />
                           </svg>
                         </div>
                       </div>
@@ -162,8 +190,18 @@ const Hero = () => {
                     <div className="flex items-start space-x-2">
                       <div className="flex-shrink-0">
                         <div className="w-8 h-8 xl:w-10 xl:h-10 bg-red-50 rounded-lg flex items-center justify-center">
-                          <svg className="w-4 h-4 xl:w-5 xl:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          <svg
+                            className="w-4 h-4 xl:w-5 xl:h-5 text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 10V3L4 14h7v7l9-11h-7z"
+                            />
                           </svg>
                         </div>
                       </div>
@@ -180,13 +218,6 @@ const Hero = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Slider Dots */}
-          <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
-            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full opacity-40"></div>
-            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full"></div>
-            <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white rounded-full opacity-40"></div>
           </div>
         </div>
       </div>
