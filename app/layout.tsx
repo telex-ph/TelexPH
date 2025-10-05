@@ -7,18 +7,21 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "900"], 
   variable: "--font-poppins",
+  display: "swap",
 });
 
 const openSans = Open_Sans({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-open-sans",
+  display: "swap",
 });
 
 const rubik = Rubik({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-rubik",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
