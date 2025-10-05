@@ -11,7 +11,7 @@ const DEFAULT_MAX_WIDTH_CLASS = "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:p
 
 const Footer = () => {
   return (
-    <footer className="relative bg-[#20252b] text-white pt-20 mt-30">
+    <footer className="relative bg-[#20252b] text-white pt-20 sm:pt-24 md:pt-28 mt-30">
       {/* CTA Section positioned above footer */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full z-20">
         <div className={DEFAULT_MAX_WIDTH_CLASS}>
