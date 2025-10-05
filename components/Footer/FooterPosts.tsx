@@ -7,7 +7,7 @@ const FooterPosts = () => {
       <div className="mb-6">
         <h3 className="font-poppins-black mb-2 text-white">Popular Post</h3>
         {/* Red line sa baba ng heading */}
-        <div className="w-12 h-1 bg-red-600"></div>
+        <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
       
       {/* Gamitin ang Grid para sa 2x2 layout */}
@@ -22,12 +22,12 @@ const FooterPosts = () => {
           />
           
           {/* Red Overlay with content */}
-          <div className="absolute inset-0 bg-red-600/80 p-4 flex flex-col justify-between">
+          <div className="absolute inset-0 bg-[#a10000]/80 p-4 flex flex-col justify-between">
             {/* Icon sa taas */}
             <div className="flex justify-start">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                 <svg 
-                  className="w-5 h-5 text-red-600" 
+                  className="w-5 h-5 text-[#a10000]" 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
