@@ -5,7 +5,7 @@ const Choose = () => {
   return (
     <div
       id="choose"
-      className="pt-20 pb-20 bg-[#f8f8f8] relative overflow-hidden scroll-mt-[120px]"
+      className="pt-20 pb-20 bg-white relative overflow-hidden"
     >
       {/* Background Pattern - Responsive */}
       <div className="absolute top-0 right-0 w-1/2 h-full opacity-[0.03]">

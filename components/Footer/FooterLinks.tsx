@@ -3,7 +3,12 @@ import React from "react";
 const FooterLinks = () => {
   return (
     <div>
-      <h3 className="font-semibold mb-4">Need Help?</h3>
+      <div className="mb-6">
+        <h3 className="font-poppins-black mb-2 text-white">Need Help?</h3>
+        {/* Red line sa baba ng heading */}
+        <div className="w-12 h-1 bg-[#a10000]"></div>
+      </div>
+      
       <p className="text-sm text-gray-300 mb-2">
         Call Us Directly?<br /><span className="text-base font-medium">(044) 331-5040</span> 
       </p>
