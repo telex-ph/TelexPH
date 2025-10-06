@@ -8,6 +8,8 @@ import Footer from "@/components/Footer/Footer";
 // Make sure the path to your About component is correct. 
 import Partners from "../Partners/Partners";
 import AboutUs from "../AboutUs/AboutUs";
+import PartnerLogos from "../PartnerLogos/PartnerLogos";
+import ServicesGrid from "../Services/Services";
 
 const Home = () => {
   return (
@@ -23,14 +25,24 @@ const Home = () => {
         <Partners />
       </div>
       
-      {/* 4. About Section - ID: about (Moved before Footer) */}
+      {/* 3. About Section - ID: about (Moved before Footer) */}
       <div id="about">
         <AboutUs />
       </div>
 
-      {/* 3. Choose Section - ID: choose (Commented out as requested) */}
+      {/* 4. Choose Section - ID: choose (Commented out as requested) */}
       <div id="choose">
         <Choose />
+      </div>
+
+      {/* 5. PartnerLogos Section - ID: partnerlogos (Commented out as requested) */}
+      <div id="partnerlogos">
+        <PartnerLogos />
+      </div>
+
+      {/* 6. Services Section - ID: services (Commented out as requested) */}
+      <div id="services">
+        <ServicesGrid />
       </div>
       
       <Footer />
