@@ -10,7 +10,7 @@ const AboutUs = () => {
     >
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
         {/* Background Large Outline Text inside same max-width */}
-        <div className="absolute bottom-20 left-0 w-full pointer-events-none z-0">
+        <div className="absolute bottom-15 left-0 w-full pointer-events-none z-0">
           <div
             className={`${DEFAULT_MAX_WIDTH_CLASS} 
                        text-[3rem] md:text-[5rem] lg:text-[6rem] 
