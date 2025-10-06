@@ -38,7 +38,7 @@ export default function RootLayout({
     <html lang="en" className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}> 
       {/* Set ang default font at antialiasing sa body */}
       <body 
-        className={`font-rubik antialiased`} 
+        className={`font-rubik-regular antialiased`} 
       >
         <ResponsiveNav />
         {children}
