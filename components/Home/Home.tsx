@@ -23,14 +23,14 @@ const Home = () => {
         <Partners />
       </div>
       
-      {/* 3. Choose Section - ID: choose (Commented out as requested) */}
-      {/* <div id="choose">
-        <Choose />
-      </div> */}
-      
       {/* 4. About Section - ID: about (Moved before Footer) */}
       <div id="about">
         <AboutUs />
+      </div>
+
+      {/* 3. Choose Section - ID: choose (Commented out as requested) */}
+      <div id="choose">
+        <Choose />
       </div>
       
       <Footer />
