@@ -7,6 +7,7 @@ html {
 @layer base {
   
   body {
+    /* Default font ng body ay Rubik (400) */
     font-family: var(--font-rubik), sans-serif;
     font-weight: 400; 
   }
@@ -14,16 +15,20 @@ html {
 
 @layer utilities {
   
+  /* Para sa mga pinaka-bold na headings/text (900) */
   .font-poppins-black {
     font-family: var(--font-poppins), sans-serif;
     font-weight: 900;
   }
   
+  /* Para sa bold text (700) */
   .font-open-sans-bold {
     font-family: var(--font-open-sans), sans-serif;
     font-weight: 700;
   }
-  .font-rubik {
+  
+  /* Para sa body text at default (400) */
+  .font-rubik-regular {
     font-family: var(--font-rubik), sans-serif;
     font-weight: 400; 
   }
@@ -31,6 +36,5 @@ html {
 
 .text-outline-red-thin {
   color: transparent;
-  -webkit-text-stroke: 1px rgba(161, 0, 0, 0.3); /* manipis na red outline na may 40% opacity */
+  -webkit-text-stroke: 1px rgba(161, 0, 0, 0.3); 
 }
-
