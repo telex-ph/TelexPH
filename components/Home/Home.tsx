@@ -1,15 +1,12 @@
-// Home.tsx (assuming this is app/page.tsx or pages/index.tsx)
-
 import React from "react";
-// Assuming these are the paths to your components
 import Hero from "./Hero/Hero"; 
 import Choose from "@/components/Choose/Choose";
 import Footer from "@/components/Footer/Footer";
-// Make sure the path to your About component is correct. 
 import Partners from "../Partners/Partners";
 import AboutUs from "../AboutUs/AboutUs";
 import PartnerLogos from "../PartnerLogos/PartnerLogos";
 import ServicesGrid from "../Services/Services";
+import ContactSupport from "../ContactSupport/ContactSupport";
 
 const Home = () => {
   return (
@@ -45,6 +42,11 @@ const Home = () => {
         <ServicesGrid />
       </div>
       
+      {/* 6. ContactSupport Section - ID: contactsupport (Commented out as requested) */}
+      <div id="contactsupport">
+        <ContactSupport />
+      </div>
+
       <Footer />
     </div>
   );
