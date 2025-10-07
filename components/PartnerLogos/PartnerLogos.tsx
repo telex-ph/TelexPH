@@ -1,13 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import Image from 'next/image';
-
-// 💡 IMPORT NATIN ANG CONSTANTS MULA SA IYONG LAYOUT FILE
 import { DEFAULT_MAX_WIDTH_CLASS } from '../../constant/layout'; 
-// NOTE: I-adjust ang path '../../constant/layout' kung hindi ito tugma sa folder structure mo.
 
 const logos = [
+  // ... (Your logo array) ...
   { src: '/images/logo1.png', alt: 'Partner Logo 1' },
   { src: '/images/logo2.png', alt: 'Partner Logo 2' },
   { src: '/images/logo3.png', alt: 'Partner Logo 3' },
@@ -21,6 +18,8 @@ const logos = [
 const PartnerLogos: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const logosForLoop = [...logos, ...logos]; 
+
   const defaultLogoStyle: React.CSSProperties = {
     opacity: 0.5, 
     filter: 'grayscale(10%)',
@@ -30,35 +29,58 @@ const PartnerLogos: React.FC = () => {
     opacity: 1, 
     filter: 'grayscale(0%)', 
   };
-  
-  const baseLogoClasses = 'w-auto object-contain cursor-pointer transition-all duration-300 ease-in-out';
+    
+  const baseLogoClasses = 'w-auto object-contain cursor-pointer transition-colors duration-300 ease-in-out';
 
   const enlargedSizeClasses = 'h-[70px]'; 
   const defaultSizeClasses = 'h-[50px]'; 
+    
+  const logoItemStyle: React.CSSProperties = {
+    width: `${100 / logos.length}%`, 
+  };
+    
+  const containerWidthStyle: React.CSSProperties = {
+    width: '200%', 
+  };
+
 
   return (
     <div className="bg-gray-50 py-10 flex justify-center w-full"> 
-      <div className={`flex flex-row flex-wrap justify-center items-center gap-x-10 ${DEFAULT_MAX_WIDTH_CLASS}`}>
+      <div className={`flex items-center ${DEFAULT_MAX_WIDTH_CLASS} w-full overflow-hidden`}>
         
-        {logos.map((logo, index) => {
-          const sizeClasses = index === 0 ? enlargedSizeClasses : defaultSizeClasses;
+        {/* Ito ang div na may custom animation classes */}
+        <div
+          // Siguraduhin na tama ang spelling ng classes
+          className="flex items-center animate-slide-right group hover:pause-animation"
+          style={containerWidthStyle}
+        >
           
-          return (
-            <img
-              key={index}
-              src={logo.src}
-              alt={logo.alt}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              
-              className={`${baseLogoClasses} ${sizeClasses}`}
-              style={{
-                ...defaultLogoStyle,
-                ...(index === hoveredIndex ? hoveredLogoStyle : {}),
-              }}
-            />
-          );
-        })}
+          {logosForLoop.map((logo, index) => {
+            const originalIndex = index % logos.length; 
+            const sizeClasses = originalIndex === 0 ? enlargedSizeClasses : defaultSizeClasses;
+            
+            return (
+              <div 
+                key={index}
+                className={`flex-shrink-0 px-8`} 
+                style={logoItemStyle}
+                onMouseEnter={() => setHoveredIndex(originalIndex)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  
+                  className={`${baseLogoClasses} ${sizeClasses}`}
+                  style={{
+                    ...defaultLogoStyle,
+                    ...(originalIndex === hoveredIndex ? hoveredLogoStyle : {}),
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
