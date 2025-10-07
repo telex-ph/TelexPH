@@ -10,7 +10,7 @@ const FooterLinks = () => {
       </div>
       
       <p className="text-sm text-gray-300 mb-2">
-        Call Us Directly?<br /><span className="text-base font-medium">(044) 331-5040</span> 
+        Call Us Directly?<br /><span className="text-base font-medium">+63 (044) 331-5040</span> 
       </p>
       <p className="text-sm text-gray-300 mb-2">
         For Support?<br /><span className="text-base font-medium">partnerships@telexph.com</span>
