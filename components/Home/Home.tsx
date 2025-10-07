@@ -7,6 +7,7 @@ import AboutUs from "../AboutUs/AboutUs";
 import PartnerLogos from "../PartnerLogos/PartnerLogos";
 import ServicesGrid from "../Services/Services";
 import ContactSupport from "../ContactSupport/ContactSupport";
+import Process from "../Process/Process";
 
 const Home = () => {
   return (
@@ -45,6 +46,11 @@ const Home = () => {
       {/* 6. ContactSupport Section - ID: contactsupport (Commented out as requested) */}
       <div id="contactsupport">
         <ContactSupport />
+      </div>
+
+      {/* 6. Process Section - ID: process (Commented out as requested) */}
+      <div id="process">
+        <Process />
       </div>
 
       <Footer />
