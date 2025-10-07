@@ -25,7 +25,7 @@ const TopBar = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span className="whitespace-nowrap">+0044 9922299</span>
+                <span className="whitespace-nowrap">(044) 331 - 5040</span>
               </span>
             </div>
 
@@ -34,7 +34,7 @@ const TopBar = () => {
               <span className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
                 <span className="whitespace-nowrap">
-                  22 Sterling Close, Winchester, M23 4FD
+                  Guimba, Nueva Ecija
                 </span>
               </span>
               <div className="flex items-center gap-3">
