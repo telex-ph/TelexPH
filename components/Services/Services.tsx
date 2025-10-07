@@ -1,16 +1,17 @@
 "use client";
 
-import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import React from "react";
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 
-const DARK_RED = '#a10000';
-const HOVER_DARK_RED = '#850000';
-const DEFAULT_MAX_WIDTH_CLASS = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
+const DARK_RED = "#a10000";
+const HOVER_DARK_RED = "#850000";
+const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
 
 const services = [
-  { 
-    title: 'Customer Support Outsourcing', 
-    imageSrc: '/images/services1.jpg', 
+  {
+    title: "Customer Support Outsourcing",
+    imageSrc: "/images/services1.jpg",
     isHighlight: false,
     icon: (
       <>
@@ -19,43 +20,43 @@ const services = [
         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </>
-    )
+    ),
   },
-  { 
-    title: 'Technical Helpdesk', 
-    imageSrc: '/images/services2.jpg', 
+  {
+    title: "Technical Helpdesk",
+    imageSrc: "/images/services2.jpg",
     isHighlight: true,
     icon: (
       <>
         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
       </>
-    )
+    ),
   },
-  { 
-    title: 'Sales & Lead Generation', 
-    imageSrc: '/images/services3.jpg', 
+  {
+    title: "Sales & Lead Generation",
+    imageSrc: "/images/services3.jpg",
     isHighlight: false,
     icon: (
       <>
         <line x1="12" y1="1" x2="12" y2="23" />
         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
       </>
-    )
+    ),
   },
-  { 
-    title: 'Virtual Assistance', 
-    imageSrc: '/images/services4.jpg', 
+  {
+    title: "Virtual Assistance",
+    imageSrc: "/images/services4.jpg",
     isHighlight: false,
     icon: (
       <>
         <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
       </>
-    )
+    ),
   },
-  { 
-    title: 'Back Office Operations', 
-    imageSrc: '/images/services5.jpg', 
+  {
+    title: "Back Office Operations",
+    imageSrc: "/images/services5.jpg",
     isHighlight: false,
     icon: (
       <>
@@ -65,11 +66,11 @@ const services = [
         <line x1="16" y1="17" x2="8" y2="17" />
         <polyline points="10 9 9 9 8 9" />
       </>
-    )
+    ),
   },
-  { 
-    title: 'Social Media Management', 
-    imageSrc: '/images/services6.jpg', 
+  {
+    title: "Social Media Management",
+    imageSrc: "/images/services6.jpg",
     isHighlight: false,
     icon: (
       <>
@@ -77,7 +78,7 @@ const services = [
         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
       </>
-    )
+    ),
   },
 ];
 
@@ -90,34 +91,39 @@ const ServiceCard = ({ service }: { service: ServiceType }) => {
     <div className="relative group">
       {/* Main image container with rounded corners */}
       <div className="relative rounded-2xl overflow-hidden shadow-md transition-all duration-300 group-hover:shadow-xl">
-        <div style={{ paddingBottom: '75%' }} className="relative">
-          <img
+        <div className="relative w-full aspect-[4/3]">
+          <Image
             src={service.imageSrc}
             alt={service.title}
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
           />
         </div>
       </div>
-      
-      {/* Content card - positioned at bottom left, overlapping the image */}
-      <div 
+
+      {/* Content card */}
+      <div
         className="absolute -bottom-6 left-20 -right-6 rounded-xl p-5 shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1 overflow-hidden"
-        style={{ 
-          backgroundColor: isHighlighted ? DARK_RED : '#fff'
+        style={{
+          backgroundColor: isHighlighted ? DARK_RED : "#fff",
         }}
       >
-        {/* Decorative circle with icon in top-right corner of card */}
-        <div 
+        {/* Decorative circle with icon */}
+        <div
           className="absolute -top-3 -right-3 w-16 h-16 rounded-full flex items-center justify-center"
-          style={{ 
-            backgroundColor: isHighlighted ? '#fff' : 'rgba(254, 226, 226, 0.5)'
+          style={{
+            backgroundColor: isHighlighted
+              ? "#fff"
+              : "rgba(254, 226, 226, 0.5)",
           }}
         >
           <svg
             className="w-7 h-7"
             viewBox="0 0 24 24"
             fill="none"
-            stroke={isHighlighted ? DARK_RED : DARK_RED}
+            stroke={DARK_RED}
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -125,10 +131,10 @@ const ServiceCard = ({ service }: { service: ServiceType }) => {
             {service.icon}
           </svg>
         </div>
-        
-        <h3 
+
+        <h3
           className="text-base font-open-sans-bold mb-2.5 leading-tight"
-          style={{ color: isHighlighted ? '#fff' : '#374151' }}
+          style={{ color: isHighlighted ? "#fff" : "#374151" }}
         >
           {service.title}
         </h3>
@@ -136,18 +142,27 @@ const ServiceCard = ({ service }: { service: ServiceType }) => {
           href="#"
           className="flex items-center text-sm font-rubik-regular transition-colors gap-1.5 group/link"
         >
-          <span 
+          <span
             className="p-1 rounded flex items-center justify-center transition-colors"
-            style={{ 
-              backgroundColor: isHighlighted ? 'rgba(255, 255, 255, 0.2)' : 'rgba(254, 226, 226, 0.5)'
+            style={{
+              backgroundColor: isHighlighted
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(254, 226, 226, 0.5)",
             }}
           >
-            <ArrowUpRight 
-              className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" 
-              style={{ color: isHighlighted ? '#fff' : DARK_RED }}
+            <ArrowUpRight
+              className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+              style={{ color: isHighlighted ? "#fff" : DARK_RED }}
             />
           </span>
-          <span className="font-rubik-regular" style={{ color: isHighlighted ? 'rgba(255, 255, 255, 0.8)' : '#9ca3af' }}>
+          <span
+            className="font-rubik-regular"
+            style={{
+              color: isHighlighted
+                ? "rgba(255, 255, 255, 0.8)"
+                : "#9ca3af",
+            }}
+          >
             Read More
           </span>
         </a>
@@ -177,8 +192,12 @@ function ServicesGrid() {
             <button
               className="flex items-center justify-center w-16 h-16 rounded-full text-white transition-all hover:scale-105 shadow-lg"
               style={{ backgroundColor: DARK_RED }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = DARK_RED)}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = DARK_RED)
+              }
             >
               <ArrowUpRight className="w-7 h-7" />
             </button>
@@ -187,7 +206,8 @@ function ServicesGrid() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14 pb-10">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
           {services.map((service, index) => (
             <ServiceCard key={index} service={service} />
           ))}
