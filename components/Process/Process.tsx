@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
 import { DEFAULT_MAX_WIDTH_CLASS, SECTION_HEIGHT } from "@/constant/layout";
 
@@ -92,11 +93,14 @@ const Process: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
           {processSteps.map((step) => (
             <div key={step.number} className="relative flex flex-col md:flex-row items-center">
-              <div className="relative w-full md:w-[65%] md:ml-auto">
-                <img
+              <div className="relative w-full md:w-[65%] md:ml-auto h-56">
+                <Image
                   src={step.imageUrl}
                   alt={step.title}
-                  className="w-full h-56 object-cover rounded-md shadow-md"
+                  fill
+                  className="object-cover rounded-md shadow-md"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  priority={step.number === "01"}
                 />
               </div>
               <div
