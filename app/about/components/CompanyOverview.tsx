@@ -1,7 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import imageOne from "../../../public/images/gg.png";
-import imageTwo from "../../../public/images/zz.png";
 
 export default function CompanyOverview() {
   return (
