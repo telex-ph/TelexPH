@@ -48,3 +48,26 @@ html {
     50% { transform: rotate(15deg); }
   }
 }
+
+/* Custom animation para sa infinite slideshow */
+@keyframes infinite-slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); /* Seamless loop dahil 200% width */
+  }
+}
+
+.animate-infinite-slide {
+  animation: infinite-slide 20s linear infinite; /* Adjust 20s para sa speed (mas mababa = mas mabilis) */
+}
+
+/* Pause on hover */
+.group:hover .animate-infinite-slide {
+  animation-play-state: paused;
+}
+
+.pause-animation {
+  animation-play-state: paused !important;
+}
