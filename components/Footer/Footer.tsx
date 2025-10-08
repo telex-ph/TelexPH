@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
 import FooterLogo from "./FooterLogo";
 import FooterPosts from "./FooterPosts";
 import FooterLinks from "./FooterLinks";
@@ -10,7 +12,42 @@ import FooterCTA from "./FooterCTA";
 const DEFAULT_MAX_WIDTH_CLASS =
   "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8";
 
+// Scroll threshold in pixels
+const SCROLL_THRESHOLD = 300;
+
 const Footer = () => {
+  // State to control the visibility of the button
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Function to scroll to the top of the page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // For a smooth scrolling effect
+    });
+  };
+
+  // Function to check scroll position and update visibility state
+  const handleScroll = useCallback(() => {
+    // Check if the current scroll position is past the threshold
+    if (window.scrollY > SCROLL_THRESHOLD) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  }, []);
+
+  // Set up and clean up the scroll event listener
+  useEffect(() => {
+    // Add the event listener when the component mounts
+    window.addEventListener("scroll", handleScroll);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
+
   return (
     <footer className="relative bg-[#282828] text-white pt-10 sm:pt-16 md:pt-20 mt-16 sm:mt-20">
       {/* CTA Section positioned above footer */}
@@ -19,6 +56,31 @@ const Footer = () => {
           <FooterCTA />
         </div>
       </div>
+
+      {/* Scroll to Top Button */}
+      {isVisible && (
+        <button
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+          className="fixed bottom-6 right-6 p-3 bg-[#a10000] hover:bg-[#8a0000] rounded-full shadow-lg transition-all duration-300 z-50 focus:outline-none focus:ring-2 focus:ring-[#a10000] focus:ring-offset-2 focus:ring-offset-[#282828] hover:scale-110"
+        >
+          {/* Arrow Up Icon */}
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Main Footer Content Grid */}
       <div
