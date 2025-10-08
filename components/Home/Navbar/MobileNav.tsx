@@ -1,10 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { navLinks } from "@/constant/constant"; 
-import { CgClose } from "react-icons/cg";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { RiCloseFill } from "react-icons/ri";
+import { PiArrowUpRightBold } from "react-icons/pi";
+// Import the necessary fonts
+import { Poppins, Open_Sans, Rubik } from "next/font/google";
+
+
+// Define the font instances (matching the weights used in your RootLayout/utilities)
+const poppins = Poppins({
+    subsets: ["latin"],
+    weight: ["700", "900"], // Added weights used in utilities
+    variable: "--font-poppins",
+    display: "swap",
+});
+
+const openSans = Open_Sans({
+    subsets: ["latin"],
+    weight: ["700"],
+    variable: "--font-open-sans",
+    display: "swap",
+});
+
+const rubik = Rubik({
+    subsets: ["latin"],
+    weight: ["400"],
+    variable: "--font-rubik",
+    display: "swap",
+});
+
 
 type Props = {
   showNav: boolean;
@@ -12,117 +39,141 @@ type Props = {
 };
 
 const MobileNav = ({ showNav, closeNav }: Props) => {
-  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
-
-  const toggleDropdown = (id: number) => {
-    setOpenDropdownId(openDropdownId === id ? null : id);
-  };
+  // ----------------------------------------------------
+  // NOTE: Drodown states and logic are commented out.
+  // ... (Removed for brevity)
+  // ----------------------------------------------------
 
   const handleLinkClick = () => {
     closeNav(); 
-    setOpenDropdownId(null); 
+    // setOpenDropdownId(null); // No need for this state now
   };
 
+  const currentYear = new Date().getFullYear();
+
   return (
-    <div className="lg:hidden">
-      {/* 1. OVERLAY (Standard Dark Overlay) */}
+    <div className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}>
+      {/* 1. GLASSMORHPIC OVERLAY - Light & Clean */}
       {showNav && (
         <div
-          className="fixed inset-0 bg-gray-900 opacity-70 w-full h-screen z-[1000] transition-opacity duration-300"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm w-full h-screen z-[1000] transition-opacity duration-500"
           onClick={closeNav}
         ></div>
       )}
 
-      {/* 2. SLIDING MENU (White Background, Slide from Left) */}
+      {/* 2. SLIDING PANEL - MODERN LIGHT GLASS */}
       <div
-        className={`fixed top-0 left-0 flex flex-col h-full w-[90%] sm:w-[70%] bg-white shadow-2xl z-[1050] transform transition-transform duration-500 ease-in-out overflow-y-auto ${
-          // Ibalik natin sa Left-Slide
-          showNav ? "translate-x-0" : "-translate-x-full" 
-        }`}
+        className={`fixed top-0 left-0 flex flex-col h-full w-[85%] sm:w-[75%] max-w-md z-[1050] transform transition-all duration-700 ease-out 
+          ${showNav ? "translate-x-0" : "-translate-x-full"} 
+          rounded-r-3xl overflow-hidden shadow-2xl`}
       >
-        {/* CLOSE BUTTON AND HEADER */}
-        <div className="flex justify-between items-center px-6 py-5 border-b-4 border-red-600 bg-gray-900">
-          {/* Logo Title (Aligned with Desktop Logo Color Scheme) */}
-          <div className="text-white">
-            <span className="text-xl font-bold tracking-wide">
-                TELEX<span className="text-red-500">PH</span>
-            </span>
+        {/* Light Glassmorphic Background - Soft White */}
+        <div className="absolute inset-0 bg-white/95 backdrop-blur-2xl backdrop-saturate-150 border-r border-gray-100"></div>
+        
+        {/* Animated Background Elements - Subtle and vibrant */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl animate-spin-slow"></div>
+        <div className="absolute bottom-0 left-0 w-52 h-52 bg-blue-500/10 rounded-full blur-3xl animate-spin-slow-delay"></div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col h-full">
+          
+          {/* HEADER - High-Contrast Dark Header for Logo and Close */}
+          <div className="px-6 py-6 flex justify-between items-center bg-[#282828] border-b border-white/20">
+            <div className="relative w-40 h-16">
+              <Image 
+                src="/images/Weblogo.png" // Assumed white/light logo works here
+                alt="TELEX Logo" 
+                fill
+                className="object-contain object-left drop-shadow-md"
+                priority
+              />
+            </div>
+            
+            <button
+              onClick={closeNav}
+              // Close Button - Modern dark-to-red transition
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/20 text-white hover:bg-red-600 hover:border-red-600 shadow-xl transition-all duration-300 group"
+            >
+              <RiCloseFill className="w-6 h-6 transition-colors" />
+            </button>
           </div>
-          <CgClose
-            onClick={closeNav}
-            className="w-7 h-7 cursor-pointer text-white hover:text-red-500 transition-colors"
-          />
-        </div>
 
-        {/* 3. NAVIGATION LINKS LIST (Clean, Bordered Links) */}
-        <nav className="flex flex-col mt-4">
-          {navLinks.map((link) => {
-            const isOpen = openDropdownId === link.id;
-
-            return (
-              <div key={link.id} className="w-full border-b border-gray-200">
-                
-                {/* Main Link/Toggle Area */}
-                <div
-                  className={`flex items-center justify-between transition-colors duration-200 cursor-pointer 
-                    ${isOpen ? "bg-red-50 border-l-4 border-red-600" : "hover:bg-gray-50 border-l-4 border-transparent"}`}
-                >
+          {/* NAVIGATION - FLAT LINKS, Modern Light Cards */}
+          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2 custom-scrollbar-light"> 
+            {navLinks.map((link) => {
+              return (
+                <div key={link.id}>
+                  {/* Main Link - Sleek White/Red Card */}
                   <Link 
                     href={link.url} 
-                    onClick={link.dropdown ? (e) => { e.preventDefault(); toggleDropdown(link.id); } : handleLinkClick}
-                    // Large Text and Padding
-                    className={`py-4 px-6 text-xl font-semibold w-full transition-colors 
-                        ${isOpen ? "text-red-600" : "text-gray-800 hover:text-red-600"}`}
+                    onClick={link.dropdown ? handleLinkClick : handleLinkClick}
+                    className={`relative flex items-center justify-between py-4 px-5 rounded-xl border transition-all duration-300 group 
+                        bg-white/80 border-gray-100 shadow-lg hover:bg-red-50 hover:border-red-300`
+                    }
                   >
-                    {link.label}
+                    <span className={`text-[16px] font-open-sans-bold tracking-tight transition-colors duration-300
+                        text-gray-900 group-hover:text-red-600`
+                    }>
+                        {link.label}
+                    </span>
+                    
+                    {/* Indicator Icon - Arrow up right for modern touch */}
+                    <div className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
+                      bg-red-100/50 group-hover:bg-red-600`
+                    }>
+                      <PiArrowUpRightBold className={`w-5 h-5 transition-colors
+                          text-red-500 group-hover:text-white`} 
+                      />
+                    </div>
                   </Link>
-                  
-                  {/* Dropdown Toggle Button */}
-                  {link.dropdown && (
-                    <button 
-                      onClick={() => toggleDropdown(link.id)}
-                      className={`p-4 transition-colors ${isOpen ? "text-red-600" : "text-gray-500 hover:text-red-600"}`}
-                    >
-                      {isOpen ? (
-                        <FaChevronUp className="w-5 h-5" />
-                      ) : (
-                        <FaChevronDown className="w-5 h-5" />
-                      )}
-                    </button>
-                  )}
-                </div>
 
-                {/* Dropdown Menu (Sub-links - Simple Indented List) */}
-                {link.dropdown && isOpen && (
-                  <div className="bg-gray-100 py-1">
-                    {link.dropdown.map((subLink) => (
-                      <Link
-                        key={subLink.id}
-                        href={subLink.url}
-                        onClick={handleLinkClick}
-                        // Styling for sub-links
-                        className="block py-3 px-10 text-base font-medium text-gray-700 hover:bg-white hover:text-red-600 transition-colors duration-200"
-                      >
-                        {subLink.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
-        
-        {/* 4. Contact Us Section (CTA at the bottom) */}
-        <div className="mt-auto p-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500 mb-2">Ready to start your project?</p>
-          <Link href="/contact" onClick={handleLinkClick}>
-            <button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-md text-base font-semibold transition-colors shadow-md">
-              Contact Our Team
-            </button>
-          </Link>
+                  {/* DROPDOWN SECTION COMMENTED OUT */}
+                  {/* ... (Removed for brevity) */}
+                </div>
+              );
+            })}
+          </nav>
+          
+          {/* FOOTER - Simple Copyright Section */}
+          <div className="px-6 pb-6 pt-4 border-t border-gray-200 bg-white/95 text-center">
+            <p className="text-xs text-gray-500 font-rubik-regular">
+              &copy; {currentYear} TELEX. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        /* Custom Scrollbar for light-mode aesthetics */
+        .custom-scrollbar-light::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar-light::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        .custom-scrollbar-light::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        .custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animated Blobs (Spinning) */
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 25s linear infinite;
+        }
+        .animate-spin-slow-delay {
+            animation: spin-slow 25s linear infinite 5s;
+        }
+      `}</style>
     </div>
   );
 };
