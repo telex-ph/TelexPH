@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import HeroClients from "./HeroClients";
 import { RESPONSIVE_HEIGHT } from "@/constant/layout";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
 
@@ -76,22 +75,29 @@ const Hero = () => {
                   </Link>
                 </div>
 
-                {/* Reviews and Avatars */}
-                <div className="flex items-center">
+                <div className="flex items-center relative z-[10]">
+                  {/* Avatars */}
                   <div className="flex -space-x-2 mr-4">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-300">
-                      <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-500"></div>
-                    </div>
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-400">
-                      <div className="w-full h-full bg-gradient-to-br from-gray-500 to-gray-600"></div>
-                    </div>
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-500">
-                      <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-700"></div>
-                    </div>
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gray-600">
-                      <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800"></div>
-                    </div>
+                    {[
+                      "/images/avatar4.jpg",
+                      "/images/avatar1.jpeg",
+                      "/images/avatar2.jpeg",
+                      "/images/avatar3.jpg",
+                    ].map((src, idx) => (
+                      <div
+                        key={idx}
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden shadow-md"
+                      >
+                        <img
+                          src={src}
+                          alt={`Avatar ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
                   </div>
+
+                  {/* Reviews */}
                   <div className="text-white">
                     <div className="text-amber-400 text-xs sm:text-sm mb-0">
                       ★★★★★
