@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
@@ -56,32 +57,28 @@ const Nav = ({ openNav }: Props) => {
     <nav
       className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
     >
+      {" "}
       <TopBar />
-
       <div
         className={`relative bg-white transition-all duration-300 ${
           navBg ? "shadow-md" : ""
         }`}
       >
-        {/* MAIN NAV CONTAINER */}
         <div className="relative h-[80px] flex items-stretch">
           {/* Logo Section */}
           <div
             className="bg-gray-800 flex items-center justify-center h-full relative z-10 
-                          px-4 sm:px-8 
-                          w-auto 
-                          lg:w-[350px]"
+            px-4 sm:px-8 
+            w-auto 
+            lg:w-[350px]"
           >
-            <div className="text-white">
-              <div className="flex items-center">
-                <span className="text-2xl font-poppins-black tracking-wide">
-                  TELEX<span className="text-[#a10000]">PH</span>
-                </span>
-              </div>
-              <div className="text-[#a10000] text-[10px] font-open-sans-bold tracking-widest mt-1">
-                DELIVERY & TRANSPORT
-              </div>
-            </div>
+            <Image
+              src="/images/Weblogo.png"
+              alt="TELEXPH Delivery & Transport Logo"
+              width={250}
+              height={50}
+              className="object-contain"
+            />
           </div>
 
           {/* Red Diagonal Strip */}
@@ -94,7 +91,6 @@ const Nav = ({ openNav }: Props) => {
 
           {/* Links & Buttons Section */}
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
-            {/* Nav Links - Updated for word highlight and dropdown */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <div
@@ -110,32 +106,33 @@ const Nav = ({ openNav }: Props) => {
                     </span>
                   </Link>
 
-                  {/* Dropdown Menu */}
-                  {link.dropdown && (
-                    <div
-                      className="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 
-                                 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50"
-                    >
-                      <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-[#a10000] py-2 rounded-b-md">
-                        {link.dropdown.map((subLink) => (
-                          <Link
-                            key={subLink.id}
-                            href={subLink.url}
-                            className="block px-4 py-2 text-sm font-rubik text-gray-700 hover:bg-gray-100 hover:text-[#a10000] transition-colors duration-200"
-                          >
-                            {subLink.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {/* DROPDOWN COMMENTED OUT */}
+                  {/*
+              {link.dropdown && (
+                <div
+                  className="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 
+                          group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50"
+                >
+                  <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-[#a10000] py-2 rounded-b-md">
+                    {link.dropdown.map((subLink) => (
+                      <Link
+                        key={subLink.id}
+                        href={subLink.url}
+                        className="block px-4 py-2 text-sm font-rubik text-gray-700 hover:bg-gray-100 hover:text-[#a10000] transition-colors duration-200"
+                      >
+                        {subLink.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+              */}
                 </div>
               ))}
             </div>
 
             {/* Right Icons & Hamburger */}
             <div className="flex items-center space-x-8 ml-auto">
-              {/* Desktop Icons */}
               <div className="hidden lg:flex items-center space-x-3">
                 <button className="text-[#a10000] hover:text-red-700 transition">
                   <FaRegUser className="w-4 h-4" />
@@ -148,12 +145,10 @@ const Nav = ({ openNav }: Props) => {
                 </button>
               </div>
 
-              {/* Contact Us Button */}
               <button className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded">
-                Get Started
+                Contact Us
               </button>
 
-              {/* Hamburger Menu Button */}
               <button onClick={openNav} className="lg:hidden text-gray-700 p-2">
                 <HiBars3BottomRight className="w-6 h-6" />
               </button>
