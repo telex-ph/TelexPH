@@ -128,3 +128,15 @@ html {
 .group:hover .animate-infinite-slide {
   animation-play-state: paused;
 }
+
+#about {
+  scroll-margin-top: 100px;
+}
+
+#process {
+  scroll-margin-top: 100px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
