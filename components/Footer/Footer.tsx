@@ -22,7 +22,7 @@ const Footer = () => {
 
       {/* Main Footer Content Grid */}
       <div
-        className={`${DEFAULT_MAX_WIDTH_CLASS} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 py-10 relative z-10`}
+        className={`${DEFAULT_MAX_WIDTH_CLASS} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 py-20 relative z-10`}
       >
         {/* Logo + About */}
         <FooterLogo />
