@@ -1,4 +1,5 @@
 import React from 'react';
+import { COLORS } from "@/constant/styles";
 
 type FeatureCardProps = {
   feature: {
@@ -10,14 +11,8 @@ type FeatureCardProps = {
   };
 };
 
-const DARK_RED_TEXT_CLASS = 'text-[#a10000]';
-const DARK_RED_BG_CLASS = 'bg-[#a10000]';
-const LIGHT_DARK_RED_BG_CLASS = 'bg-[#fce5e5]'; 
-const BORDER_DARK_RED_CLASS = 'border-[#f0c4c4]'; 
-
-
 const getIconSVG = (iconName: string) => {
-  const ICON_CLASS = `w-8 h-8 ${DARK_RED_TEXT_CLASS}`; 
+  const ICON_CLASS = `w-8 h-8 text-[${COLORS.primary}]`; 
   
   switch (iconName) {
     case 'layers':
@@ -77,13 +72,22 @@ const getIconSVG = (iconName: string) => {
 };
 
 const FeatureCard = ({ feature }: FeatureCardProps) => {
+  const BG_COLOR = COLORS.primaryLight;
+  const BORDER_COLOR = COLORS.primaryLightBorder;
+
   return (
     <div className="bg-white p-6 rounded-2xl hover:shadow-xl transition-all duration-300 border border-gray-100 relative">
       {feature.hasRedDot && (
-        <div className={`absolute top-4 right-4 w-3 h-3 ${DARK_RED_BG_CLASS} rounded-full`}></div>
+        <div className={`absolute top-4 right-4 w-3 h-3 bg-[${COLORS.primary}] rounded-full`}></div>
       )}
       <div className="flex items-start gap-4">
-        <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 border-2 ${LIGHT_DARK_RED_BG_CLASS} ${BORDER_DARK_RED_CLASS}`}>
+        <div 
+          className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 border-2`}
+          style={{ 
+            backgroundColor: BG_COLOR, 
+            borderColor: BORDER_COLOR,
+          }}
+        >
           {getIconSVG(feature.icon)}
         </div>
         <div className="flex-1">
