@@ -5,7 +5,6 @@ const FooterSubscribe = () => {
     <div>
       <div className="mb-6">
         <h3 className="font-poppins-black mb-2 text-white">Subscribe Now</h3>
-        {/* Red line sa baba ng heading */}
         <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
       

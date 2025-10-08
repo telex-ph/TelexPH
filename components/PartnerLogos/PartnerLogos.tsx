@@ -17,7 +17,7 @@ const logos = [
 const PartnerLogos: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const logosForLoop = [...logos, ...logos]; // Duplicate para sa infinite loop
+  const logosForLoop = [...logos, ...logos]; 
 
   const defaultLogoStyle: React.CSSProperties = {
     opacity: 0.5, 
@@ -39,14 +39,13 @@ const PartnerLogos: React.FC = () => {
   };
     
   const containerWidthStyle: React.CSSProperties = {
-    width: '200%', // 200% dahil duplicated ang array
+    width: '200%',
   };
 
   return (
     <div className="bg-gray-50 py-10 flex justify-center w-full"> 
       <div className={`flex items-center ${DEFAULT_MAX_WIDTH_CLASS} w-full overflow-hidden`}>
         
-        {/* Ito ang div na may infinite sliding animation */}
         <div
           className="flex items-center animate-infinite-slide group hover:pause-animation"
           style={containerWidthStyle}

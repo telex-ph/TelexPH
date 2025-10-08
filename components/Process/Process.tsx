@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
 import { DEFAULT_MAX_WIDTH_CLASS, SECTION_HEIGHT } from "@/constant/layout";
 
-// FONT LOADERS MUST BE CALLED IN THE MODULE SCOPE (Top of file)
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["900"],
@@ -64,8 +63,6 @@ const processSteps: ProcessStep[] = [
     imageUrl: "/images/process6.jpg",
   },
 ];
-
-// --- EXTRACTED PROCESS STEP ITEM FOR REUSABILITY ---
 const ProcessStepItem: React.FC<{ step: ProcessStep }> = ({ step }) => {
     return (
         <div
@@ -118,7 +115,6 @@ const ProcessStepItem: React.FC<{ step: ProcessStep }> = ({ step }) => {
     );
 };
 
-// --- CAROUSEL PAGINATION COMPONENT (DOTS) ---
 const CarouselPagination: React.FC<{ steps: typeof processSteps, activeIndex: number, scrollTo: (index: number) => void }> = ({ steps, activeIndex, scrollTo }) => {
     return (
         <div className="flex justify-center mt-4 space-x-2">
@@ -129,8 +125,8 @@ const CarouselPagination: React.FC<{ steps: typeof processSteps, activeIndex: nu
                     className={`
                         h-2 rounded-full transition-all duration-300 ease-in-out
                         ${index === activeIndex 
-                            ? 'bg-[#a10000] w-6' // Active: Red and longer
-                            : 'bg-gray-300 w-2' // Inactive: Gray and small
+                            ? 'bg-[#a10000] w-6'
+                            : 'bg-gray-300 w-2' 
                         }
                     `}
                     aria-label={`Go to process step ${index + 1}`}
@@ -141,7 +137,6 @@ const CarouselPagination: React.FC<{ steps: typeof processSteps, activeIndex: nu
 };
 
 
-// --- MOBILE/MID-SCREEN CAROUSEL ---
 const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -151,8 +146,7 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) =>
             const scrollLeft = scrollRef.current.scrollLeft;
             const itemWidth = scrollRef.current.querySelector(':scope > div')?.clientWidth || 1;
             
-            // Calculate the nearest index based on scroll position
-            const newIndex = Math.round(scrollLeft / (itemWidth + 16)); // 16px is the space-x-4 padding (4 * 4 = 16)
+            const newIndex = Math.round(scrollLeft / (itemWidth + 16));
 
             if (newIndex !== activeIndex) {
                 setActiveIndex(newIndex);
@@ -163,7 +157,6 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) =>
     const scrollTo = (index: number) => {
         if (scrollRef.current) {
             const itemWidth = scrollRef.current.querySelector(':scope > div')?.clientWidth || 1;
-            // The scroll position is the index * (itemWidth + space-x)
             scrollRef.current.scrollTo({
                 left: index * (itemWidth + 16),
                 behavior: 'smooth',
@@ -176,7 +169,6 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) =>
         const currentRef = scrollRef.current;
         if (currentRef) {
             currentRef.addEventListener('scroll', handleScroll);
-            // Cleanup function
             return () => currentRef.removeEventListener('scroll', handleScroll);
         }
     }, []);
@@ -194,14 +186,11 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) =>
                 "
             >
                 {steps.map((step) => (
-                    // w-[calc(100%-32px)] for full item width minus padding/margin
                     <div key={step.number} className="flex-shrink-0 w-full snap-start"> 
                         <ProcessStepItem step={step} />
                     </div>
                 ))}
             </div>
-            
-            {/* Pagination Dots */}
             <CarouselPagination steps={steps} activeIndex={activeIndex} scrollTo={scrollTo} />
         </>
     );
@@ -212,11 +201,9 @@ const Process: React.FC = () => {
     return (
         <section
             id="process"
-            // Bawasan ang vertical padding sa section. Ginawa kong py-10 for mobile/mid-screen.
             className={`py-10 sm:py-20 bg-white relative overflow-hidden`} 
         >
             <div className={`${DEFAULT_MAX_WIDTH_CLASS}`}>
-                {/* Section Header */}
                 <div className="text-center mb-10 sm:mb-10">
                     <p
                         className={`${openSans.className} text-[#a10000] uppercase text-sm tracking-widest font-semibold relative inline-block
@@ -232,14 +219,10 @@ const Process: React.FC = () => {
                     </h2>
                 </div>
 
-                {/* --- Mobile/Mid-Screen Carousel (Visible until lg breakpoint) --- */}
-                {/* Mid-screen (sm) still uses the carousel to keep the compact look, hiding at large (lg) */}
                 <div className="lg:hidden pb-2 overflow-visible"> 
                     <ProcessCarousel steps={processSteps} />
                 </div>
 
-
-                {/* --- Desktop Grid (Visible only on large screens) --- */}
                 <div
                     className="
                         hidden lg:grid lg:grid-cols-3

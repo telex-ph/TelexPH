@@ -2,13 +2,12 @@ import React from 'react';
 
 const ExperienceCard = () => {
   const DARK_RED = '#a10000';
-  const DARKER_RED = '#850000'; // Pinalit sa bg-red-600
+  const DARKER_RED = '#850000';
 
   return (
     <div className={`bg-[${DARK_RED}] rounded-2xl flex flex-col items-center justify-center text-white 
                     py-6 px-6 shadow-xl relative overflow-hidden 
                     aspect-square sm:aspect-auto sm:h-[180px] md:h-[200px] lg:h-[220px]`}>
-      {/* Pinalitan ang bg-red-600 */}
       <div className={`absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-[${DARKER_RED}] rounded-full -mr-10 -mt-10 sm:-mr-12 sm:-mt-12 opacity-50`}></div>
       <div className="relative z-10">
         <div className="w-14 h-14 sm:w-16 sm:h-16 border-[3px] border-white rounded-full flex items-center justify-center mb-4 mx-auto">
@@ -17,9 +16,7 @@ const ExperienceCard = () => {
             <path d="M12 1v6m0 6v6M4.2 4.2l4.2 4.2m5.6 5.6l4.2 4.2M1 12h6m6 0h6M4.2 19.8l4.2-4.2m5.6-5.6l4.2-4.2"/>
           </svg>
         </div>
-        {/* Poppins Black (900) para sa number */}
         <div className="text-3xl sm:text-4xl font-open-sans-bold mb-1 text-center">30+</div>
-        {/* Open Sans Bold (700) para sa label */}
         <div className="text-white text-sm sm:text-base font-open-sans-bold text-center">Years Experience</div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import React from 'react';
-// REFACTOR: Nag-import ng FeatureCard mula sa external file
 import FeatureCard from './FeatureCard'; 
 
 type Feature = {
