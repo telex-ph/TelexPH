@@ -1,4 +1,3 @@
-// /src/components/Container.tsx
 import React, { ReactNode } from 'react';
 import { DEFAULT_MAX_WIDTH_CLASS } from '@/constant/layout';
 

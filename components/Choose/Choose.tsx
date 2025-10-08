@@ -13,7 +13,6 @@ const Choose = () => {
 
       <div className="absolute inset-0 bg-white/90"></div>
 
-      {/* REFACTOR: Pinalitan ang hardcoded width ng DEFAULT_MAX_WIDTH_CLASS */}
       <div className={DEFAULT_MAX_WIDTH_CLASS + " relative z-10"}>
         <ChooseContent />
       </div>

@@ -1,26 +1,26 @@
 import React from 'react';
-// REFACTOR: Nag-import ng FeatureCard mula sa external file
 import FeatureCard from './FeatureCard'; 
 
 type Feature = {
-  id: number;
-  title: string;
-  description: string;
-  icon: string;
-  hasRedDot?: boolean;
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  hasRedDot?: boolean;
 };
 
 type FeatureColumnProps = {
-  features: Feature[];
+  features: Feature[];
 };
+
 const FeaturesSection = ({ features }: FeatureColumnProps) => {
-  return (
-    <div className="lg:col-span-4 flex flex-col gap-6">
-      {features.map((feature) => (
-        <FeatureCard key={feature.id} feature={feature} />
-      ))}
-    </div>
-  );
+  return (
+    <div className="lg:col-span-4 flex flex-col gap-6">
+      {features.map((feature) => (
+        <FeatureCard key={feature.id} feature={feature} />
+      ))}
+    </div>
+  );
 };
 
 export default FeaturesSection;
