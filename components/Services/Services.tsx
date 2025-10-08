@@ -200,7 +200,7 @@ const ViewAboutUsButton = () => (
                 <ArrowUpRight className="w-5 h-5 rotate-[15deg]" /> 
             </button>
             <p className="text-gray-900 font-open-sans-bold text-lg transition-colors group-hover:text-gray-700">
-                View About Us
+                View Our Services
             </p>
         </a>
     </div>
