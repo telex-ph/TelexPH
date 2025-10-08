@@ -5,11 +5,30 @@ html {
 }
 
 @layer base {
+  :root {
+    /* Brand Colors */
+    --color-primary: #a10000;
+    --color-dark: #282828;
+    --color-white: #ffffff;
+    --color-black: #000000;
+    
+    /* Semantic Colors */
+    --color-text-primary: #000000;
+    --color-text-secondary: #282828;
+    --color-background: #ffffff;
+    --color-accent: #a10000;
+    
+    /* RGB versions for opacity usage */
+    --color-primary-rgb: 161, 0, 0;
+    --color-dark-rgb: 40, 40, 40;
+  }
   
   body {
     /* Default font ng body ay Rubik (400) */
     font-family: var(--font-rubik), sans-serif;
-    font-weight: 400; 
+    font-weight: 400;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
   }
 }
 
@@ -32,24 +51,40 @@ html {
     font-family: var(--font-rubik), sans-serif;
     font-weight: 400; 
   }
+  
+  /* Wiggle Animation */
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+  
+  /* Infinite Slide Animation */
+  .animate-infinite-slide {
+    animation: infinite-slide 20s linear infinite;
+  }
+  
+  /* Pause Animation */
+  .pause-animation {
+    animation-play-state: paused !important;
+  }
 }
 
+/* Text Outline Effect */
 .text-outline-red-thin {
   color: transparent;
   -webkit-text-stroke: 1px rgba(161, 0, 0, 0.3); 
 }
 
-@layer utilities {
-  .animate-wiggle {
-    animation: wiggle 1s ease-in-out infinite;
+/* Wiggle Animation Keyframes */
+@keyframes wiggle {
+  0%, 100% { 
+    transform: rotate(-15deg); 
   }
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(-15deg); }
-    50% { transform: rotate(15deg); }
+  50% { 
+    transform: rotate(15deg); 
   }
 }
 
-/* Custom animation para sa infinite slideshow */
+/* Infinite Slide Animation Keyframes */
 @keyframes infinite-slide {
   0% {
     transform: translateX(0);
@@ -59,15 +94,7 @@ html {
   }
 }
 
-.animate-infinite-slide {
-  animation: infinite-slide 20s linear infinite; /* Adjust 20s para sa speed (mas mababa = mas mabilis) */
-}
-
 /* Pause on hover */
 .group:hover .animate-infinite-slide {
   animation-play-state: paused;
-}
-
-.pause-animation {
-  animation-play-state: paused !important;
 }

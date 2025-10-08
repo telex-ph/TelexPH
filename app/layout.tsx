@@ -70,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}> 
       <body 
-        className={`font-rubik-regular antialiased`} 
+        className={`font-rubik antialiased bg-white text-black`} 
       >
         <ResponsiveNav />
         {children}
