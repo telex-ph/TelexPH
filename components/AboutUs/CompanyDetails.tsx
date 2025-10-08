@@ -18,15 +18,15 @@ const BG_DARK_RED_CLASS = 'bg-[#a10000]';
 
 const CompanyDetails = () => {
     return (
-        <div className="py-12"> 
+        <div className={`py-12 ${SECTION_HEIGHT.standard}`}> 
             <div className={DEFAULT_MAX_WIDTH_CLASS}>
                 
                 <div className="flex justify-end mb-4">
                     <div className="flex items-center gap-4 flex-shrink-0">
-                        <button className={`flex items-center justify-center gap-2 bg-[#a10000] text-white w-14 h-14 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}>
+                        <button className={`flex items-center justify-center gap-2 ${BG_DARK_RED_CLASS} text-white w-14 h-14 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}>
                             <FaArrowRight className="w-5 h-5 rotate-[-45deg]" />
                         </button>
-                        <p className="text-gray-900 font-open-sans-bold text-lg hidden md:block">About Us</p>
+                        <p className="font-open-sans-bold text-lg text-gray-900 hidden md:block">About Us</p>
                     </div>
                 </div>
                 
@@ -34,10 +34,10 @@ const CompanyDetails = () => {
                     
                     <div className="space-y-4 lg:col-span-1 order-1 lg:order-2">
                         <div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2"> 
+                            <h3 className="text-2xl font-open-sans-bold text-gray-900 mb-2"> 
                                 Best Business <br /> Support Services
                             </h3>
-                            <p className="text-gray-600"> 
+                            <p className="font-rubik-regular text-gray-600"> 
                                 At Telex Philippines, we provide innovative and cost-efficient outsourcing solutions
                                 that help businesses thrive in today&apos;s competitive world.
                             </p>
@@ -51,8 +51,8 @@ const CompanyDetails = () => {
                         </div>
 
                         <div className='flex-grow mt-1'>
-                            <p className={`text-3xl sm:text-4xl font-bold my-1 leading-none ${DARK_RED_CLASS}`}>2024</p> 
-                            <p className="text-base sm:text-lg font-semibold text-gray-800">
+                            <p className={`text-3xl sm:text-4xl font-poppins-black my-1 leading-none ${DARK_RED_CLASS}`}>2024</p> 
+                            <p className="text-base sm:text-lg font-open-sans-bold text-gray-800">
                                 Best Performer Awards
                             </p>
                         </div>
@@ -61,14 +61,14 @@ const CompanyDetails = () => {
                         </div>
                     </div>
                     
-                    <div className="space-y-4 lg:col-span-1 order-3 lg:order-3 mt-[-4] sm:mt-0"> 
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2"> 
+                    <div className="space-y-4 lg:col-span-1 order-3 lg:order-3 mt-[-4px] sm:mt-0"> 
+                        <h3 className="text-2xl font-open-sans-bold text-gray-900 mb-2"> 
                             Best Feature List <br /> About Us
                         </h3>
-                        <ul className="space-y-2 text-gray-600">
+                        <ul className="space-y-2 font-rubik-regular text-gray-600">
                             {['Award-Winning Excellence', 'Scalable Solutions', 'Smart Technologies', 'Global Reach', 'Expert Workforce'].map((feature) => (
                                 <li key={feature} className="flex items-center">
-                                    <span className={`text-lg mr-3 font-bold ${DARK_RED_CLASS}`}>✓</span>
+                                    <span className={`text-lg mr-3 font-open-sans-bold ${DARK_RED_CLASS}`}>✓</span>
                                     {feature}
                                 </li>
                             ))}
@@ -90,10 +90,10 @@ const CompanyDetails = () => {
                     
                     <div className="lg:hidden mt-3 mb-15 col-span-full flex justify-center order-5">
                         <div className="flex items-center gap-4 flex-shrink-0">
-                             <button className={`flex items-center justify-center gap-2 bg-[#a10000] text-white w-11 h-11 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}>
+                            <button className={`flex items-center justify-center gap-2 ${BG_DARK_RED_CLASS} text-white w-11 h-11 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}>
                                 <FaArrowRight className="w-4 h-4 rotate-[-45deg]" />
                             </button>
-                            <p className="text-gray-900 font-open-sans-bold text-lg">View About Us</p>
+                            <p className="font-open-sans-bold text-lg text-gray-900">View About Us</p>
                         </div>
                     </div>
                 </div>
