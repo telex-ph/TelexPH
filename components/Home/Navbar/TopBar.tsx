@@ -21,11 +21,11 @@ const TopBar = () => {
             <div className="flex items-center gap-6 flex-1">
               <span className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span className="whitespace-nowrap">Sun - Fri (7:00 - 18:00)</span>
+                <span className="whitespace-nowrap">Mon - Fri ( 9AM - 6PM )</span>
               </span>
               <span className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span className="whitespace-nowrap">(044) 331 - 5040</span>
+                <span className="whitespace-nowrap">+63 (44) 331 - 5040</span>
               </span>
             </div>
 
@@ -34,7 +34,7 @@ const TopBar = () => {
               <span className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
                 <span className="whitespace-nowrap">
-                  Guimba, Nueva Ecija
+                  Cawayan Bugtong, Guimba, Nueva Ecija
                 </span>
               </span>
               <div className="flex items-center gap-3">
