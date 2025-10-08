@@ -2,7 +2,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
-import { DEFAULT_MAX_WIDTH_CLASS, SECTION_HEIGHT } from "@/constant/layout";
+const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
+const SECTION_HEIGHT = "min-h-[90vh]";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -200,7 +201,7 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) =>
 const Process: React.FC = () => {
     return (
         <section
-            id="process"
+            id="process" 
             className={`py-10 sm:py-20 bg-white relative overflow-hidden`} 
         >
             <div className={`${DEFAULT_MAX_WIDTH_CLASS}`}>

@@ -293,7 +293,7 @@ function ServicesGrid() {
 
   if (isLargeScreen) {
     return (
-      <div id="services" className="bg-white py-16"> {/* Added id="services" here */}
+      <div id="services" className="bg-white py-16">
         <div className={DEFAULT_MAX_WIDTH_CLASS}>
           {commonHeader}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
@@ -307,7 +307,7 @@ function ServicesGrid() {
   }
 
   return (
-    <div id="services" className="bg-white py-16"> {/* Added id="services" here for consistency across screen sizes */}
+    <div id="services" className="bg-white py-16">
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
         {commonHeader}
       </div>
