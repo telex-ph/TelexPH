@@ -38,3 +38,13 @@ html {
   color: transparent;
   -webkit-text-stroke: 1px rgba(161, 0, 0, 0.3); 
 }
+
+@layer utilities {
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+  }
+}
