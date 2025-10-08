@@ -67,7 +67,7 @@ const Nav = ({ openNav }: Props) => {
         <div className="relative h-[80px] flex items-stretch">
           {/* Logo Section */}
           <div
-            className="bg-gray-800 flex items-center justify-center h-full relative z-10 
+            className="bg-[#282828] flex items-center justify-center h-full relative z-10 
             px-4 sm:px-8 
             w-auto 
             lg:w-[350px]"
@@ -108,25 +108,25 @@ const Nav = ({ openNav }: Props) => {
 
                   {/* DROPDOWN COMMENTED OUT */}
                   {/*
-              {link.dropdown && (
-                <div
-                  className="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 
-                          group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50"
-                >
-                  <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-[#a10000] py-2 rounded-b-md">
-                    {link.dropdown.map((subLink) => (
-                      <Link
-                        key={subLink.id}
-                        href={subLink.url}
-                        className="block px-4 py-2 text-sm font-rubik text-gray-700 hover:bg-gray-100 hover:text-[#a10000] transition-colors duration-200"
+                    {link.dropdown && (
+                      <div
+                        className="absolute top-full left-0 pt-1 opacity-0 invisible group-hover:opacity-100 
+                              group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50"
                       >
-                        {subLink.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-              */}
+                        <div className="bg-white shadow-xl min-w-[200px] border-t-2 border-[#a10000] py-2 rounded-b-md">
+                          {link.dropdown.map((subLink) => (
+                            <Link
+                              key={subLink.id}
+                              href={subLink.url}
+                              className="block px-4 py-2 text-sm font-rubik text-gray-700 hover:bg-gray-100 hover:text-[#a10000] transition-colors duration-200"
+                            >
+                              {subLink.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  */}
                 </div>
               ))}
             </div>
