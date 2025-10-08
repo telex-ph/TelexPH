@@ -21,18 +21,25 @@ const CompanyDetails = () => {
   return (
     <div className={`py-12 ${SECTION_HEIGHT.standard}`}>
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
-        <div className="flex justify-end mb-4 mt-13">
-          <div className="flex items-center gap-4 flex-shrink-0 md:flex">
-            <p className="font-open-sans-bold text-lg text-gray-900 hidden md:block">
-              About Us
-            </p>
+        <div className="flex justify-end mb-4">
+          <div className="hidden lg:flex justify-end mb-4">
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <button
+                className={`flex items-center justify-center gap-2 ${BG_DARK_RED_CLASS} text-white w-14 h-14 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}
+              >
+                <FaArrowRight className="w-5 h-5 rotate-[-45deg]" />
+              </button>
+              <p className="font-open-sans-bold text-lg text-gray-900">
+                About Us
+              </p>
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-y-3 lg:gap-8 items-start">
           <div className="space-y-4 lg:col-span-1 order-1 lg:order-2">
             <div>
-              <h3 className="text-2xl font-open-sans-bold text-gray-900 mb-3 -mt-5">
+              <h3 className="text-2xl font-open-sans-bold text-gray-900 mb-3 mt-5">
                 Best Business <br /> Support Services
               </h3>
               <p className="font-rubik-regular text-gray-600">
