@@ -6,13 +6,9 @@ const AboutUs = () => {
     return (
         <div
             id="about"
-            // INAYOS: Ginamit ang 'py-40' (160px) sa mobile, at binalik ang 'md:py-80' (320px) sa desktop.
-            className={`py-40 md:py-80 bg-[#f8f8f8] relative overflow-hidden scroll-mt-[120px] flex items-center justify-center ${SECTION_HEIGHT.compact} min-h-[460px]`}
+            className={`py-80 md:py-80 bg-[#f8f8f8] relative overflow-hidden scroll-mt-[120px] flex items-center justify-center ${SECTION_HEIGHT.compact} min-h-[460px]`}
         >
             <div className={DEFAULT_MAX_WIDTH_CLASS}>
-                
-                {/* Background Large Outline Text */}
-                {/* PINAKA IMPORTANTE: Idinagdag ang 'hidden md:block' para TANGGALIN ito sa mobile. */}
                 <div className="absolute bottom-15 left-0 w-full pointer-events-none z-0 hidden md:block"> 
                     <div
                         className={`${DEFAULT_MAX_WIDTH_CLASS} 
