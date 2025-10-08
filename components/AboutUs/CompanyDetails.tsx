@@ -1,11 +1,15 @@
 import React from 'react';
-import { FaFire, FaArrowRight } from 'react-icons/fa';
+import { FaFire, FaArrowRight } from 'react-icons/fa'; 
+
+const DARK_RED = '#a10000'; 
+const HOVER_DARK_RED = '#800000'; 
 
 const DEFAULT_MAX_WIDTH_CLASS = "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8";
+
 const SECTION_HEIGHT = {
     hero: "min-h-[90vh] max-h-[850px]",
     standard: "min-h-[600px] max-h-[800px]",
-    compact: "min-h-[500px] max-h-[650px]",
+    compact: "", 
     full: "min-h-screen max-h-[1150px]",
 } as const;
 
@@ -14,38 +18,51 @@ const BG_DARK_RED_CLASS = 'bg-[#a10000]';
 
 const CompanyDetails = () => {
     return (
-        <div className={`py-12 ${SECTION_HEIGHT.compact}`}>
+        <div className="py-12"> 
             <div className={DEFAULT_MAX_WIDTH_CLASS}>
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-                    <div className="relative bg-white shadow-xl p-4 rounded-xl border-t-4 transform transition duration-300 hover:scale-[1.02] min-h-[200px] flex flex-col justify-between lg:col-span-1 border-t-[#a10000]">
-                        <div className="flex items-start mb-2">
-                            <FaFire className="text-3xl text-orange-500 mr-2 mt-0" /> 
-                            <div className="text-xl text-yellow-400">★★★★★</div>
-                        </div>
-
-                        <div className='flex-grow mt-2'>
-                            <p className={`text-4xl font-bold my-1 leading-none ${DARK_RED_CLASS}`}>2024</p> 
-                            <p className="text-lg font-semibold text-gray-800">
-                                Best Performer <br /> Awards
-                            </p>
-                        </div>
-                        <div className={`absolute bottom-[-15px] right-[-15px] w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${BG_DARK_RED_CLASS}`}>
-                            <FaArrowRight className="text-white text-base rotate-[-45deg]" />
-                        </div>
+                
+                <div className="flex justify-end mb-4">
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                        <button className={`flex items-center justify-center gap-2 bg-[#a10000] text-white w-14 h-14 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}>
+                            <FaArrowRight className="w-5 h-5 rotate-[-45deg]" />
+                        </button>
+                        <p className="text-gray-900 font-open-sans-bold text-lg hidden md:block">About Us</p>
                     </div>
-                    <div className="space-y-4 lg:col-span-1">
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-y-3 lg:gap-8 items-start">
+                    
+                    <div className="space-y-4 lg:col-span-1 order-1 lg:order-2">
                         <div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2"> 
                                 Best Business <br /> Support Services
                             </h3>
-                            <p className="text-gray-600 mb-2">
-                                At Telex Philippines, we provide inovative and cost-efficient outsourcing solutions
+                            <p className="text-gray-600"> 
+                                At Telex Philippines, we provide innovative and cost-efficient outsourcing solutions
                                 that help businesses thrive in today&apos;s competitive world.
                             </p>
                         </div>
                     </div>
-                    <div className="space-y-4 lg:col-span-1">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+
+                    <div className="relative bg-white shadow-xl p-3 sm:p-4 rounded-xl border-t-4 transform transition duration-300 hover:scale-[1.02] flex flex-col justify-between lg:col-span-1 border-t-[#a10000] order-2 lg:order-1 mt-2 lg:mt-0">
+                        <div className="flex items-start mb-1">
+                            <FaFire className="text-2xl sm:text-3xl text-orange-500 mr-2 mt-0" /> 
+                            <div className="text-lg sm:text-xl text-yellow-400">★★★★★</div>
+                        </div>
+
+                        <div className='flex-grow mt-1'>
+                            <p className={`text-3xl sm:text-4xl font-bold my-1 leading-none ${DARK_RED_CLASS}`}>2024</p> 
+                            <p className="text-base sm:text-lg font-semibold text-gray-800">
+                                Best Performer Awards
+                            </p>
+                        </div>
+                        <div className={`absolute bottom-[-10px] right-[-10px] w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg ${BG_DARK_RED_CLASS}`}>
+                            <FaArrowRight className="text-white text-sm sm:text-base rotate-[-45deg]" />
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-4 lg:col-span-1 order-3 lg:order-3 mt-[-4] sm:mt-0"> 
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2"> 
                             Best Feature List <br /> About Us
                         </h3>
                         <ul className="space-y-2 text-gray-600">
@@ -57,7 +74,8 @@ const CompanyDetails = () => {
                             ))}
                         </ul>
                     </div>
-                    <div className="relative min-h-[400px] mt-10 lg:mt-0 lg:col-span-2">
+                    
+                    <div className="hidden lg:block relative min-h-[400px] mt-0 lg:mt-0 lg:col-span-2 order-4">
                         <img
                             src="images/post1.svg" 
                             alt="Post 1"
@@ -69,15 +87,15 @@ const CompanyDetails = () => {
                             className="absolute bottom-0 right-0 w-[60%] h-[200px] object-cover rounded-xl z-20 shadow-xl"
                         />
                     </div>
-                    <div className="lg:hidden mt-8 col-span-full flex justify-center">
-                        <button className="flex items-center text-gray-900 font-semibold">
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 transform transition duration-300 hover:scale-110 shadow-xl ${BG_DARK_RED_CLASS}`}>
-                                <FaArrowRight className="text-white text-xl" />
-                            </div>
-                            View About Us
-                        </button>
+                    
+                    <div className="lg:hidden mt-3 mb-15 col-span-full flex justify-center order-5">
+                        <div className="flex items-center gap-4 flex-shrink-0">
+                             <button className={`flex items-center justify-center gap-2 bg-[#a10000] text-white w-11 h-11 rounded-full hover:bg-[#800000] transition-all hover:scale-105 shadow-lg`}>
+                                <FaArrowRight className="w-4 h-4 rotate-[-45deg]" />
+                            </button>
+                            <p className="text-gray-900 font-open-sans-bold text-lg">View About Us</p>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
