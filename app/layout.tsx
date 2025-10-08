@@ -25,6 +25,8 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://telexph.com'), 
+  
   title: {
     default: "TelexPH", 
     template: "%s | TelexPH", 
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'TelexPH',
     description: "TelexPH: Your trusted partner for modern communication solutions.",
-    url: 'https://yourwebsite.com', 
+    url: '/', 
     siteName: 'TelexPH',
     images: [
       {
@@ -56,7 +58,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'TelexPH',
     description: "TelexPH: Your trusted partner for modern communication solutions.",
-    images: ['/images/telexlogo.png'],
+    images: ['/images/telexlogo.png'], 
   },
 };
 
