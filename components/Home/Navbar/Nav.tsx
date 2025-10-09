@@ -131,8 +131,10 @@ const Nav = ({ openNav }: Props) => {
               <button
                 type="button"
                 onClick={() =>
-                  (window.location.href =
-                    "https://hiretelex.com/scale-with-telex")
+                  window.open(
+                    "https://hiretelex.com/scale-with-telex",
+                    "_blank"
+                  )
                 }
                 className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded cursor-pointer"
               >
