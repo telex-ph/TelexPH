@@ -92,12 +92,12 @@ const CompanyDetails = () => {
 
           <div className="hidden lg:block relative min-h-[400px] mt-0 lg:mt-0 lg:col-span-2 order-4">
             <img
-              src="images/post1.svg"
+              src="images/post1.webp"
               alt="Post 1"
               className="absolute top-0 left-0 w-[90%] h-[300px] object-cover rounded-xl z-10 shadow-lg"
             />
             <img
-              src="images/post5.svg"
+              src="images/post5.webp"
               alt="Post 5"
               className="absolute bottom-0 right-0 w-[60%] h-[200px] object-cover rounded-xl z-20 shadow-xl"
             />

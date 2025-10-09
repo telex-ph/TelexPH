@@ -28,49 +28,6 @@ html {
   }
 }
 
-/* --- NProgress Custom Style --- */
-#nprogress {
-  pointer-events: none;
-}
-
-#nprogress .bar {
-  background: #3b82f6; /* Tailwind blue-500 */
-  position: fixed;
-  z-index: 99999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-}
-
-/* Optional: Add spinner to the right side */
-#nprogress .spinner {
-  display: block;
-  position: fixed;
-  z-index: 99999;
-  top: 15px;
-  right: 15px;
-}
-
-#nprogress .spinner-icon {
-  width: 18px;
-  height: 18px;
-  box-sizing: border-box;
-  border: solid 2px transparent;
-  border-top-color: #3b82f6;
-  border-left-color: #3b82f6;
-  border-radius: 50%;
-  animation: nprogress-spinner 400ms linear infinite;
-}
-
-@keyframes nprogress-spinner {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
 
 @layer utilities {
   
@@ -137,6 +94,19 @@ html {
   scroll-margin-top: 100px;
 }
 
-html {
+#home {
+  scroll-margin-top: 100px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none; 
   scroll-behavior: smooth;
+  background-color: #ffffff; 
+}
+
+.hero-section {
+  overscroll-behavior: contain;
 }

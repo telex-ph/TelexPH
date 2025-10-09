@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react"; 
 
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
-const LG_BREAKPOINT = 1024; 
+// LG_BREAKPOINT is no longer needed for the primary rendering logic
 
 const services = [
   {
@@ -93,17 +93,23 @@ const ServiceCard = ({
 }) => {
   const isHighlighted = service.isHighlight;
 
+  // Gumamit ng klase para sa height na nag-a-adjust sa breakpoints.
+  // Ito ay mas stable at nag-a-address sa CLS.
+  const imageContainerClasses = isCarousel 
+    ? 'relative w-full h-56 lg:h-64 sm:h-64' // Ito ay para sa mobile carousel height
+    : 'relative w-full h-64 sm:h-72'; // Ito ay para sa grid view height
+
   const contentCardClasses = isCarousel
-    ? 'p-4 -bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] md:w-[80%]' 
+    ? 'p-4 -bottom-6 left-1/2 transform -translate-x-1/2 w-[95%]' 
     : 'p-5 -bottom-6 left-20 -right-6'; 
 
   const iconCircleClasses = isCarousel ? 'w-14 h-14 -top-3 -right-3' : 'w-16 h-16 -top-3 -right-3';
   const iconSizeClasses = isCarousel ? 'w-6 h-6' : 'w-7 h-7';
 
   return (
-    <div className={`relative group ${isCarousel ? 'px-1' : ''}`}>
+    <div className="relative group h-full"> 
       <div className="relative rounded-2xl overflow-hidden shadow-md transition-all duration-300 group-hover:shadow-xl">
-        <div className="relative w-full aspect-[4/3]">
+        <div className={imageContainerClasses}>
           <Image
             src={service.imageSrc}
             alt={service.title}
@@ -181,81 +187,83 @@ const ServiceCard = ({
   );
 };
 
-const ViewAboutUsButton = () => (
-    <div className="flex justify-center mt-12 md:mt-16">
-        <a 
-          href="#"
-          className="flex items-center gap-3 group" 
+const ViewAllServicesButton = ({ isLargeScreenHeader = false }) => (
+    <div className={`${isLargeScreenHeader ? 'hidden lg:flex' : 'flex justify-center mt-12 md:mt-16 lg:hidden'}`}>
+      <a 
+        href="#"
+        className={`flex items-center gap-3 group ${isLargeScreenHeader ? 'mt-6 md:mt-0 lg:flex items-center' : ''}`} 
+      >
+        <button
+            className={`flex items-center justify-center rounded-full text-white transition-all hover:scale-105 shadow-lg ${isLargeScreenHeader ? 'w-16 h-16' : 'w-11 h-11'}`}
+            style={{ backgroundColor: DARK_RED }}
+            onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)
+            }
+            onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = DARK_RED)
+            }
         >
-            <button
-                className="flex items-center justify-center w-11 h-11 rounded-full text-white transition-all hover:scale-105 shadow-lg"
-                style={{ backgroundColor: DARK_RED }}
-                onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)
-                }
-                onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = DARK_RED)
-                }
-            >
-                <ArrowUpRight className="w-5 h-5 rotate-[15deg]" /> 
-            </button>
-            <p className="text-gray-900 font-open-sans-bold text-lg transition-colors group-hover:text-gray-700">
-                View Our Services
-            </p>
-        </a>
+            <ArrowUpRight className={`rotate-[15deg] ${isLargeScreenHeader ? 'w-7 h-7' : 'w-5 h-5'}`} /> 
+        </button>
+        <p className="text-gray-900 font-open-sans-bold text-lg transition-colors group-hover:text-gray-700">
+            View All Services
+        </p>
+      </a>
     </div>
 );
 
 
 function ServicesGrid() {
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(`(min-width: ${LG_BREAKPOINT}px)`);
-    setIsLargeScreen(mediaQuery.matches);
+  // Kinuha ang isLargeScreen state at useEffect. Ginamit na lang ang Tailwind class:
+  // Is Large Screen? -> lg:block
+  // Is Mobile Screen? -> block lg:hidden
 
-    const handleResize = () => {
-      setIsLargeScreen(mediaQuery.matches);
-      if (mediaQuery.matches) {
-        setCurrentIndex(0);
-      }
-    };
+  // Ngunit KAILANGAN pa rin natin ng state at useEffect para sa MOBILE CAROUSEL LOGIC:
+  const handleScroll = useCallback(() => {
+    const element = scrollRef.current;
+    if (!element) return;
 
-    mediaQuery.addEventListener("change", handleResize);
-    return () => mediaQuery.removeEventListener("change", handleResize);
+    // Check if we are on a large screen (to disable carousel logic)
+    // NOTE: This relies on client-side check, but the rendering split below fixes the flash.
+    if (window.innerWidth >= 1024) return; 
+
+    let timeout: NodeJS.Timeout | null = null;
+
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+
+    timeout = setTimeout(() => {
+        const scrollLeft = element.scrollLeft;
+        
+        const totalScrollWidth = element.scrollWidth - element.clientWidth;
+        const totalItems = services.length;
+
+        if (totalScrollWidth > 0 && totalItems > 1) {
+            const scrollPerCard = totalScrollWidth / (totalItems - 1); 
+            const newIndex = Math.round(scrollLeft / scrollPerCard);
+            setCurrentIndex(Math.min(newIndex, totalItems - 1));
+        } else {
+            setCurrentIndex(0);
+        }
+        if (timeout) clearTimeout(timeout);
+    }, 150); 
   }, []);
 
   useEffect(() => {
     const element = scrollRef.current;
-    if (isLargeScreen || !element) return;
-
-    let timeout: NodeJS.Timeout | null = null;
-
-    const handleScroll = () => {
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-
-        timeout = setTimeout(() => {
-            const scrollLeft = element.scrollLeft;
-            const firstCard = element.children[0];
-            const cardWidth = firstCard?.scrollWidth || 1; 
-
-            const newIndex = Math.round(scrollLeft / cardWidth); 
-            setCurrentIndex(newIndex);
-        }, 150); 
-    };
+    if (!element) return;
 
     element.addEventListener('scroll', handleScroll);
     return () => {
         element.removeEventListener('scroll', handleScroll);
-        if (timeout) clearTimeout(timeout);
     };
-  }, [isLargeScreen]);
+  }, [handleScroll]); // Tanging scroll logic lang ang nasa useEffect
 
-
+  // Ang logic ng button visibility ay gagamit ng Tailwind classes:
   const commonHeader = (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 md:mb-20">
       <div>
@@ -271,40 +279,10 @@ function ServicesGrid() {
         </h2>
       </div>
 
-      <div className="mt-6 md:mt-0 lg:flex items-center gap-4 hidden">
-        <button
-          className="flex items-center justify-center w-16 h-16 rounded-full text-white transition-all hover:scale-105 shadow-lg"
-          style={{ backgroundColor: DARK_RED }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = DARK_RED)
-          }
-        >
-          <ArrowUpRight className="w-7 h-7" />
-        </button>
-        <p className="text-gray-900 font-open-sans-bold text-lg hidden md:block">
-          View All Services
-        </p>
-      </div>
+      {/* Button for Desktop/Large Screens (Hidden on Mobile) */}
+      <ViewAllServicesButton isLargeScreenHeader={true} />
     </div>
   );
-
-  if (isLargeScreen) {
-    return (
-      <div id="services" className="bg-white py-16">
-        <div className={DEFAULT_MAX_WIDTH_CLASS}>
-          {commonHeader}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
-            {services.map((service, index) => (
-              <ServiceCard key={index} service={service} isCarousel={false} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div id="services" className="bg-white py-16">
@@ -312,57 +290,76 @@ function ServicesGrid() {
         {commonHeader}
       </div>
 
-      <div className="relative overflow-hidden">
-        
-        <div
-          ref={scrollRef}
-          className="flex overflow-x-scroll snap-x snap-mandatory pb-8 hide-scrollbar md:px-6" 
-        >
+      {/* ===================================================================
+        1. DESKTOP GRID VIEW (Block on LG screens, Hidden on Mobile) 
+        ===================================================================
+      */}
+      <div className={`${DEFAULT_MAX_WIDTH_CLASS} hidden lg:block`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
           {services.map((service, index) => (
-            <div 
-              key={index} 
-              className="w-11/12 sm:w-2/3 md:w-1/2 flex-shrink-0 snap-start px-2" 
-            >
-              <ServiceCard service={service} isCarousel={true} />
-            </div>
+            <ServiceCard key={index} service={service} isCarousel={false} />
           ))}
-          <div className="w-4 flex-shrink-0"></div> 
         </div>
       </div>
 
-      <div className="flex justify-center gap-2 mt-8"> 
-        {services.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-                setCurrentIndex(index);
-                if (scrollRef.current) {
-                    const targetCard = scrollRef.current.children[index] as HTMLElement;
-                    
-                    if (targetCard) {
-                        const targetLeft = targetCard.offsetLeft;
-                        
-                        scrollRef.current.scrollTo({
-                            left: targetLeft,
-                            behavior: 'smooth',
-                        });
-                    }
-                }
-            }}
-            className={`transition-all duration-300 rounded-full h-2 ${
-              index === currentIndex
-                ? "w-8 shadow-lg shadow-red-300/50 scale-110"
-                : "w-4 hover:bg-gray-400"
-            }`}
-            style={{
-              backgroundColor: index === currentIndex ? DARK_RED : "#e5e7eb",
-            }}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
-      
-      <ViewAboutUsButton />
+
+      {/* ===================================================================
+        2. MOBILE CAROUSEL VIEW (Block on Mobile, Hidden on LG screens)
+        ===================================================================
+      */}
+      <div className="block lg:hidden">
+        <div className="relative">
+          <div
+            ref={scrollRef}
+            className="flex overflow-x-scroll snap-x snap-mandatory pb-8 px-4 space-x-4 hide-scrollbar" 
+          >
+            {services.map((service, index) => (
+              <div 
+                key={index} 
+                className="w-[85vw] sm:w-[60vw] md:w-[45vw] flex-shrink-0 snap-start" 
+              >
+                <ServiceCard service={service} isCarousel={true} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Pagination dots (Mobile only) */}
+        <div className="flex justify-center gap-2 mt-8"> 
+          {services.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                  if (scrollRef.current) {
+                      const cardContainerPaddingLeft = 16; 
+                      const targetCard = scrollRef.current.children[index] as HTMLElement;
+                      
+                      if (targetCard) {
+                          scrollRef.current.scrollTo({
+                              left: targetCard.offsetLeft - cardContainerPaddingLeft, 
+                              behavior: 'smooth',
+                          });
+                          setCurrentIndex(index);
+                      }
+                  }
+              }}
+              className={`transition-all duration-300 rounded-full h-2 ${
+                index === currentIndex
+                  ? "w-8 shadow-lg shadow-red-300/50 scale-110"
+                  : "w-4 hover:bg-gray-400"
+              }`}
+              style={{
+                backgroundColor: index === currentIndex ? DARK_RED : "#e5e7eb",
+              }}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+        
+        {/* View All Services Button (Mobile only) */}
+        <ViewAllServicesButton isLargeScreenHeader={false} />
+
+      </div> 
 
       <style jsx global>{`
         .hide-scrollbar::-webkit-scrollbar {
@@ -371,12 +368,6 @@ function ServicesGrid() {
         .hide-scrollbar {
           -ms-overflow-style: none; /* IE and Edge */
           scrollbar-width: none; /* Firefox */
-          padding-left: 0.5rem; /* Start padding for alignment */
-        }
-        @media (min-width: 640px) { /* Adjust padding for sm screens */
-            .hide-scrollbar {
-                padding-left: 1rem; 
-            }
         }
       `}</style>
     </div>
