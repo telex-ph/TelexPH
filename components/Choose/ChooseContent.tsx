@@ -137,7 +137,7 @@ const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
         >
           <ArrowUpRight className="w-6 h-6" />
         </button>
-        <p className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-lg select-none`}>Contact Us</p>
+        <p className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-lg select-none`}>Choose Us</p>
       </div>
     </div>
   );
