@@ -1,27 +1,29 @@
 import React from "react";
 import Image from "next/image";
 
-const FooterPosts = () => {
+const FooterPosts: React.FC = () => {
   return (
-    <div>
-      <div className="mb-6">
-        <h3 className="font-poppins-black mb-2 text-white">Popular Post</h3>
+    <div className="w-full">
+      <div className="mb-4 sm:mb-6">
+        <h3 className="font-poppins-black mb-2 text-sm sm:text-base text-white">Popular Post</h3>
         <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto sm:mx-0">
+        {/* First Post - Special with Overlay */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
-          <img 
+          <Image 
             src="/images/post1.svg" 
-            alt="Background" 
-            className="absolute inset-0 w-full h-full object-cover"
+            alt="Book a Free Consultation" 
+            fill
+            className="object-cover"
           />
           
-          <div className="absolute inset-0 bg-[#a10000]/80 p-4 flex flex-col justify-between">
+          <div className="absolute inset-0 bg-[#a10000]/80 p-2 sm:p-4 flex flex-col justify-between">
             <div className="flex justify-start">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0">
                 <svg 
-                  className="w-5 h-5 text-[#a10000]" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-[#a10000]" 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -36,14 +38,15 @@ const FooterPosts = () => {
               </div>
             </div>
             
-            <div className="text-white">
-              <p className="text-lg font-open-sans-bold leading-tight">
-                Book a Free<br />Consultation
+            <div className="text-white px-1 sm:px-0">
+              <p className="text-xs sm:text-sm lg:text-base font-open-sans-bold leading-tight">
+                Book a Free Consultation
               </p>
             </div>
           </div>
         </div>
         
+        {/* Second Post */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
             src="/images/post2.jpg" 
@@ -53,6 +56,7 @@ const FooterPosts = () => {
           />
         </div>
         
+        {/* Third Post */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
             src="/images/post3.jpg" 
@@ -62,6 +66,7 @@ const FooterPosts = () => {
           />
         </div>
 
+        {/* Fourth Post */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
             src="/images/post4.jpg" 
