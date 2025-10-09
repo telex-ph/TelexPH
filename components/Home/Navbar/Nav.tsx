@@ -114,19 +114,6 @@ const Nav = ({ openNav }: Props) => {
 
             {/* Right Icons & Hamburger */}
             <div className="flex items-center space-x-8 ml-auto">
-              {/* Desktop Icons */}
-              <div className="hidden lg:flex items-center space-x-3">
-                <button className="text-[#a10000] hover:text-red-700 transition">
-                  <FaRegUser className="w-4 h-4" />
-                </button>
-                <button className="text-gray-600 hover:text-[#a10000] transition">
-                  <IoSearchOutline className="w-5 h-5" />
-                </button>
-                <button className="text-gray-600 hover:text-[#a10000] transition">
-                  <BsThreeDotsVertical className="w-4 h-4" />
-                </button>
-              </div>
-
               {/* Contact Us Button */}
               <button
                 type="button"
