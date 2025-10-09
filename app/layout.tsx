@@ -85,7 +85,7 @@ export const metadata: Metadata = {
   },
 };
 
-// ✅ Root Layout
+// ✅ Root Layout (Updated: Added #modal-root for Portal modals)
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -95,8 +95,9 @@ export default function RootLayout({
       className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}
     >
       <body className="font-rubik antialiased bg-white text-black">
-          <ResponsiveNav />
-          {children}
+        <ResponsiveNav />
+        {children}
+        <div id="modal-root" />
       </body>
     </html>
   );

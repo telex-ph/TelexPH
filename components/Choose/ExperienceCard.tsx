@@ -7,7 +7,7 @@ const ExperienceCard = () => {
   return (
     <div className={`
       bg-[${COLORS.primary}] rounded-2xl flex flex-col items-center justify-center text-white 
-      py-6 px-6 shadow-xl relative overflow-hidden 
+                    py-6 px-6 shadow-xl relative overflow-hidden 
       aspect-square sm:aspect-auto sm:h-[180px] md:h-[200px] lg:h-[220px]`
     }>
       <div 
@@ -24,7 +24,7 @@ const ExperienceCard = () => {
         </div>
         
         <div className={`text-3xl sm:text-4xl ${FONT_CLASSES.openSansBold} mb-1 text-center`}>
-          30+
+          7+
         </div>
         
         <div className={`text-white text-sm sm:text-base ${FONT_CLASSES.openSansBold} text-center`}>

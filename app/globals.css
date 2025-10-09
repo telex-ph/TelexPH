@@ -110,3 +110,16 @@ body {
 .hero-section {
   overscroll-behavior: contain;
 }
+
+body.modal-open {
+  overflow: hidden !important; 
+  position: fixed; 
+  width: 100%;
+  height: 100%;
+}
+body.modal-open ::-webkit-scrollbar {
+  display: none; 
+}
+body.modal-open {
+  touch-action: none;
+}
