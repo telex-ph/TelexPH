@@ -53,6 +53,7 @@ const FooterCTA = () => {
         </div>
         <a
           href="https://hiretelex.com/scale-with-telex"
+          target="_blank"
           className="z-20 ml-auto bg-white text-[#a10000] font-open-sans-bold px-4 sm:px-5 md:px-6 lg:px-7 py-2.5 sm:py-3 md:py-3.5 rounded shadow hover:bg-gray-100 transition whitespace-nowrap text-xs sm:text-sm md:text-base inline-block text-center"
         >
           CONTACT US NOW

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image"; 
+import Image from "next/image";
 import { Phone } from "lucide-react";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
@@ -21,15 +21,14 @@ const ContactSupport = () => {
           className={`relative bg-gray-50 rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.15),0_10px_20px_-2px_rgba(0,0,0,0.1)] overflow-hidden w-full`}
         >
           <div className="flex flex-col md:flex-row items-center px-4 sm:px-6 lg:px-8 py-4 sm:py-5 md:py-6 gap-4 md:gap-6">
-            
             {/* Image Section with Phone Icon */}
             <div className="relative flex-shrink-0 flex justify-center w-full md:w-auto mb-2 md:mb-0">
               <div className="relative inline-block">
                 <Image
                   src="/images/handshake.webp"
                   alt="Business Handshake"
-                  width={256} 
-                  height={176} 
+                  width={256}
+                  height={176}
                   className="w-32 h-24 sm:w-44 sm:h-32 md:w-56 md:h-40 lg:w-64 lg:h-44 object-cover rounded-md shadow-md"
                   loading="lazy"
                 />
@@ -46,10 +45,12 @@ const ContactSupport = () => {
 
             {/* Content Section */}
             <div className="flex-1 md:pl-4 lg:pl-6 text-center md:text-left w-full">
-              <h2 className={`text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl ${FONT_CLASSES.openSansBold} text-gray-900 mb-2 sm:mb-3 md:mb-4`}>
+              <h2
+                className={`text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl ${FONT_CLASSES.openSansBold} text-gray-900 mb-2 sm:mb-3 md:mb-4`}
+              >
                 Have Any Questions? Call Us
               </h2>
-              
+
               {/* Contact Info */}
               <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center sm:justify-center md:justify-start md:items-start lg:items-baseline gap-2 sm:gap-3 md:gap-2 lg:gap-4 mb-2 sm:mb-3">
                 <a
@@ -65,19 +66,23 @@ const ContactSupport = () => {
                   partnerships@telexph.com
                 </a>
               </div>
-              
+
               {/* Description */}
-              <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 text-xs sm:text-sm md:text-sm leading-relaxed sm:leading-snug max-w-full sm:max-w-xl md:max-w-lg mx-auto md:mx-0 mt-2 px-2 sm:px-0`}>
+              <p
+                className={`${FONT_CLASSES.rubikRegular} text-gray-500 text-xs sm:text-sm md:text-sm leading-relaxed sm:leading-snug max-w-full sm:max-w-xl md:max-w-lg mx-auto md:mx-0 mt-2 px-2 sm:px-0`}
+              >
                 Start scaling your business the smarter way with Telex
                 Philippines, your partner in smart support services.
               </p>
 
-              {/* Contact Us Button */}
               <div className="mt-2 sm:mt-6">
                 <button
                   type="button"
                   onClick={() =>
-                    window.location.href = "https://hiretelex.com/scale-with-telex"
+                    window.open(
+                      "https://hiretelex.com/scale-with-telex",
+                      "_blank"
+                    )
                   }
                   className="bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm sm:text-base font-open-sans-bold rounded transition-colors cursor-pointer"
                 >
@@ -88,7 +93,9 @@ const ContactSupport = () => {
 
             {/* Decorative Circle - Hidden on mobile and tablet */}
             <div className={`hidden xl:block absolute -right-10 -bottom-8`}>
-              <div className={`w-28 h-28 bg-[${COLORS.primary}] rounded-full`}></div>
+              <div
+                className={`w-28 h-28 bg-[${COLORS.primary}] rounded-full`}
+              ></div>
             </div>
           </div>
         </div>
