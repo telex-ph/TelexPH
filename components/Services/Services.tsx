@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react"; 
+import ComingSoonModal from "@/components/Modals/ComingSoonModal"; // Adjust path as needed (e.g., '@/components/modals/ComingSoonModal')
 
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
-// LG_BREAKPOINT is no longer needed for the primary rendering logic
 
 const services = [
   {
@@ -93,11 +93,9 @@ const ServiceCard = ({
 }) => {
   const isHighlighted = service.isHighlight;
 
-  // Gumamit ng klase para sa height na nag-a-adjust sa breakpoints.
-  // Ito ay mas stable at nag-a-address sa CLS.
   const imageContainerClasses = isCarousel 
-    ? 'relative w-full h-56 lg:h-64 sm:h-64' // Ito ay para sa mobile carousel height
-    : 'relative w-full h-64 sm:h-72'; // Ito ay para sa grid view height
+    ? 'relative w-full h-56 lg:h-64 sm:h-64' 
+    : 'relative w-full h-64 sm:h-72'; 
 
   const contentCardClasses = isCarousel
     ? 'p-4 -bottom-6 left-1/2 transform -translate-x-1/2 w-[95%]' 
@@ -187,69 +185,78 @@ const ServiceCard = ({
   );
 };
 
-const ViewAllServicesButton = ({ isLargeScreenHeader = false }) => (
-    <div className={`${isLargeScreenHeader ? 'hidden lg:flex' : 'flex justify-center mt-12 md:mt-16 lg:hidden'}`}>
-      <a 
-        href="#"
-        className={`flex items-center gap-3 group ${isLargeScreenHeader ? 'mt-6 md:mt-0 lg:flex items-center' : ''}`} 
-      >
-        <button
-            className={`flex items-center justify-center rounded-full text-white transition-all hover:scale-105 shadow-lg ${isLargeScreenHeader ? 'w-16 h-16' : 'w-11 h-11'}`}
-            style={{ backgroundColor: DARK_RED }}
-            onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)
-            }
-            onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = DARK_RED)
-            }
-        >
-            <ArrowUpRight className={`rotate-[15deg] ${isLargeScreenHeader ? 'w-7 h-7' : 'w-5 h-5'}`} /> 
-        </button>
-        <p className="text-gray-900 font-open-sans-bold text-lg transition-colors group-hover:text-gray-700">
-            View All Services
-        </p>
-      </a>
-    </div>
-);
+// Updated ViewAllServicesButton: Now accepts onClick prop for modal
+interface ViewAllServicesButtonProps {
+  isLargeScreenHeader?: boolean;
+  onClick?: () => void; // New prop for opening modal
+}
 
+const ViewAllServicesButton: React.FC<ViewAllServicesButtonProps> = ({ 
+  isLargeScreenHeader = false, 
+  onClick 
+}) => (
+  <div className={`${isLargeScreenHeader ? 'hidden lg:flex' : 'flex justify-center mt-12 md:mt-16 lg:hidden'}`}>
+    <a 
+      href="#"
+      onClick={(e) => {
+        e.preventDefault(); // Prevent default link behavior
+        onClick?.(); // Trigger modal open
+      }}
+      className={`flex items-center gap-3 group ${isLargeScreenHeader ? 'mt-6 md:mt-0 lg:flex items-center' : ''}`} 
+    >
+      <button
+        className={`flex items-center justify-center rounded-full text-white transition-all hover:scale-105 shadow-lg ${isLargeScreenHeader ? 'w-16 h-16' : 'w-11 h-11'}`}
+        style={{ backgroundColor: DARK_RED }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = DARK_RED)
+        }
+      >
+        <ArrowUpRight className={`rotate-[15deg] ${isLargeScreenHeader ? 'w-7 h-7' : 'w-5 h-5'}`} /> 
+      </button>
+      <p className="text-gray-900 font-open-sans-bold text-lg transition-colors group-hover:text-gray-700">
+        View All Services
+      </p>
+    </a>
+  </div>
+);
 
 function ServicesGrid() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // New state for modal
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Kinuha ang isLargeScreen state at useEffect. Ginamit na lang ang Tailwind class:
-  // Is Large Screen? -> lg:block
-  // Is Mobile Screen? -> block lg:hidden
+  // Modal handlers (same as CompanyDetails)
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
-  // Ngunit KAILANGAN pa rin natin ng state at useEffect para sa MOBILE CAROUSEL LOGIC:
   const handleScroll = useCallback(() => {
     const element = scrollRef.current;
     if (!element) return;
-
-    // Check if we are on a large screen (to disable carousel logic)
-    // NOTE: This relies on client-side check, but the rendering split below fixes the flash.
     if (window.innerWidth >= 1024) return; 
 
     let timeout: NodeJS.Timeout | null = null;
 
     if (timeout) {
-        clearTimeout(timeout);
+      clearTimeout(timeout);
     }
 
     timeout = setTimeout(() => {
-        const scrollLeft = element.scrollLeft;
-        
-        const totalScrollWidth = element.scrollWidth - element.clientWidth;
-        const totalItems = services.length;
+      const scrollLeft = element.scrollLeft;
+      
+      const totalScrollWidth = element.scrollWidth - element.clientWidth;
+      const totalItems = services.length;
 
-        if (totalScrollWidth > 0 && totalItems > 1) {
-            const scrollPerCard = totalScrollWidth / (totalItems - 1); 
-            const newIndex = Math.round(scrollLeft / scrollPerCard);
-            setCurrentIndex(Math.min(newIndex, totalItems - 1));
-        } else {
-            setCurrentIndex(0);
-        }
-        if (timeout) clearTimeout(timeout);
+      if (totalScrollWidth > 0 && totalItems > 1) {
+        const scrollPerCard = totalScrollWidth / (totalItems - 1); 
+        const newIndex = Math.round(scrollLeft / scrollPerCard);
+        setCurrentIndex(Math.min(newIndex, totalItems - 1));
+      } else {
+        setCurrentIndex(0);
+      }
+      if (timeout) clearTimeout(timeout);
     }, 150); 
   }, []);
 
@@ -259,11 +266,10 @@ function ServicesGrid() {
 
     element.addEventListener('scroll', handleScroll);
     return () => {
-        element.removeEventListener('scroll', handleScroll);
+      element.removeEventListener('scroll', handleScroll);
     };
-  }, [handleScroll]); // Tanging scroll logic lang ang nasa useEffect
+  }, [handleScroll]); 
 
-  // Ang logic ng button visibility ay gagamit ng Tailwind classes:
   const commonHeader = (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 md:mb-20">
       <div>
@@ -279,8 +285,8 @@ function ServicesGrid() {
         </h2>
       </div>
 
-      {/* Button for Desktop/Large Screens (Hidden on Mobile) */}
-      <ViewAllServicesButton isLargeScreenHeader={true} />
+      {/* Pass onClick to open modal */}
+      <ViewAllServicesButton isLargeScreenHeader={true} onClick={openModal} />
     </div>
   );
 
@@ -289,11 +295,6 @@ function ServicesGrid() {
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
         {commonHeader}
       </div>
-
-      {/* ===================================================================
-        1. DESKTOP GRID VIEW (Block on LG screens, Hidden on Mobile) 
-        ===================================================================
-      */}
       <div className={`${DEFAULT_MAX_WIDTH_CLASS} hidden lg:block`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14">
           {services.map((service, index) => (
@@ -301,12 +302,6 @@ function ServicesGrid() {
           ))}
         </div>
       </div>
-
-
-      {/* ===================================================================
-        2. MOBILE CAROUSEL VIEW (Block on Mobile, Hidden on LG screens)
-        ===================================================================
-      */}
       <div className="block lg:hidden">
         <div className="relative">
           <div
@@ -323,25 +318,23 @@ function ServicesGrid() {
             ))}
           </div>
         </div>
-
-        {/* Pagination dots (Mobile only) */}
         <div className="flex justify-center gap-2 mt-8"> 
           {services.map((_, index) => (
             <button
               key={index}
               onClick={() => {
-                  if (scrollRef.current) {
-                      const cardContainerPaddingLeft = 16; 
-                      const targetCard = scrollRef.current.children[index] as HTMLElement;
-                      
-                      if (targetCard) {
-                          scrollRef.current.scrollTo({
-                              left: targetCard.offsetLeft - cardContainerPaddingLeft, 
-                              behavior: 'smooth',
-                          });
-                          setCurrentIndex(index);
-                      }
+                if (scrollRef.current) {
+                  const cardContainerPaddingLeft = 16; 
+                  const targetCard = scrollRef.current.children[index] as HTMLElement;
+                  
+                  if (targetCard) {
+                    scrollRef.current.scrollTo({
+                      left: targetCard.offsetLeft - cardContainerPaddingLeft, 
+                      behavior: 'smooth',
+                    });
+                    setCurrentIndex(index);
                   }
+                }
               }}
               className={`transition-all duration-300 rounded-full h-2 ${
                 index === currentIndex
@@ -355,10 +348,8 @@ function ServicesGrid() {
             />
           ))}
         </div>
-        
-        {/* View All Services Button (Mobile only) */}
-        <ViewAllServicesButton isLargeScreenHeader={false} />
-
+        {/* Pass onClick to open modal */}
+        <ViewAllServicesButton isLargeScreenHeader={false} onClick={openModal} />
       </div> 
 
       <style jsx global>{`
@@ -370,6 +361,15 @@ function ServicesGrid() {
           scrollbar-width: none; /* Firefox */
         }
       `}</style>
+
+      {/* Render the Modal (Services-specific content) */}
+      <ComingSoonModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="Our Services Are on the Way!"
+        message="Thank you for visiting TelexPH. We're currently putting the finishing touches on our full services page to give you detailed insights. Stay tuned - it'll be live very soon!"
+        // backgroundImageSrc="/images/background.jpg" // Optional: Add if you want a background image like in your original ServicesModal
+      />
     </div>
   );
 }
