@@ -42,9 +42,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div
-      className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
-    >
+    <div className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}>
       {showNav && (
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-sm w-full h-screen z-[1000] transition-opacity duration-500"
@@ -83,35 +81,32 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
           </div>
 
           <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2 custom-scrollbar-light">
-            {navLinks.map((link) => {
-              return (
-                <div key={link.id}>
-                  <Link
-                    href={link.url}
-                    onClick={handleLinkClick}
-                    className={`relative flex items-center justify-between py-4 px-5 rounded-xl border transition-all duration-300 group 
-                                            bg-white/80 border-gray-100 shadow-lg hover:bg-red-50 hover:border-red-300`}
+            {navLinks.map((link) => (
+              <div key={link.id}>
+                <Link
+                  href={link.url}
+                  onClick={handleLinkClick}
+                  className={`relative flex items-center justify-between py-4 px-5 rounded-xl border transition-all duration-300 group 
+                            bg-white/80 border-gray-100 shadow-lg hover:bg-red-50 hover:border-red-300`}
+                >
+                  <span
+                    className={`text-[16px] font-open-sans-bold tracking-tight transition-colors duration-300
+                              text-gray-900 group-hover:text-red-600`}
                   >
-                    <span
-                      className={`text-[16px] font-open-sans-bold tracking-tight transition-colors duration-300
-                                            text-gray-900 group-hover:text-red-600`}
-                    >
-                      {link.label}
-                    </span>
+                    {link.label}
+                  </span>
 
-                    <div
-                      className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
-                                            bg-red-100/50 group-hover:bg-red-600`}
-                    >
-                      <PiArrowUpRightBold
-                        className={`w-5 h-5 transition-colors
-                                                text-red-500 group-hover:text-white`}
-                      />
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
+                  <div
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
+                              bg-red-100/50 group-hover:bg-red-600`}
+                  >
+                    <PiArrowUpRightBold
+                      className={`w-5 h-5 transition-colors text-red-500 group-hover:text-white`}
+                    />
+                  </div>
+                </Link>
+              </div>
+            ))}
           </nav>
 
           <div className="px-6 pb-6 pt-4 border-t border-gray-200 bg-white/95 text-center">
@@ -123,7 +118,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
       </div>
 
       <style jsx>{`
-        /* Custom Scrollbar for light-mode aesthetics */
         .custom-scrollbar-light::-webkit-scrollbar {
           width: 8px;
         }
@@ -141,7 +135,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
           background-color: rgba(0, 0, 0, 0.3);
         }
 
-        /* Animated Blobs (Spinning) */
         @keyframes spin-slow {
           from {
             transform: rotate(0deg);
