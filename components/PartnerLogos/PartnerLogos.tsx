@@ -31,8 +31,14 @@ const PartnerLogos: React.FC = () => {
     
   const baseLogoClasses = 'w-auto object-contain cursor-pointer transition-all duration-300 ease-in-out';
 
-  const enlargedSizeClasses = 'h-[70px]'; 
-  const defaultSizeClasses = 'h-[50px]'; 
+  // Enlarged for first logo (index 0) - using standard Tailwind classes for better compatibility
+  const enlargedSizeClasses = 'h-20 sm:h-16'; // h-20=80px on mobile, h-16=64px on sm+ (slightly larger than before for visibility)
+  
+  // Default for most logos - larger on mobile
+  const defaultSizeClasses = 'h-16 sm:h-12'; // h-16=64px on mobile, h-12=48px on sm+ (close to 65px/50px, standard classes)
+  
+  // Special small size for 4th logo (index 3) - fixed small
+  const smallSizeClasses = 'h-12'; // h-12=48px on all sizes (no enlargement)
     
   const logoItemStyle: React.CSSProperties = {
     width: `${100 / logos.length}%`, 
@@ -54,12 +60,21 @@ const PartnerLogos: React.FC = () => {
           
           {logosForLoop.map((logo, index) => {
             const originalIndex = index % logos.length; 
-            const sizeClasses = originalIndex === 0 ? enlargedSizeClasses : defaultSizeClasses;
+            
+            // Determine size classes based on index
+            let sizeClasses: string;
+            if (originalIndex === 0) {
+              sizeClasses = enlargedSizeClasses; // First logo: enlarged
+            } else if (originalIndex === 3) {
+              sizeClasses = smallSizeClasses; // 4th logo: keep small, no enlargement
+            } else {
+              sizeClasses = defaultSizeClasses; // Rest: larger on mobile
+            }
             
             return (
               <div 
                 key={index}
-                className={`flex-shrink-0 px-8 flex items-center justify-center`}
+                className={`flex-shrink-0 px-6 sm:px-8 flex items-center justify-center`} // Reduced px on mobile for better fit with larger images
                 style={logoItemStyle}
                 onMouseEnter={() => setHoveredIndex(originalIndex)}
                 onMouseLeave={() => setHoveredIndex(null)}
@@ -67,7 +82,7 @@ const PartnerLogos: React.FC = () => {
                 <img
                   src={logo.src}
                   alt={logo.alt}
-                  className={`${baseLogoClasses} ${sizeClasses}`}
+                  className={`${baseLogoClasses} ${sizeClasses} max-w-full`} // Added max-w-full to prevent overflow
                   style={{
                     ...defaultLogoStyle,
                     ...(originalIndex === hoveredIndex ? hoveredLogoStyle : {}),
