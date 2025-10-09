@@ -137,6 +137,17 @@ html {
   scroll-margin-top: 100px;
 }
 
-html {
+/* Prevent scroll bounce (white gap sa taas or baba) */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none; /* 🔥 stops over-scrolling */
   scroll-behavior: smooth;
+  background-color: #ffffff; /* optional para di mag-white flash */
+}
+
+/* Optional: Prevent scroll bounce inside specific elements */
+.hero-section {
+  overscroll-behavior: contain;
 }
