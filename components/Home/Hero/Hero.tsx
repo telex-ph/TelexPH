@@ -65,12 +65,14 @@ const Hero = () => {
                 </p>
 
                 <div className="mb-5 sm:mb-6">
-                  <Link
-                    href="#"
+                  <a
+                    href="https://hiretelex.com/scale-with-telex"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-block rounded px-6 sm:px-7 py-2 sm:py-2.5 text-xs font-open-sans-bold uppercase tracking-wide bg-white hover:bg-gray-100 text-[#a10000] transition-all ease-out duration-300"
                   >
-                    REQUEST A QUOTE
-                  </Link>
+                    CONTACT US NOW
+                  </a>
                 </div>
 
                 {/* Avatars & Reviews */}

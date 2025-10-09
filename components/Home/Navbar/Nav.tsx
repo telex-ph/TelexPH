@@ -108,7 +108,6 @@ const Nav = ({ openNav }: Props) => {
                       {link.label}
                     </span>
                   </Link>
-                  
                 </div>
               ))}
             </div>
@@ -129,8 +128,15 @@ const Nav = ({ openNav }: Props) => {
               </div>
 
               {/* Contact Us Button */}
-              <button className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded">
-                Get Started
+              <button
+                type="button"
+                onClick={() =>
+                  (window.location.href =
+                    "https://hiretelex.com/scale-with-telex")
+                }
+                className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded cursor-pointer"
+              >
+                CONTACT US
               </button>
 
               {/* Hamburger Menu Button */}
