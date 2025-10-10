@@ -38,17 +38,17 @@ type Props = {
 const Nav = ({ openNav }: Props) => {
   const [navBg, setNavBg] = useState(false);
   const prevScrollY = useRef(0);
-  
-  // 1. STATE FOR DROPDOWN: State para sa ID ng link na may bukas na dropdown
-  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
-  const handleMouseEnter = (id: number) => {
-    setOpenDropdownId(id);
-  };
+  // Dropdown state (commented out)
+  // const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
-  const handleMouseLeave = () => {
-    setOpenDropdownId(null);
-  };
+  // const handleMouseEnter = (id: number) => {
+  //   setOpenDropdownId(id);
+  // };
+
+  // const handleMouseLeave = () => {
+  //   setOpenDropdownId(null);
+  // };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,27 +95,28 @@ const Nav = ({ openNav }: Props) => {
           </div>
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
             
-            {/* START: UPDATED NAVIGATION LINKS WITH DROPDOWN LOGIC */}
+            {/* START: NAVIGATION LINKS (Dropdown commented out) */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <div
                   key={link.id}
-                  className="relative h-full flex items-center" 
-                  onMouseEnter={() => handleMouseEnter(link.id)}
-                  onMouseLeave={handleMouseLeave}
+                  className="relative h-full flex items-center"
+                  // onMouseEnter={() => handleMouseEnter(link.id)}
+                  // onMouseLeave={handleMouseLeave}
                 >
                   <Link
                     href={link.url}
                     className="relative py-[30px] scroll-smooth"
                   >
-                    <span className={`text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors ${
-                         openDropdownId === link.id ? "text-[#a10000]" : "hover:text-[#a10000]"
-                    }`}>
+                    <span
+                      className={`text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]`}
+                    >
                       {link.label}
                     </span>
                   </Link>
 
-                  {link.dropdown && link.dropdown.length > 0 && openDropdownId === link.id && (
+                  {/* Dropdown menu (commented out) */}
+                  {/* {link.dropdown && link.dropdown.length > 0 && openDropdownId === link.id && (
                     <div 
                       className="absolute top-full left-0 mt-[-2px] bg-white border border-gray-100 shadow-lg min-w-[180px] z-20 py-2 rounded-b-md"
                     >
@@ -124,16 +125,17 @@ const Nav = ({ openNav }: Props) => {
                           key={dropdownItem.id}
                           href={dropdownItem.url}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f5f5f5] hover:text-[#a10000] whitespace-nowrap transition-colors"
-                          onClick={handleMouseLeave} 
+                          onClick={handleMouseLeave}
                         >
                           {dropdownItem.label}
                         </Link>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </div>
               ))}
             </div>
+            {/* END: NAVIGATION LINKS */}
 
             <div className="flex items-center space-x-8 ml-auto">
               <button
