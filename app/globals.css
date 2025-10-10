@@ -111,6 +111,7 @@ body {
   overscroll-behavior: contain;
 }
 
+/* globals.css */
 body.modal-open {
   overflow: hidden !important; 
   position: fixed; 
@@ -122,4 +123,26 @@ body.modal-open ::-webkit-scrollbar {
 }
 body.modal-open {
   touch-action: none;
+}
+
+
+@layer base {
+  .font-poppins-bold {
+    font-family: var(--font-poppins);
+    font-weight: 700;
+  }
+  .font-open-sans-bold {
+    font-family: var(--font-open-sans);
+    font-weight: 700;
+  }
+}
+
+.nav-dropdown-menu {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); 
+  border-radius: 0 0 6px 6px; 
+}
+
+.nav-link-item a,
+.nav-dropdown-menu a {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
