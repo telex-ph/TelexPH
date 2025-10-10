@@ -56,30 +56,30 @@ interface ContactUsButtonMobileProps {
 
 const ContactUsButtonMobile: React.FC<ContactUsButtonMobileProps> = ({ openModal }) => {
   return (
-    <div className="lg:hidden mt-12 mb-6 flex justify-center">
+    <div className="lg:hidden mt-6 mb-2 flex justify-center">
       <div 
-        className="flex items-center gap-3 group cursor-pointer hover:opacity-80 transition-opacity"
-        onClick={openModal} // Now uses the passed prop
+        className="flex items-center gap-2 group cursor-pointer hover:opacity-80 transition-opacity"
+        onClick={openModal}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openModal(); // Now uses the passed prop
+            openModal();
           }
         }}
       >
         <a 
           href="#"
           onClick={(e) => {
-            e.preventDefault(); // Prevent default link behavior
+            e.preventDefault();
           }}
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-2 group"
         >
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Prevent double-trigger from parent
-              openModal(); // Now uses the passed prop
+              e.stopPropagation();
+              openModal();
             }}
             className={`flex items-center justify-center w-11 h-11 rounded-full text-white transition-all hover:scale-105 shadow-lg 
               bg-[${COLORS.primary}] hover:bg-[${COLORS.dark}]`} 
@@ -87,7 +87,7 @@ const ContactUsButtonMobile: React.FC<ContactUsButtonMobileProps> = ({ openModal
           >
             <ArrowUpRight className="w-5 h-5 rotate-[15deg]" /> 
           </button>
-          <p className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-lg transition-colors group-hover:text-gray-700 select-none`}>
+          <p className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-base transition-colors group-hover:text-gray-700 select-none`}>
             Choose Us
           </p>
         </a>
@@ -103,33 +103,33 @@ interface ChooseHeaderProps {
 
 const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-16 gap-8">
+    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 lg:mb-16 gap-2 lg:gap-8">
       <div>
-        <p className={`text-[${COLORS.primary}] text-sm ${FONT_CLASSES.openSansBold} mb-3 uppercase tracking-wide flex items-center gap-2`}>
+        <p className={`text-[${COLORS.primary}] text-sm ${FONT_CLASSES.openSansBold} mb-2 uppercase tracking-wide flex items-center gap-2`}>
           <span className={`w-8 h-[2px] bg-[${COLORS.primary}]`}></span>
           WHY CHOOSE US
         </p>
-        <h2 className={`text-[2rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-[1.1]`}>
+        <h2 className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-tight`}>
           We Use Proven Technologies<br />
           to Foster a Clean Energy
         </h2>
       </div>
       <div 
         className="hidden lg:flex items-center gap-4 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-        onClick={openModal} // Now uses the passed prop
+        onClick={openModal}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openModal(); // Now uses the passed prop
+            openModal();
           }
         }}
       >
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            openModal(); // Now uses the passed prop
+            openModal();
           }}
           className={`flex items-center justify-center gap-2 w-14 h-14 rounded-full text-white transition-all hover:scale-105 shadow-lg 
             bg-[${COLORS.primary}] hover:bg-[${COLORS.dark}]`}
@@ -145,7 +145,7 @@ const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
 
 const ChooseGrid = () => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-6">
       <FeaturesSection features={LEFT_FEATURES} />
       <CenterGrid />
       <FeaturesSection features={RIGHT_FEATURES} />
@@ -162,7 +162,6 @@ const ChooseContent: React.FC = () => {
 
   return (
     <>
-      {/* Pass openModal prop to sub-components */}
       <ChooseHeader openModal={openModal} />
       <ChooseGrid />
       <ContactUsButtonMobile openModal={openModal} />
