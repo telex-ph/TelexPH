@@ -6,8 +6,6 @@ import Image from "next/image";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
-
-// Icons
 import { HiBars3BottomRight } from "react-icons/hi2";
 
 const poppins = Poppins({
