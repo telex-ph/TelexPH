@@ -4,7 +4,7 @@ const DEFAULT_MAX_WIDTH_CLASS = "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:p
 
 const Choose = () => {
   return (
-    <div id="choose" className="pt-20 pb-20 relative overflow-hidden">
+    <div id="choose" className="pt-12 pb-12 lg:pt-20 lg:pb-20 relative overflow-hidden">
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center"
         style={{ backgroundImage: "url('/images/choosebg.jpg')" }}

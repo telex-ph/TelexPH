@@ -49,7 +49,6 @@ const RIGHT_FEATURES = [
   },
 ];
 
-// Updated: Mobile button now accepts openModal as prop (no local dummy function)
 interface ContactUsButtonMobileProps {
   openModal: () => void;
 }
@@ -96,14 +95,13 @@ const ContactUsButtonMobile: React.FC<ContactUsButtonMobileProps> = ({ openModal
   );
 };
 
-// Updated: Header now accepts openModal as prop (no local dummy function)
 interface ChooseHeaderProps {
   openModal: () => void;
 }
 
 const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 lg:mb-16 gap-2 lg:gap-8">
+    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 lg:mb-16 gap-2 lg:gap-8">
       <div>
         <p className={`text-[${COLORS.primary}] text-sm ${FONT_CLASSES.openSansBold} mb-2 uppercase tracking-wide flex items-center gap-2`}>
           <span className={`w-8 h-[2px] bg-[${COLORS.primary}]`}></span>
@@ -153,7 +151,6 @@ const ChooseGrid = () => {
   );
 };
 
-// Main Component: Now passes openModal to sub-components
 const ChooseContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
