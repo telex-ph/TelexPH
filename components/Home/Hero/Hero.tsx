@@ -41,12 +41,17 @@ const Hero = () => {
         {/* Background Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-red-950 via-red-900 to-red-950 opacity-45"></div>
 
-        {/* Content */}
-        <div className="relative z-10 w-full h-full flex items-center pb-0 -mt-12">
+        {/* Content - MODIFIED: 
+          1. Changed the main container to `items-end` for default (mobile) view.
+          2. Added `pb-12` (padding bottom) to push the content up from the bottom edge.
+          3. For screens larger than small (`sm:`), we revert to `items-center` and remove the bottom padding (`sm:pb-0`) to use vertical centering instead. This ensures consistency for bigger screens while fixing the low position on mobile.
+        */}
+        <div className="relative z-10 w-full h-full flex items-end sm:items-center pb-12 sm:pb-0 pt-0 sm:pt-20 lg:pt-0">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left side */}
-              <div className="lg:col-span-5 pt-40 sm:pt-28 lg:pt-25 lg:pl-20 px-4 sm:px-0">
+              
+              {/* Left side - Kept current column spans (full width up to xl, then 5 cols at xl) */}
+              <div className="lg:col-span-12 xl:col-span-5 lg:pl-20 px-4 sm:px-0">
                 <p className="text-sm sm:text-base text-white mb-2 font-open-sans-bold">
                   Your trusted partner in Business Process Outsourcing
                 </p>
@@ -108,8 +113,8 @@ const Hero = () => {
                 </div>
               </div>
 
-              {/* Right side */}
-              <div className="lg:col-span-7 relative hidden lg:flex items-end justify-start h-full">
+              {/* Right side - Hidden until xl screen size (1280px) */}
+              <div className="lg:col-span-7 relative hidden xl:flex items-end justify-start h-full">
                 <div
                   className="absolute left-0 right-0 flex items-end justify-start"
                   style={{ bottom: "-260px" }}

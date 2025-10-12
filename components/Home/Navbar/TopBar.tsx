@@ -17,7 +17,7 @@ const TopBar = () => {
 
   return (
     <>
-      {/* Desktop / Tablet - Large screens (lg and up) */}
+      {/* Desktop / Tablet - Large screens (lg and up) - No changes */}
       <div
         className="hidden lg:block text-white"
         style={{ backgroundColor: "#a10000" }}
@@ -49,6 +49,7 @@ const TopBar = () => {
                   Cawayan Bugtong, Guimba, Nueva Ecija
                 </span>
               </Link>
+              {/* Social Icons - Visible on LG and up */}
               <div className="flex items-center gap-3">
                 <a
                   href={facebookLink}
@@ -66,7 +67,7 @@ const TopBar = () => {
         </Container>
       </div>
 
-      {/* Tablet - Medium screens (md to lg) */}
+      {/* Tablet - Medium screens (md to lg) - Social Icons Still Visible here */}
       <div
         className="hidden md:block lg:hidden text-white"
         style={{ backgroundColor: "#a10000" }}
@@ -98,6 +99,7 @@ const TopBar = () => {
                   Cawayan Bugtong, Guimba, Nueva Ecija
                 </span>
               </Link>
+              {/* Social Icons - Still visible on MD */}
               <div className="flex items-center gap-3">
                 <a
                   href={facebookLink}
@@ -115,96 +117,84 @@ const TopBar = () => {
         </Container>
       </div>
 
-      {/* Mobile - Small screens (sm to md) */}
+      {/* MOBILE - Small screens (sm to md) - SOCIAL ICONS HIDDEN */}
       <div
         className="hidden sm:block md:hidden text-white"
         style={{ backgroundColor: "#a10000" }}
       >
         <Container>
-          <div className="px-4 py-2.5 text-sm space-y-2">
-            {/* Email + Phone */}
-            <div className="flex items-center justify-center gap-6">
-              <span className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                <span className="text-xs">partnerships@telexph.com</span>
+          {/* Mas mababang py-2, space-y-1 */}
+          <div className="px-2 py-2 text-sm space-y-1 flex flex-col items-center">
+            
+            {/* 1st Line: Email at Phone - Single line, centered, mas maliit na gap */}
+            <div className="flex items-center justify-center gap-4"> 
+              <span className="flex items-center gap-1">
+                <Mail className="w-3.5 h-3.5" />
+                <span className="text-xs whitespace-nowrap">
+                    partnerships@telexph.com
+                </span>
               </span>
-              <span className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                <span className="text-xs">+63 (44) 331 - 5040</span>
+              <span className="flex items-center gap-1">
+                <Phone className="w-3.5 h-3.5" />
+                <span className="text-xs whitespace-nowrap">
+                    +63 (44) 331 - 5040
+                </span>
               </span>
             </div>
 
-            {/* Address + Social */}
-            <div className="flex items-center justify-between">
-              <Link
-                href="/location"
-                className="flex items-center gap-2 flex-1 hover:opacity-80 transition-opacity"
-              >
-                <MapPin className="w-4 h-4 flex-shrink-0" />
-                <span className="text-xs underline underline-offset-2">
-                  Cawayan Bugtong, Guimba, Nueva Ecija
-                </span>
-              </Link>
-              <div className="flex items-center gap-3 ml-4">
-                <a
-                  href={facebookLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Facebook className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
-                </a>
-                <Twitter className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
-                <Instagram className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
-                <Youtube className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
-              </div>
-            </div>
+            {/* 2nd Line: Address - Centered */}
+            <Link
+              href="/location"
+              className="flex items-center gap-1 hover:opacity-80 transition-opacity text-center"
+            >
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="text-xs underline underline-offset-2 whitespace-nowrap">
+                Cawayan Bugtong, Guimba, Nueva Ecija
+              </span>
+            </Link>
+            
+            {/* Social Icons - COMPLETELY REMOVED IN THIS VIEW */}
           </div>
         </Container>
       </div>
 
-      {/* Extra Small Mobile - Below 640px */}
+      {/* EXTRA SMALL MOBILE - Below 640px - SOCIAL ICONS HIDDEN */}
       <div
         className="block sm:hidden text-white"
         style={{ backgroundColor: "#a10000" }}
       >
         <Container>
-          <div className="px-3 py-3 text-xs space-y-2.5">
-            {/* Email + Phone */}
+           {/* Mas mababang py-1.5, space-y-1 */}
+          <div className="px-1 py-1.5 text-xs space-y-1 flex flex-col items-center">
+            
+            {/* 1st Line: Email at Phone - Single line, centered, mas maliit na gap */}
             <div className="flex items-center justify-center gap-4">
-              <span className="flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5" />
-                <span>partnerships@telexph.com</span>
+              <span className="flex items-center gap-1">
+                <Mail className="w-3 h-3" />
+                <span className="text-[10px] whitespace-nowrap">
+                    partnerships@telexph.com
+                </span>
               </span>
-              <span className="flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5" />
-                <span>+63 (44) 331 - 5040</span>
+              <span className="flex items-center gap-1">
+                <Phone className="w-3 h-3" />
+                <span className="text-[10px] whitespace-nowrap">
+                    +63 (44) 331 - 5040
+                </span>
               </span>
             </div>
 
-            {/* Address */}
+            {/* 2nd Line: Address - Centered */}
             <Link
               href="/location"
-              className="flex items-center justify-center gap-1.5 text-center hover:opacity-80 transition-opacity"
+              className="flex items-center justify-center gap-1 hover:opacity-80 transition-opacity text-center"
             >
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="underline underline-offset-2">
+              <MapPin className="w-3 h-3 flex-shrink-0" />
+              <span className="text-[10px] underline underline-offset-2 whitespace-nowrap">
                 Cawayan Bugtong, Guimba, Nueva Ecija
               </span>
             </Link>
 
-            {/* Social Icons */}
-            <div className="flex items-center justify-center gap-4 pt-1">
-              <a
-                href={facebookLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Facebook className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
-              </a>
-              <Twitter className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
-              <Instagram className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
-              <Youtube className="w-4 h-4 cursor-pointer hover:opacity-80 transition-opacity" />
-            </div>
+            {/* Social Icons - COMPLETELY REMOVED IN THIS VIEW */}
           </div>
         </Container>
       </div>
