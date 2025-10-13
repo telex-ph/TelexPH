@@ -8,28 +8,22 @@ import FooterSubscribe from "./FooterSubscribe";
 import FooterBottom from "./FooterBottom";
 import FooterCTA from "./FooterCTA";
 
-// Layout constants
 const DEFAULT_MAX_WIDTH_CLASS =
   "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8";
 
-// Scroll threshold in pixels
 const SCROLL_THRESHOLD = 300;
 
 const Footer = () => {
-  // State to control the visibility of the button
   const [isVisible, setIsVisible] = useState(false);
 
-  // Function to scroll to the top of the page
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // For a smooth scrolling effect
+      behavior: "smooth", 
     });
   };
 
-  // Function to check scroll position and update visibility state
   const handleScroll = useCallback(() => {
-    // Check if the current scroll position is past the threshold
     if (window.scrollY > SCROLL_THRESHOLD) {
       setIsVisible(true);
     } else {
@@ -37,12 +31,9 @@ const Footer = () => {
     }
   }, []);
 
-  // Set up and clean up the scroll event listener
   useEffect(() => {
-    // Add the event listener when the component mounts
     window.addEventListener("scroll", handleScroll);
 
-    // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -50,7 +41,6 @@ const Footer = () => {
 
   return (
     <footer className="relative bg-[#282828] text-white pt-10 sm:pt-16 md:pt-20 mt-16 sm:mt-20">
-      {/* CTA Section positioned above footer */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full z-20">
         <div className={DEFAULT_MAX_WIDTH_CLASS}>
           <FooterCTA />
