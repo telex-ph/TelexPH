@@ -19,7 +19,7 @@ const LocationContactInfo = () => {
           CONTACT
         </p>
         <h2
-          className="text-4xl md:text-5xl mb-6"
+        className="text-3xl md:text-4xl mb-3"
           style={{
             fontFamily: FONTS.openSans,
             fontWeight: FONT_WEIGHTS.bold,
