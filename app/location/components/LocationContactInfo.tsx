@@ -2,7 +2,7 @@ import React from 'react';
 import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS } from '@/constant/styles';
 
 const LocationContactInfo = () => {
-  const secondaryTextColor = '#6b7280'; 
+  const secondaryTextColor = '#6b7280';
 
   return (
     <div className="space-y-8">
@@ -19,7 +19,7 @@ const LocationContactInfo = () => {
           CONTACT
         </p>
         <h2
-        className="text-3xl md:text-4xl mb-3"
+          className="text-3xl md:text-4xl mb-3"
           style={{
             fontFamily: FONTS.openSans,
             fontWeight: FONT_WEIGHTS.bold,
@@ -72,8 +72,6 @@ const LocationContactInfo = () => {
         </div>
       </div>
 
-      {/* --- */}
-
       {/* Get in Touch (Contact Info) */}
       <div className="space-y-4">
         <div className="flex items-start space-x-3">
@@ -102,8 +100,8 @@ const LocationContactInfo = () => {
                 fontFamily: FONTS.rubik,
                 color: secondaryTextColor,
               }}
-              onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primary}
-              onMouseLeave={(e) => e.currentTarget.style.color = secondaryTextColor}
+              onMouseEnter={(e) => (e.currentTarget.style.color = COLORS.primary)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = secondaryTextColor)}
             >
               +63 (44) 331 - 5040
             </a>
@@ -115,8 +113,8 @@ const LocationContactInfo = () => {
                 fontFamily: FONTS.rubik,
                 color: secondaryTextColor,
               }}
-              onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primary}
-              onMouseLeave={(e) => e.currentTarget.style.color = secondaryTextColor}
+              onMouseEnter={(e) => (e.currentTarget.style.color = COLORS.primary)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = secondaryTextColor)}
             >
               partnerships@telexph.com
             </a>
@@ -126,26 +124,44 @@ const LocationContactInfo = () => {
 
       {/* Business Hours */}
       <div className="pt-4 border-t border-gray-200">
-        <h3
-          className="text-lg mb-3"
-          style={{
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.semibold,
-            color: COLORS.black,
-          }}
-        >
-          Business Hours
-        </h3>
-        <div
-          className="space-y-2"
-          style={{
-            fontFamily: FONTS.rubik,
-            color: secondaryTextColor,
-          }}
-        >
-          <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
-          <p>Saturday: 8:00 AM - 12:00 PM</p>
-          <p>Sunday: Closed</p>
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
+            {/* ⏰ Time / Clock Icon */}
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 2" />
+            </svg>
+          </div>
+          <div>
+            <h3
+              className="text-lg mb-3"
+              style={{
+                fontFamily: FONTS.poppins,
+                fontWeight: FONT_WEIGHTS.semibold,
+                color: COLORS.black,
+              }}
+            >
+              Business Hours
+            </h3>
+            <div
+              className="space-y-2"
+              style={{
+                fontFamily: FONTS.rubik,
+                color: secondaryTextColor,
+              }}
+            >
+              <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
+              <p>Saturday: 8:00 AM - 12:00 PM</p>
+              <p>Sunday: Closed</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
