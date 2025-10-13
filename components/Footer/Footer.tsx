@@ -7,6 +7,7 @@ import FooterLinks from "./FooterLinks";
 import FooterSubscribe from "./FooterSubscribe";
 import FooterBottom from "./FooterBottom";
 import FooterCTA from "./FooterCTA";
+import ChatbaseWidget from "@/components/Chatbot/ChatbaseWidget";
 
 const DEFAULT_MAX_WIDTH_CLASS =
   "w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8";
@@ -19,7 +20,7 @@ const Footer = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", 
+      behavior: "smooth",
     });
   };
 
@@ -76,6 +77,10 @@ const Footer = () => {
       <div
         className={`${DEFAULT_MAX_WIDTH_CLASS} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 py-20 relative z-10`}
       >
+
+        {/* ✅ Chatbase Chatbot Integration */}
+      <ChatbaseWidget />
+      
         {/* Logo + About */}
         <FooterLogo />
 
