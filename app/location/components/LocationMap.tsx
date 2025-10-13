@@ -1,0 +1,110 @@
+import React from "react";
+import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/styles";
+
+const LocationMap = () => {
+  return (
+    <section
+      className="w-full py-12 px-4 md:px-8 bg-white"
+      style={{ backgroundColor: COLORS.white }}
+    >
+      <div className="max-w-5xl mx-auto space-y-8 text-center">
+        {/* Title & Address */}
+        <div>
+          <h2
+            className="text-3xl md:text-4xl mb-3"
+            style={{
+              fontFamily: TYPOGRAPHY.heading.fontFamily,
+              fontWeight: TYPOGRAPHY.heading.fontWeight,
+              color: COLORS.black,
+            }}
+          >
+            Visit Our Office
+          </h2>
+          <p
+            className="max-w-2xl mx-auto"
+            style={{
+              fontFamily: FONTS.rubik,
+              fontWeight: FONT_WEIGHTS.regular,
+              color: getColorWithOpacity("dark", 0.7),
+            }}
+          >
+            MQ4C+5MX, Pangasinan - Nueva Ecija Rd, Guimba, Nueva Ecija
+          </p>
+        </div>
+
+        {/* Map */}
+        <div
+          className="relative rounded-2xl overflow-hidden shadow-xl border transition-transform duration-500 hover:scale-[1.01]"
+          style={{
+            borderColor: COLORS.primaryLightBorder,
+          }}
+        >
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3847.5!2d120.756!3d15.655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sMQ4C%2B5MX%2C%20Pangasinan%20-%20Nueva%20Ecija%20Rd%2C%20Guimba%2C%20Nueva%20Ecija!5e0!3m2!1sen!2sph!4v1234567890"
+            className="w-full h-[300px] sm:h-[400px] md:h-[450px]" // ✅ responsive height
+            style={{
+              border: 0,
+              filter: "grayscale(5%) contrast(1.05)",
+            }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="TELEX Office Location"
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="https://www.google.com/maps/dir//MQ4C+5MX,+Pangasinan+-+Nueva+Ecija+Rd,+Guimba,+Nueva+Ecija"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 rounded-lg text-center shadow-sm transition-all duration-300"
+            style={{
+              backgroundColor: COLORS.primary,
+              color: COLORS.white,
+              fontFamily: FONTS.poppins,
+              fontWeight: FONT_WEIGHTS.semibold,
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = getColorWithOpacity("primary", 0.85))
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = COLORS.primary)
+            }
+          >
+            Get Directions
+          </a>
+
+          <a
+            href="https://www.google.com/maps/place/MQ4C+5MX,+Pangasinan+-+Nueva+Ecija+Rd,+Guimba,+Nueva+Ecija"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 rounded-lg border-2 text-center transition-all duration-300"
+            style={{
+              backgroundColor: COLORS.white,
+              color: COLORS.black,
+              borderColor: getColorWithOpacity("dark", 0.1),
+              fontFamily: FONTS.poppins,
+              fontWeight: FONT_WEIGHTS.semibold,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = COLORS.primaryLight;
+              e.currentTarget.style.borderColor = COLORS.primary;
+              e.currentTarget.style.color = COLORS.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = COLORS.white;
+              e.currentTarget.style.borderColor = getColorWithOpacity("dark", 0.1);
+              e.currentTarget.style.color = COLORS.black;
+            }}
+          >
+            View on Google Maps
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default LocationMap;
