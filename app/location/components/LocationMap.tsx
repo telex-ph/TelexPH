@@ -1,5 +1,11 @@
 import React from "react";
-import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/styles";
+import {
+  COLORS,
+  FONTS,
+  TYPOGRAPHY,
+  FONT_WEIGHTS,
+  getColorWithOpacity,
+} from "@/constant/styles";
 
 const LocationMap = () => {
   return (
@@ -11,10 +17,10 @@ const LocationMap = () => {
         {/* Title & Address */}
         <div>
           <h2
-            className="text-3xl md:text-4xl mb-3"
+            className="text-4xl md:text-5xl mb-6"
             style={{
-              fontFamily: TYPOGRAPHY.heading.fontFamily,
-              fontWeight: TYPOGRAPHY.heading.fontWeight,
+              fontFamily: FONTS.openSans,
+              fontWeight: FONT_WEIGHTS.bold,
               color: COLORS.black,
             }}
           >
@@ -67,7 +73,10 @@ const LocationMap = () => {
               fontWeight: FONT_WEIGHTS.semibold,
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = getColorWithOpacity("primary", 0.85))
+              (e.currentTarget.style.backgroundColor = getColorWithOpacity(
+                "primary",
+                0.85
+              ))
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.backgroundColor = COLORS.primary)
@@ -95,7 +104,10 @@ const LocationMap = () => {
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = COLORS.white;
-              e.currentTarget.style.borderColor = getColorWithOpacity("dark", 0.1);
+              e.currentTarget.style.borderColor = getColorWithOpacity(
+                "dark",
+                0.1
+              );
               e.currentTarget.style.color = COLORS.black;
             }}
           >
