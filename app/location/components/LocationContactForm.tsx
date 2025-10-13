@@ -11,19 +11,43 @@ const LocationContactForm = () => {
     message: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState("");
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Add your form submission logic here (e.g., API call)
+    setIsSubmitting(true);
+    setStatus("");
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("message", formData.message);
+
+    try {
+      const response = await fetch("https://getform.io/f/akkpvmva", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      if (response.ok) {
+        setStatus("✅ Your message has been sent successfully!");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setStatus("❌ Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      setStatus("⚠️ Network error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,81 +82,55 @@ const LocationContactForm = () => {
       </div>
 
       {/* Contact Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name Input */}
-        <div>
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="
-    w-full px-4 py-3 bg-gray-50 border border-gray-200 
-    rounded-lg focus:outline-none focus:border-transparent 
-    focus:ring-2 focus:ring-[#a10000] transition-all
-  "
-            style={{
-              fontFamily: FONTS.rubik,
-            }}
-          />
-        </div>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6"
+        encType="multipart/form-data"
+      >
+        {/* Name */}
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#a10000] focus:outline-none"
+        />
 
-        {/* Email Input */}
-        <div>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="
-              w-full px-4 py-3 bg-gray-50 border border-gray-200 
-              rounded-lg focus:outline-none focus:border-transparent 
-              focus:ring-2 transition-all
-            "
-            style={{
-              fontFamily: FONTS.rubik,
-            }}
-          />
-        </div>
+        {/* Email */}
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#a10000] focus:outline-none"
+        />
 
-        {/* Message Textarea */}
-        <div>
-          <textarea
-            name="message"
-            placeholder="Message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-            rows={6}
-            className="
-              w-full px-4 py-3 bg-gray-50 border border-gray-200 
-              rounded-lg focus:outline-none focus:border-transparent 
-              focus:ring-2 transition-all resize-none
-            "
-            style={{
-              fontFamily: FONTS.rubik,
-            }}
-          />
-        </div>
+        {/* Message */}
+        <textarea
+          name="message"
+          placeholder="Message"
+          value={formData.message}
+          onChange={handleChange}
+          required
+          rows={5}
+          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#a10000] focus:outline-none resize-none"
+        />
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="
-            w-full text-white py-3 px-6 rounded-lg transition-colors duration-300
-            bg-[#a10000] hover:bg-[#8a0000]
-          "
-          style={{
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.semibold,
-          }}
+          disabled={isSubmitting}
+          className="w-full text-white py-3 px-6 rounded-lg bg-[#a10000] hover:bg-[#8a0000] transition"
         >
-          Submit
+          {isSubmitting ? "Sending..." : "Submit"}
         </button>
+
+        {/* Status Message */}
+        {status && <p className="text-center text-sm mt-4">{status}</p>}
       </form>
     </div>
   );
