@@ -90,10 +90,13 @@ export default function RootLayout({
       lang="en"
       className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}
     >
-      <body className="font-rubik antialiased bg-white text-black">
+      <body 
+        className="font-rubik antialiased bg-white text-black"
+        suppressHydrationWarning={true}  // This line suppresses the hydration mismatch warning
+      >
         <ResponsiveNav />
         {children}
-        <ExitIntentPopup /> {/* ✅ Popup triggers globally */}
+        <ExitIntentPopup />
         <div id="modal-root" />
       </body>
     </html>
