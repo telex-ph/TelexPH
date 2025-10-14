@@ -36,17 +36,15 @@ type Props = {
 const Nav = ({ openNav }: Props) => {
   const [navBg, setNavBg] = useState(false);
   const prevScrollY = useRef(0);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
-  // Dropdown state (commented out)
-  // const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const handleMouseEnter = (id: number) => {
+    setOpenDropdownId(id);
+  };
 
-  // const handleMouseEnter = (id: number) => {
-  //   setOpenDropdownId(id);
-  // };
-
-  // const handleMouseLeave = () => {
-  //   setOpenDropdownId(null);
-  // };
+  const handleMouseLeave = () => {
+    setOpenDropdownId(null);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,14 +91,14 @@ const Nav = ({ openNav }: Props) => {
           </div>
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
             
-            {/* START: NAVIGATION LINKS (Dropdown commented out) */}
+            {/* START: NAVIGATION LINKS */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <div
                   key={link.id}
                   className="relative h-full flex items-center"
-                  // onMouseEnter={() => handleMouseEnter(link.id)}
-                  // onMouseLeave={handleMouseLeave}
+                  onMouseEnter={() => handleMouseEnter(link.id)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   <Link
                     href={link.url}
@@ -113,8 +111,8 @@ const Nav = ({ openNav }: Props) => {
                     </span>
                   </Link>
 
-                  {/* Dropdown menu (commented out) */}
-                  {/* {link.dropdown && link.dropdown.length > 0 && openDropdownId === link.id && (
+                  {/* Dropdown menu */}
+                  {link.dropdown && link.dropdown.length > 0 && openDropdownId === link.id && (
                     <div 
                       className="absolute top-full left-0 mt-[-2px] bg-white border border-gray-100 shadow-lg min-w-[180px] z-20 py-2 rounded-b-md"
                     >
@@ -129,7 +127,7 @@ const Nav = ({ openNav }: Props) => {
                         </Link>
                       ))}
                     </div>
-                  )} */}
+                  )}
                 </div>
               ))}
             </div>
