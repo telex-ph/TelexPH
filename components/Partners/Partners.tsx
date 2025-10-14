@@ -3,7 +3,11 @@ import Image from "next/image";
 import { Settings, Users, Wrench, Award } from "lucide-react";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
 
-const Partners = () => {
+interface PartnersProps {
+  imageSrc?: string; // optional prop for custom image
+}
+
+const Partners: React.FC<PartnersProps> = ({ imageSrc = "/images/partnership.jpg" }) => {
   const partnershipFeatures = [
     {
       icon: <Settings className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
@@ -12,18 +16,18 @@ const Partners = () => {
     },
     {
       icon: <Users className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Collaborative Teamwork",
-      description: "We work closely to achieve your business goals.",
+      title: "Proven Track Record",
+      description: "Delivering results across industries.",
     },
     {
       icon: <Wrench className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Reliable Solutions",
-      description: "Delivering innovative and effective strategies.",
+      title: "Smart solutions",
+      description: "Tailored outsourcing that scales with you.",
     },
     {
       icon: <Award className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Recognized Excellence",
-      description: "Award-winning services trusted worldwide.",
+      title: "Expert Workforce",
+      description: "Professional teams ready to support your goalss.",
     },
   ];
 
@@ -33,7 +37,7 @@ const Partners = () => {
         <div className="relative w-full">
           <div className="w-full h-[400px] md:h-[650px] overflow-hidden shadow-2xl relative rounded-xl">
             <Image
-              src="/images/partnership.jpg"
+              src={imageSrc}
               alt="Professional team collaboration"
               fill
               className="object-cover"
