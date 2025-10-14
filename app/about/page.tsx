@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
-import Partners from "@/components/Partners/Partners";
+import Partners from "@/components/Partners/Partners"; 
 
 // ✅ Page-specific section components
 import AboutHero from "./components/AboutHero";
@@ -30,8 +30,8 @@ export default function AboutPage() {
       <main>
         <AboutHero />
 
-        {/* ✅ Partners with custom image */}
-        <Partners imageSrc="/images/about1.jpg" />
+        {/* 🚀 Partners now receives the custom background color */}
+        <Partners imageSrc="/images/about1.jpg" backgroundColor="bg-gray-50" /> 
 
         <CompanyOverview />
         <MissionVision />
