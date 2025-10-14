@@ -5,7 +5,7 @@ import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/
 export default function AboutHero() {
   return (
     <section
-      className="relative pt-40 pb-2 overflow-hidden"
+      className="relative pt-40 pb-10 overflow-hidden"
       style={{ backgroundColor: COLORS.white }}
     >
       {/* Background Stroke Text */}
