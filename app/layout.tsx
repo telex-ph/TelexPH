@@ -3,6 +3,7 @@ import "./globals.css";
 import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
 import LoadingProvider from "@/components/ProgressProvider/ProgressProvider";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import ExitIntentPopup from "./exit-intent/components/ExitIntentPopup";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,7 +28,7 @@ const rubik = Rubik({
 
 export const viewport: Viewport = {
   initialScale: 1,
-  themeColor: '#a10000', 
+  themeColor: "#a10000",
 };
 
 export const metadata: Metadata = {
@@ -36,8 +37,8 @@ export const metadata: Metadata = {
     default: "TelexPH",
     template: "%s | TelexPH",
   },
-  description: "TWe deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
-  
+  description:
+    "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
   authors: [{ name: "TelexPH Team", url: "https://telexph.com" }],
   keywords: [
     "TelexPH",
@@ -49,17 +50,16 @@ export const metadata: Metadata = {
     "Creative Services BPO",
     "Travel BPO",
   ],
-  
   icons: {
     icon: "/images/Tlxlogo.png",
     shortcut: "/images/Tlxlogo.png",
     apple: "/images/Tlxlogo.png",
   },
-  
   openGraph: {
     title: "TelexPH: Your trusted partner in Business Process Outsourcing",
-    description: "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
-    url: "https://telexph.com", 
+    description:
+      "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
+    url: "https://telexph.com",
     siteName: "TelexPH",
     images: [
       {
@@ -67,17 +67,17 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: "TelexPH: Your trusted partner in Business Process Outsourcing",
-        type: "image/png", 
+        type: "image/png",
       },
     ],
     locale: "en_US",
     type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
     title: "TelexPH: Your trusted partner in Business Process Outsourcing",
-    description: "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
+    description:
+      "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
     images: ["/images/Tlxlogo.png"],
   },
 };
@@ -93,6 +93,7 @@ export default function RootLayout({
       <body className="font-rubik antialiased bg-white text-black">
         <ResponsiveNav />
         {children}
+        <ExitIntentPopup /> {/* ✅ Popup triggers globally */}
         <div id="modal-root" />
       </body>
     </html>
