@@ -26,7 +26,7 @@ export default function LocationHero() {
             opacity: 0.85,
           }}
         >
-          Our Location
+          OUR LOCATION
         </span>
       </div>
 
@@ -41,7 +41,7 @@ export default function LocationHero() {
               color: COLORS.black,
             }}
           >
-            Our Location
+            OUR LOCATION
           </h1>
 
           <p
