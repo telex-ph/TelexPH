@@ -10,18 +10,18 @@ export const navLinks = [
     id: 2,
     url: "#about",
     label: "About",
+    dropdown: [
+      {
+        id: 21,
+        url: "/about",  
+        label: "Company Overview",
+      },
+    ],
   },
   {
     id: 3,
     url: "#services",
     label: "Services",
-    // dropdown: [
-    //   {
-    //     id: 4,
-    //     url: "#choose",
-    //     label: "Industry",
-    //   },
-    // ],
   },
   {
     id: 4,
