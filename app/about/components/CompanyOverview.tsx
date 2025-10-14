@@ -1,71 +1,154 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
+import { Check, PhoneCall } from "lucide-react";
+import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles"; // ✅ central design tokens
 
 export default function CompanyOverview() {
   return (
-    <section className="py-20 bg-gray-100 relative overflow-hidden">
+    <section
+      className="py-16 md:py-24 relative overflow-hidden"
+      style={{ backgroundColor: SEMANTIC_COLORS.background.primary }}
+    >
       <div className="w-[90%] mx-auto max-w-[1300px]">
-        <div className="grid md:grid-cols-2 gap-16 items-start">
-          
-          {/* Left: Text Content */}
-          <div>
-            <span className="text-red-600 font-bold text-base uppercase tracking-[0.2em]">
-              — OUR STORY
-            </span>
-            <h2 className="text-5xl font-extrabold text-gray-900 mt-4 mb-8 leading-tight">
-              Driving Innovation in Smart Logistics
-            </h2>
-            <p className="text-gray-600 mb-5 leading-relaxed border-l-4 border-red-600 pl-4">
-              As one of the leading smart solution providers in the industry, 
-              we pride ourselves on delivering the best **delivery and transport solutions** to our clients. Our commitment to excellence and innovation sets us apart 
-              in the competitive market.
-            </p>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              With **over 15 years of experience** and a team of dedicated professionals, 
-              we have successfully completed numerous projects, helping businesses 
-              optimize their operations and achieve sustainable growth through 
-              innovative and efficient strategies.
-            </p>
-            
-            {/* Stat Boxes - Combined Design */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-4 bg-gray-900 text-white rounded-lg shadow-xl text-center">
-                <div className="text-3xl font-bold text-red-500">15+</div>
-                <div className="text-xs mt-1 uppercase tracking-wider">Years Experience</div>
-              </div>
-              <div className="p-4 bg-white text-gray-900 rounded-lg border border-red-600 text-center">
-                <div className="text-3xl font-bold">500+</div>
-                <div className="text-xs mt-1 uppercase tracking-wider">Projects Done</div>
-              </div>
-              <div className="p-4 bg-gray-900 text-white rounded-lg shadow-xl text-center">
-                <div className="text-3xl font-bold text-red-500">98%</div>
-                <div className="text-xs mt-1 uppercase tracking-wider">Client Satisfaction</div>
-              </div>
+        <div className="grid md:grid-cols-2 gap-10 lg:gap-20 items-center">
+          {/* ====================== IMAGE SIDE ====================== */}
+          <div className="relative h-[450px] md:h-[600px] lg:h-[700px] order-1 flex items-center justify-center">
+            <div className="relative w-full h-full">
+              <Image
+                src="/images/about2.png"
+                alt="Business professionals collaborating"
+                fill
+                priority
+                style={{
+                  objectFit: "contain",
+                  objectPosition: "center",
+                }}
+                className="transition-transform duration-500"
+              />
             </div>
           </div>
-          
-          {/* Right: Images - Split and Overlapping Design */}
-          <div className="relative h-[600px] mt-10 md:mt-0">
-              {/* Main Image (Image 1) */}
-              <div className="absolute top-0 left-0 w-[80%] h-[400px] rounded-xl overflow-hidden shadow-2xl">
-                  <Image 
-                      src={"/images/gg.png"} 
-                      alt="Company team working" 
-                      fill
-                      objectFit="cover" 
-                      className="transition-transform duration-500 hover:scale-105"
-                  />
+
+          {/* ====================== TEXT SIDE ====================== */}
+          <div className="order-2">
+            <span
+              className={`${FONT_CLASSES.openSansBold} text-base uppercase tracking-[0.2em]`}
+              style={{ color: COLORS.primary }}
+            >
+              — ABOUT COMPANY
+            </span>
+
+            <h2
+              className={`${FONT_CLASSES.openSansBold} text-gray-900 text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+            >
+              Powering Your Business <br className="hidden lg:inline" /> the
+              Smart Way
+            </h2>
+
+            <p
+              className={`${FONT_CLASSES.rubikRegular} mb-5 leading-relaxed`}
+              style={{ color: SEMANTIC_COLORS.text.secondary }}
+            >
+              At Telex Philippines, we provide innovative and cost-efficient
+              outsourcing solutions that help businesses thrive in today's
+              competitive world. With years of experience in the BPO industry,
+              we are committed to excellence, reliability, and smart growth.
+            </p>
+
+            {/* ====================== FEATURES + IMAGE GRID ====================== */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mb-6">
+              {/* FEATURE LIST */}
+              <div className="mt-6 md:mt-0">
+                <h3
+                  className={`${FONT_CLASSES.openSansBold} text-xl mb-6`}
+                  style={{ color: SEMANTIC_COLORS.text.primary }}
+                >
+                  Best Feature List <br /> About Us
+                </h3>
+
+                <div className="grid grid-cols-1 gap-y-5">
+                  {[
+                    "Award-Winning Excellence",
+                    "Scalable Solutions",
+                    "Smart Technologies",
+                    "Global Reach",
+                    "Expert Workforce",
+                  ].map((feature, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center space-x-3 ${FONT_CLASSES.rubikRegular}`}
+                      style={{ color: SEMANTIC_COLORS.text.secondary }}
+                    >
+                      <Check
+                        className="w-4 h-4 flex-shrink-0"
+                        style={{ color: COLORS.primary }}
+                      />
+                      <span className="text-base font-medium">{feature}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {/* Secondary Image (Image 2 - Overlap) */}
-              <div className="absolute bottom-0 right-0 w-[70%] h-[350px] rounded-xl overflow-hidden shadow-2xl border-4 border-white">
-                  <Image 
-                      src={"/images/zz.png"} 
-                      alt="Logistics solutions" 
-                      fill
-                      objectFit="cover" 
-                      className="transition-transform duration-500 hover:scale-105"
+
+              {/* IMAGE + CONTACT */}
+              <div className="flex flex-col space-y-6">
+                <div className="w-full h-[200px] rounded-lg overflow-hidden shadow-xl relative">
+                  <Image
+                    src="/images/about3.jpg"
+                    alt="Small team photo"
+                    fill
+                    priority
+                    style={{ objectFit: "cover", objectPosition: "center" }}
                   />
+                </div>
+
+                <div className="flex items-center space-x-3 w-full">
+                  <div
+                    className="p-3 border rounded-full flex-shrink-0"
+                    style={{
+                      borderColor: COLORS.primaryLightBorder,
+                      color: COLORS.primary,
+                    }}
+                  >
+                    <PhoneCall className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p
+                      className={`${FONT_CLASSES.rubikRegular} text-sm`}
+                      style={{ color: SEMANTIC_COLORS.text.secondary }}
+                    >
+                      Have any question? Give us a call
+                    </p>
+                    <p
+                      className={`${FONT_CLASSES.openSansBold} text-xl`}
+                      style={{ color: SEMANTIC_COLORS.text.primary }}
+                    >
+                      (044) 331 - 5040
+                    </p>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            {/* ====================== CTA BUTTON ====================== */}
+            <div className="flex flex-wrap items-center gap-6 mt-8">
+              <a
+                href="#"
+                className={`${FONT_CLASSES.openSansBold} py-3 px-8 rounded-lg shadow-md transition duration-300 w-full sm:w-auto text-center`}
+                style={{
+                  backgroundColor: COLORS.primary,
+                  color: SEMANTIC_COLORS.text.inverse,
+                }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#8a0000")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor = COLORS.primary)
+                }
+              >
+                Explore More
+              </a>
+            </div>
           </div>
         </div>
       </div>
