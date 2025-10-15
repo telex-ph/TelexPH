@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
+import { FaLinkedin } from "react-icons/fa"; // Import the LinkedIn icon
 
 const COLORS = {
-  primary: "#a10000", 
+  primary: "#a10000",
 };
 
 const SEMANTIC_COLORS = {
   text: {
-    primary: "#282828", 
-    secondary: "#6b7280", 
+    primary: "#282828",
+    secondary: "#6b7280",
   },
   background: {
-    primary: "#f9fafb", 
+    primary: "#f9fafb",
   },
 };
 
@@ -28,6 +29,9 @@ const FONT_WEIGHTS = {
   black: "900",
 };
 
+// --------------------------------------------
+// Define TypeScript interfaces
+// --------------------------------------------
 interface MemberCardProps {
   img: string;
   name: string;
@@ -36,32 +40,9 @@ interface MemberCardProps {
   imagePositionClass?: string;
 }
 
-interface LinkedInLinkProps {
-  name: string;
-  url: string;
-}
-
-const LinkedInLink = ({ name, url }: LinkedInLinkProps) => (
-  <div className="absolute bottom-4 right-4 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg z-20">
-    <a
-      href={url || `#linkedin-${name.replace(/\s/g, "-")}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-red-600 hover:text-red-700 transition-colors"
-      aria-label={`LinkedIn profile for ${name}`}
-    >
-      <svg
-        className="w-5 h-5"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.2 20.45H3.66V9h3.54v11.45zM5.43 7.6C4.2 7.6 3.2 6.6 3.2 5.37c0-1.23 1-2.23 2.23-2.23 1.23 0 2.23 1 2.23 2.23 0 1.23-1 2.23-2.23 2.23zm15.15 12.85h-3.54v-5.5c0-1.32-.47-2.23-1.66-2.23-1.28 0-2.03.87-2.37 1.72-.12.3-.16.63-.16.97v5.04H10.5V9h3.54v1.54c.5-1.1 1.95-2.5 4.34-2.5 3.16 0 5.59 2.08 5.59 6.57v5.34z" />
-      </svg>
-    </a>
-  </div>
-);
-
+// --------------------------------------------
+// Member Card Component (with background image)
+// --------------------------------------------
 const MemberCard = ({
   img,
   name,
@@ -70,12 +51,14 @@ const MemberCard = ({
   imagePositionClass = "object-center",
 }: MemberCardProps) => {
   return (
-    <div
-      className="relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl
-			transition-all duration-300 transform hover:-translate-y-1 w-full max-w-sm mx-auto"
-    >
-      {/* Image Section */}
-      <div className="relative bg-gray-800 pt-[120%]">
+    <div className="relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full max-w-sm mx-auto">
+      {/* Image Section - now with background image */}
+      <div
+        className="relative pt-[120%] bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('images/bgmeet.png')",
+        }}
+      >
         <img
           src={img}
           alt={`Portrait of ${name}`}
@@ -86,35 +69,61 @@ const MemberCard = ({
         <div className="absolute bottom-0 left-0 right-0 h-10 bg-[#a10000] transform skew-y-[-3deg] origin-bottom-left -mb-4 z-10"></div>
       </div>
 
-      {/* Text Content */}
-      <div className="relative bg-white p-4 pt-8 text-left z-20">
+      {/* Text Section */}
+      <div
+        className="relative bg-gray-100 p-6 text-center z-20 border-t border-gray-200"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <h3
-          className={`text-xl leading-snug`}
+          className="text-lg leading-snug mb-1"
           style={{
             fontFamily: FONTS.openSans,
             fontWeight: FONT_WEIGHTS.bold,
             color: SEMANTIC_COLORS.text.primary,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
           {name}
         </h3>
         <p
-          className="text-xs sm:text-sm mt-1"
+          className="text-xs mt-0"
           style={{
             fontFamily: FONTS.rubik,
             fontWeight: FONT_WEIGHTS.regular,
             color: SEMANTIC_COLORS.text.secondary,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
           {title}
         </p>
-      </div>
 
-      <LinkedInLink name={name} url={linkedinUrl} />
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2"
+          aria-label={`LinkedIn profile of ${name}`}
+          style={{ color: COLORS.primary }}
+        >
+          <FaLinkedin size={24} />
+        </a>
+      </div>
     </div>
   );
 };
 
+// --------------------------------------------
+// Main Team Section
+// --------------------------------------------
 export default function Team() {
   return (
     <section
@@ -122,6 +131,7 @@ export default function Team() {
       style={{ backgroundColor: SEMANTIC_COLORS.background.primary }}
     >
       <div className="w-[90%] mx-auto max-w-[1300px] text-center">
+        {/* Header */}
         <div className="mb-16">
           <span
             className="text-base uppercase tracking-[0.2em]"
@@ -160,6 +170,7 @@ export default function Team() {
           </p>
         </div>
 
+        {/* Executive Committee */}
         <h2
           className="text-3xl mb-8"
           style={{
@@ -176,21 +187,21 @@ export default function Team() {
               img="images/jena_01.png"
               name="Jenalyn M. Valler"
               title="President & Chief Executive Officer (CEO)"
-              linkedinUrl="#"
+              linkedinUrl="https://www.linkedin.com/in/jenalyn-valler"
               imagePositionClass="object-center translate-y-16 scale-130"
             />
             <MemberCard
               img="images/Arturo_01.png"
               name="Arturo D. Valler Jr."
               title="Corporate Secretary"
-              linkedinUrl="#"
+              linkedinUrl="https://www.linkedin.com/in/arturo-valler"
               imagePositionClass="object-center translate-y-7 scale-130"
             />
           </div>
         </div>
 
+        {/* Executive Office */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
-          {/* Executive Office */}
           <div>
             <h2
               className="text-3xl mb-8"
@@ -207,14 +218,14 @@ export default function Team() {
                 img="images/fatima_01.png"
                 name="Fatima M. Guzman"
                 title="Executive Director for Admin/HR"
-                linkedinUrl="#"
+                linkedinUrl="https://www.linkedin.com/in/fatima-guzman"
                 imagePositionClass="object-center translate-y-7 scale-130"
               />
               <MemberCard
                 img="images/anjeaneth_01.png"
                 name="Anjanneth P. Bilas"
                 title="Head of Finance"
-                linkedinUrl="#"
+                linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas"
                 imagePositionClass="object-center translate-y-3 scale-150"
               />
             </div>
@@ -237,20 +248,21 @@ export default function Team() {
                 img="images/joanne_01.png"
                 name="Joanne P. Corpuz"
                 title="Operations and Talent Acquisition Manager"
-                linkedinUrl="#"
+                linkedinUrl="https://www.linkedin.com/in/joanne-corpuz"
                 imagePositionClass="object-center translate-y-16 scale-130"
               />
               <MemberCard
                 img="images/mitch_01.png"
                 name="Michelle D. Soliman"
                 title="Client Relations Manager"
-                linkedinUrl="#"
+                linkedinUrl="https://www.linkedin.com/in/michelle-soliman"
                 imagePositionClass="object-center translate-y-6 scale-130"
               />
             </div>
           </div>
         </div>
 
+        {/* Governance & Technology Division */}
         <h2
           className="text-3xl mb-8"
           style={{
@@ -267,21 +279,21 @@ export default function Team() {
               img="images/mark_01.png"
               name="Mark Jayson G. Robes"
               title="Information Technology Head"
-              linkedinUrl="#"
+              linkedinUrl="https://www.linkedin.com/in/mark-robes"
               imagePositionClass="object-center translate-y-15 scale-125"
             />
             <MemberCard
               img="images/maybelle_01.png"
               name="Maybelle A. Cabalar"
               title="Head of Audit and Compliance"
-              linkedinUrl="#"
+              linkedinUrl="https://www.linkedin.com/in/maybelle-cabalar"
               imagePositionClass="object-center translate-y-15 scale-125"
             />
             <MemberCard
               img="images/jayro_01.png"
-              name="Jayro D.G. Gabriel"
+              name="Jayro DG. Gabriel"
               title="Innovation and Digital Development Manager"
-              linkedinUrl="#"
+              linkedinUrl="https://www.linkedin.com/in/jayro-gabriel"
               imagePositionClass="object-center -translate-y-2 scale-125"
             />
           </div>
