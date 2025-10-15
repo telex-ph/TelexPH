@@ -243,7 +243,7 @@ const ExitIntentPopup = () => {
                 <div 
                   className="absolute inset-0"
                   style={{
-                    backgroundImage: 'url(/images/exit.png)',
+                    backgroundImage: 'url(/images/exit.webp)',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
@@ -262,7 +262,7 @@ const ExitIntentPopup = () => {
                 {/* Team Image */}
                 <div className="relative z-10 w-full px-4 md:px-8 pb-0">
                   <img
-                    src="/images/footer.png"
+                    src="/images/footer.webp"
                     alt="Telex Team"
                     className="w-full h-auto drop-shadow-2xl"
                     onError={(e) => {

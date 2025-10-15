@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Check, PhoneCall } from "lucide-react";
-import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles"; // ✅ central design tokens
+import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles"; 
 
 export default function CompanyOverview() {
   return (
@@ -94,7 +94,7 @@ export default function CompanyOverview() {
               <div className="flex flex-col space-y-6">
                 <div className="w-full h-[200px] rounded-lg overflow-hidden shadow-xl relative">
                   <Image
-                    src="/images/about3.jpg"
+                    src="/images/about3.webp"
                     alt="Small team photo"
                     fill
                     priority

@@ -30,38 +30,38 @@ const processSteps: ProcessStep[] = [
     number: "01",
     title: "Consultation",
     description: "We assess your business needs and challenges.",
-    imageUrl: "/images/process1.jpg",
+    imageUrl: "/images/process1.webp",
   },
   {
     number: "02",
     title: "Strategy",
     description: "A tailored outsourcing plan designed for your goals.",
-    imageUrl: "/images/process2.jpg",
+    imageUrl: "/images/process2.webp",
   },
   {
     number: "03",
     title: "Onboarding",
     description:
       "Seamless setup with training, integration, and dedicated teams.",
-    imageUrl: "/images/process3.jpg",
+    imageUrl: "/images/process3.webp",
   },
   {
     number: "04",
     title: "Execution",
     description: "Our experts deliver results with efficiency and precision.",
-    imageUrl: "/images/process4.jpg",
+    imageUrl: "/images/process4.webp",
   },
   {
     number: "05",
     title: "Customer Support",
     description: "Continuous tracking of performance and KPIs.",
-    imageUrl: "/images/process5.jpg",
+    imageUrl: "/images/process5.webp",
   },
   {
     number: "06",
     title: "Optimization",
     description: "Regular improvements to maximize efficiency and ROI.",
-    imageUrl: "/images/process6.jpg",
+    imageUrl: "/images/process6.webp",
   },
 ];
 const ProcessStepItem: React.FC<{ step: ProcessStep }> = ({ step }) => {

@@ -56,7 +56,7 @@ const MemberCard = ({
       <div
         className="relative pt-[120%] bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('images/bgmeet.png')",
+          backgroundImage: "url('images/bgmeet.webp')",
         }}
       >
         <img
@@ -184,14 +184,14 @@ export default function Team() {
         <div className="flex justify-center mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-xl">
             <MemberCard
-              img="images/jena_01.png"
+              img="images/jena_01.webp"
               name="Jenalyn M. Valler"
               title="President & Chief Executive Officer (CEO)"
               linkedinUrl="https://www.linkedin.com/in/jenalyn-valler"
               imagePositionClass="object-center translate-y-16 scale-130"
             />
             <MemberCard
-              img="images/Arturo_01.png"
+              img="images/Arturo_01.webp"
               name="Arturo D. Valler Jr."
               title="Corporate Secretary"
               linkedinUrl="https://www.linkedin.com/in/arturo-valler"
@@ -215,14 +215,14 @@ export default function Team() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <MemberCard
-                img="images/fatima_01.png"
+                img="images/fatima_01.webp"
                 name="Fatima M. Guzman"
                 title="Executive Director for Admin/HR"
                 linkedinUrl="https://www.linkedin.com/in/fatima-guzman"
                 imagePositionClass="object-center translate-y-7 scale-130"
               />
               <MemberCard
-                img="images/anjeaneth_01.png"
+                img="images/anjeaneth_01.webp"
                 name="Anjanneth P. Bilas"
                 title="Head of Finance"
                 linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas"
@@ -245,14 +245,14 @@ export default function Team() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <MemberCard
-                img="images/joanne_01.png"
+                img="images/joanne_01.webp"
                 name="Joanne P. Corpuz"
                 title="Operations and Talent Acquisition Manager"
                 linkedinUrl="https://www.linkedin.com/in/joanne-corpuz"
                 imagePositionClass="object-center translate-y-16 scale-130"
               />
               <MemberCard
-                img="images/mitch_01.png"
+                img="images/mitch_01.webp"
                 name="Michelle D. Soliman"
                 title="Client Relations Manager"
                 linkedinUrl="https://www.linkedin.com/in/michelle-soliman"
@@ -276,21 +276,21 @@ export default function Team() {
         <div className="flex justify-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl">
             <MemberCard
-              img="images/mark_01.png"
+              img="images/mark_01.webp"
               name="Mark Jayson G. Robes"
               title="Information Technology Head"
               linkedinUrl="https://www.linkedin.com/in/mark-robes"
               imagePositionClass="object-center translate-y-15 scale-125"
             />
             <MemberCard
-              img="images/maybelle_01.png"
+              img="images/maybelle_01.webp"
               name="Maybelle A. Cabalar"
               title="Head of Audit and Compliance"
               linkedinUrl="https://www.linkedin.com/in/maybelle-cabalar"
               imagePositionClass="object-center translate-y-15 scale-125"
             />
             <MemberCard
-              img="images/jayro_01.png"
+              img="images/jayro_01.webp"
               name="Jayro DG. Gabriel"
               title="Innovation and Digital Development Manager"
               linkedinUrl="https://www.linkedin.com/in/jayro-gabriel"

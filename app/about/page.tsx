@@ -33,7 +33,7 @@ export default function AboutPage() {
         <AboutHero />
 
         {/* 🚀 Partners now receives the custom background color */}
-        <Partners imageSrc="/images/about1.jpg" backgroundColor="bg-gray-50" /> 
+        <Partners imageSrc="/images/about1.webp" backgroundColor="bg-gray-50" /> 
         <CompanyOverview />
         <MissionVision />
         <Choose />

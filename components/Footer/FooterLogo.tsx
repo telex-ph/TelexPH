@@ -5,7 +5,7 @@ const FooterLogo = () => {
     <div>
       <div className="flex flex-col items-start">
         <img 
-          src="/images/telexlogo.png" 
+          src="/images/telexlogo.webp" 
           alt="Telex Logo" 
           width={200} 
           height={80} 

@@ -13,7 +13,7 @@ const FooterPosts: React.FC = () => {
         {/* First Post - Special with Overlay */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
-            src="/images/post1.svg" 
+            src="/images/post1.webp" 
             alt="Book a Free Consultation" 
             fill
             className="object-cover"
@@ -49,7 +49,7 @@ const FooterPosts: React.FC = () => {
         {/* Second Post */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
-            src="/images/post2.jpg" 
+            src="/images/post2.webp" 
             alt="Post 2"
             fill
             className="object-cover"
@@ -59,7 +59,7 @@ const FooterPosts: React.FC = () => {
         {/* Third Post */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
-            src="/images/post3.jpg" 
+            src="/images/post3.webp" 
             alt="Post 3"
             fill
             className="object-cover"
@@ -69,7 +69,7 @@ const FooterPosts: React.FC = () => {
         {/* Fourth Post */}
         <div className="relative aspect-square rounded-lg overflow-hidden">
           <Image 
-            src="/images/post4.jpg" 
+            src="/images/post4.webp" 
             alt="Post 4"
             fill
             className="object-cover"
