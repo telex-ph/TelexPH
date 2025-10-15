@@ -14,7 +14,7 @@ import PartnerLogos from "@/components/PartnerLogos/PartnerLogos";
 import AboutHero from "./components/AboutHero";
 import CompanyOverview from "./components/CompanyOverview";
 import MissionVision from "./components/MissionVision";
-import CoreValues from "./components/CoreValues";
+import CoreValues from "./components/Team";
 
 export default function AboutPage() {
   const [showNav, setShowNav] = useState(false);
@@ -40,7 +40,6 @@ export default function AboutPage() {
         <PartnerLogos />
         <CoreValues />
       </main>
-
       {/* ✅ Footer */}
       <Footer />
     </div>
