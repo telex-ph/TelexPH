@@ -7,6 +7,8 @@ import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
 import Partners from "@/components/Partners/Partners"; 
+import Choose from "@/components/Choose/Choose";
+import PartnerLogos from "@/components/PartnerLogos/PartnerLogos";
 
 // ✅ Page-specific section components
 import AboutHero from "./components/AboutHero";
@@ -32,9 +34,10 @@ export default function AboutPage() {
 
         {/* 🚀 Partners now receives the custom background color */}
         <Partners imageSrc="/images/about1.jpg" backgroundColor="bg-gray-50" /> 
-
         <CompanyOverview />
         <MissionVision />
+        <Choose />
+        <PartnerLogos />
         <CoreValues />
       </main>
 
