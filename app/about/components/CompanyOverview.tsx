@@ -17,7 +17,7 @@ export default function CompanyOverview() {
           <div className="relative h-[450px] md:h-[600px] lg:h-[700px] order-1 flex items-center justify-center">
             <div className="relative w-full h-full">
               <Image
-                src="/images/about2.png"
+                src="/images/about2.webp"
                 alt="Business professionals collaborating"
                 fill
                 priority
