@@ -76,7 +76,7 @@ const Nav = ({ openNav }: Props) => {
                 lg:w-[350px]"
           >
             <Image
-              src="/images/Weblogo.png"
+              src="/images/Weblogo.webp"
               alt="TELEXPH Delivery & Transport Logo"
               width={250}
               height={50}
