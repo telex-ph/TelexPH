@@ -63,7 +63,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
           <div className="px-6 py-6 flex justify-between items-center bg-[#282828] border-b border-white/20">
             <div className="relative w-40 h-16">
               <Image
-                src="/images/Weblogo.png"
+                src="/images/Weblogo.webp"
                 alt="TELEX Logo"
                 fill
                 sizes="(max-width: 640px) 160px, (max-width: 1024px) 200px, 240px"
