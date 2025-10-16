@@ -26,7 +26,7 @@ export default function WhatWeOfferHero() {
             opacity: 0.85,
           }}
         >
-          OUR SERVICES
+          OUR ABOUT
         </span>
       </div>
 
@@ -42,7 +42,7 @@ export default function WhatWeOfferHero() {
               color: COLORS.black,
             }}
           >
-            SERVICES WE OFFER
+            OUR ABOUT
           </h1>
 
           {/* Description - Changed for Services */}
@@ -53,9 +53,9 @@ export default function WhatWeOfferHero() {
               color: getColorWithOpacity("dark", 0.7),
             }}
           >
-            At Telex Philippines, we offer a comprehensive suite of outsourcing solutions,
-            from customer support to advanced technical services. We are committed to
-            delivering scalable, high-quality, and cost-effective support that drives your business forward.
+            At Telex Philippines, we provide smart, scalable outsourcing solutions designed to help businesses achieve
+            efficiency, growth, and long-term success. Guided by our tagline "SCALE SMARTER", we combine innovation,
+            expertise, and technology to deliver exceptional business support services worldwide.
           </p>
 
           {/* Breadcrumbs - Changed last link to Services */}
