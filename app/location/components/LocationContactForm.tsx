@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import ReCAPTCHA from "react-google-recaptcha";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
+
+const RECAPTCHA_SITE_KEY = "6LfTCuwrAAAAAHjnAEuF4CK1xwE8H0vZKY3IWDyi";
 
 const LocationContactForm = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +16,7 @@ const LocationContactForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -20,9 +24,20 @@ const LocationContactForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
+    setStatus(""); 
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!recaptchaToken) {
+      setStatus("⚠️ Please complete the reCAPTCHA challenge before submitting.");
+      return;
+    }
+
     setIsSubmitting(true);
     setStatus("");
 
@@ -30,6 +45,8 @@ const LocationContactForm = () => {
     formDataToSend.append("name", formData.name);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("message", formData.message);
+    
+    formDataToSend.append("g-recaptcha-response", recaptchaToken);
 
     try {
       const response = await fetch("https://getform.io/f/akkpvmva", {
@@ -38,10 +55,11 @@ const LocationContactForm = () => {
       });
 
       if (response.ok) {
-        setStatus("✅ Your message has been sent successfully!");
+        setStatus("✅ Your message has been sent successfully! We will contact you shortly.");
         setFormData({ name: "", email: "", message: "" });
+        setRecaptchaToken(null); 
       } else {
-        setStatus("❌ Something went wrong. Please try again.");
+        setStatus("❌ Submission Failed. There was an issue reaching the form server. Please try again.");
       }
     } catch (error) {
       setStatus("⚠️ Network error. Please try again later.");
@@ -50,87 +68,107 @@ const LocationContactForm = () => {
     }
   };
 
+  const inputStyle = `w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a10000] focus:border-[#a10000] focus:outline-none transition placeholder-gray-500`;
+
   return (
     <div
-      className="rounded-2xl shadow-lg p-8 lg:p-10"
+      className="rounded-3xl shadow-2xl p-6 lg:p-10 transform hover:shadow-3xl transition duration-500"
       style={{ backgroundColor: COLORS.white }}
     >
-      {/* Logo / Brand */}
-      <div className="mb-6">
+      <div className="mb-8 border-b pb-4 border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="relative w-10 h-10 flex-shrink-0">
+          <div className="relative w-12 h-12 flex-shrink-0">
             <Image
-              src="/images/Tlxlogo.png"
+              src="/images/Tlxlogo.webp"
               alt="TELEX Philippines Logo"
               fill
               className="object-contain"
-              sizes="40px"
+              sizes="48px"
               priority
             />
           </div>
-          <span
-            className="text-xl"
-            style={{
-              fontFamily: FONTS.poppins,
-              fontWeight: FONT_WEIGHTS.bold,
-              color: COLORS.black,
-            }}
-          >
-            TELEX PHILIPPINES
-          </span>
+          <div>
+            <span
+              className="text-2xl block tracking-tight"
+              style={{
+                fontFamily: FONTS.poppins,
+                fontWeight: FONT_WEIGHTS.bold,
+                color: COLORS.black,
+              }}
+            >
+              TELEX PHILIPPINES
+            </span>
+            <p className="text-sm text-gray-600" style={{ fontFamily: FONTS.poppins }}>
+                Send us a message
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Contact Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-6"
         encType="multipart/form-data"
       >
-        {/* Name */}
         <input
           type="text"
           name="name"
-          placeholder="Name"
+          placeholder="Full Name"
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#a10000] focus:outline-none"
+          className={inputStyle}
         />
-
-        {/* Email */}
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email Address"
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#a10000] focus:outline-none"
+          className={inputStyle}
         />
 
-        {/* Message */}
         <textarea
           name="message"
-          placeholder="Message"
+          placeholder="Your Message or Inquiry"
           value={formData.message}
           onChange={handleChange}
           required
           rows={5}
-          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#a10000] focus:outline-none resize-none"
+          className={`${inputStyle} resize-none`}
         />
 
-        {/* Submit Button */}
+        <div className="pt-2">
+            <ReCAPTCHA
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={handleRecaptchaChange}
+            />
+        </div>
+
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full text-white py-3 px-6 rounded-lg bg-[#a10000] hover:bg-[#8a0000] transition"
+          disabled={isSubmitting || !recaptchaToken} 
+          className={`w-full text-white font-semibold py-3 px-6 rounded-xl shadow-md transition duration-300 transform ${
+            isSubmitting || !recaptchaToken
+              ? "bg-gray-400 cursor-not-allowed shadow-none"
+              : "bg-[#a10000] hover:bg-[#8a0000] hover:scale-[1.01] active:scale-[0.99]"
+          }`}
+          style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold }}
         >
-          {isSubmitting ? "Sending..." : "Submit"}
+          {isSubmitting ? "Sending..." : "Send Message"}
         </button>
 
-        {/* Status Message */}
-        {status && <p className="text-center text-sm mt-4">{status}</p>}
+        {status && (
+          <p
+            className={`text-center text-sm pt-2 ${
+              status.startsWith("✅") ? "text-green-600" : "text-red-600"
+            }`}
+            style={{ fontFamily: FONTS.poppins }}
+          >
+            {status}
+          </p>
+        )}
       </form>
     </div>
   );
