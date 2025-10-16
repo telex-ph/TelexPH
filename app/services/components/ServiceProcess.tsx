@@ -91,7 +91,8 @@ const ProcessCard: React.FC<{ step: typeof processSteps[0]; index: number }> = (
         }}
       />
 
-      <div className="relative flex-shrink-0 w-20 md:w-24 mx-auto lg:mx-0">
+      {/* Number */}
+      <div className="relative flex-shrink-0 w-20 md:w-24 mx-auto lg:mx-0 text-center lg:text-left">
         <div
           className={`text-4xl md:text-5xl font-extrabold ${FONT_CLASSES.poppinsBlack} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 relative z-10`}
           style={{
@@ -111,6 +112,7 @@ const ProcessCard: React.FC<{ step: typeof processSteps[0]; index: number }> = (
         />
       </div>
 
+      {/* Title */}
       <div className="relative flex-shrink-0 w-full max-w-sm mx-auto text-center lg:w-32 lg:text-left lg:max-w-none">
         <h3
           className={`text-xl md:text-2xl font-bold ${FONT_CLASSES.openSansBold} relative z-10`}
@@ -124,7 +126,8 @@ const ProcessCard: React.FC<{ step: typeof processSteps[0]; index: number }> = (
         </h3>
       </div>
 
-      <div className="flex-shrink-0 w-10 md:w-12 relative mx-auto lg:mx-0">
+      {/* Arrow - hidden on mobile/mid */}
+      <div className="flex-shrink-0 w-10 md:w-12 relative mx-auto lg:mx-0 hidden lg:flex">
         <svg
           width="48"
           height="24"
@@ -146,6 +149,7 @@ const ProcessCard: React.FC<{ step: typeof processSteps[0]; index: number }> = (
         </svg>
       </div>
 
+      {/* Description */}
       <p
         className={`text-sm md:text-base leading-relaxed flex-grow text-center lg:text-left ${FONT_CLASSES.rubikRegular} relative z-10`}
         style={{
@@ -159,6 +163,7 @@ const ProcessCard: React.FC<{ step: typeof processSteps[0]; index: number }> = (
         {step.description}
       </p>
 
+      {/* Image */}
       <div className="flex-shrink-0 w-full md:w-80 h-40 md:h-32 rounded-2xl overflow-hidden relative group/image mx-auto lg:mx-0">
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500 z-10" />
         <Image
@@ -205,9 +210,7 @@ const CarouselPagination: React.FC<{
   );
 };
 
-const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({
-  steps,
-}) => {
+const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -216,12 +219,8 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({
       const scrollLeft = scrollRef.current.scrollLeft;
       const itemWidth =
         (scrollRef.current.querySelector(":scope > div")?.clientWidth || 1) + 16;
-
       const newIndex = Math.round(scrollLeft / itemWidth);
-
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex);
-      }
+      if (newIndex !== activeIndex) setActiveIndex(newIndex);
     }
   };
 
@@ -267,11 +266,7 @@ const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({
           </div>
         ))}
       </div>
-      <CarouselPagination
-        steps={steps}
-        activeIndex={activeIndex}
-        scrollTo={scrollTo}
-      />
+      <CarouselPagination steps={steps} activeIndex={activeIndex} scrollTo={scrollTo} />
     </>
   );
 };
@@ -280,7 +275,7 @@ export default function ServiceProcess() {
   return (
     <section
       className="py-20 md:py-24 relative overflow-hidden"
-      style={{ backgroundColor: "#f7f7f7" }} 
+      style={{ backgroundColor: "#f7f7f7" }}
     >
       <div className="absolute top-20 right-0 w-96 h-96 bg-blue-50 rounded-full filter blur-3xl opacity-20" />
       <div className="absolute bottom-20 left-0 w-96 h-96 bg-purple-50 rounded-full filter blur-3xl opacity-20" />
@@ -310,10 +305,12 @@ export default function ServiceProcess() {
           </p>
         </div>
 
+        {/* Mobile carousel */}
         <div className="lg:hidden pb-2 overflow-visible">
           <ProcessCarousel steps={processSteps} />
         </div>
 
+        {/* Desktop grid */}
         <div className="hidden lg:block space-y-6">
           {processSteps.map((step, index) => (
             <ProcessCard key={index} step={step} index={index} />
