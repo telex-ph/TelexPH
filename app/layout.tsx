@@ -51,9 +51,9 @@ export const metadata: Metadata = {
     "Travel BPO",
   ],
   icons: {
-    icon: "/images/Tlxlogo.png",
-    shortcut: "/images/Tlxlogo.png",
-    apple: "/images/Tlxlogo.png",
+    icon: "/images/Tlxlogo.webp",
+    shortcut: "/images/Tlxlogo.webp",
+    apple: "/images/Tlxlogo.webp",
   },
   openGraph: {
     title: "TelexPH: Your trusted partner in Business Process Outsourcing",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     siteName: "TelexPH",
     images: [
       {
-        url: "/images/Tlxlogo.png",
+        url: "/images/Tlxlogo.webp",
         width: 1200,
         height: 630,
         alt: "TelexPH: Your trusted partner in Business Process Outsourcing",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     title: "TelexPH: Your trusted partner in Business Process Outsourcing",
     description:
       "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
-    images: ["/images/Tlxlogo.png"],
+    images: ["/images/Tlxlogo.webp"],
   },
 };
 
