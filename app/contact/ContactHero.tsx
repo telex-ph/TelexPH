@@ -14,7 +14,6 @@ export default function LocationHero() {
       className="relative pt-40 pb-16 overflow-hidden"
       style={{ backgroundColor: COLORS.white }}
     >
-      {/* Background Stroke Text */}
       <div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[85%]
                    text-[5rem] md:text-[7rem] lg:text-[8rem]
@@ -36,7 +35,6 @@ export default function LocationHero() {
         </span>
       </div>
 
-      {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1
@@ -53,13 +51,12 @@ export default function LocationHero() {
             className="text-md md:text-lg max-w-xl mx-auto mb-8"
             style={{
               fontFamily: FONTS.rubik,
-              color: getColorWithOpacity("dark", 0.7), // soft dark gray tone
+              color: getColorWithOpacity("dark", 0.7),
             }}
           ></p>
           Let's Start a Conversation! Whether you have questions about our
           services or want to explore partnership opportunities, our team is
           here to help. Feel free to visit our office or get in touch with us.
-          {/* Breadcrumbs */}
           <div
             className="text-sm"
             style={{

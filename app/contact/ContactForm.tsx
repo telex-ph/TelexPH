@@ -24,17 +24,19 @@ const ContactForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleRecaptchaChange = (token: string | null) => {
     setRecaptchaToken(token);
-    setStatus(""); 
+    setStatus("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!recaptchaToken) {
-      setStatus("⚠️ Please complete the reCAPTCHA challenge before submitting.");
+      setStatus(
+        "⚠️ Please complete the reCAPTCHA challenge before submitting."
+      );
       return;
     }
 
@@ -45,7 +47,7 @@ const ContactForm = () => {
     formDataToSend.append("name", formData.name);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("message", formData.message);
-    
+
     formDataToSend.append("g-recaptcha-response", recaptchaToken);
 
     try {
@@ -55,11 +57,15 @@ const ContactForm = () => {
       });
 
       if (response.ok) {
-        setStatus("✅ Your message has been sent successfully! We will contact you shortly.");
+        setStatus(
+          "✅ Your message has been sent successfully! We will contact you shortly."
+        );
         setFormData({ name: "", email: "", message: "" });
-        setRecaptchaToken(null); 
+        setRecaptchaToken(null);
       } else {
-        setStatus("❌ Submission Failed. There was an issue reaching the form server. Please try again.");
+        setStatus(
+          "❌ Submission Failed. There was an issue reaching the form server. Please try again."
+        );
       }
     } catch (error) {
       setStatus("⚠️ Network error. Please try again later.");
@@ -98,8 +104,11 @@ const ContactForm = () => {
             >
               TELEX PHILIPPINES
             </span>
-            <p className="text-sm text-gray-600" style={{ fontFamily: FONTS.poppins }}>
-                Send us a message
+            <p
+              className="text-sm text-gray-600"
+              style={{ fontFamily: FONTS.poppins }}
+            >
+              Send us a message
             </p>
           </div>
         </div>
@@ -140,15 +149,15 @@ const ContactForm = () => {
         />
 
         <div className="pt-2">
-            <ReCAPTCHA
-                sitekey={RECAPTCHA_SITE_KEY}
-                onChange={handleRecaptchaChange}
-            />
+          <ReCAPTCHA
+            sitekey={RECAPTCHA_SITE_KEY}
+            onChange={handleRecaptchaChange}
+          />
         </div>
 
         <button
           type="submit"
-          disabled={isSubmitting || !recaptchaToken} 
+          disabled={isSubmitting || !recaptchaToken}
           className={`w-full text-white font-semibold py-3 px-6 rounded-xl shadow-md transition duration-300 transform ${
             isSubmitting || !recaptchaToken
               ? "bg-gray-400 cursor-not-allowed shadow-none"

@@ -13,15 +13,11 @@ import {
 
 const OfficeLocationHeader: React.FC = () => {
   return (
-    // Taas (Height): Tinanggal na ang lahat ng vertical padding (py-)
-    <div className="relative overflow-hidden"> 
-      {/* Soft background blur shapes */}
+    <div className="relative overflow-hidden">
       <div className="absolute top-16 right-0 w-80 h-80 bg-red-50 rounded-full filter blur-3xl opacity-30" />
       <div className="absolute bottom-16 left-0 w-80 h-80 bg-red-100 rounded-full filter blur-3xl opacity-20" />
 
-      {/* Main container - Lapad (Width): Nananatili sa max-w-[1400px] */}
       <div className="container mx-auto px-4 max-w-[1400px] relative z-10">
-        {/* Header Section */}
         <div className="mb-12 text-center md:text-left">
           <div className="inline-block mb-3">
             <span
@@ -58,7 +54,6 @@ const OfficeLocationHeader: React.FC = () => {
           </p>
         </div>
 
-        {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ContactInfoCard />
           <ContactMap />

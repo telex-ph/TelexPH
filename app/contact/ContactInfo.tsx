@@ -1,17 +1,11 @@
 import React from "react";
-import {
-  COLORS,
-  FONTS,
-  FONT_WEIGHTS,
-  FONT_CLASSES,
-} from "@/constant/styles";
+import { COLORS, FONTS, FONT_WEIGHTS, FONT_CLASSES } from "@/constant/styles";
 
 const ContactInfo: React.FC = () => {
-  const secondaryTextColor = "#6b7280"; // gray-600
+  const secondaryTextColor = "#6b7280";
 
   return (
     <div className="mt-8 space-y-10">
-      {/* Header Section */}
       <div className="mb-10 text-center md:text-left">
         <div className="inline-block mb-4">
           <span
@@ -34,8 +28,7 @@ const ContactInfo: React.FC = () => {
             fontWeight: FONT_WEIGHTS.black,
           }}
         >
-          Get in{" "}
-          <span style={{ color: COLORS.primary }}>Touch</span>
+          Get in <span style={{ color: COLORS.primary }}>Touch</span>
         </h2>
 
         <p
@@ -44,12 +37,10 @@ const ContactInfo: React.FC = () => {
             fontFamily: FONTS.rubik,
           }}
         >
-          We help you streamline operations, enhance productivity, and scale your
-          business with smart outsourcing solutions.
+          We help you streamline operations, enhance productivity, and scale
+          your business with smart outsourcing solutions.
         </p>
       </div>
-
-      {/* Our Office */}
       <div className="space-y-4 mt-8">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
@@ -75,14 +66,14 @@ const ContactInfo: React.FC = () => {
                 color: secondaryTextColor,
               }}
             >
-              MQ4C+5MX, Pangasinan - Nueva Ecija Rd<br />
+              MQ4C+5MX, Pangasinan - Nueva Ecija Rd
+              <br />
               Guimba, Nueva Ecija, Philippines
             </p>
           </div>
         </div>
       </div>
 
-      {/* Get in Touch Info */}
       <div className="space-y-4 mt-8">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
@@ -138,8 +129,6 @@ const ContactInfo: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Business Hours */}
       <div className="pt-6 mt-8 border-t border-gray-200">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
