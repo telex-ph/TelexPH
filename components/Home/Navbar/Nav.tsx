@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
@@ -37,6 +38,8 @@ const Nav = ({ openNav }: Props) => {
   const [navBg, setNavBg] = useState(false);
   const prevScrollY = useRef(0);
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleMouseEnter = (id: number) => {
     setOpenDropdownId(id);
@@ -44,6 +47,48 @@ const Nav = ({ openNav }: Props) => {
 
   const handleMouseLeave = () => {
     setOpenDropdownId(null);
+  };
+
+  // ✅ IMPROVED: Handle smooth scroll with Next.js router (NO DELAY)
+  const handleScrollClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    url: string
+  ) => {
+    // Check if it's a hash link (anchor link)
+    if (url.startsWith("#")) {
+      e.preventDefault();
+
+      const isHomepage = pathname === "/";
+
+      if (isHomepage) {
+        // On homepage - just scroll to section
+        scrollToSection(url);
+      } else {
+        // On other pages - use Next.js router (faster, no reload)
+        router.push("/" + url);
+
+        // After navigation, scroll to section
+        setTimeout(() => {
+          scrollToSection(url);
+        }, 100);
+      }
+    }
+  };
+
+  // Helper function to scroll to section
+  const scrollToSection = (hash: string) => {
+    const element = document.querySelector(hash);
+    if (element) {
+      const navbarHeight = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
   };
 
   useEffect(() => {
@@ -90,7 +135,6 @@ const Nav = ({ openNav }: Props) => {
             />
           </div>
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
-            
             {/* START: NAVIGATION LINKS */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
@@ -102,7 +146,8 @@ const Nav = ({ openNav }: Props) => {
                 >
                   <Link
                     href={link.url}
-                    className="relative py-[30px] scroll-smooth"
+                    onClick={(e) => handleScrollClick(e, link.url)}
+                    className="relative py-[30px]"
                   >
                     <span
                       className={`text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]`}
@@ -112,22 +157,25 @@ const Nav = ({ openNav }: Props) => {
                   </Link>
 
                   {/* Dropdown menu */}
-                  {link.dropdown && link.dropdown.length > 0 && openDropdownId === link.id && (
-                    <div 
-                      className="absolute top-full left-0 mt-[-2px] bg-white border border-gray-100 shadow-lg min-w-[180px] z-20 py-2 rounded-b-md"
-                    >
-                      {link.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.id}
-                          href={dropdownItem.url}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f5f5f5] hover:text-[#a10000] whitespace-nowrap transition-colors"
-                          onClick={handleMouseLeave}
-                        >
-                          {dropdownItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                  {link.dropdown &&
+                    link.dropdown.length > 0 &&
+                    openDropdownId === link.id && (
+                      <div className="absolute top-full left-0 mt-[-2px] bg-white border border-gray-100 shadow-lg min-w-[180px] z-20 py-2 rounded-b-md">
+                        {link.dropdown.map((dropdownItem) => (
+                          <Link
+                            key={dropdownItem.id}
+                            href={dropdownItem.url}
+                            onClick={(e) => {
+                              handleScrollClick(e, dropdownItem.url);
+                              handleMouseLeave();
+                            }}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f5f5f5] hover:text-[#a10000] whitespace-nowrap transition-colors"
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
@@ -136,17 +184,16 @@ const Nav = ({ openNav }: Props) => {
             <div className="flex items-center space-x-8 ml-auto">
               <button
                 type="button"
-                onClick={() =>
-                  window.open(
-                    "https://hiretelex.com/scale-with-telex",
-                    "_blank"
-                  )
-                }
+                onClick={() => (window.location.href = "/contact")}
                 className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded cursor-pointer"
               >
                 CONTACT US
               </button>
-              <button onClick={openNav} className="lg:hidden text-gray-700 p-2">
+              <button
+                onClick={openNav}
+                className="lg:hidden text-gray-700 p-2"
+                aria-label="Open mobile navigation"
+              >
                 <HiBars3BottomRight className="w-6 h-6" />
               </button>
             </div>
