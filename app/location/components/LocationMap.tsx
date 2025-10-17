@@ -2,35 +2,27 @@ import React from "react";
 import {
   COLORS,
   FONTS,
-  TYPOGRAPHY,
   FONT_WEIGHTS,
   getColorWithOpacity,
 } from "@/constant/styles";
+import { DEFAULT_MAX_WIDTH_CLASS, SECTION_HEIGHT } from "@/constant/layout";
 
 const LocationMap = () => {
   return (
     <section
-      className="w-full py-12 px-4 md:px-8 bg-white"
-      style={{ backgroundColor: COLORS.white }}
+      className={`relative w-screen left-1/2 right-1/2 -mx-[50vw] py-16 md:py-20 ${SECTION_HEIGHT.standard}`}
+      style={{
+        backgroundColor: "#f3f4f6",
+      }}
     >
-      <div className="max-w-5xl mx-auto space-y-8 text-center">
-        {/* Title & Address */}
+      <div className={`${DEFAULT_MAX_WIDTH_CLASS} space-y-10 text-center`}>
+        {/* Address */}
         <div>
-          <h2
-            className="text-4xl md:text-5xl mb-6"
-            style={{
-              fontFamily: FONTS.openSans,
-              fontWeight: FONT_WEIGHTS.bold,
-              color: COLORS.black,
-            }}
-          >
-            Visit Our Office
-          </h2>
           <p
             className="max-w-2xl mx-auto"
             style={{
               fontFamily: FONTS.rubik,
-              fontWeight: FONT_WEIGHTS.regular,
+              fontWeight: FONT_WEIGHTS.bold,
               color: getColorWithOpacity("dark", 0.7),
             }}
           >
@@ -47,7 +39,7 @@ const LocationMap = () => {
         >
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3847.5!2d120.756!3d15.655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sMQ4C%2B5MX%2C%20Pangasinan%20-%20Nueva%20Ecija%20Rd%2C%20Guimba%2C%20Nueva%20Ecija!5e0!3m2!1sen!2sph!4v1234567890"
-            className="w-full h-[300px] sm:h-[400px] md:h-[450px]" // ✅ responsive height
+            className="w-full h-[300px] sm:h-[400px] md:h-[450px]"
             style={{
               border: 0,
               filter: "grayscale(5%) contrast(1.05)",
