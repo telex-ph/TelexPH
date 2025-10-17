@@ -1,12 +1,8 @@
 "use client";
 
 import React from "react";
-import {
-  Facebook,
-  Linkedin,
-  Twitter,
-  Instagram,
-} from "lucide-react";
+import Image from "next/image";
+import { Facebook, Linkedin, Twitter, Instagram } from "lucide-react";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
 
 interface SocialIconProps {
@@ -33,13 +29,17 @@ const SocialIcon: React.FC<SocialIconProps> = ({ href, label, children }) => (
 export const ContactInfoCard: React.FC = () => {
   return (
     <div className="flex flex-col p-6 space-y-6 bg-white rounded-lg shadow-xl border border-gray-50 h-full">
-      {/* Placeholder / Image */}
-      <div
-        className="w-full h-48 rounded-md bg-gray-200"
-        aria-label="Placeholder Image/Content"
-      />
+      <div className="w-full h-48 relative overflow-hidden rounded-md">
+        <Image
+          src="/images/about1.webp"
+          alt="A representative discussing energy solutions"
+          fill
+          className="object-cover"
+          style={{ objectPosition: "50% 40%" }}
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+      </div>
 
-      {/* Need Solution Section */}
       <div className="space-y-3">
         <h3
           className="text-xl font-bold"
@@ -64,9 +64,7 @@ export const ContactInfoCard: React.FC = () => {
 
       <hr className="border-gray-100" />
 
-      {/* Support Center + Socials */}
       <div className="flex justify-between items-start pt-2">
-        {/* Support Center */}
         <div>
           <p
             className="text-xs uppercase tracking-wider mb-1 text-gray-500"
@@ -89,7 +87,6 @@ export const ContactInfoCard: React.FC = () => {
           </a>
         </div>
 
-        {/* Follow Us */}
         <div className="text-right">
           <p
             className="text-xs uppercase tracking-wider mb-2 text-gray-500"
