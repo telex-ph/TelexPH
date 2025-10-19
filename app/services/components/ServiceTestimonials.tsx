@@ -58,7 +58,7 @@ const TestimonialCard: React.FC<{
           className={`relative text-lg italic leading-relaxed z-10 ${FONT_CLASSES.rubikRegular} transition-all duration-500`}
           style={{
             color: COLORS.dark,
-            minHeight: '8rem'
+            minHeight: "8rem",
           }}
         >
           “{isExpanded ? testimonial.quote : shortQuote}”
@@ -114,11 +114,11 @@ const TestimonialCarousel: React.FC<{
   const handleScroll = () => {
     if (scrollRef.current) {
       const scrollLeft = scrollRef.current.scrollLeft;
-      const itemWidth = scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
-      const spaceWidth = 32; 
+      const itemWidth =
+        scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
+      const spaceWidth = 32;
 
       const totalItemWidth = itemWidth + spaceWidth;
-      
       const newIndex = Math.round(scrollLeft / totalItemWidth);
 
       if (newIndex !== activeIndex) {
@@ -126,23 +126,22 @@ const TestimonialCarousel: React.FC<{
       }
     }
   };
-  
+
   const scrollTo = (index: number) => {
     if (scrollRef.current) {
-        const item = scrollRef.current.querySelector(":scope > div");
-        if (!item) return;
+      const item = scrollRef.current.querySelector(":scope > div");
+      if (!item) return;
 
-        const itemWidth = item.clientWidth;
-        const spaceWidth = 32; 
+      const itemWidth = item.clientWidth;
+      const spaceWidth = 32;
 
-        scrollRef.current.scrollTo({
-            left: index * (itemWidth + spaceWidth),
-            behavior: "smooth",
-        });
-        setActiveIndex(index);
+      scrollRef.current.scrollTo({
+        left: index * (itemWidth + spaceWidth),
+        behavior: "smooth",
+      });
+      setActiveIndex(index);
     }
   };
-
 
   useEffect(() => {
     const currentRef = scrollRef.current;
@@ -169,7 +168,10 @@ const TestimonialCarousel: React.FC<{
         }}
       >
         {testimonials.map((testimonial, index) => (
-          <div key={index} className="flex-shrink-0 w-full md:w-[85%] snap-center">
+          <div
+            key={index}
+            className="flex-shrink-0 w-full md:w-[85%] snap-center"
+          >
             <TestimonialCard
               testimonial={testimonial}
               index={index}
@@ -179,7 +181,7 @@ const TestimonialCarousel: React.FC<{
           </div>
         ))}
       </div>
-      
+
       <div className="flex justify-center mt-8 space-x-3">
         {testimonials.map((_, index) => (
           <button
@@ -195,7 +197,8 @@ const TestimonialCarousel: React.FC<{
               }
             `}
             style={{
-              backgroundColor: index === activeIndex ? COLORS.primary : undefined,
+              backgroundColor:
+                index === activeIndex ? COLORS.primary : undefined,
             }}
             aria-label={`Go to testimonial ${index + 1}`}
           />
@@ -207,7 +210,6 @@ const TestimonialCarousel: React.FC<{
 
 export default function ServiceTestimonials() {
   const primaryColor = COLORS.primary;
-
   const [expanded, setExpanded] = useState<number[]>([]);
 
   const toggleExpand = (index: number) => {
@@ -222,9 +224,9 @@ export default function ServiceTestimonials() {
     <section
       id="service-testimonials"
       aria-label="Client Testimonials Section"
-      className="py-16 md:py-24"
+      className="py-16 md:py-24 scroll-mt-20"
       style={{
-        backgroundColor: "ffffff",
+        backgroundColor: "#ffffff",
         color: SEMANTIC_COLORS.text.primary,
       }}
     >
@@ -249,7 +251,8 @@ export default function ServiceTestimonials() {
           <p
             className={`${FONT_CLASSES.rubikRegular} text-lg text-gray-600 mt-4 max-w-3xl mx-auto`}
           >
-            Hear directly from the partners who have scaled their operations and achieved success with our dedicated BPO teams.
+            Hear directly from the partners who have scaled their operations and
+            achieved success with our dedicated BPO teams.
           </p>
         </div>
 
