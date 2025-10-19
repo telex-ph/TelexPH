@@ -36,13 +36,24 @@ const FooterPosts: React.FC = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-4 sm:mb-6">
-        <h3 className="font-poppins-black mb-2 text-sm sm:text-base text-white">
+      <div className="mb-6">
+        <h3 className="font-poppins-black mb-2 text-base text-white">
           Popular Post
         </h3>
         <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto sm:mx-0">
+
+      <div
+        className="
+          grid 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-2 
+          lg:grid-cols-2 
+          gap-4 
+          w-full 
+        "
+      >
         {posts.map((post) => (
           <Link
             key={post.id}
@@ -50,7 +61,18 @@ const FooterPosts: React.FC = () => {
             {...(post.external
               ? { target: "_blank", rel: "noopener noreferrer" }
               : {})}
-            className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer block"
+            className="
+              relative 
+              aspect-square 
+              rounded-lg 
+              overflow-hidden 
+              group 
+              cursor-pointer 
+              block 
+              transition-transform 
+              duration-500 
+              hover:scale-[1.02]
+            "
           >
             <Image
               src={post.image}
@@ -59,11 +81,40 @@ const FooterPosts: React.FC = () => {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
-            <div className="absolute inset-0 bg-[#a10000]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 sm:p-4 flex flex-col justify-between">
+            <div
+              className="
+                absolute 
+                inset-0 
+                bg-[#a10000]/80 
+                opacity-0 
+                group-hover:opacity-100 
+                transition-opacity 
+                duration-300 
+                p-4 
+                flex 
+                flex-col 
+                justify-between
+              "
+            >
               <div className="flex justify-start">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0 transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                <div
+                  className="
+                    w-10 
+                    h-10 
+                    bg-white 
+                    rounded-full 
+                    flex 
+                    items-center 
+                    justify-center 
+                    transform 
+                    scale-0 
+                    group-hover:scale-100 
+                    transition-transform 
+                    duration-300
+                  "
+                >
                   <svg
-                    className="w-4 h-4 sm:w-5 sm:h-5 text-[#a10000]"
+                    className="w-5 h-5 text-[#a10000]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -78,8 +129,26 @@ const FooterPosts: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-white px-1 sm:px-0 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                <p className="text-xs sm:text-sm lg:text-base font-open-sans-bold leading-tight">
+              <div
+                className="
+                  text-white 
+                  transform 
+                  translate-y-2 
+                  opacity-0 
+                  group-hover:translate-y-0 
+                  group-hover:opacity-100 
+                  transition-all 
+                  duration-300
+                "
+              >
+                <p
+                  className="
+                    text-sm 
+                    md:text-base 
+                    font-open-sans-bold 
+                    leading-tight
+                  "
+                >
                   {post.title}
                 </p>
               </div>
