@@ -27,7 +27,7 @@ const TopBar = () => {
               <span className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span className="whitespace-nowrap">
-                  partnerships@telexph.com
+                  heyjena@telexph.com
                 </span>
               </span>
               <span className="flex items-center gap-2">
@@ -42,7 +42,7 @@ const TopBar = () => {
               >
                 <MapPin className="w-4 h-4" />
                 <span className="whitespace-nowrap underline underline-offset-2">
-                  Cawayan Bugtong, Guimba, Nueva Ecija
+                  Guimba, Nueva Ecija, Philippines
                 </span>
               </Link>
               <div className="flex items-center gap-3">

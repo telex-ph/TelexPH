@@ -26,7 +26,7 @@ const LocationMap = () => {
               color: getColorWithOpacity("dark", 0.7),
             }}
           >
-            MQ4C+5MX, Pangasinan - Nueva Ecija Rd, Guimba, Nueva Ecija
+            Guimba, Nueva Ecija, Philippines
           </p>
         </div>
 

@@ -66,9 +66,9 @@ const ContactInfo: React.FC = () => {
                 color: secondaryTextColor,
               }}
             >
-              MQ4C+5MX, Pangasinan - Nueva Ecija Rd
+              Guimba, Nueva Ecija, 
               <br />
-              Guimba, Nueva Ecija, Philippines
+              Philippines
             </p>
           </div>
         </div>
@@ -124,7 +124,7 @@ const ContactInfo: React.FC = () => {
                 (e.currentTarget.style.color = secondaryTextColor)
               }
             >
-              partnerships@telexph.com
+              heyjena@telexph.com
             </a>
           </div>
         </div>
