@@ -5,7 +5,7 @@ import Image from "next/image";
 import ReCAPTCHA from "react-google-recaptcha";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
 
-const RECAPTCHA_SITE_KEY = "6LfTCuwrAAAAAHjnAEuF4CK1xwE8H0vZKY3IWDyi";
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!;
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
