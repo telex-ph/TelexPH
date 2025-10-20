@@ -108,8 +108,8 @@ const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
           WHY CHOOSE US
         </p>
         <h2 className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-tight`}>
-          We Use Proven Technologies<br />
-          to Foster a Clean Energy
+          We Use Proven Smart Technologies<br />
+          for Faster & More Efficient Work
         </h2>
       </div>
       <div 
