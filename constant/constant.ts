@@ -33,7 +33,7 @@ export const navLinks = [
   {
     id: 4,
     url: "#choose",
-    label: "Industry",
+    label: "Why us",
   },
   {
     id: 5,
