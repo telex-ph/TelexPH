@@ -39,7 +39,7 @@ const FooterCTA = () => {
         </div>
         <div className="hidden md:block absolute inset-0 h-full w-full pointer-events-none">
           <img
-            src="/images/footer.png"
+            src="/images/footer.webp"
             alt="Delivery man on scooter"
             className="
               absolute bottom-0 

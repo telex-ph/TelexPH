@@ -24,7 +24,7 @@ const ContactSupport = () => {
             <div className="relative flex-shrink-0 flex justify-center w-full md:w-auto mb-2 md:mb-0">
               <div className="relative inline-block">
                 <Image
-                  src="/images/handshake.jpg"
+                  src="/images/handshake.webp"
                   alt="Business Handshake"
                   width={256}
                   height={176}

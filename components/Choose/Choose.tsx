@@ -7,7 +7,7 @@ const Choose = () => {
     <div id="choose" className="pt-12 pb-12 lg:pt-20 lg:pb-20 relative overflow-hidden">
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/choosebg.jpg')" }}
+        style={{ backgroundImage: "url('/images/choosebg.webp')" }}
       ></div>
       <div className="absolute inset-0 bg-black/20"></div>
 

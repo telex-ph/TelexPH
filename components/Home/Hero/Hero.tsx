@@ -27,13 +27,13 @@ const rubik = Rubik({
   display: "swap",
 });
 
-const HERO_BG_IMAGE = "/images/background.jpg";
+const HERO_BG_IMAGE = "/images/background.webp";
 
 const AVATARS = [
-  "/images/avatar1.jpeg",
-  "/images/avatar2.jpeg",
-  "/images/avatar3.jpg",
-  "/images/avatar4.jpg",
+  "/images/avatar1.webp",
+  "/images/avatar2.webp",
+  "/images/avatar3.webp",
+  "/images/avatar4.webp",
 ];
 
 const FLOATING_CARDS = [
@@ -204,7 +204,7 @@ const Hero = () => {
                 style={{ bottom: "-260px" }}
               >
                 <img
-                  src="/images/hpic.png"
+                  src="/images/hpic.webp"
                   alt="Customer Service Representatives"
                   loading="lazy"
                   className="w-auto h-auto object-contain object-bottom"

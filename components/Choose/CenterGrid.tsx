@@ -5,9 +5,9 @@ import Image from "next/image";
 import ExperienceCard from "./ExperienceCard";
 
 const GRID_IMAGES = [
-  { src: "/images/choose1.jpg", alt: "Choose Option 1", priority: true },
-  { src: "/images/choose2.jpg", alt: "Choose Option 2", priority: false },
-  { src: "/images/choose3.jpg", alt: "Choose Option 3", priority: false },
+  { src: "/images/choose1.webp", alt: "Choose Option 1", priority: true },
+  { src: "/images/choose2.webp", alt: "Choose Option 2", priority: false },
+  { src: "/images/choose3.webp", alt: "Choose Option 3", priority: false },
 ];
 
 const CenterGrid = () => {

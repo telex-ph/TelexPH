@@ -1,72 +1,260 @@
 import React from "react";
+import { Target, Eye, Users, Award, TrendingUp, Heart } from "lucide-react";
+import { COLORS, FONT_CLASSES } from "@/constant/styles";
 
 export default function MissionVision() {
   return (
-    <section className="py-20 bg-white">
-      
-      {/* Background Outline Text - OUR SERVICES */}
-      <div 
-          className="absolute top-[-10%] left-0 right-0 text-[10rem] md:text-[14rem] lg:text-[18rem] 
-                     text-red-500 opacity-10 font-extrabold select-none pointer-events-none 
-                     leading-none z-0"
-      >
-          <span 
-            // Custom CSS class for outline text
-            style={{
-              WebkitTextStroke: '1px #ff0000', // Red stroke
-              WebkitTextFillColor: 'transparent', // Transparent fill
-              opacity: 0.1, 
-            }}
-          >
-            OUR SERVICES
-          </span>
-      </div>
+    <div className="bg-gray-50">
+      {/* Mission & Vision Section */}
+      <section className="py-12 sm:py-16 relative overflow-hidden">
+        {/* Header */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 mb-10 sm:mb-16">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-px w-8" />
+            <span
+              className={`${FONT_CLASSES.openSansBold} text-base uppercase tracking-[0.2em]`}
+              style={{ color: COLORS.primary }}
+            >
+              — WHAT DRIVES US FORWARD
+            </span>
+          </div>
+        </div>
 
-      <div className="w-[90%] mx-auto max-w-[1300px] relative z-10">
-        <div className="text-center mb-12">
-          <span className="text-red-600 font-bold text-base uppercase tracking-[0.2em]">
-            — OUR PURPOSE
-          </span>
-          <h2 className="text-5xl font-extrabold text-gray-900 mt-4">
-            Mission & Vision
-          </h2>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white p-10 rounded-xl shadow-lg border-t-8 border-red-600 hover:shadow-2xl transition-shadow duration-300">
-            <div className="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center mb-6">
-              {/* Mission Icon */}
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        {/* Mission and Vision Cards */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
+            {/* Mission Card */}
+            <div className="group">
+              <div className="flex items-start gap-4 sm:gap-6">
+                <div className="flex-shrink-0">
+                  <div
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 flex items-center justify-center bg-white relative"
+                    style={{ borderColor: COLORS.primary }}
+                  >
+                    <Target
+                      className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.5]"
+                      style={{ color: COLORS.primary }}
+                    />
+                    <div
+                      className="absolute inset-0 rounded-full border-2 animate-ping opacity-20"
+                      style={{ borderColor: COLORS.primary }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <h2
+                    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 mb-4 sm:mb-6 tracking-tight`}
+                  >
+                    MISSION
+                  </h2>
+                  <p
+                    className={`${FONT_CLASSES.rubikRegular} text-gray-600 text-sm sm:text-base leading-relaxed`}
+                  >
+                    To empower businesses through innovative outsourcing
+                    solutions, cutting-edge technology, and adaptive strategies
+                    that drive efficiency, growth, and long-term success.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Our Mission
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              To provide innovative and reliable delivery and transport solutions that 
-              empower businesses to thrive in a competitive market. We are committed to 
-              excellence, sustainability, and customer satisfaction in everything we do.
-            </p>
-          </div>
-          <div className="bg-white p-10 rounded-xl shadow-lg border-t-8 border-gray-900 hover:shadow-2xl transition-shadow duration-300">
-            <div className="w-16 h-16 bg-gray-900 rounded-xl flex items-center justify-center mb-6">
-              {/* Vision Icon */}
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
+
+            {/* Vision Card */}
+            <div className="group">
+              <div className="flex items-start gap-4 sm:gap-6">
+                <div className="flex-shrink-0">
+                  <div
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 flex items-center justify-center bg-white relative"
+                    style={{ borderColor: COLORS.dark }}
+                  >
+                    <Eye
+                      className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.5]"
+                      style={{ color: COLORS.dark }}
+                    />
+                    <div
+                      className="absolute inset-0 rounded-full border-2 animate-ping opacity-20"
+                      style={{ borderColor: COLORS.dark }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <h2
+                    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 mb-4 sm:mb-6 tracking-tight`}
+                  >
+                    VISION
+                  </h2>
+                  <p
+                    className={`${FONT_CLASSES.rubikRegular} text-gray-600 text-sm sm:text-base leading-relaxed`}
+                  >
+                    To be a global leader in business process solutions,
+                    recognized for harnessing innovation, people, and technology
+                    to create sustainable value, transform industries, and shape
+                    the future of work.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Our Vision
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              To be the leading provider of smart business solutions, recognized for 
-              our innovation, reliability, and commitment to helping businesses achieve 
-              their full potential through cutting-edge technology and exceptional service.
-            </p>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Core Values Section */}
+      <section className="py-12 sm:py-16 bg-gray-50 -mt-4 sm:-mt-5">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-8">
+          {/* Header with Diamond Icon */}
+          <div className="mb-10 sm:mb-16">
+            {/* Mobile & Mid Screen Layout */}
+            <div className="flex items-center gap-4 sm:gap-6 lg:hidden">
+              <div className="flex-shrink-0">
+                <div
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 flex items-center justify-center bg-white relative"
+                  style={{ borderColor: COLORS.primary }}
+                >
+                  <svg
+                    className="w-8 h-8 sm:w-10 sm:h-10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ color: COLORS.primary }}
+                  >
+                    <path d="M12 2L2 9l10 13 10-13-10-7z" />
+                    <path d="M2 9h20" />
+                    <path d="M12 2l4 7-4 13-4-13 4-7z" />
+                  </svg>
+                  <div
+                    className="absolute inset-0 rounded-full border-2 animate-ping opacity-20"
+                    style={{ borderColor: COLORS.primary }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <h2
+                  className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 tracking-tight translate-y-1`}
+                >
+                  CORE VALUES
+                </h2>
+                <div className="flex gap-1 mt-2">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-1 rounded-full"
+                      style={{ backgroundColor: COLORS.primary }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-6">
+              <div className="flex-shrink-0">
+                <div
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 flex items-center justify-center bg-white relative"
+                  style={{ borderColor: COLORS.primary }}
+                >
+                  <svg
+                    className="w-8 h-8 sm:w-10 sm:h-10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ color: COLORS.primary }}
+                  >
+                    <path d="M12 2L2 9l10 13 10-13-10-7z" />
+                    <path d="M2 9h20" />
+                    <path d="M12 2l4 7-4 13-4-13 4-7z" />
+                  </svg>
+                  <div
+                    className="absolute inset-0 rounded-full border-2 animate-ping opacity-20"
+                    style={{ borderColor: COLORS.primary }}
+                  />
+                </div>
+              </div>
+
+              <h2
+                className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 tracking-tight text-center sm:text-left`}
+              >
+                CORE VALUES
+              </h2>
+            </div>
+          </div>
+
+          {/* Core Values Cards */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              {
+                title: "Provide",
+                desc: "Jobs and to give employee a friendly work environment where they can hone their skills.",
+                icon: <Users className="w-6 h-6 sm:w-7 sm:h-7" />,
+              },
+              {
+                title: "Contribute",
+                desc: "To the continued worldwide development of service industry through management.",
+                icon: <Award className="w-6 h-6 sm:w-7 sm:h-7" />,
+              },
+              {
+                title: "Pursue",
+                desc: "Total Quality and Customer Satisfaction allowing Company, Employees, and Community to grow.",
+                icon: <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7" />,
+              },
+              {
+                title: "Grow & Prosper",
+                desc: "With an appreciative feeling of mutual pride & trust.",
+                icon: <Heart className="w-6 h-6 sm:w-7 sm:h-7" />,
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 relative"
+              >
+                {/* Top section */}
+                <div className="flex items-center gap-3 mb-4 sm:mb-6 lg:block">
+                  <div
+                    className="sm:flex md:flex lg:hidden w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: COLORS.primaryLight }}
+                  >
+                    <div style={{ color: COLORS.primary }}>{item.icon}</div>
+                  </div>
+
+                  <div className="flex items-baseline gap-2">
+                    <span
+                      className={`${FONT_CLASSES.openSansBold} text-xs sm:text-sm text-gray-900`}
+                    >
+                      To
+                    </span>
+                    <h3
+                      className={`${FONT_CLASSES.poppinsBlack} text-lg sm:text-2xl text-gray-900 leading-tight`}
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* ✅ Description (normal weight, not bold) */}
+                <p
+                  className={`${FONT_CLASSES.rubikRegular} text-gray-700 text-[13px] sm:text-[14px] leading-relaxed mb-3 sm:mb-4`}
+                >
+                  {item.desc}
+                </p>
+
+                <div
+                  className="hidden lg:flex w-14 h-14 rounded-full items-center justify-center absolute bottom-4 right-4"
+                  style={{ backgroundColor: COLORS.primaryLight }}
+                >
+                  <div style={{ color: COLORS.primary }}>{item.icon}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

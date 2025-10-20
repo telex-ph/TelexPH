@@ -5,7 +5,7 @@ import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/
 export default function LocationHero() {
   return (
     <section
-      className="relative pt-40 pb-16 overflow-hidden"
+      className="relative pt-40 pb-1 overflow-hidden"
       style={{ backgroundColor: COLORS.white }}
     >
       {/* Background Stroke Text */}
@@ -26,7 +26,7 @@ export default function LocationHero() {
             opacity: 0.85,
           }}
         >
-          Our Location
+          OUR LOCATION
         </span>
       </div>
 
@@ -41,7 +41,7 @@ export default function LocationHero() {
               color: COLORS.black,
             }}
           >
-            Our Location
+            OUR LOCATION
           </h1>
 
           <p

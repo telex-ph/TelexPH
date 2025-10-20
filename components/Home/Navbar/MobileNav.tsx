@@ -1,12 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { navLinks } from "@/constant/constant";
+import { useRouter, usePathname } from "next/navigation";
+import { navLinks } from "@/constant/constant"; // Assuming this is defined
 import { RiCloseFill } from "react-icons/ri";
-import { PiArrowUpRightBold } from "react-icons/pi";
+import { HiChevronDown } from "react-icons/hi";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
+
+// Assuming you have a separate file for constants, like `constants/styles.ts`
+// Import the necessary constants for the fonts and weights
+// I'll define mock ones here for completeness, but you should import from your file
+const FONT_WEIGHTS = {
+  regular: 400,
+  bold: 700,
+  black: 900,
+} as const;
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -29,44 +39,100 @@ const rubik = Rubik({
   display: "swap",
 });
 
+type NavLinkType = {
+  id: number;
+  label: string;
+  url: string;
+  dropdown?: NavLinkType[];
+};
+
 type Props = {
   showNav: boolean;
   closeNav: () => void;
 };
 
 const MobileNav = ({ showNav, closeNav }: Props) => {
-  const handleLinkClick = () => {
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleToggleDropdown = (id: number) => {
+    setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
+  /**
+   * Function to scroll to an element based on its hash ID.
+   */
+  const scrollToSection = (hash: string) => {
+    const element = document.querySelector(hash);
+    if (element) {
+      const navbarHeight = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  /**
+   * Handles click events for all navigation links (parent and dropdown).
+   */
+  const handleScrollClick = (
+    e: React.MouseEvent<HTMLAnchorElement> | { preventDefault: () => void },
+    url: string
+  ) => {
+    // 1. Close the mobile navigation bar
     closeNav();
+    // 2. Close any open dropdown
+    setOpenDropdownId(null);
+
+    if (url.startsWith("#")) {
+      e.preventDefault();
+
+      const isHomepage = pathname === "/";
+
+      if (isHomepage) {
+        scrollToSection(url);
+      } else {
+        router.push("/" + url);
+
+        setTimeout(() => {
+          scrollToSection(url);
+        }, 150);
+      }
+    }
   };
 
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}>
+    <div
+      className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+    >
       {showNav && (
         <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm w-full h-screen z-[1000] transition-opacity duration-500"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm w-full h-screen z-[1000] transition-opacity duration-500"
           onClick={closeNav}
         ></div>
       )}
       <div
-        className={`fixed top-0 left-0 flex flex-col h-full w-[85%] sm:w-[75%] max-w-md z-[1050] transform transition-all duration-700 ease-out 
-                    ${showNav ? "translate-x-0" : "-translate-x-full"} 
-                    rounded-r-3xl overflow-hidden shadow-2xl`}
+        className={`fixed top-0 left-0 flex flex-col h-full w-[85%] sm:w-[75%] max-w-sm z-[1050] transform transition-all duration-500 ease-out 
+          ${showNav ? "translate-x-0" : "-translate-x-full"} 
+          bg-white shadow-2xl overflow-hidden`}
       >
-        <div className="absolute inset-0 bg-white/95 backdrop-blur-2xl backdrop-saturate-150 border-r border-gray-100"></div>
-
-        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl animate-spin-slow"></div>
-        <div className="absolute bottom-0 left-0 w-52 h-52 bg-blue-500/10 rounded-full blur-3xl animate-spin-slow-delay"></div>
-
         <div className="relative z-10 flex flex-col h-full">
-          <div className="px-6 py-6 flex justify-between items-center bg-[#282828] border-b border-white/20">
-            <div className="relative w-40 h-16">
+          {/* Mobile Nav Header */}
+          <div className="flex-shrink-0 px-6 py-5 flex justify-between items-center bg-gray-800">
+            <div className="relative w-[180px] h-[35px]">
               <Image
-                src="/images/Weblogo.png"
-                alt="TELEX Logo"
+                src="/images/Weblogo.webp"
+                alt="TELEXPH Delivery & Transport Logo"
                 fill
-                sizes="(max-width: 640px) 160px, (max-width: 1024px) 200px, 240px"
+                sizes="(max-width: 640px) 180px"
                 className="object-contain object-left drop-shadow-md"
                 priority
               />
@@ -74,80 +140,134 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
 
             <button
               onClick={closeNav}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 border border-white/20 text-white hover:bg-red-600 hover:border-red-600 shadow-xl transition-all duration-300 group"
+              className="w-8 h-8 flex items-center justify-center rounded-full text-white hover:text-[#a10000] hover:bg-white transition-all duration-300"
+              aria-label="Close mobile navigation"
             >
               <RiCloseFill className="w-6 h-6 transition-colors" />
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2 custom-scrollbar-light">
-            {navLinks.map((link) => (
-              <div key={link.id}>
-                <Link
-                  href={link.url}
-                  onClick={handleLinkClick}
-                  className={`relative flex items-center justify-between py-4 px-5 rounded-xl border transition-all duration-300 group 
-                            bg-white/80 border-gray-100 shadow-lg hover:bg-red-50 hover:border-red-300`}
-                >
-                  <span
-                    className={`text-[16px] font-open-sans-bold tracking-tight transition-colors duration-300
-                              text-gray-900 group-hover:text-red-600`}
+          {/* Mobile Nav Links Container (Scrollable) */}
+          <nav className="flex-1 overflow-y-auto custom-scrollbar-light divide-y divide-gray-100">
+            {navLinks.map((link: NavLinkType) => (
+              <div key={link.id} className="w-full">
+                <div className="flex items-stretch">
+                  <Link
+                    href={link.url}
+                    onClick={(e) => {
+                      handleScrollClick(e, link.url);
+                    }}
+                    // Using custom class for Open Sans Bold
+                    className={`flex-1 flex items-center py-4 px-6 text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:bg-gray-50 hover:text-[#a10000]`}
                   >
                     {link.label}
-                  </span>
+                  </Link>
 
+                  {/* Dropdown Toggle Button */}
+                  {link.dropdown && link.dropdown.length > 0 && (
+                    <button
+                      onClick={() => handleToggleDropdown(link.id)}
+                      className={`flex-shrink-0 w-14 flex items-center justify-center border-l border-gray-100 transition-colors duration-300 ${
+                        openDropdownId === link.id
+                          ? "bg-gray-100 text-[#a10000]"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-[#a10000]"
+                      }`}
+                      aria-expanded={openDropdownId === link.id}
+                      aria-controls={`dropdown-${link.id}`}
+                    >
+                      <HiChevronDown
+                        className={`w-5 h-5 transition-transform duration-300 ${
+                          openDropdownId === link.id ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  )}
+                </div>
+
+                {/* Dropdown Links */}
+                {link.dropdown && link.dropdown.length > 0 && (
                   <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300
-                              bg-red-100/50 group-hover:bg-red-600`}
+                    id={`dropdown-${link.id}`}
+                    className={`overflow-hidden transition-all duration-300 ease-in-out bg-gray-50/50 ${
+                      openDropdownId === link.id ? "max-h-[500px]" : "max-h-0"
+                    }`}
                   >
-                    <PiArrowUpRightBold
-                      className={`w-5 h-5 transition-colors text-red-500 group-hover:text-white`}
-                    />
+                    <div className="py-2 pl-6 pr-4 border-l-4 border-[#a10000] space-y-1">
+                      {link.dropdown.map((dropdownItem) => (
+                        <Link
+                          key={dropdownItem.id}
+                          href={dropdownItem.url}
+                          onClick={(e) =>
+                            handleScrollClick(e, dropdownItem.url)
+                          }
+                          // Using custom class for Rubik Regular
+                          className="group flex items-center py-2 px-4 text-sm text-gray-700 font-rubik-regular transition-colors duration-200 hover:bg-white hover:text-[#a10000] rounded-md"
+                        >
+                          <span className="w-1 h-1 rounded-full bg-red-400 group-hover:bg-[#a10000] mr-3 transition-colors"></span>
+                          {dropdownItem.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </Link>
+                )}
               </div>
             ))}
           </nav>
 
-          <div className="px-6 pb-6 pt-4 border-t border-gray-200 bg-white/95 text-center">
-            <p className="text-xs text-gray-500 font-rubik-regular">
+          {/* Mobile Nav Footer (Fixed/Non-scrollable) */}
+          <div className="flex-shrink-0 px-6 pb-6 pt-4 border-t border-gray-200 bg-white">
+            {/* CONTACT US Button (In the fixed footer area) */}
+            <div className="mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  // Using a mock event for button click to ensure proper handling
+                  handleScrollClick(
+                    { preventDefault: () => {} } as React.MouseEvent<HTMLAnchorElement>,
+                    "/contact"
+                  );
+                }}
+                // Using custom class for Open Sans Bold
+                className="w-full bg-[#a10000] hover:bg-red-700 text-white px-6 py-3 text-sm font-open-sans-bold transition-colors rounded cursor-pointer uppercase shadow-lg"
+              >
+                CONTACT US
+              </button>
+            </div>
+
+            {/* Copyright */}
+            <p className="text-xs text-gray-500 font-rubik-regular text-center">
               &copy; {currentYear} TELEX. All rights reserved.
             </p>
           </div>
         </div>
       </div>
 
-      <style jsx>{`
-        .custom-scrollbar-light::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar-light::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.05);
-          border-radius: 10px;
-        }
-        .custom-scrollbar-light::-webkit-scrollbar-thumb {
-          background-color: rgba(0, 0, 0, 0.15);
-          border-radius: 10px;
-          border: 2px solid transparent;
-          background-clip: content-box;
-        }
-        .custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(0, 0, 0, 0.3);
+      <style jsx global>{`
+        /* Custom font classes using CSS variables */
+        .font-open-sans-bold {
+          font-family: var(--font-open-sans), sans-serif;
+          font-weight: ${FONT_WEIGHTS.bold};
         }
 
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+        .font-rubik-regular {
+          font-family: var(--font-rubik), sans-serif;
+          font-weight: ${FONT_WEIGHTS.regular};
         }
-        .animate-spin-slow {
-          animation: spin-slow 25s linear infinite;
+      `}</style>
+      <style jsx>{`
+        /* Minimalist scrollbar for a cleaner look */
+        .custom-scrollbar-light::-webkit-scrollbar {
+          width: 6px;
         }
-        .animate-spin-slow-delay {
-          animation: spin-slow 25s linear infinite 5s;
+        .custom-scrollbar-light::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+        .custom-scrollbar-light::-webkit-scrollbar-thumb {
+          background-color: #ccc;
+          border-radius: 3px;
+        }
+        .custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
+          background-color: #a10000;
         }
       `}</style>
     </div>

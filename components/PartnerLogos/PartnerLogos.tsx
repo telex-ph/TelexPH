@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { DEFAULT_MAX_WIDTH_CLASS } from '../../constant/layout'; 
 
 const logos = [
-  { src: '/images/logo1.png', alt: 'Partner Logo 1' },
-  { src: '/images/logo2.png', alt: 'Partner Logo 2' },
-  { src: '/images/logo3.png', alt: 'Partner Logo 3' },
-  { src: '/images/logo4.png', alt: 'Partner Logo 4' },
-  { src: '/images/logo5.png', alt: 'Partner Logo 5' },
-  { src: '/images/logo6.png', alt: 'Partner Logo 6' },
-  { src: '/images/logo7.png', alt: 'Partner Logo 7' },
-  { src: '/images/logo8.png', alt: 'Partner Logo 8' },
+  { src: '/images/logo1.webp', alt: 'Partner Logo 1' },
+  { src: '/images/logo2.webp', alt: 'Partner Logo 2' },
+  { src: '/images/logo3.webp', alt: 'Partner Logo 3' },
+  { src: '/images/logo4.webp', alt: 'Partner Logo 4' },
+  { src: '/images/logo5.webp', alt: 'Partner Logo 5' },
+  { src: '/images/logo6.webp', alt: 'Partner Logo 6' },
+  { src: '/images/logo7.webp', alt: 'Partner Logo 7' },
+  { src: '/images/logo8.webp', alt: 'Partner Logo 8' },
 ];
 
 const PartnerLogos: React.FC = () => {

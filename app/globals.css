@@ -1,75 +1,108 @@
 @import "tailwindcss";
 
+/* -----------------------------------------------------------
+   GLOBAL SCROLL & HTML SETTINGS
+----------------------------------------------------------- */
 html {
+  scroll-behavior: smooth;
   scroll-padding-top: 120px;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+  background-color: #ffffff;
+}
+
+/* Prevent mobile overscroll bounce and improve map touch handling */
+body {
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+}
+
+/* -----------------------------------------------------------
+   COLOR VARIABLES & BASE TYPOGRAPHY
+----------------------------------------------------------- */
 @layer base {
   :root {
-    --color-primary: #a10000; 
+    --color-primary: #a10000;
     --color-dark: #282828;
     --color-white: #ffffff;
     --color-black: #000000;
-    
+
     --color-text-primary: #000000;
     --color-text-secondary: #282828;
     --color-background: #ffffff;
     --color-accent: #a10000;
-    
+
     --color-primary-rgb: 161, 0, 0;
     --color-dark-rgb: 40, 40, 40;
   }
-  
+
   body {
     font-family: var(--font-rubik), sans-serif;
     font-weight: 400;
     background-color: var(--color-background);
     color: var(--color-text-primary);
   }
-}
 
+  .font-poppins-bold {
+    font-family: var(--font-poppins), sans-serif;
+    font-weight: 700;
+  }
 
-@layer utilities {
-  
   .font-poppins-black {
     font-family: var(--font-poppins), sans-serif;
     font-weight: 900;
   }
-  
+
   .font-open-sans-bold {
     font-family: var(--font-open-sans), sans-serif;
     font-weight: 700;
   }
-  
+
   .font-rubik-regular {
     font-family: var(--font-rubik), sans-serif;
-    font-weight: 400; 
+    font-weight: 400;
   }
-  
+}
+
+/* -----------------------------------------------------------
+   UTILITIES
+----------------------------------------------------------- */
+@layer utilities {
   .animate-wiggle {
     animation: wiggle 1s ease-in-out infinite;
   }
-  
+
   .animate-infinite-slide {
     animation: infinite-slide 20s linear infinite;
   }
-  
+
   .pause-animation {
     animation-play-state: paused !important;
   }
 }
 
+/* -----------------------------------------------------------
+   TEXT EFFECTS
+----------------------------------------------------------- */
 .text-outline-red-thin {
   color: transparent;
-  -webkit-text-stroke: 1px rgba(161, 0, 0, 0.3); 
+  -webkit-text-stroke: 1px rgba(161, 0, 0, 0.3);
 }
 
+/* -----------------------------------------------------------
+   KEYFRAMES
+----------------------------------------------------------- */
 @keyframes wiggle {
-  0%, 100% { 
-    transform: rotate(-15deg); 
+  0%, 100% {
+    transform: rotate(-15deg);
   }
-  50% { 
-    transform: rotate(15deg); 
+  50% {
+    transform: rotate(15deg);
   }
 }
 
@@ -78,71 +111,82 @@ html {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%); 
+    transform: translateX(-50%);
   }
 }
 
+/* Pause animation on hover (used for carousels or slides) */
 .group:hover .animate-infinite-slide {
   animation-play-state: paused;
 }
 
-#about {
-  scroll-margin-top: 100px;
-}
-
+/* -----------------------------------------------------------
+   SECTION SCROLL MARGINS
+----------------------------------------------------------- */
+#home,
+#about,
 #process {
   scroll-margin-top: 100px;
 }
 
-#home {
-  scroll-margin-top: 100px;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  overscroll-behavior: none; 
-  scroll-behavior: smooth;
-  background-color: #ffffff; 
-}
-
+/* -----------------------------------------------------------
+   HERO & MODAL BEHAVIOR
+----------------------------------------------------------- */
 .hero-section {
   overscroll-behavior: contain;
 }
 
-/* globals.css */
+/* Disable scroll when modal is open */
 body.modal-open {
-  overflow: hidden !important; 
-  position: fixed; 
+  overflow: hidden !important;
+  position: fixed;
   width: 100%;
   height: 100%;
-}
-body.modal-open ::-webkit-scrollbar {
-  display: none; 
-}
-body.modal-open {
   touch-action: none;
 }
-
-
-@layer base {
-  .font-poppins-bold {
-    font-family: var(--font-poppins);
-    font-weight: 700;
-  }
-  .font-open-sans-bold {
-    font-family: var(--font-open-sans);
-    font-weight: 700;
-  }
+body.modal-open ::-webkit-scrollbar {
+  display: none;
 }
 
+/* -----------------------------------------------------------
+   NAVIGATION STYLES
+----------------------------------------------------------- */
 .nav-dropdown-menu {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); 
-  border-radius: 0 0 6px 6px; 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 6px 6px;
 }
 
 .nav-link-item a,
 .nav-dropdown-menu a {
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* -----------------------------------------------------------
+   MAP & PIN FIXED CENTER HELPERS
+----------------------------------------------------------- */
+
+/* For consistent map frame layout */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  filter: grayscale(100%) contrast(1.2);
+}
+
+/* Fixed centered pin overlay (for ContactMap.tsx) */
+.fixed-pin-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
@@ -36,17 +37,53 @@ type Props = {
 const Nav = ({ openNav }: Props) => {
   const [navBg, setNavBg] = useState(false);
   const prevScrollY = useRef(0);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Dropdown state (commented out)
-  // const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const handleMouseEnter = (id: number) => {
+    setOpenDropdownId(id);
+  };
 
-  // const handleMouseEnter = (id: number) => {
-  //   setOpenDropdownId(id);
-  // };
+  const handleMouseLeave = () => {
+    setOpenDropdownId(null);
+  };
 
-  // const handleMouseLeave = () => {
-  //   setOpenDropdownId(null);
-  // };
+  const handleScrollClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    url: string
+  ) => {
+    if (url.startsWith("#")) {
+      e.preventDefault();
+
+      const isHomepage = pathname === "/";
+
+      if (isHomepage) {
+        scrollToSection(url);
+      } else {
+        router.push("/" + url);
+
+        setTimeout(() => {
+          scrollToSection(url);
+        }, 100);
+      }
+    }
+  };
+
+  const scrollToSection = (hash: string) => {
+    const element = document.querySelector(hash);
+    if (element) {
+      const navbarHeight = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,7 +115,7 @@ const Nav = ({ openNav }: Props) => {
                 lg:w-[350px]"
           >
             <Image
-              src="/images/Weblogo.png"
+              src="/images/Weblogo.webp"
               alt="TELEXPH Delivery & Transport Logo"
               width={250}
               height={50}
@@ -92,19 +129,19 @@ const Nav = ({ openNav }: Props) => {
             />
           </div>
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
-            
-            {/* START: NAVIGATION LINKS (Dropdown commented out) */}
+            {/* START: NAVIGATION LINKS */}
             <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <div
                   key={link.id}
                   className="relative h-full flex items-center"
-                  // onMouseEnter={() => handleMouseEnter(link.id)}
-                  // onMouseLeave={handleMouseLeave}
+                  onMouseEnter={() => handleMouseEnter(link.id)}
+                  onMouseLeave={handleMouseLeave}
                 >
                   <Link
                     href={link.url}
-                    className="relative py-[30px] scroll-smooth"
+                    onClick={(e) => handleScrollClick(e, link.url)}
+                    className="relative py-[30px]"
                   >
                     <span
                       className={`text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]`}
@@ -113,23 +150,31 @@ const Nav = ({ openNav }: Props) => {
                     </span>
                   </Link>
 
-                  {/* Dropdown menu (commented out) */}
-                  {/* {link.dropdown && link.dropdown.length > 0 && openDropdownId === link.id && (
-                    <div 
-                      className="absolute top-full left-0 mt-[-2px] bg-white border border-gray-100 shadow-lg min-w-[180px] z-20 py-2 rounded-b-md"
-                    >
-                      {link.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.id}
-                          href={dropdownItem.url}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f5f5f5] hover:text-[#a10000] whitespace-nowrap transition-colors"
-                          onClick={handleMouseLeave}
-                        >
-                          {dropdownItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )} */}
+                  {/* UPDATED DROPDOWN DESIGN */}
+                  {link.dropdown &&
+                    link.dropdown.length > 0 &&
+                    openDropdownId === link.id && (
+                      <div className="absolute top-full left-0 mt-[-2px] bg-gradient-to-b from-white to-gray-50 border-t-2 border-[#a10000] shadow-xl min-w-[200px] z-20 rounded-b-lg overflow-hidden">
+                        {link.dropdown.map((dropdownItem, index) => (
+                          <Link
+                            key={dropdownItem.id}
+                            href={dropdownItem.url}
+                            onClick={(e) => {
+                              handleScrollClick(e, dropdownItem.url);
+                              handleMouseLeave();
+                            }}
+                            className={`group block px-5 py-3 text-sm text-gray-700 hover:bg-[#a10000] hover:text-white transition-all duration-200 relative ${
+                              index !== link.dropdown!.length - 1 ? 'border-b border-gray-200' : ''
+                            }`}
+                          >
+                            <span className="flex items-center">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#a10000] group-hover:bg-white mr-2.5 transition-colors"></span>
+                              {dropdownItem.label}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
@@ -138,17 +183,16 @@ const Nav = ({ openNav }: Props) => {
             <div className="flex items-center space-x-8 ml-auto">
               <button
                 type="button"
-                onClick={() =>
-                  window.open(
-                    "https://hiretelex.com/scale-with-telex",
-                    "_blank"
-                  )
-                }
+                onClick={() => (window.location.href = "/contact")}
                 className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded cursor-pointer"
               >
                 CONTACT US
               </button>
-              <button onClick={openNav} className="lg:hidden text-gray-700 p-2">
+              <button
+                onClick={openNav}
+                className="lg:hidden text-gray-700 p-2"
+                aria-label="Open mobile navigation"
+              >
                 <HiBars3BottomRight className="w-6 h-6" />
               </button>
             </div>

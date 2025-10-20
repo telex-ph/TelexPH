@@ -12,7 +12,7 @@ const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
 const services = [
   {
     title: "Customer Support Outsourcing",
-    imageSrc: "/images/services1.jpg",
+    imageSrc: "/images/services1.webp",
     isHighlight: false,
     icon: (
       <>
@@ -25,7 +25,7 @@ const services = [
   },
   {
     title: "Technical Helpdesk",
-    imageSrc: "/images/services2.jpg",
+    imageSrc: "/images/services2.webp",
     isHighlight: true,
     icon: (
       <>
@@ -37,7 +37,7 @@ const services = [
   },
   {
     title: "Sales & Lead Generation",
-    imageSrc: "/images/services3.jpg",
+    imageSrc: "/images/services3.webp",
     isHighlight: false,
     icon: (
       <>
@@ -49,7 +49,7 @@ const services = [
   },
   {
     title: "Virtual Assistance",
-    imageSrc: "/images/services4.jpg",
+    imageSrc: "/images/services4.webp",
     isHighlight: false,
     icon: (
       <>
@@ -60,7 +60,7 @@ const services = [
   },
   {
     title: "Back Office Operations",
-    imageSrc: "/images/services5.jpg",
+    imageSrc: "/images/services5.webp",
     isHighlight: false,
     icon: (
       <>
@@ -72,7 +72,7 @@ const services = [
   },
   {
     title: "Social Media Management",
-    imageSrc: "/images/services6.jpg",
+    imageSrc: "/images/services6.webp",
     isHighlight: false,
     icon: (
       <>

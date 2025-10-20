@@ -81,7 +81,7 @@ export default function LoadingProvider({ children }: LoadingProviderProps) {
           <div className="relative z-10 flex flex-col items-center gap-6">
             <div className="w-48 h-48 flex items-center justify-center">
               <Image
-                src="/images/telexlogo.png"
+                src="/images/telexlogo.webp"
                 alt="TelexPH Logo"
                 width={180}
                 height={180}
@@ -118,7 +118,7 @@ export default function LoadingProvider({ children }: LoadingProviderProps) {
           <div className="relative z-10 flex flex-col items-center gap-6">
             <div className="w-48 h-48 flex items-center justify-center">
               <Image
-                src="/images/telexlogo.png"
+                src="/images/telexlogo.webp"
                 alt="TelexPH Logo"
                 width={180}
                 height={180}
