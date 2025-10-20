@@ -291,7 +291,7 @@ export default function ServiceProcess() {
             </span>
           </div>
           <h2
-            className={`${FONT_CLASSES.poppinsBlack} text-3xl md:text-4xl lg:text-5xl mb-4`}
+            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-4`}
             style={{ color: SEMANTIC_COLORS.text.primary }}
           >
             Our Work <span style={{ color: COLORS.primary }}>Process</span>

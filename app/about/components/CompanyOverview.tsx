@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Check, PhoneCall } from "lucide-react";
-import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles"; 
+import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles";
 
 export default function CompanyOverview() {
   return (
@@ -14,40 +14,42 @@ export default function CompanyOverview() {
       <div className="w-[90%] mx-auto max-w-[1300px]">
         <div className="grid md:grid-cols-2 gap-10 lg:gap-20 items-center">
           {/* ====================== IMAGE SIDE ====================== */}
-          <div className="relative h-[450px] md:h-[600px] lg:h-[700px] order-1 flex items-center justify-center">
-            <div className="relative w-full h-full">
-              <Image
-                src="/images/about2.webp"
-                alt="Business professionals collaborating"
-                fill
-                priority
-                style={{
-                  objectFit: "contain",
-                  objectPosition: "center",
-                }}
-                className="transition-transform duration-500"
-              />
-            </div>
+          <div className="relative h-[450px] md:h-[600px] lg:h-[700px] flex items-center justify-center">
+            <Image
+              src="/images/about2.webp"
+              alt="Business professionals collaborating"
+              fill
+              priority
+              style={{
+                objectFit: "contain",
+                objectPosition: "center",
+              }}
+              className="transition-transform duration-500"
+            />
           </div>
 
           {/* ====================== TEXT SIDE ====================== */}
-          <div className="order-2">
+          <div>
+            {/* BADGE */}
             <span
-              className={`${FONT_CLASSES.openSansBold} text-base uppercase tracking-[0.2em]`}
+              className={`${FONT_CLASSES.openSansBold} text-sm uppercase tracking-[0.25em] px-6 py-2 rounded-full inline-block`}
               style={{ color: COLORS.primary }}
             >
               — ABOUT COMPANY
             </span>
 
+            {/* HEADING */}
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-gray-900 text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+              className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+              style={{ color: SEMANTIC_COLORS.text.primary }}
             >
-              Powering Your Business <br className="hidden lg:inline" /> the
-              Smart Way
+              Powering Your Business <br className="hidden lg:inline" />
+              <span style={{ color: COLORS.primary }}>the Smart Way</span>
             </h2>
 
+            {/* DESCRIPTION */}
             <p
-              className={`${FONT_CLASSES.rubikRegular} mb-5 leading-relaxed`}
+              className={`${FONT_CLASSES.rubikRegular} mb-5 leading-relaxed text-lg`}
               style={{ color: SEMANTIC_COLORS.text.secondary }}
             >
               At Telex Philippines, we provide innovative and cost-efficient
@@ -56,18 +58,17 @@ export default function CompanyOverview() {
               we are committed to excellence, reliability, and smart growth.
             </p>
 
-            {/* ====================== FEATURES + IMAGE GRID ====================== */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mb-6">
+            {/* FEATURES + IMAGE GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* FEATURE LIST */}
-              <div className="mt-6 md:mt-0">
+              <div>
                 <h3
                   className={`${FONT_CLASSES.openSansBold} text-xl mb-6`}
                   style={{ color: SEMANTIC_COLORS.text.primary }}
                 >
                   Best Feature List <br /> About Us
                 </h3>
-
-                <div className="grid grid-cols-1 gap-y-5">
+                <div className="grid grid-cols-1 gap-y-4">
                   {[
                     "Award-Winning Excellence",
                     "Scalable Solutions",
@@ -130,7 +131,7 @@ export default function CompanyOverview() {
               </div>
             </div>
 
-            {/* ====================== CTA BUTTON ====================== */}
+            {/* CTA BUTTON */}
             <div className="flex flex-wrap items-center gap-6 mt-8">
               <a
                 href="#"

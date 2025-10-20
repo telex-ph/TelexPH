@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FaLinkedin } from "react-icons/fa"; // Import the LinkedIn icon
+import { FaLinkedin } from "react-icons/fa"; // LinkedIn icon
 
 const COLORS = {
   primary: "#a10000",
@@ -30,7 +30,7 @@ const FONT_WEIGHTS = {
 };
 
 // --------------------------------------------
-// Define TypeScript interfaces
+// MemberCard Component
 // --------------------------------------------
 interface MemberCardProps {
   img: string;
@@ -40,9 +40,6 @@ interface MemberCardProps {
   imagePositionClass?: string;
 }
 
-// --------------------------------------------
-// Member Card Component (with background image)
-// --------------------------------------------
 const MemberCard = ({
   img,
   name,
@@ -52,7 +49,7 @@ const MemberCard = ({
 }: MemberCardProps) => {
   return (
     <div className="relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full max-w-sm mx-auto">
-      {/* Image Section - now with background image */}
+      {/* Image Section */}
       <div
         className="relative pt-[120%] bg-cover bg-center bg-no-repeat"
         style={{
@@ -132,13 +129,13 @@ export default function Team() {
     >
       <div className="w-[90%] mx-auto max-w-[1300px] text-center">
         {/* Header */}
-        <div className="mb-16">
+        <div className="mb-16 text-center">
           <span
-            className="text-base uppercase tracking-[0.2em]"
+            className="text-sm uppercase tracking-[0.25em] px-6 py-2 rounded-full inline-block"
             style={{
-              color: COLORS.primary,
-              fontFamily: FONTS.poppins,
+              fontFamily: FONTS.openSans,
               fontWeight: FONT_WEIGHTS.bold,
+              color: COLORS.primary,
             }}
           >
             — MEET OUR TEAM
@@ -147,12 +144,12 @@ export default function Team() {
           <h1
             className="mt-4 mb-4 text-4xl md:text-5xl leading-tight"
             style={{
-              fontFamily: FONTS.poppins,
-              fontWeight: FONT_WEIGHTS.black,
+              fontFamily: FONTS.openSans,
+              fontWeight: FONT_WEIGHTS.bold,
               color: SEMANTIC_COLORS.text.primary,
             }}
           >
-            The Team That Helps You Scale Smarter
+            The Team That Helps You <span style={{ color: COLORS.primary }}>Scale Smarter</span>
           </h1>
 
           <p
@@ -174,7 +171,7 @@ export default function Team() {
         <h2
           className="text-3xl mb-8"
           style={{
-            fontFamily: FONTS.poppins,
+            fontFamily: FONTS.openSans,
             fontWeight: FONT_WEIGHTS.bold,
             color: SEMANTIC_COLORS.text.primary,
           }}
@@ -206,7 +203,7 @@ export default function Team() {
             <h2
               className="text-3xl mb-8"
               style={{
-                fontFamily: FONTS.poppins,
+                fontFamily: FONTS.openSans,
                 fontWeight: FONT_WEIGHTS.bold,
                 color: SEMANTIC_COLORS.text.primary,
               }}
@@ -236,7 +233,7 @@ export default function Team() {
             <h2
               className="text-3xl mb-8"
               style={{
-                fontFamily: FONTS.poppins,
+                fontFamily: FONTS.openSans,
                 fontWeight: FONT_WEIGHTS.bold,
                 color: SEMANTIC_COLORS.text.primary,
               }}
@@ -266,7 +263,7 @@ export default function Team() {
         <h2
           className="text-3xl mb-8"
           style={{
-            fontFamily: FONTS.poppins,
+            fontFamily: FONTS.openSans,
             fontWeight: FONT_WEIGHTS.bold,
             color: SEMANTIC_COLORS.text.primary,
           }}

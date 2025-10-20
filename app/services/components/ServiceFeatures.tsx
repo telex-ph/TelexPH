@@ -138,7 +138,7 @@ const ServiceCard: React.FC<{
         />
 
         <h3
-          className={`${FONT_CLASSES.poppinsBlack} text-2xl mb-4 transition-colors duration-300`}
+          className={`${FONT_CLASSES.openSansBold} text-2xl mb-4 transition-colors duration-300`}
           style={{ color: service.textColor }}
         >
           {service.title}
@@ -173,15 +173,11 @@ const CarouselPagination: React.FC<{
         <button
           key={index}
           onClick={() => scrollTo(index)}
-          className={`
-            h-2.5 rounded-full transition-all duration-300 ease-out
-            hover:opacity-100
-            ${
-              index === activeIndex
-                ? "w-8 opacity-100"
-                : "bg-gray-300 w-2.5 opacity-50 hover:opacity-70"
-            }
-          `}
+          className={`h-2.5 rounded-full transition-all duration-300 ease-out hover:opacity-100 ${
+            index === activeIndex
+              ? "w-8 opacity-100"
+              : "bg-gray-300 w-2.5 opacity-50 hover:opacity-70"
+          }`}
           style={{
             backgroundColor: index === activeIndex ? COLORS.primary : undefined,
           }}
@@ -205,10 +201,7 @@ const ServiceCarousel: React.FC<{ services: typeof services }> = ({
         scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
 
       const newIndex = Math.round(scrollLeft / (itemWidth + 16));
-
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex);
-      }
+      if (newIndex !== activeIndex) setActiveIndex(newIndex);
     }
   };
 
@@ -237,16 +230,8 @@ const ServiceCarousel: React.FC<{ services: typeof services }> = ({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="
-          relative 
-          flex snap-x snap-mandatory overflow-x-scroll overflow-y-visible
-          space-x-4 px-4 pb-4
-          scrollbar-hide
-        "
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
+        className="relative flex snap-x snap-mandatory overflow-x-scroll overflow-y-visible space-x-4 px-4 pb-4 scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {services.map((service, index) => (
           <div key={index} className="flex-shrink-0 w-full snap-start">
@@ -285,7 +270,7 @@ export default function ServiceFeatures() {
             </span>
           </div>
           <h2
-            className={`${FONT_CLASSES.poppinsBlack} text-3xl md:text-4xl lg:text-5xl mb-4`}
+            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-4`}
             style={{ color: COLORS.black }}
           >
             Services Designed to
