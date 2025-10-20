@@ -49,7 +49,7 @@ const MemberCard = ({
     <div className="relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-64 flex-shrink-0">
       <div
         className="relative h-64 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('images/bgmeet.webp')" }}
+        style={{ backgroundImage: "url('images/bgteam.webp')" }}
       >
         <img
           src={img}
