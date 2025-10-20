@@ -5,8 +5,6 @@ import Image from "next/image";
 import ReCAPTCHA from "react-google-recaptcha";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
 
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!;
-
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -17,6 +15,9 @@ const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+
+  // Safely read the reCAPTCHA site key
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -33,6 +34,11 @@ const ContactForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!RECAPTCHA_SITE_KEY) {
+      setStatus("⚠️ reCAPTCHA is not configured. Cannot submit form.");
+      return;
+    }
+
     if (!recaptchaToken) {
       setStatus(
         "⚠️ Please complete the reCAPTCHA challenge before submitting."
@@ -47,7 +53,6 @@ const ContactForm = () => {
     formDataToSend.append("name", formData.name);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("message", formData.message);
-
     formDataToSend.append("g-recaptcha-response", recaptchaToken);
 
     try {
@@ -149,17 +154,23 @@ const ContactForm = () => {
         />
 
         <div className="pt-2">
-          <ReCAPTCHA
-            sitekey={RECAPTCHA_SITE_KEY}
-            onChange={handleRecaptchaChange}
-          />
+          {RECAPTCHA_SITE_KEY ? (
+            <ReCAPTCHA
+              sitekey={RECAPTCHA_SITE_KEY}
+              onChange={handleRecaptchaChange}
+            />
+          ) : (
+            <p className="text-red-600 text-sm">
+              ⚠️ reCAPTCHA key is missing. Please contact support.
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
-          disabled={isSubmitting || !recaptchaToken}
+          disabled={isSubmitting || !recaptchaToken || !RECAPTCHA_SITE_KEY}
           className={`w-full text-white font-semibold py-3 px-6 rounded-xl shadow-md transition duration-300 transform ${
-            isSubmitting || !recaptchaToken
+            isSubmitting || !recaptchaToken || !RECAPTCHA_SITE_KEY
               ? "bg-gray-400 cursor-not-allowed shadow-none"
               : "bg-[#a10000] hover:bg-[#8a0000] hover:scale-[1.01] active:scale-[0.99]"
           }`}
