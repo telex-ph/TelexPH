@@ -28,17 +28,13 @@ const ContactSection: React.FC = () => {
             </span>
           </div>
 
-          <h1
-            className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-4xl lg:text-5xl leading-snug sm:leading-tight tracking-tight`}
-            style={{
-              color: SEMANTIC_COLORS.text.primary,
-              fontFamily: FONTS.poppins,
-              fontWeight: FONT_WEIGHTS.black,
-            }}
+          <h2
+            className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+            style={{ color: SEMANTIC_COLORS.text.primary }}
           >
-            Connect with Us for <br className="hidden sm:block" />
+            Connect with Us for <br className="hidden lg:inline" />
             <span style={{ color: COLORS.primary }}>Immediate Assistance</span>
-          </h1>
+          </h2>
         </div>
         <div className="flex-1 flex flex-col sm:flex-row sm:items-start lg:items-center gap-4 sm:gap-6">
           <div

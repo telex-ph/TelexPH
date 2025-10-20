@@ -33,12 +33,8 @@ const OfficeLocationHeader: React.FC = () => {
           </div>
 
           <h2
-            className={`${FONT_CLASSES.poppinsBlack} text-3xl md:text-4xl lg:text-5xl mb-3`}
-            style={{
-              color: SEMANTIC_COLORS.text.primary,
-              fontFamily: FONTS.poppins,
-              fontWeight: FONT_WEIGHTS.black,
-            }}
+            className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+            style={{ color: SEMANTIC_COLORS.text.primary }}
           >
             Visit Our{" "}
             <span style={{ color: COLORS.primary }}>Office Locations</span>

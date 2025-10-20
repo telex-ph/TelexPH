@@ -1,5 +1,5 @@
 import React from "react";
-import { COLORS, FONTS, FONT_WEIGHTS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, FONTS, FONT_WEIGHTS, FONT_CLASSES, SEMANTIC_COLORS } from "@/constant/styles";
 
 const ContactInfo: React.FC = () => {
   const secondaryTextColor = "#6b7280";
@@ -21,12 +21,8 @@ const ContactInfo: React.FC = () => {
         </div>
 
         <h2
-          className={`${FONT_CLASSES.poppinsBlack} text-3xl md:text-4xl lg:text-5xl mb-4`}
-          style={{
-            color: COLORS.black,
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.black,
-          }}
+          className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+          style={{ color: SEMANTIC_COLORS.text.primary }}
         >
           Get in <span style={{ color: COLORS.primary }}>Touch</span>
         </h2>
@@ -66,7 +62,7 @@ const ContactInfo: React.FC = () => {
                 color: secondaryTextColor,
               }}
             >
-              Guimba, Nueva Ecija, 
+              Guimba, Nueva Ecija,
               <br />
               Philippines
             </p>

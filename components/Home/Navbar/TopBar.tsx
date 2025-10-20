@@ -87,7 +87,7 @@ const TopBar = () => {
               >
                 <MapPin className="w-4 h-4" />
                 <span className="text-xs sm:text-sm underline underline-offset-2">
-                  Cawayan Bugtong, Guimba, Nueva Ecija
+                  Guimba, Nueva Ecija
                 </span>
               </Link>
               <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ const TopBar = () => {
             >
               <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="text-xs underline underline-offset-2 whitespace-nowrap">
-                Cawayan Bugtong, Guimba, Nueva Ecija
+                Guimba, Nueva Ecija
               </span>
             </Link>
           </div>
@@ -165,7 +165,7 @@ const TopBar = () => {
             >
               <MapPin className="w-3 h-3 flex-shrink-0" />
               <span className="text-[10px] underline underline-offset-2 whitespace-nowrap">
-                Cawayan Bugtong, Guimba, Nueva Ecija
+                Guimba, Nueva Ecija
               </span>
             </Link>
           </div>
