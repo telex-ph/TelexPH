@@ -35,7 +35,7 @@ const FooterPosts: React.FC = () => {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full px-4 sm:px-0">
       <div className="mb-6">
         <h3 className="font-poppins-black mb-2 text-base text-white">
           Popular Post
@@ -43,17 +43,8 @@ const FooterPosts: React.FC = () => {
         <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
 
-      <div
-        className="
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-2 
-          lg:grid-cols-2 
-          gap-4 
-          w-full 
-        "
-      >
+      {/* Mobile: 2x2 grid, mid & large screens unchanged */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 w-full">
         {posts.map((post) => (
           <Link
             key={post.id}
@@ -63,7 +54,8 @@ const FooterPosts: React.FC = () => {
               : {})}
             className="
               relative 
-              aspect-square 
+              aspect-[3/2] sm:aspect-square  /* mobile slightly rectangular, larger screens square */
+              max-h-40 sm:max-h-none        /* smaller on mobile, unrestricted mid/large */
               rounded-lg 
               overflow-hidden 
               group 
@@ -81,38 +73,34 @@ const FooterPosts: React.FC = () => {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
-            <div
-              className="
-                absolute 
-                inset-0 
-                bg-[#a10000]/80 
-                opacity-0 
-                group-hover:opacity-100 
-                transition-opacity 
-                duration-300 
-                p-4 
-                flex 
-                flex-col 
-                justify-between
-              "
-            >
+            <div className="
+              absolute 
+              inset-0 
+              bg-[#a10000]/80 
+              opacity-0 
+              group-hover:opacity-100 
+              transition-opacity 
+              duration-300 
+              p-4 
+              flex 
+              flex-col 
+              justify-between
+            ">
               <div className="flex justify-start">
-                <div
-                  className="
-                    w-10 
-                    h-10 
-                    bg-white 
-                    rounded-full 
-                    flex 
-                    items-center 
-                    justify-center 
-                    transform 
-                    scale-0 
-                    group-hover:scale-100 
-                    transition-transform 
-                    duration-300
-                  "
-                >
+                <div className="
+                  w-10 
+                  h-10 
+                  bg-white 
+                  rounded-full 
+                  flex 
+                  items-center 
+                  justify-center 
+                  transform 
+                  scale-0 
+                  group-hover:scale-100 
+                  transition-transform 
+                  duration-300
+                ">
                   <svg
                     className="w-5 h-5 text-[#a10000]"
                     fill="none"
@@ -129,26 +117,22 @@ const FooterPosts: React.FC = () => {
                 </div>
               </div>
 
-              <div
-                className="
-                  text-white 
-                  transform 
-                  translate-y-2 
-                  opacity-0 
-                  group-hover:translate-y-0 
-                  group-hover:opacity-100 
-                  transition-all 
-                  duration-300
-                "
-              >
-                <p
-                  className="
-                    text-sm 
-                    md:text-base 
-                    font-open-sans-bold 
-                    leading-tight
-                  "
-                >
+              <div className="
+                text-white 
+                transform 
+                translate-y-2 
+                opacity-0 
+                group-hover:translate-y-0 
+                group-hover:opacity-100 
+                transition-all 
+                duration-300
+              ">
+                <p className="
+                  text-sm 
+                  md:text-base 
+                  font-open-sans-bold 
+                  leading-tight
+                ">
                   {post.title}
                 </p>
               </div>
