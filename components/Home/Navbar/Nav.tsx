@@ -49,25 +49,20 @@ const Nav = ({ openNav }: Props) => {
     setOpenDropdownId(null);
   };
 
-  // ✅ IMPROVED: Handle smooth scroll with Next.js router (NO DELAY)
   const handleScrollClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     url: string
   ) => {
-    // Check if it's a hash link (anchor link)
     if (url.startsWith("#")) {
       e.preventDefault();
 
       const isHomepage = pathname === "/";
 
       if (isHomepage) {
-        // On homepage - just scroll to section
         scrollToSection(url);
       } else {
-        // On other pages - use Next.js router (faster, no reload)
         router.push("/" + url);
 
-        // After navigation, scroll to section
         setTimeout(() => {
           scrollToSection(url);
         }, 100);
@@ -75,7 +70,6 @@ const Nav = ({ openNav }: Props) => {
     }
   };
 
-  // Helper function to scroll to section
   const scrollToSection = (hash: string) => {
     const element = document.querySelector(hash);
     if (element) {
@@ -156,12 +150,12 @@ const Nav = ({ openNav }: Props) => {
                     </span>
                   </Link>
 
-                  {/* Dropdown menu */}
+                  {/* UPDATED DROPDOWN DESIGN */}
                   {link.dropdown &&
                     link.dropdown.length > 0 &&
                     openDropdownId === link.id && (
-                      <div className="absolute top-full left-0 mt-[-2px] bg-white border border-gray-100 shadow-lg min-w-[180px] z-20 py-2 rounded-b-md">
-                        {link.dropdown.map((dropdownItem) => (
+                      <div className="absolute top-full left-0 mt-[-2px] bg-gradient-to-b from-white to-gray-50 border-t-2 border-[#a10000] shadow-xl min-w-[200px] z-20 rounded-b-lg overflow-hidden">
+                        {link.dropdown.map((dropdownItem, index) => (
                           <Link
                             key={dropdownItem.id}
                             href={dropdownItem.url}
@@ -169,9 +163,14 @@ const Nav = ({ openNav }: Props) => {
                               handleScrollClick(e, dropdownItem.url);
                               handleMouseLeave();
                             }}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f5f5f5] hover:text-[#a10000] whitespace-nowrap transition-colors"
+                            className={`group block px-5 py-3 text-sm text-gray-700 hover:bg-[#a10000] hover:text-white transition-all duration-200 relative ${
+                              index !== link.dropdown!.length - 1 ? 'border-b border-gray-200' : ''
+                            }`}
                           >
-                            {dropdownItem.label}
+                            <span className="flex items-center">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#a10000] group-hover:bg-white mr-2.5 transition-colors"></span>
+                              {dropdownItem.label}
+                            </span>
                           </Link>
                         ))}
                       </div>
