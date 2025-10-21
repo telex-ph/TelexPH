@@ -1,12 +1,20 @@
 import { MetadataRoute } from 'next'
 
+const routes = [
+  { path: '/', priority: 1.0 },
+  { path: '/location', priority: 0.8 },
+  { path: '/about', priority: 0.8 },
+  { path: '/services', priority: 0.8 },
+  { path: '/contact', priority: 0.8 },
+]
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: 'https://telexph.com',
-      lastModified: new Date(),
-      changeFrequency: 'weekly', 
-      priority: 1, 
-    },
-  ]
+  const baseUrl = 'https://www.telexph.com'
+
+  return routes.map(route => ({
+    url: `${baseUrl}${route.path}`,
+    lastModified: new Date(), 
+    changeFrequency: 'weekly',
+    priority: route.priority,
+  }))
 }
