@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react"; 
-import ComingSoonModal from "@/components/Modals/ComingSoonModal"; // Adjust path as needed (e.g., '@/components/modals/ComingSoonModal')
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
@@ -152,8 +152,8 @@ const ServiceCard = ({
         >
           {service.title}
         </h3>
-        <a
-          href="#"
+        <Link
+          href="/services"
           className="flex items-center text-sm font-rubik-regular transition-colors gap-1.5 group/link"
         >
           <span
@@ -179,29 +179,22 @@ const ServiceCard = ({
           >
             Read More
           </span>
-        </a>
+        </Link>
       </div>
     </div>
   );
 };
 
-// Updated ViewAllServicesButton: Now accepts onClick prop for modal
 interface ViewAllServicesButtonProps {
   isLargeScreenHeader?: boolean;
-  onClick?: () => void; // New prop for opening modal
 }
 
 const ViewAllServicesButton: React.FC<ViewAllServicesButtonProps> = ({ 
-  isLargeScreenHeader = false, 
-  onClick 
+  isLargeScreenHeader = false
 }) => (
   <div className={`${isLargeScreenHeader ? 'hidden lg:flex' : 'flex justify-center mt-12 md:mt-16 lg:hidden'}`}>
-    <a 
-      href="#"
-      onClick={(e) => {
-        e.preventDefault(); // Prevent default link behavior
-        onClick?.(); // Trigger modal open
-      }}
+    <Link 
+      href="/services"
       className={`flex items-center gap-3 group ${isLargeScreenHeader ? 'mt-6 md:mt-0 lg:flex items-center' : ''}`} 
     >
       <button
@@ -219,18 +212,13 @@ const ViewAllServicesButton: React.FC<ViewAllServicesButtonProps> = ({
       <p className="text-gray-900 font-open-sans-bold text-lg transition-colors group-hover:text-gray-700">
         View All Services
       </p>
-    </a>
+    </Link>
   </div>
 );
 
 function ServicesGrid() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false); // New state for modal
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Modal handlers (same as CompanyDetails)
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   const handleScroll = useCallback(() => {
     const element = scrollRef.current;
@@ -285,8 +273,7 @@ function ServicesGrid() {
         </h2>
       </div>
 
-      {/* Pass onClick to open modal */}
-      <ViewAllServicesButton isLargeScreenHeader={true} onClick={openModal} />
+      <ViewAllServicesButton isLargeScreenHeader={true} />
     </div>
   );
 
@@ -348,8 +335,7 @@ function ServicesGrid() {
             />
           ))}
         </div>
-        {/* Pass onClick to open modal */}
-        <ViewAllServicesButton isLargeScreenHeader={false} onClick={openModal} />
+        <ViewAllServicesButton isLargeScreenHeader={false} />
       </div> 
 
       <style jsx global>{`
@@ -361,15 +347,6 @@ function ServicesGrid() {
           scrollbar-width: none; /* Firefox */
         }
       `}</style>
-
-      {/* Render the Modal (Services-specific content) */}
-      <ComingSoonModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title="Our Services Are on the Way!"
-        message="Thank you for visiting TelexPH. We're currently putting the finishing touches on our full services page to give you detailed insights. Stay tuned - it'll be live very soon!"
-        // backgroundImageSrc="/images/background.jpg" // Optional: Add if you want a background image like in your original ServicesModal
-      />
     </div>
   );
 }
