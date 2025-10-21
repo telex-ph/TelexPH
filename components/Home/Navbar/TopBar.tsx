@@ -72,7 +72,7 @@ const TopBar = () => {
               <span className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span className="whitespace-nowrap">
-                  partnerships@telexph.com
+                  heyjena@telexph.com
                 </span>
               </span>
               <span className="flex items-center gap-2">
@@ -117,7 +117,7 @@ const TopBar = () => {
               <span className="flex items-center gap-1">
                 <Mail className="w-3.5 h-3.5" />
                 <span className="text-xs whitespace-nowrap">
-                    partnerships@telexph.com
+                    heyjena@telexph.com
                 </span>
               </span>
               <span className="flex items-center gap-1">
@@ -149,7 +149,7 @@ const TopBar = () => {
               <span className="flex items-center gap-1">
                 <Mail className="w-3 h-3" />
                 <span className="text-[10px] whitespace-nowrap">
-                    partnerships@telexph.com
+                    heyjena@telexph.com
                 </span>
               </span>
               <span className="flex items-center gap-1">

@@ -1,4 +1,4 @@
-// ChatbaseWidget.tsx (secured + final version)
+"use client";
 
 import React, { useEffect } from "react";
 
@@ -12,24 +12,30 @@ const ChatbaseWidget = () => {
       return;
     }
 
+    // Avoid duplicate injection
+    if (document.getElementById(CHATBOT_ID)) return;
+
     window.embeddedChatbotConfig = {
       chatbotId: CHATBOT_ID,
       domain: DOMAIN,
     };
 
-    const script = document.createElement("script");
-    script.src = `https://${DOMAIN}/embed.min.js`;
-    script.id = CHATBOT_ID;
-    script.setAttribute("domain", DOMAIN);
-    script.setAttribute("chatbotId", CHATBOT_ID);
+    try {
+      const script = document.createElement("script");
+      script.src = `https://${DOMAIN}/embed.min.js`;
+      script.id = CHATBOT_ID;
+      script.async = true;
+      script.setAttribute("domain", DOMAIN);
+      script.setAttribute("chatbotId", CHATBOT_ID);
+      document.body.appendChild(script);
+    } catch (error) {
+      console.error("Failed to load Chatbase script:", error);
+    }
 
-    document.body.appendChild(script);
-
+    // Cleanup
     return () => {
       const chatbaseScript = document.getElementById(CHATBOT_ID);
-      if (chatbaseScript) {
-        document.body.removeChild(chatbaseScript);
-      }
+      if (chatbaseScript) document.body.removeChild(chatbaseScript);
     };
   }, []);
 
