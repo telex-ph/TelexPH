@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 const FooterPosts: React.FC = () => {
+  const [activePost, setActivePost] = useState<number | null>(null);
+
   const posts = [
     {
       id: 1,
@@ -34,6 +36,21 @@ const FooterPosts: React.FC = () => {
     },
   ];
 
+  const handleClick = (e: React.MouseEvent, postId: number) => {
+    // Detect if device has touch capability (mobile/tablet)
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    if (isTouchDevice) {
+      // On touch devices, first click shows overlay, second click goes to link
+      if (activePost !== postId) {
+        e.preventDefault();
+        setActivePost(postId);
+      }
+      // If activePost === postId, let the link navigate normally
+    }
+    // On desktop, just navigate normally (hover handles the overlay)
+  };
+
   return (
     <div className="w-full px-4 sm:px-0">
       <div className="mb-6">
@@ -43,7 +60,6 @@ const FooterPosts: React.FC = () => {
         <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
 
-      {/* Mobile: 2x2 grid, mid & large screens unchanged */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 w-full">
         {posts.map((post) => (
           <Link
@@ -52,10 +68,11 @@ const FooterPosts: React.FC = () => {
             {...(post.external
               ? { target: "_blank", rel: "noopener noreferrer" }
               : {})}
+            onClick={(e) => handleClick(e, post.id)}
             className="
               relative 
-              aspect-[3/2] sm:aspect-square  /* mobile slightly rectangular, larger screens square */
-              max-h-40 sm:max-h-none        /* smaller on mobile, unrestricted mid/large */
+              aspect-[3/2] sm:aspect-square
+              max-h-40 sm:max-h-none
               rounded-lg 
               overflow-hidden 
               group 
@@ -64,6 +81,7 @@ const FooterPosts: React.FC = () => {
               transition-transform 
               duration-500 
               hover:scale-[1.02]
+              active:scale-[0.98]
             "
           >
             <Image
@@ -73,36 +91,36 @@ const FooterPosts: React.FC = () => {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
-            <div className="
+            {/* Overlay - shows on hover (desktop) or when active (mobile) */}
+            <div className={`
               absolute 
               inset-0 
               bg-[#a10000]/80 
-              opacity-0 
-              group-hover:opacity-100 
               transition-opacity 
               duration-300 
-              p-4 
+              p-2 sm:p-3 md:p-3 lg:p-4
               flex 
               flex-col 
               justify-between
-            ">
+              ${activePost === post.id ? 'opacity-100' : 'opacity-0'}
+              group-hover:opacity-100
+            `}>
               <div className="flex justify-start">
-                <div className="
-                  w-10 
-                  h-10 
+                <div className={`
+                  w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10
                   bg-white 
                   rounded-full 
                   flex 
                   items-center 
                   justify-center 
                   transform 
-                  scale-0 
-                  group-hover:scale-100 
                   transition-transform 
                   duration-300
-                ">
+                  ${activePost === post.id ? 'scale-100' : 'scale-0'}
+                  group-hover:scale-100
+                `}>
                   <svg
-                    className="w-5 h-5 text-[#a10000]"
+                    className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 text-[#a10000]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -117,19 +135,17 @@ const FooterPosts: React.FC = () => {
                 </div>
               </div>
 
-              <div className="
+              <div className={`
                 text-white 
                 transform 
-                translate-y-2 
-                opacity-0 
-                group-hover:translate-y-0 
-                group-hover:opacity-100 
                 transition-all 
                 duration-300
-              ">
+                ${activePost === post.id ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}
+                group-hover:translate-y-0 
+                group-hover:opacity-100
+              `}>
                 <p className="
-                  text-sm 
-                  md:text-base 
+                  text-[10px] sm:text-[11px] md:text-xs lg:text-base
                   font-open-sans-bold 
                   leading-tight
                 ">
