@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { navLinks } from "@/constant/constant"; // Assuming this is defined
+import { navLinks } from "@/constant/constant";
 import { RiCloseFill } from "react-icons/ri";
 import { HiChevronDown } from "react-icons/hi";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
 
-// Assuming you have a separate file for constants, like `constants/styles.ts`
-// Import the necessary constants for the fonts and weights
-// I'll define mock ones here for completeness, but you should import from your file
 const FONT_WEIGHTS = {
   regular: 400,
   bold: 700,
@@ -60,9 +57,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  /**
-   * Function to scroll to an element based on its hash ID.
-   */
   const scrollToSection = (hash: string) => {
     const element = document.querySelector(hash);
     if (element) {
@@ -78,16 +72,11 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
     }
   };
 
-  /**
-   * Handles click events for all navigation links (parent and dropdown).
-   */
   const handleScrollClick = (
     e: React.MouseEvent<HTMLAnchorElement> | { preventDefault: () => void },
     url: string
   ) => {
-    // 1. Close the mobile navigation bar
     closeNav();
-    // 2. Close any open dropdown
     setOpenDropdownId(null);
 
     if (url.startsWith("#")) {
@@ -125,7 +114,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
           bg-white shadow-2xl overflow-hidden`}
       >
         <div className="relative z-10 flex flex-col h-full">
-          {/* Mobile Nav Header */}
           <div className="flex-shrink-0 px-6 py-5 flex justify-between items-center bg-gray-800">
             <div className="relative w-[180px] h-[35px]">
               <Image
@@ -147,7 +135,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
             </button>
           </div>
 
-          {/* Mobile Nav Links Container (Scrollable) */}
           <nav className="flex-1 overflow-y-auto custom-scrollbar-light divide-y divide-gray-100">
             {navLinks.map((link: NavLinkType) => (
               <div key={link.id} className="w-full">
@@ -157,13 +144,11 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
                     onClick={(e) => {
                       handleScrollClick(e, link.url);
                     }}
-                    // Using custom class for Open Sans Bold
                     className={`flex-1 flex items-center py-4 px-6 text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:bg-gray-50 hover:text-[#a10000]`}
                   >
                     {link.label}
                   </Link>
 
-                  {/* Dropdown Toggle Button */}
                   {link.dropdown && link.dropdown.length > 0 && (
                     <button
                       onClick={() => handleToggleDropdown(link.id)}
@@ -184,7 +169,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
                   )}
                 </div>
 
-                {/* Dropdown Links */}
                 {link.dropdown && link.dropdown.length > 0 && (
                   <div
                     id={`dropdown-${link.id}`}
@@ -200,7 +184,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
                           onClick={(e) =>
                             handleScrollClick(e, dropdownItem.url)
                           }
-                          // Using custom class for Rubik Regular
                           className="group flex items-center py-2 px-4 text-sm text-gray-700 font-rubik-regular transition-colors duration-200 hover:bg-white hover:text-[#a10000] rounded-md"
                         >
                           <span className="w-1 h-1 rounded-full bg-red-400 group-hover:bg-[#a10000] mr-3 transition-colors"></span>
@@ -214,27 +197,17 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
             ))}
           </nav>
 
-          {/* Mobile Nav Footer (Fixed/Non-scrollable) */}
           <div className="flex-shrink-0 px-6 pb-6 pt-4 border-t border-gray-200 bg-white">
-            {/* CONTACT US Button (In the fixed footer area) */}
             <div className="mb-4">
-              <button
-                type="button"
-                onClick={() => {
-                  // Using a mock event for button click to ensure proper handling
-                  handleScrollClick(
-                    { preventDefault: () => {} } as React.MouseEvent<HTMLAnchorElement>,
-                    "/contact"
-                  );
-                }}
-                // Using custom class for Open Sans Bold
-                className="w-full bg-[#a10000] hover:bg-red-700 text-white px-6 py-3 text-sm font-open-sans-bold transition-colors rounded cursor-pointer uppercase shadow-lg"
+              <Link
+                href="/contact"
+                onClick={closeNav}
+                className="block w-full bg-[#a10000] hover:bg-red-700 text-white px-6 py-3 text-sm font-open-sans-bold transition-colors rounded cursor-pointer uppercase shadow-lg text-center"
               >
                 CONTACT US
-              </button>
+              </Link>
             </div>
 
-            {/* Copyright */}
             <p className="text-xs text-gray-500 font-rubik-regular text-center">
               &copy; {currentYear} TELEX. All rights reserved.
             </p>
@@ -243,7 +216,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
       </div>
 
       <style jsx global>{`
-        /* Custom font classes using CSS variables */
         .font-open-sans-bold {
           font-family: var(--font-open-sans), sans-serif;
           font-weight: ${FONT_WEIGHTS.bold};
@@ -255,7 +227,6 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
         }
       `}</style>
       <style jsx>{`
-        /* Minimalist scrollbar for a cleaner look */
         .custom-scrollbar-light::-webkit-scrollbar {
           width: 6px;
         }
@@ -274,4 +245,4 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
   );
 };
 
-export default MobileNav;
+export default MobileNav

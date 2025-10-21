@@ -1,5 +1,11 @@
 import React from "react";
-import { COLORS, FONTS, FONT_WEIGHTS, FONT_CLASSES, SEMANTIC_COLORS } from "@/constant/styles";
+import {
+  COLORS,
+  FONTS,
+  FONT_WEIGHTS,
+  FONT_CLASSES,
+  SEMANTIC_COLORS,
+} from "@/constant/styles";
 
 const ContactInfo: React.FC = () => {
   const secondaryTextColor = "#6b7280";
@@ -162,9 +168,7 @@ const ContactInfo: React.FC = () => {
                 color: secondaryTextColor,
               }}
             >
-              <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
-              <p>Saturday: 8:00 AM - 12:00 PM</p>
-              <p>Sunday: Closed</p>
+              <p>Open 24 Hours</p>
             </div>
           </div>
         </div>

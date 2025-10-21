@@ -1,9 +1,9 @@
-"use client"; 
+"use client";
 
-import React, { useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
-import ComingSoonModal from "@/components/Modals/ComingSoonModal";
-import FeaturesSection from "./FeaturesSection"; 
+import React from "react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
+import FeaturesSection from "./FeaturesSection";
 import CenterGrid from "./CenterGrid";
 import { FONT_CLASSES, COLORS } from "@/constant/styles";
 
@@ -49,85 +49,83 @@ const RIGHT_FEATURES = [
   },
 ];
 
-interface ContactUsButtonMobileProps {
-  openModal: () => void;
-}
+// ✅ Mobile Button (Redirects to /contact)
+const ContactUsButtonMobile: React.FC = () => {
+  const router = useRouter();
 
-const ContactUsButtonMobile: React.FC<ContactUsButtonMobileProps> = ({ openModal }) => {
   return (
     <div className="lg:hidden mt-6 mb-2 flex justify-center">
-      <div 
+      <div
         className="flex items-center gap-2 group cursor-pointer hover:opacity-80 transition-opacity"
-        onClick={openModal}
+        onClick={() => router.push("/contact")}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            openModal();
+            router.push("/contact");
           }
         }}
       >
-        <a 
-          href="#"
+        <button
           onClick={(e) => {
-            e.preventDefault();
+            e.stopPropagation();
+            router.push("/contact");
           }}
-          className="flex items-center gap-2 group"
+          className={`flex items-center justify-center w-11 h-11 rounded-full text-white transition-all hover:scale-105 shadow-lg 
+            bg-[${COLORS.primary}] hover:bg-[${COLORS.dark}]`}
+          type="button"
         >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              openModal();
-            }}
-            className={`flex items-center justify-center w-11 h-11 rounded-full text-white transition-all hover:scale-105 shadow-lg 
-              bg-[${COLORS.primary}] hover:bg-[${COLORS.dark}]`} 
-            type="button"
-          >
-            <ArrowUpRight className="w-5 h-5 rotate-[15deg]" /> 
-          </button>
-          <p className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-base transition-colors group-hover:text-gray-700 select-none`}>
-            Choose Us
-          </p>
-        </a>
+          <ArrowUpRight className="w-5 h-5 rotate-[15deg]" />
+        </button>
+        <p
+          className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-base transition-colors group-hover:text-gray-700 select-none`}
+        >
+          Choose Us
+        </p>
       </div>
     </div>
   );
 };
 
-interface ChooseHeaderProps {
-  openModal: () => void;
-}
+// ✅ Header (Redirects to /contact)
+const ChooseHeader: React.FC = () => {
+  const router = useRouter();
 
-const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
   return (
     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 lg:mb-16 gap-2 lg:gap-8">
       <div>
-        <p className={`text-[${COLORS.primary}] text-sm ${FONT_CLASSES.openSansBold} mb-2 uppercase tracking-wide flex items-center gap-2`}>
+        <p
+          className={`text-[${COLORS.primary}] text-sm ${FONT_CLASSES.openSansBold} mb-2 uppercase tracking-wide flex items-center gap-2`}
+        >
           <span className={`w-8 h-[2px] bg-[${COLORS.primary}]`}></span>
           WHY CHOOSE US
         </p>
-        <h2 className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-tight`}>
-          We Use Proven Smart Technologies<br />
+        <h2
+          className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-tight`}
+        >
+          We Use Proven Smart Technologies
+          <br />
           for Faster & More Efficient Work
         </h2>
       </div>
-      <div 
+
+      <div
         className="hidden lg:flex items-center gap-4 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-        onClick={openModal}
+        onClick={() => router.push("/contact")}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            openModal();
+            router.push("/contact");
           }
         }}
       >
-        <button 
+        <button
           onClick={(e) => {
             e.stopPropagation();
-            openModal();
+            router.push("/contact");
           }}
           className={`flex items-center justify-center gap-2 w-14 h-14 rounded-full text-white transition-all hover:scale-105 shadow-lg 
             bg-[${COLORS.primary}] hover:bg-[${COLORS.dark}]`}
@@ -135,12 +133,17 @@ const ChooseHeader: React.FC<ChooseHeaderProps> = ({ openModal }) => {
         >
           <ArrowUpRight className="w-6 h-6" />
         </button>
-        <p className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-lg select-none`}>Choose Us</p>
+        <p
+          className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-lg select-none`}
+        >
+          Contact Us
+        </p>
       </div>
     </div>
   );
 };
 
+// ✅ Feature Grid
 const ChooseGrid = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-6">
@@ -151,24 +154,13 @@ const ChooseGrid = () => {
   );
 };
 
+// ✅ Main Component
 const ChooseContent: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
   return (
     <>
-      <ChooseHeader openModal={openModal} />
+      <ChooseHeader />
       <ChooseGrid />
-      <ContactUsButtonMobile openModal={openModal} />
-      
-      <ComingSoonModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title="Contact Us - Coming Soon"
-        message="Our contact and 'Why Choose Us' section is under development. Stay tuned for more details on how Telex Philippines can support your business!"
-      />
+      <ContactUsButtonMobile />
     </>
   );
 };
