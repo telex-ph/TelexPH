@@ -16,16 +16,16 @@ const ContactMap: React.FC = () => {
         ></iframe>
 
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[80px] flex flex-col items-center pointer-events-none">
-          <div className="bg-[#ff0000] text-white font-bold text-[16px] px-4 py-[6px] rounded-md shadow-md whitespace-nowrap">
+          <div className="bg-[#a10000] text-white font-bold text-[16px] px-4 py-[6px] rounded-md shadow-md whitespace-nowrap">
             TELEX Philippines
           </div>
 
-          <div className="w-[4px] h-[60px] bg-[#ff0000] relative z-10"></div>
+          <div className="w-[4px] h-[60px] bg-[#a10000] relative z-10"></div>
 
           <div className="relative z-10 mt-[-2px]">
             <div className="absolute inset-0 w-[30px] h-[30px] bg-white opacity-40 rounded-full -translate-x-[8px] -translate-y-[8px] scale-150 z-0"></div>
 
-            <div className="relative w-[20px] h-[20px] bg-[#ff0000] rounded-full shadow-md z-10"></div>
+            <div className="relative w-[20px] h-[20px] bg-[#a10000] rounded-full shadow-md z-10"></div>
           </div>
         </div>
       </div>
