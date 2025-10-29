@@ -120,6 +120,8 @@ const ContactForm = () => {
       </div>
 
       <form
+      action="https://services.leadconnectorhq.com/hooks/KlBL9XEG0eVNlAqE7m5V/webhook-trigger/c44f7f42-a284-4852-be0d-f263777767ef"
+      method="POST"
         onSubmit={handleSubmit}
         className="space-y-6"
         encType="multipart/form-data"
