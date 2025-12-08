@@ -126,7 +126,7 @@ const ContactInfo: React.FC = () => {
                 (e.currentTarget.style.color = secondaryTextColor)
               }
             >
-              heyjena@telexph.com
+              partnerships@telexph.com
             </a>
           </div>
         </div>
