@@ -38,7 +38,7 @@ const LocationMap = () => {
           }}
         >
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3847.5!2d120.756!3d15.655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sMQ4C%2B5MX%2C%20Pangasinan%20-%20Nueva%20Ecija%20Rd%2C%20Guimba%2C%20Nueva%20Ecija!5e0!3m2!1sen!2sph!4v1234567890"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d478.34912517522844!2d120.77153623320268!3d15.655633368301466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33912cc48bef12e3%3A0x433512b75eadf1c2!2sMQ4C%2B5R8%2C%20Pangasinan%20-%20Nueva%20Ecija%20Rd%2C%20Guimba%2C%20Nueva%20Ecija!5e1!3m2!1sfil!2sph!4v1761804948643!5m2!1sfil!2sph"
             className="w-full h-[300px] sm:h-[400px] md:h-[450px]"
             style={{
               border: 0,
