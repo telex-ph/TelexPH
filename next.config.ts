@@ -3,13 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   
-  // Temporary: Allow build to succeed
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
   typescript: {
-    ignoreBuildErrors: false, // Keep this strict
+    ignoreBuildErrors: false,
   },
   
   images: {
