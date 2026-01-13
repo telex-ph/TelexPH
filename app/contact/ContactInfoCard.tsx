@@ -83,7 +83,7 @@ export const ContactInfoCard: React.FC = () => {
               fontFamily: FONTS.poppins,
             }}
           >
-            +63 (044) 331-5040
+            0449504196
           </a>
         </div>
 
