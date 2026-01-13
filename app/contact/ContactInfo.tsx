@@ -109,7 +109,7 @@ const ContactInfo: React.FC = () => {
                 (e.currentTarget.style.color = secondaryTextColor)
               }
             >
-              +63 (44) 331 - 5040
+              0449504196
             </a>
 
             <a
