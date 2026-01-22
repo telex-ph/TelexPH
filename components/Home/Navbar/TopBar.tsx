@@ -32,7 +32,7 @@ const TopBar = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span className="whitespace-nowrap">+63 (44) 331 - 5040</span>
+                <span className="whitespace-nowrap">0449504196</span>
               </span>
             </div>
             <div className="flex items-center gap-6 flex-1 justify-end">
@@ -77,7 +77,7 @@ const TopBar = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span className="whitespace-nowrap">+63 (44) 331 - 5040</span>
+                <span className="whitespace-nowrap">0449504196</span>
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -123,7 +123,7 @@ const TopBar = () => {
               <span className="flex items-center gap-1">
                 <Phone className="w-3.5 h-3.5" />
                 <span className="text-xs whitespace-nowrap">
-                    +63 (44) 331 - 5040
+                    0449504196
                 </span>
               </span>
             </div>
@@ -155,7 +155,7 @@ const TopBar = () => {
               <span className="flex items-center gap-1">
                 <Phone className="w-3 h-3" />
                 <span className="text-[10px] whitespace-nowrap">
-                    +63 (44) 331 - 5040
+                    0449504196
                 </span>
               </span>
             </div>

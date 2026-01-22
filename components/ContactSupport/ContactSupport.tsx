@@ -54,7 +54,7 @@ const ContactSupport = () => {
                   href="tel:+630443315040"
                   className={`text-base sm:text-lg md:text-xl lg:text-2xl ${FONT_CLASSES.openSansBold} text-[${COLORS.primary}] hover:text-[${COLORS.dark}] transition-colors whitespace-nowrap`}
                 >
-                  +63 (44) 331 - 5040
+                  0449504196
                 </a>
                 <a
                   href="mailto:partnerships@telexph.com"
