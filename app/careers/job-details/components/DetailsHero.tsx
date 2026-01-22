@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, Calendar, Clock, Banknote } from "lucide-react";
 import { COLORS, FONTS, TYPOGRAPHY, getColorWithOpacity } from "@/constant/styles";
 
 export default function CareerHero() {
@@ -11,10 +11,10 @@ export default function CareerHero() {
       className="relative pt-20 pb-10 overflow-hidden" 
       style={{ 
         backgroundColor: COLORS.white,
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000')`,
-        backgroundSize: "100% 100%",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070')`,
+        backgroundSize: "100% 563px",
+        backgroundPosition: "top center",
+        backgroundRepeat: "no-repeat",
         width: "100%"
       }}
     >
@@ -45,7 +45,7 @@ export default function CareerHero() {
           </h1>
 
           <p className="text-md md:text-lg max-w-2xl mx-auto mb-8 font-normal" style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.7) }}>
-            join our elite team of experts and build the future of integrated logistics and outsourcing solutions. we are looking for the top 1% of talent to lead our global operations.
+            Join our elite team of experts and build the future of integrated logistics and outsourcing solutions. We are looking for the top 1% of talent to lead our global operations.
           </p>
 
           <div 
@@ -85,7 +85,7 @@ export default function CareerHero() {
           </div>
 
           <div className="w-full text-left border-t border-gray-100 pt-10 pb-10">
-            <div className="mb-6">
+            <div className="mb-6 ml-10">
               <span 
                 className="px-8 py-2.5 rounded-full text-white text-[11px] font-bold tracking-[0.2em] uppercase"
                 style={{ backgroundColor: "#800000" }}
@@ -95,35 +95,50 @@ export default function CareerHero() {
             </div>
 
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
-              <div className="space-y-3">
+              <div className="space-y-3 ml-10">
                 <h2 
-                  className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight"
-                  style={{ color: "#1a1a1a" }}
+                  className="text-4xl md:text-5xl lg:text-6xl tracking-tight uppercase"
+                  style={{ 
+                    color: "#1a1a1a",
+                    fontFamily: "var(--font-poppins), sans-serif",
+                    fontWeight: 700
+                  }}
                 >
                   front-end <span style={{ color: "#800000" }}>developer</span>
                 </h2>
                 
                 <div className="flex items-center gap-2 text-gray-700 italic">
                   <MapPin size={22} className="text-[#800000]" />
-                  <span className="text-base md:text-lg font-medium">
-                    cawayan bugtong, guimba, nueva ecija
+                  <span className="text-base md:text-lg font-light">
+                    Cawayan Bugtong, Guimba, Nueva Ecija
                   </span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                <button 
-                  className="px-12 py-4 rounded-xl text-white font-bold text-sm tracking-widest uppercase transition-all hover:bg-[#600000] shadow-lg"
-                  style={{ backgroundColor: "#800000" }}
-                >
-                  apply now
-                </button>
-                <button 
-                  className="px-12 py-4 rounded-xl text-white font-bold text-sm tracking-widest uppercase transition-all hover:bg-[#600000] shadow-lg"
-                  style={{ backgroundColor: "#800000" }}
-                >
-                  book now
-                </button>
+              <div className="flex flex-wrap gap-4 mr-10">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
+                  <Calendar size={16} className="text-[#800000]" />
+                  <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+                    <p className="text-[12px] text-gray-400 uppercase font-extrabold leading-none">Posted</p>
+                    <p className="text-[13px] font-bold text-gray-700 uppercase">oct 24, 2025</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
+                  <Clock size={16} className="text-[#800000]" />
+                  <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+                    <p className="text-[12px] text-gray-400 uppercase font-extrabold leading-none">type</p>
+                    <p className="text-[13px] font-bold text-gray-700 uppercase">full-time</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
+                  <Banknote size={16} className="text-[#800000]" />
+                  <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+                    <p className="text-[12px] text-gray-400 uppercase font-extrabold leading-none">salary</p>
+                    <p className="text-[13px] font-bold text-gray-700 uppercase">competitive</p>
+                  </div>
+                </div>
               </div>
             </div>
 
