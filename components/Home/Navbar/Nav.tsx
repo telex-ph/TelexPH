@@ -7,7 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
-import { HiBars3BottomRight } from "react-icons/hi2";
+import { HiBars3BottomRight, HiChevronRight } from "react-icons/hi2";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -36,36 +36,27 @@ type Props = {
 
 const Nav = ({ openNav }: Props) => {
   const [navBg, setNavBg] = useState(false);
-  const prevScrollY = useRef(0);
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  
+  const [activeServicesTab, setActiveServicesTab] = useState("offer");
+  const [activeAboutTab, setActiveAboutTab] = useState("company");
+  const [activeResourcesTab, setActiveResourcesTab] = useState("learning");
+  const [activeCareersTab, setActiveCareersTab] = useState("careers-center");
+
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleMouseEnter = (id: number) => {
-    setOpenDropdownId(id);
-  };
+  const handleMouseEnter = (id: number) => setOpenDropdownId(id);
+  const handleMouseLeave = () => setOpenDropdownId(null);
 
-  const handleMouseLeave = () => {
-    setOpenDropdownId(null);
-  };
-
-  const handleScrollClick = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    url: string
-  ) => {
+  const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     if (url.startsWith("#")) {
       e.preventDefault();
-
-      const isHomepage = pathname === "/";
-
-      if (isHomepage) {
+      if (pathname === "/") {
         scrollToSection(url);
       } else {
         router.push("/" + url);
-
-        setTimeout(() => {
-          scrollToSection(url);
-        }, 100);
+        setTimeout(() => scrollToSection(url), 100);
       }
     }
   };
@@ -73,128 +64,142 @@ const Nav = ({ openNav }: Props) => {
   const scrollToSection = (hash: string) => {
     const element = document.querySelector(hash);
     if (element) {
-      const navbarHeight = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - navbarHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setNavBg(currentScrollY > 50);
-      prevScrollY.current = currentScrollY;
-    };
-
+    const handleScroll = () => setNavBg(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return (
-    <nav
-      className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
-    >
-      <TopBar />
+  const servicesMegaData = [
+    { id: "offer", label: "What We Offer", items: ["Customer Support", "Technical Helpdesk", "Sales & Lead Generation", "Virtual Assistance", "Back Office Operations", "Social Media Management"] },
+    { id: "freight", label: "Freight Services", items: ["Air Freight", "Drop Trailer", "Flatbed", "Intermodal", "LTL", "Ocean Shipping", "Port Services", "Truckload"] },
+    { id: "logistics", label: "Logistics Services", items: ["Warehousing", "Distribution", "Fulfillment"] },
+    { id: "supply", label: "Supply Chain", items: ["Consulting", "Optimization", "Sourcing"] },
+    { id: "ai", label: "Lean AI Platform", items: ["AI Analytics", "Route Opti"] },
+    { id: "industries", label: "Industries", items: ["Retail", "Manufacturing", "Automotive"] },
+  ];
 
-      <div
-        className={`relative bg-white transition-all duration-300 ${
-          navBg ? "shadow-md" : ""
-        }`}
-      >
+  const aboutMegaData = [
+    { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
+    { id: "team", label: "Our Team", items: ["Leadership", "Careers", "Culture"] },
+    { id: "legal", label: "Legal", items: ["Privacy Policy", "Terms of Service", "Compliance"] },
+  ];
+
+  const resourcesMegaData = [
+    { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
+    { 
+      id: "news", 
+      label: "Industry Use Cases", 
+      items: [
+        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
+        { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
+        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
+        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
+        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
+        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
+        { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
+      ]
+    },
+    { id: "help", label: "Support", items: ["FAQs", "Contact Support", "Documentation"] },
+  ];
+
+
+const careersMegaData = [
+  { 
+    id: "careers-center", 
+    label: "Careers Center", 
+    items: [
+      { label: "Careers Home", url: "/careers" }, 
+    ] 
+  },
+  { 
+    id: "job-details", 
+    label: "Job Details", 
+    items: [
+      { label: "Full Job Details", url: "/careers/job-details" },
+    ] 
+  },
+];
+
+  const getMegaConfig = (label: string) => {
+    if (label === "Services") return { data: servicesMegaData, active: activeServicesTab, setter: setActiveServicesTab, path: "/services" };
+    if (label === "About") return { data: aboutMegaData, active: activeAboutTab, setter: setActiveAboutTab, path: "/about" };
+    if (label === "Resources") return { data: resourcesMegaData, active: activeResourcesTab, setter: setActiveResourcesTab, path: "/resources" };
+    if (label === "Careers") return { data: careersMegaData, active: activeCareersTab, setter: setActiveCareersTab, path: "/careers" };
+    return null;
+  };
+
+  return (
+    <nav className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable} ${rubik.variable}`}>
+      <TopBar />
+      <div className={`relative bg-white transition-all duration-300 ${navBg ? "shadow-md" : ""}`}>
         <div className="relative h-[80px] flex items-stretch">
-          <div
-            className="bg-gray-800 flex items-center justify-center h-full relative z-10 
-                px-4 sm:px-8 
-                w-auto 
-                lg:w-[350px]"
-          >
-            <Image
-              src="/images/Weblogo.webp"
-              alt="TELEXPH Delivery & Transport Logo"
-              width={250}
-              height={50}
-              className="object-contain"
-            />
+          <div className="bg-gray-800 flex items-center justify-center h-full relative z-10 px-4 sm:px-8 w-auto lg:w-[350px]">
+            <Image src="/images/Weblogo.webp" alt="Logo" width={250} height={50} className="object-contain" priority />
           </div>
-          <div className="h-full z-30 w-10 -ml-5 sm:w-16 sm:-ml-8 lg:w-[60px] lg:-ml-[30px] relative">
-            <div
-              className="absolute top-0 left-0 w-full h-full bg-[#a10000]"
-              style={{ clipPath: "polygon(50% 0, 100% 0, 50% 100%, 0 100%)" }}
-            />
+          <div className="h-full z-30 w-[60px] -ml-[30px] relative hidden lg:block">
+            <div className="absolute top-0 left-0 w-full h-full bg-[#a10000]" style={{ clipPath: "polygon(50% 0, 100% 0, 50% 100%, 0 100%)" }} />
           </div>
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
-            {/* START: NAVIGATION LINKS */}
-            <div className="hidden lg:flex items-center space-x-6">
-              {navLinks.map((link) => (
-                <div
-                  key={link.id}
-                  className="relative h-full flex items-center"
-                  onMouseEnter={() => handleMouseEnter(link.id)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <Link
-                    href={link.url}
-                    onClick={(e) => handleScrollClick(e, link.url)}
-                    className="relative py-[30px]"
-                  >
-                    <span
-                      className={`text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]`}
-                    >
-                      {link.label}
-                    </span>
-                  </Link>
-
-                  {/* UPDATED DROPDOWN DESIGN */}
-                  {link.dropdown &&
-                    link.dropdown.length > 0 &&
-                    openDropdownId === link.id && (
-                      <div className="absolute top-full left-0 mt-[-2px] bg-gradient-to-b from-white to-gray-50 border-t-2 border-[#a10000] shadow-xl min-w-[200px] z-20 rounded-b-lg overflow-hidden">
-                        {link.dropdown.map((dropdownItem, index) => (
-                          <Link
-                            key={dropdownItem.id}
-                            href={dropdownItem.url}
-                            onClick={(e) => {
-                              handleScrollClick(e, dropdownItem.url);
-                              handleMouseLeave();
-                            }}
-                            className={`group block px-5 py-3 text-sm text-gray-700 hover:bg-[#a10000] hover:text-white transition-all duration-200 relative ${
-                              index !== link.dropdown!.length - 1 ? 'border-b border-gray-200' : ''
-                            }`}
-                          >
-                            <span className="flex items-center">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#a10000] group-hover:bg-white mr-2.5 transition-colors"></span>
-                              {dropdownItem.label}
-                            </span>
-                          </Link>
-                        ))}
+            <div className="hidden lg:flex items-center space-x-6 h-full">
+              {navLinks.map((link) => {
+                const megaConfig = getMegaConfig(link.label);
+                return (
+                  <div key={link.id} className="relative h-full flex items-center" onMouseEnter={() => handleMouseEnter(link.id)} onMouseLeave={handleMouseLeave}>
+                    <Link href={link.url} onClick={(e) => handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
+                      <span className="text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]">
+                        {link.label}
+                      </span>
+                    </Link>
+                    {megaConfig && openDropdownId === link.id && (
+                      <div className="absolute top-full left-0 mt-[-2px] bg-white border-t-2 border-[#a10000] shadow-xl min-w-[800px] z-20 rounded-b-lg flex overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="w-[35%] bg-[#f8fafc] px-8 pt-8 pb-8 border-r border-gray-200 flex flex-col">
+                          <h3 className="text-[#a10000] font-open-sans-bold text-sm uppercase border-b border-[#a10000] pb-3 mb-6">
+                            Explore {link.label}
+                          </h3>
+                          <div className="flex flex-col space-y-4">
+                            {megaConfig.data.map((cat) => (
+                              <div key={cat.id} onMouseEnter={() => megaConfig.setter(cat.id)} className={`cursor-pointer transition-all duration-200 font-rubik text-[15px] flex items-center justify-between ${megaConfig.active === cat.id ? "text-[#a10000] font-medium" : "text-[rgba(40,40,40,0.7)] hover:text-[#a10000]"}`}>
+                                <span>{cat.label}</span>
+                                <HiChevronRight className={`w-4 h-4 transition-transform ${megaConfig.active === cat.id ? "translate-x-1" : "opacity-0"}`} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="w-[65%] px-8 pt-8 pb-8 bg-white flex flex-col">
+                          <h3 className="text-[#a10000] font-open-sans-bold text-sm uppercase border-b border-[#a10000] pb-3">
+                            {megaConfig.data.find(c => c.id === megaConfig.active)?.label}
+                          </h3>
+                          <div className="grid gap-x-12 gap-y-3 mt-6 auto-cols-max grid-flow-col" style={{ gridTemplateRows: `repeat(${megaConfig.data.length + 5}, minmax(0, 1fr))` }}>
+                            {megaConfig.data.find(c => c.id === megaConfig.active)?.items.map((item, i) => {
+                              const label = typeof item === 'string' ? item : item.label;
+                              const url = typeof item === 'string' ? megaConfig.path : item.url;
+                              
+                              return (
+                                <Link key={i} href={url} className="relative text-sm font-rubik transition-colors py-1 group/line w-fit text-[rgba(40,40,40,0.7)] whitespace-nowrap">
+                                  <span className="group-hover/line:text-[#a10000] transition-colors">{label}</span>
+                                  <span className="absolute left-0 bottom-0 w-0 h-[1.5px] bg-[#a10000] transition-all duration-300 group-hover/line:w-full"></span>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </div>
                     )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
-            {/* END: NAVIGATION LINKS */}
-
             <div className="flex items-center space-x-8 ml-auto">
-              <button
-                type="button"
-                onClick={() => (window.location.href = "/contact")}
-                className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded cursor-pointer"
-              >
+              <button onClick={() => router.push("/contact")} className="hidden lg:block bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-colors rounded">
                 CONTACT US
               </button>
-              <button
-                onClick={openNav}
-                className="lg:hidden text-gray-700 p-2"
-                aria-label="Open mobile navigation"
-              >
-                <HiBars3BottomRight className="w-6 h-6" />
-              </button>
+              <button onClick={openNav} className="lg:hidden text-gray-700 p-2"><HiBars3BottomRight className="w-6 h-6" /></button>
             </div>
           </div>
         </div>
