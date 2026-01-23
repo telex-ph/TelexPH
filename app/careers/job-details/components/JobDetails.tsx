@@ -3,11 +3,14 @@
 import React, { useState } from "react";
 import { Check, Plus } from "lucide-react";
 import ApplyNowModal from "./ApplyNowModal";
+import BookNowModal from "./BookNowModal";
 
 export default function JobDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const toggleBookModal = () => setIsBookModalOpen(!isBookModalOpen);
 
   return (
     <div className="w-full relative min-h-screen bg-white">
@@ -212,6 +215,7 @@ export default function JobDetails() {
                   </div>
                   
                   <button 
+                    onClick={toggleBookModal}
                     className="group flex items-center justify-center gap-2 bg-white border-2 border-[#a10000] text-[#a10000] px-8 py-3 rounded-2xl hover:bg-gradient-to-r hover:from-[#a10000] hover:to-[#ce1212] hover:text-white hover:-translate-y-1 transition-all duration-300 shadow-sm"
                     style={{ 
                       fontFamily: "'open sans', sans-serif", 
@@ -231,6 +235,11 @@ export default function JobDetails() {
       <ApplyNowModal 
         isOpen={isModalOpen} 
         onClose={toggleModal} 
+      />
+
+      <BookNowModal 
+        isOpen={isBookModalOpen} 
+        onClose={toggleBookModal} 
       />
     </div>
   );
