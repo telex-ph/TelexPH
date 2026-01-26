@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { COLORS, FONTS } from "@/constant/styles";
 import { 
@@ -13,6 +13,21 @@ import {
   HiEllipsisVertical 
 } from "react-icons/hi2";
 
+// API Configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+// API Functions
+async function getAllCaseStudies() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/casestudies`);
+    if (!response.ok) throw new Error('Failed to fetch case studies');
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching case studies:', error);
+    return [];
+  }
+}
+
 export default function CaseStudiesFilter() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,6 +35,8 @@ export default function CaseStudiesFilter() {
   const [tagFilter, setTagFilter] = useState("Filter by tag");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
+  const [apiCaseStudies, setApiCaseStudies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navItems = [
     { name: "All" },
@@ -31,7 +48,8 @@ export default function CaseStudiesFilter() {
     { name: "White Papers" },
   ];
 
-  const allResources = [
+  // Hardcoded resources (keeping all original data)
+  const hardcodedResources = [
     {
       id: 1,
       type: "Case Studies",
@@ -94,6 +112,38 @@ export default function CaseStudiesFilter() {
     },
   ];
 
+  // Fetch case studies from API on component mount
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      const apiData = await getAllCaseStudies();
+      
+      // Transform API data to match the expected format
+      const transformedApiData = apiData.map((item: any) => ({
+        id: item._id,
+        type: "Case Studies",
+        title: item.title,
+        date: new Date(item.createdAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }),
+        status: item.status === "published" ? "Active" : item.status === "draft" ? "Draft" : "Scheduled",
+        tag: item.industry || "Technology",
+        description: item.challenge || item.content?.substring(0, 150) + "...",
+        image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
+      }));
+
+      setApiCaseStudies(transformedApiData);
+      setIsLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  // Combine hardcoded resources with API case studies
+  const allResources = [...hardcodedResources, ...apiCaseStudies];
+
   const filteredCards = useMemo(() => {
     return allResources.filter((card) => {
       const matchesTab = activeTab === "All" || card.type === activeTab;
@@ -103,7 +153,7 @@ export default function CaseStudiesFilter() {
       const matchesTag = tagFilter === "Filter by tag" || card.tag === tagFilter;
       return matchesTab && matchesSearch && matchesStatus && matchesTag;
     });
-  }, [activeTab, searchQuery, statusFilter, tagFilter]);
+  }, [activeTab, searchQuery, statusFilter, tagFilter, allResources]);
 
   const handleReset = () => {
     setSearchQuery("");
@@ -168,6 +218,8 @@ export default function CaseStudiesFilter() {
                 <option value="All Status">All Status</option>
                 <option value="Active">Active</option>
                 <option value="Completed">Completed</option>
+                <option value="Draft">Draft</option>
+                <option value="Scheduled">Scheduled</option>
               </select>
               <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
             </div>
@@ -183,6 +235,7 @@ export default function CaseStudiesFilter() {
                 <option value="Technology">Technology</option>
                 <option value="Logistics">Logistics</option>
                 <option value="Analytics">Analytics</option>
+                <option value="Infrastructure">Infrastructure</option>
               </select>
               <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
             </div>
@@ -199,64 +252,72 @@ export default function CaseStudiesFilter() {
           </div>
         </div>
 
-        <div className={`max-w-7xl mx-auto ${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 justify-items-center" : "flex flex-col gap-6 items-center"}`}>
-          {filteredCards.length > 0 ? (
-            filteredCards.map((card) => {
-              const isExpanded = expandedCardId === card.id;
-              return (
-                <div 
-                  key={card.id} 
-                  className={`relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300
-                    ${viewMode === "grid" ? "w-full max-w-[300px] h-[320px]" : "w-full max-w-5xl h-[180px] flex flex-row"}`}
-                >
-                  <div className={viewMode === "grid" ? "absolute top-0 w-full h-[150px]" : "w-[300px] h-full"}>
-                    <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
-                  </div>
+        {isLoading && (
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-lg">Loading case studies...</p>
+          </div>
+        )}
 
+        {!isLoading && (
+          <div className={`max-w-7xl mx-auto ${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 justify-items-center" : "flex flex-col gap-6 items-center"}`}>
+            {filteredCards.length > 0 ? (
+              filteredCards.map((card) => {
+                const isExpanded = expandedCardId === card.id;
+                return (
                   <div 
-                    className={`${viewMode === "grid" 
-                      ? `absolute bottom-0 w-full bg-white transition-all duration-500 ease-in-out px-6 pt-6 rounded-t-xl ${isExpanded ? "h-[250px]" : "h-[185px]"}`
-                      : "flex-grow bg-white px-8 py-6"}`}
+                    key={card.id} 
+                    className={`relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300
+                      ${viewMode === "grid" ? "w-full max-w-[300px] h-[320px]" : "w-full max-w-5xl h-[180px] flex flex-row"}`}
                   >
-                    <div className="relative z-10 h-full flex flex-col">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-gray-400 text-[11px] font-medium mb-1 uppercase tracking-wider">{card.date} • {card.status}</p>
-                          <h4 className="text-[18px] font-bold text-gray-900 leading-tight mb-3" style={{ fontFamily: FONTS.openSans }}>{card.title}</h4>
+                    <div className={viewMode === "grid" ? "absolute top-0 w-full h-[150px]" : "w-[300px] h-full"}>
+                      <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                    </div>
+
+                    <div 
+                      className={`${viewMode === "grid" 
+                        ? `absolute bottom-0 w-full bg-white transition-all duration-500 ease-in-out px-6 pt-6 rounded-t-xl ${isExpanded ? "h-[250px]" : "h-[185px]"}`
+                        : "flex-grow bg-white px-8 py-6"}`}
+                    >
+                      <div className="relative z-10 h-full flex flex-col">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-gray-400 text-[11px] font-medium mb-1 uppercase tracking-wider">{card.date} • {card.status}</p>
+                            <h4 className="text-[18px] font-bold text-gray-900 leading-tight mb-3" style={{ fontFamily: FONTS.openSans }}>{card.title}</h4>
+                          </div>
+                          {viewMode === "grid" && (
+                            <button onClick={() => toggleExpand(card.id)} className="bg-gray-100 hover:bg-gray-200 text-gray-500 p-1.5 rounded-full">
+                              <HiEllipsisVertical className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
+                            </button>
+                          )}
                         </div>
-                        {viewMode === "grid" && (
-                          <button onClick={() => toggleExpand(card.id)} className="bg-gray-100 hover:bg-gray-200 text-gray-500 p-1.5 rounded-full">
-                            <HiEllipsisVertical className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
-                          </button>
-                        )}
-                      </div>
-                      <hr className="border-gray-50 mb-3" />
-                      <div className={`${viewMode === "grid" ? (isExpanded ? "max-h-24 opacity-100 mb-4" : "max-h-0 opacity-0 overflow-hidden") : "opacity-100 mb-2"}`}>
-                        <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-3">{card.description}</p>
-                      </div>
-                      <div className="mt-auto pb-6 flex justify-between items-center">
-                         <div className="flex -space-x-1.5">
-                           {[1, 2, 3].map((i) => (
-                             <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                               <img src={`https://i.pravatar.cc/100?img=${card.id + i + 15}`} alt="user" />
-                             </div>
-                           ))}
-                         </div>
-                        <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`}>
-                          <button className="w-10 h-10 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer">
-                            <HiPaperAirplane className="w-4 h-4 rotate-45" />
-                          </button>
-                        </Link>
+                        <hr className="border-gray-50 mb-3" />
+                        <div className={`${viewMode === "grid" ? (isExpanded ? "max-h-24 opacity-100 mb-4" : "max-h-0 opacity-0 overflow-hidden") : "opacity-100 mb-2"}`}>
+                          <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-3">{card.description}</p>
+                        </div>
+                        <div className="mt-auto pb-6 flex justify-between items-center">
+                          <div className="flex -space-x-1.5">
+                            {[1, 2, 3].map((i) => (
+                              <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+                                <img src={`https://i.pravatar.cc/100?img=${card.id + i + 15}`} alt="user" />
+                              </div>
+                            ))}
+                          </div>
+                          <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`}>
+                            <button className="w-10 h-10 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer">
+                              <HiPaperAirplane className="w-4 h-4 rotate-45" />
+                            </button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="col-span-full py-20 text-gray-400 italic text-center w-full">No resources found in {activeTab}.</div>
-          )}
-        </div>
+                );
+              })
+            ) : (
+              <div className="col-span-full py-20 text-gray-400 italic text-center w-full">No resources found in {activeTab}.</div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
