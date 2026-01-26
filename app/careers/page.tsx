@@ -4,11 +4,8 @@ import React, { useState } from "react";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
-
-// **MGA COMPONENTS PARA SA HOME PAGE**
 import CareerHero from "./components/CareerHero";
 import CareerCards from "./components/CareerCards";
-import CareerButton from "./components/CareerButton";
 
 export default function CareersHomePage() {
   const [showNav, setShowNav] = useState(false);
@@ -25,7 +22,6 @@ export default function CareersHomePage() {
           </div>
           <CareerCards />
         </div>
-        <CareerButton />
       </main>
 
       <Footer />

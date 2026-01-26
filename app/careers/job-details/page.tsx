@@ -15,14 +15,18 @@ export default function JobDetailsPage() {
       <Nav openNav={() => setShowNav(true)} />
       <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
 
-      <main className="pt-[100px] pb-12 w-full">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col gap-5">
-          <DetailsHero />
-          <JobDetails />
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+        <main className="pt-[100px] pb-12 w-full">
+          <div className="max-w-full mx-auto flex flex-col gap-5">
+            <div className="w-full">
+              <DetailsHero />
+            </div>
+            <div className="max-w-7xl mx-auto px-6 w-full flex flex-col gap-5">
+              <JobDetails />
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+              </div>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
 
       <Footer />
     </div>
