@@ -1,7 +1,11 @@
-export default function AdminLayout({
+export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return <div>{children}</div>;
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
 }
