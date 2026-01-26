@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Footer from "@/components/Footer/Footer";
-import DetailsHeader from "../components/DetailsHeader"; 
+import DetailsHeader from "./DetailsHeader";
 import { 
   FaFacebookF, 
   FaTwitter, 

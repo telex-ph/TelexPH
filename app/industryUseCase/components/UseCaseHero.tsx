@@ -2,12 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/styles";
 
-export default function CareersHero() {
+export default function IndustryHero() {
   return (
     <section
       className="relative pt-40 pb-10 overflow-hidden"
       style={{ backgroundColor: COLORS.white }}
     >
+      {/* Background Watermark Text */}
       <div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[85%]
                    text-[5rem] md:text-[7rem] lg:text-[8rem]
@@ -25,7 +26,7 @@ export default function CareersHero() {
             opacity: 0.85,
           }}
         >
-          CAREERS
+          INDUSTRIES
         </span>
       </div>
 
@@ -40,21 +41,19 @@ export default function CareersHero() {
               color: COLORS.black,
             }}
           >
-            CAREERS
+            INDUSTRY USE CASES
           </h1>
 
-          {/* Description */}
+          {/* Description Paragraph */}
           <p
-            className="text-md md:text-lg max-w-3xl mx-auto mb-8"
+            className="text-md md:text-lg max-w-2xl mx-auto mb-8"
             style={{
               fontFamily: FONTS.rubik,
               color: getColorWithOpacity("dark", 0.7),
             }}
           >
-            At Telex Philippines, we are building an elite team of experts designed 
-            to shape the future of integrated logistics and outsourcing solutions. 
-            Guided by our tagline "SCALE SMARTER", 
-            we seek the top 1% of talent to lead our global operations with innovation, expertise.
+            Explore how our integrated outsourcing solutions empower different industries 
+            to achieve operational excellence and sustainable growth through data-driven strategies.
           </p>
 
           {/* Breadcrumbs */}
@@ -80,7 +79,7 @@ export default function CareersHero() {
               Home
             </Link>
             <span className="mx-2">&gt;&gt;</span>
-            <span style={{ color: COLORS.primary }}>Careers</span>
+            <span style={{ color: COLORS.primary }}>Industries</span>
           </div>
         </div>
       </div>

@@ -4,14 +4,13 @@ import React, { useState } from "react";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
-import UseCaseOverview from "./UseCaseOverview";
-import UseCaseChallenges from "./UseCaseChallenges";
-import UseCaseSolution from "./UseCaseSolution";
-import UseCaseScenario from "./UseCaseScenario";
-import UseCaseBenefitsAndResults from "./UseCaseBenefitsAndResults";
-import UseCaseToolsAndTechnology from "./UseCaseToolsAndTechnology";
-import UseCaseWhy from "./UseCaseWhy";
-import UseCaseHero from "./UseCaseHero";
+import UseCaseOverview from "./components/UseCaseOverview";
+import UseCaseChallenges from "./components/UseCaseChallenges";
+import UseCaseSolution from "./components/UseCaseSolution";
+import UseCaseScenario from "./components/UseCaseScenario";
+import UseCaseToolsAndTechnology from "./components/UseCaseToolsAndTechnology";
+import UseCaseWhy from "./components/UseCaseWhy";
+import UseCaseHero from "./components/UseCaseHero";
 
 import { COLORS } from "@/constant/styles";
 
@@ -26,11 +25,11 @@ export default function IndustryUseCasePage() {
       <Nav openNav={openNavHandler} />
       <MobileNav showNav={showNav} closeNav={closeNavHandler} />
 
-      <main className="bg-white pt-[80px]"> 
+      <main className="bg-white"> 
         <section id="hero">
           <UseCaseHero />
         </section>
-
+        
         <section id="overview">
           <UseCaseOverview />
         </section>
@@ -45,10 +44,6 @@ export default function IndustryUseCasePage() {
         
         <section id="scenarios">
           <UseCaseScenario />
-        </section>
-        
-        <section id="results">
-          <UseCaseBenefitsAndResults />
         </section>
         
         <section id="tools">

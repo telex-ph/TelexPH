@@ -91,17 +91,16 @@ const Nav = ({ openNav }: Props) => {
   ];
 
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
+    { id: "learning", label: "Case Study", items: ["Events", "Guides", "Videos", "Webinars", "White Papers"] },
     { 
       id: "news", 
       label: "Industry Use Cases", 
       items: [
-        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
-        { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
-        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
-        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
-        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
-        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
+        { label: "Industry Overview", url: "/industryUseCase/" }, 
+        { label: "Challenges & Pain Points", url: "/industryUseCase/#challenges" },
+        { label: "Solutions Applied", url: "/industryUseCase/#solutions" },
+        { label: "Scenarios", url: "/industryUseCase/#scenarios" },
+        { label: "Tools & Technology", url: "/industryUseCase/#tools" },
         { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
       ]
     },

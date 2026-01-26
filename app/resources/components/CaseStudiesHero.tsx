@@ -10,6 +10,7 @@ export default function CaseStudiesHero() {
       className="relative pt-40 pb-10 overflow-hidden"
       style={{ backgroundColor: COLORS.white }}
     >
+      {/* Background Text */}
       <div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[85%]
                    text-[5rem] md:text-[7rem] lg:text-[8rem]
@@ -56,8 +57,9 @@ export default function CaseStudiesHero() {
             dedicated business support.
           </p>
 
+          {/* UPDATED BREADCRUMBS SECTION */}
           <div
-            className="text-sm uppercase tracking-widest"
+            className="text-sm" // Removed 'uppercase' and 'tracking-widest'
             style={{
               fontFamily: FONTS.openSans,
               fontWeight: FONT_WEIGHTS.medium,
@@ -77,22 +79,17 @@ export default function CaseStudiesHero() {
             >
               Home
             </Link>
+            
             <span className="mx-2">&gt;&gt;</span>
-            <Link
-              href="/resources"
-              className="transition-colors"
-              style={{ color: getColorWithOpacity("dark", 0.7) }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = COLORS.primary)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))
-              }
+            
+            <span 
+              style={{ 
+                color: COLORS.primary,
+                fontWeight: 'bold' // Added Bold here
+              }}
             >
-              Resources
-            </Link>
-            <span className="mx-2">&gt;&gt;</span>
-            <span style={{ color: COLORS.primary }}>Case Studies</span>
+              Case Studies
+            </span>
           </div>
         </div>
       </div>

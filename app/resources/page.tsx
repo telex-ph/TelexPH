@@ -24,7 +24,6 @@ export default function ResourcesPage() {
         <CaseStudiesFilter />
         <CaseStudies />
       </main>
-
       <Footer />
     </div>
   );
