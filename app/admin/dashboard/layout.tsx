@@ -1,25 +1,19 @@
 'use client'
 
 import { ReactNode, useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function DashboardLayout({
   children,
 }: {
   children: ReactNode
 }) {
-  const [activeitem, setactiveitem] = useState('Dashboard')
+  const pathname = usePathname()
   const [isassignmentsopen, setisassignmentsopen] = useState(false)
   const [isdarkmode, setisdarkmode] = useState(false)
   const [issidebarcollapsed, setissidebarcollapsed] = useState(false)
   const [ismobilemenuopen, setismobilemenuopen] = useState(false)
-
-  const handleclick = (itemname: string) => {
-    setactiveitem(itemname)
-    if (itemname === 'Careers') {
-      setisassignmentsopen(!isassignmentsopen)
-    }
-    setismobilemenuopen(false)
-  }
 
   const toggledarkmode = () => {
     setisdarkmode(!isdarkmode)
@@ -30,8 +24,8 @@ export default function DashboardLayout({
     if (!issidebarcollapsed) setisassignmentsopen(false)
   }
 
-  const getnavstyle = (name: string) => {
-    const isactive = activeitem === name
+  const getnavstyle = (path: string) => {
+    const isactive = pathname === path
     const collapsedpadding = issidebarcollapsed ? 'lg:justify-center lg:px-0' : 'px-4'
     
     if (isactive) {
@@ -42,19 +36,27 @@ export default function DashboardLayout({
       : `text-gray-400 hover:text-[#800000] hover:bg-gray-50 border-none px-4 ${collapsedpadding}`
   }
 
-  const navitems = [
-    { name: 'Blogs', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M8 7h6" /><path d="M8 11h8" /></svg> },
-  ]
+const navitems = [
+  { 
+    name: 'Blogs', 
+    path: '/admin/dashboard/blogs', 
+    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M8 7h6" /><path d="M8 11h8" /></svg> 
+  },
+  { 
+    name: 'Case Studies', 
+    path: '/admin/dashboard/CaseStudies', 
+    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg> 
+  },
+]
 
   const otheritems = [
-    { name: 'Case studies', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg> },
-    { name: 'Discussion', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-1.9A8.5 8.5 0 1 0 10.5 3.5 8.5 8.5 0 0 0 3 21z" /></svg> },
+    { name: 'Discussion', path: '#', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-1.9A8.5 8.5 0 1 0 10.5 3.5 8.5 8.5 0 0 0 3 21z" /></svg> },
   ]
 
   const SidebarContent = ({ iscollapsed }: { iscollapsed: boolean }) => (
     <>
       <div className={`p-8 flex items-center transition-all duration-300 ${iscollapsed ? 'lg:justify-center' : 'justify-between'}`}>
-        <div className={`flex items-center gap-3 cursor-pointer group transition-all duration-300 ${iscollapsed ? 'lg:w-full lg:justify-center' : ''}`} onClick={() => handleclick('Dashboard')}>
+        <Link href="/admin/dashboard" className={`flex items-center gap-3 cursor-pointer group transition-all duration-300 ${iscollapsed ? 'lg:w-full lg:justify-center' : ''}`}>
           <div className="flex items-center justify-center shrink-0">
             <img 
               src="/images/log0.png" 
@@ -67,11 +69,11 @@ export default function DashboardLayout({
               TELEX
             </span>
           )}
-        </div>
+        </Link>
         {!iscollapsed && (
           <button 
             onClick={() => ismobilemenuopen ? setismobilemenuopen(false) : togglesidebar()}
-            className={`transition-all active:scale-90 border-none outline-none ${isdarkmode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-[#800000]'}`}
+            className={`transition-all active:scale-90 border-none outline-none bg-transparent ${isdarkmode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-[#800000]'}`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M9 3v18" /></svg>
           </button>
@@ -79,23 +81,23 @@ export default function DashboardLayout({
       </div>
       
       <nav className={`flex-1 space-y-3 overflow-y-auto no-scrollbar pt-2 transition-all duration-300 ${iscollapsed ? 'px-2' : 'px-6'}`}>
-        <button 
-          onClick={() => handleclick('Dashboard')}
-          className={`w-full flex items-center py-3.5 rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none ${iscollapsed ? 'justify-center' : 'gap-4'} ${getnavstyle('Dashboard')}`}
+        <Link 
+          href="/admin/dashboard"
+          className={`w-full flex items-center py-3.5 rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none no-underline ${iscollapsed ? 'justify-center' : 'gap-4'} ${getnavstyle('/admin/dashboard')}`}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="shrink-0">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
           {!iscollapsed && <span className="uppercase tracking-wide">dashboard</span>}
-        </button>
+        </Link>
 
         <div className="space-y-2">
           {navitems.map((item) => (
-            <button 
+            <Link 
               key={item.name} 
-              onClick={() => handleclick(item.name)}
-              className={`w-full flex items-center rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle(item.name)}`}
+              href={item.path}
+              className={`w-full flex items-center rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none no-underline ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle(item.path)}`}
             >
               <div className={`flex items-center ${iscollapsed ? '' : 'gap-4'}`}>
                 <span className="shrink-0">{item.icon}</span>
@@ -104,13 +106,13 @@ export default function DashboardLayout({
               {!iscollapsed && (
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="opacity-40"><path d="m6 9 6 6 6-6"/></svg>
               )}
-            </button>
+            </Link>
           ))}
           
           <div className="py-1">
             <button 
-              onClick={() => handleclick('Careers')}
-              className={`w-full flex items-center rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle('Careers')}`}
+              onClick={() => setisassignmentsopen(!isassignmentsopen)}
+              className={`w-full flex items-center rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none bg-transparent ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle('/careers')}`}
             >
               <div className={`flex items-center ${iscollapsed ? '' : 'gap-4'}`}>
                 <span className="shrink-0">
@@ -128,11 +130,10 @@ export default function DashboardLayout({
                 {['Pending', 'Submitted', 'Feedback'].map((sub) => (
                   <button 
                     key={sub} 
-                    onClick={() => handleclick(sub)}
-                    className={`w-full flex items-center py-2.5 pl-5 relative group text-left transition-all active:scale-95 rounded-r-xl border-none outline-none ${activeitem === sub ? 'bg-[#800000] text-white' : ''}`}
+                    className={`w-full flex items-center py-2.5 pl-5 relative group text-left transition-all active:scale-95 rounded-r-xl border-none outline-none bg-transparent ${pathname.includes(sub.toLowerCase()) ? 'bg-[#800000] text-white' : ''}`}
                   >
                     <p className={`text-[11px] font-bold transition-all uppercase tracking-wider ${
-                      activeitem === sub ? 'text-white' : (isdarkmode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-[#800000]')
+                      isdarkmode ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-[#800000]'
                     }`}>{sub}</p>
                   </button>
                 ))}
@@ -141,14 +142,14 @@ export default function DashboardLayout({
           </div>
 
           {otheritems.map((item) => (
-            <button 
+            <Link 
               key={item.name} 
-              onClick={() => handleclick(item.name)}
-              className={`w-full flex items-center py-3.5 rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none ${iscollapsed ? 'justify-center' : 'gap-4'} ${getnavstyle(item.name)}`}
+              href={item.path}
+              className={`w-full flex items-center py-3.5 rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none no-underline ${iscollapsed ? 'justify-center' : 'gap-4'} ${getnavstyle(item.path)}`}
             >
               <span className="shrink-0">{item.icon}</span>
               {!iscollapsed && <span className="uppercase tracking-wide">{item.name}</span>}
-            </button>
+            </Link>
           ))}
         </div>
       </nav>
@@ -169,13 +170,13 @@ export default function DashboardLayout({
           )}
         </div>
         
-        <button 
-          onClick={() => handleclick('Settings')} 
-          className={`w-full flex items-center py-3.5 rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none ${iscollapsed ? 'justify-center' : 'gap-4'} ${getnavstyle('Settings')}`}
+        <Link 
+          href="#" 
+          className={`w-full flex items-center py-3.5 rounded-2xl text-[12px] font-semibold transition-all duration-300 active:scale-95 border-none outline-none no-underline ${iscollapsed ? 'justify-center' : 'gap-4'} ${getnavstyle('/settings')}`}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1-2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
           {!iscollapsed && <span className="uppercase tracking-wide">settings</span>}
-        </button>
+        </Link>
 
         <div className={`flex items-center p-3 rounded-2xl border-none mt-2 shadow-sm transition-all hover:shadow-md cursor-pointer ${iscollapsed ? 'justify-center' : 'justify-between'} ${isdarkmode ? 'bg-[#202020]' : 'bg-white'}`}>
           <div className="flex items-center gap-3">
@@ -207,11 +208,11 @@ export default function DashboardLayout({
       <main className="flex-1 flex flex-col h-full overflow-hidden w-full">
         <header className={`h-24 flex items-center justify-between px-6 lg:px-10 shrink-0 transition-colors duration-500 ${isdarkmode ? 'bg-[#181818]' : 'bg-white border-b border-gray-50'}`}>
           <div className="flex items-center gap-4">
-            <button onClick={() => setismobilemenuopen(true)} className="lg:hidden p-2 rounded-xl text-gray-400">
+            <button onClick={() => setismobilemenuopen(true)} className="lg:hidden p-2 rounded-xl text-gray-400 bg-transparent border-none">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
             </button>
             {issidebarcollapsed && (
-              <button onClick={togglesidebar} className={`hidden lg:block p-2.5 rounded-2xl ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`}>
+              <button onClick={togglesidebar} className={`hidden lg:block p-2.5 rounded-2xl border-none ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M9 3v18" /></svg>
               </button>
             )}
@@ -227,7 +228,7 @@ export default function DashboardLayout({
             </div>
             <div className={`hidden sm:flex items-center gap-4 px-6 py-3 rounded-full lg:w-[450px] ${isdarkmode ? 'bg-[#202020]' : 'bg-gray-50'}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              <input type="text" placeholder="Search For Courses, Resources Etc.." className={`bg-transparent outline-none text-[12px] font-bold w-full ${isdarkmode ? 'text-gray-300' : 'text-gray-500'}`} />
+              <input type="text" placeholder="Search For Courses, Resources Etc.." className={`bg-transparent outline-none text-[12px] font-bold w-full border-none ${isdarkmode ? 'text-gray-300' : 'text-gray-500'}`} />
             </div>
             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isdarkmode ? 'bg-[#202020]' : 'bg-gray-50'}`}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
