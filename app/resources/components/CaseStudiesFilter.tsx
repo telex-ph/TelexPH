@@ -119,20 +119,64 @@ export default function CaseStudiesFilter() {
       const apiData = await getAllCaseStudies();
       
       // Transform API data to match the expected format
-      const transformedApiData = apiData.map((item: any) => ({
-        id: item._id,
-        type: "Case Studies",
-        title: item.title,
-        date: new Date(item.createdAt).toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        }),
-        status: item.status === "published" ? "Active" : item.status === "draft" ? "Draft" : "Scheduled",
-        tag: item.industry || "Technology",
-        description: item.challenge || item.content?.substring(0, 150) + "...",
-        image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
-      }));
+      const transformedApiData = apiData.map((item: any) => {
+        // ✅ FIXED: Properly extract text from nested objects
+        let description = "";
+        
+        // Try to get description from challenge array first
+        if (Array.isArray(item.challenge) && item.challenge.length > 0) {
+          // Extract text from first challenge object
+          description = item.challenge[0]?.text || "";
+        } 
+        // Fallback to first section if challenge is empty
+        else if (Array.isArray(item.sections) && item.sections.length > 0) {
+          description = item.sections[0]?.text || "";
+        }
+        // Final fallback to solution
+        else if (Array.isArray(item.solution) && item.solution.length > 0) {
+          description = item.solution[0]?.text || "";
+        }
+        
+        // Truncate description to 150 characters
+        if (description.length > 150) {
+          description = description.substring(0, 150) + "...";
+        }
+
+        // Map status from backend to frontend format
+        const statusMap: Record<string, string> = {
+          "active": "Active",
+          "completed": "Completed",
+          "draft": "Draft",
+          "scheduled": "Scheduled"
+        };
+
+        // Map tags - pick first tag if multiple exist
+        const tagMap: Record<string, string> = {
+          "technology": "Technology",
+          "logistics": "Logistics",
+          "analytics": "Analytics",
+          "infrastructure": "Infrastructure"
+        };
+        
+        const firstTag = Array.isArray(item.tags) && item.tags.length > 0 
+          ? tagMap[item.tags[0]] || "Technology"
+          : "Technology";
+
+        return {
+          id: item._id,
+          type: "Case Studies",
+          title: item.title || "Untitled Case Study",
+          date: new Date(item.createdAt).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+          }),
+          status: statusMap[item.status] || "Active",
+          tag: firstTag,
+          description: description || "No description available.",
+          image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
+        };
+      });
 
       setApiCaseStudies(transformedApiData);
       setIsLoading(false);

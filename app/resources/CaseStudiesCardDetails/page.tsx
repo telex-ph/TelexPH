@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Footer from "@/components/Footer/Footer";
@@ -15,7 +15,11 @@ import {
 } from "react-icons/fa";
 import { COLORS, FONTS, getColorWithOpacity } from "@/constant/styles";
 
-const ALL_CONTENT_DATA: Record<string, any> = {
+// API Configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+// Hardcoded content data (original)
+const HARDCODED_CONTENT_DATA: Record<string, any> = {
   "6": {
     challenge: "Rapidly changing geopolitical landscapes and fragmented port data made it impossible for shippers to predict freight rate fluctuations.",
     solution: "C.H. Robinson aggregated data from over 500 ports and 2,000 carrier contracts to create a transparent, real-time market visibility framework.",
@@ -44,20 +48,125 @@ const ALL_CONTENT_DATA: Record<string, any> = {
       },
       { 
         title: "Strategic Results and Long-term Empowerment", 
-        text: "The newfound transparency led to profound results. Projects saw cost savings, reduced risk, and smoother operations across the board. The strong relationship between data and execution meant better forecasting for project needs and resources. C.H. Robinson didn’t just meet expectations; they redefined what success looks like for global trade logistics in 2026." 
+        text: "The newfound transparency led to profound results. Projects saw cost savings, reduced risk, and smoother operations across the board. The strong relationship between data and execution meant better forecasting for project needs and resources. C.H. Robinson didn't just meet expectations; they redefined what success looks like for global trade logistics in 2026." 
       }
     ]
   }
 };
 
+// API fetch function
+async function getCaseStudyById(id: string) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/casestudies/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch case study');
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching case study:', error);
+    return null;
+  }
+}
+
 function CaseStudyDetailsContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id") || "6";
-  const study = ALL_CONTENT_DATA[id] || ALL_CONTENT_DATA["6"];
+  
+  const [study, setStudy] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isApiData, setIsApiData] = useState(false);
+
+  useEffect(() => {
+    async function loadCaseStudy() {
+      setIsLoading(true);
+      
+      // Check if ID is a hardcoded one (numeric string < 10)
+      const isHardcoded = !isNaN(Number(id)) && Number(id) < 100;
+      
+      if (isHardcoded && HARDCODED_CONTENT_DATA[id]) {
+        // Use hardcoded data
+        setStudy(HARDCODED_CONTENT_DATA[id]);
+        setIsApiData(false);
+      } else {
+        // Fetch from API (MongoDB ID format)
+        const apiData = await getCaseStudyById(id);
+        
+        if (apiData) {
+          // ✅ Transform API data to match expected format
+          const transformedStudy = {
+            // Extract challenge text - API returns array of {title, text}
+            challenge: Array.isArray(apiData.challenge) && apiData.challenge.length > 0
+              ? apiData.challenge.map((c: any) => c.text).join(" ")
+              : "No challenge information available.",
+            
+            // Extract solution text - API returns array of {title, text}
+            solution: Array.isArray(apiData.solution) && apiData.solution.length > 0
+              ? apiData.solution.map((s: any) => s.text).join(" ")
+              : "No solution information available.",
+            
+            // Create results summary from solution titles
+            resultsSummary: Array.isArray(apiData.solution) && apiData.solution.length > 0
+              ? apiData.solution.map((s: any) => s.title)
+              : ["Results not available"],
+            
+            // Transform sections array to body format
+            body: Array.isArray(apiData.sections) && apiData.sections.length > 0
+              ? apiData.sections.map((section: any) => ({
+                  title: section.subtitle || "",
+                  text: section.text || ""
+                }))
+              : [
+                  {
+                    title: apiData.title || "Case Study",
+                    text: "Content not available."
+                  }
+                ]
+          };
+          
+          setStudy(transformedStudy);
+          setIsApiData(true);
+        } else {
+          // Fallback to default hardcoded data
+          setStudy(HARDCODED_CONTENT_DATA["6"]);
+          setIsApiData(false);
+        }
+      }
+      
+      setIsLoading(false);
+    }
+
+    loadCaseStudy();
+  }, [id]);
 
   const handlePrintPDF = () => {
     window.print();
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+          </div>
+          <p className="mt-4 font-bold text-[18px]" style={{ fontFamily: FONTS.poppins }}>LOADING CASE STUDY...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!study) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-white">
+        <div className="text-center">
+          <p className="font-bold text-[24px]" style={{ fontFamily: FONTS.poppins, color: COLORS.primary }}>
+            Case Study Not Found
+          </p>
+          <Link href="/resources" className="mt-4 inline-block text-blue-600 hover:underline">
+            ← Back to Resources
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -188,7 +297,11 @@ function CaseStudyDetailsContent() {
 
 export default function CaseStudiesCardDetailsPage() {
   return (
-    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-white font-bold text-[24px]">LOADING...</div>}>
+    <Suspense fallback={
+      <div className="h-screen w-full flex items-center justify-center bg-white font-bold text-[24px]">
+        LOADING...
+      </div>
+    }>
       <CaseStudyDetailsContent />
     </Suspense>
   );
