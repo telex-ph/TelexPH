@@ -1,17 +1,58 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+ 
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
-export default function loginpage() {
-  const [email, setemail] = useState('')
-  const [password, setpassword] = useState('')
-
-  const handlelogin = (e: React.FormEvent) => {
+  // Solusyon para sa Hydration Error
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+ 
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert(`email: ${email}\npassword: ${password}`)
+    setError('')
+    setIsLoading(true)
+ 
+    try {
+      // Naka-point na ito sa Port 3000 (Backend)
+      const response = await fetch(`http://localhost:3000/auth/authenticate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
+ 
+      const data = await response.json()
+ 
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed')
+      }
+ 
+      router.push('/dashboard') 
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during login')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
+  // Wag mag-render hangga't hindi mounted para iwas mismatch sa fonts
+  if (!mounted) return null;
+ 
   return (
     <div className="h-screen w-full relative flex items-center justify-center p-4 md:p-8 overflow-hidden bg-black">
       <style jsx global>{`
@@ -64,11 +105,12 @@ export default function loginpage() {
                   placeholder="admin@system.com"
                   className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
                   value={email}
-                  onChange={(e) => setemail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
-
+ 
               <div>
                 <label className="block text-sm font-medium text-[#800000] tracking-wider mb-2 ml-1 font-poppins">
                   Password
@@ -78,8 +120,9 @@ export default function loginpage() {
                   placeholder="••••••••"
                   className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
                   value={password}
-                  onChange={(e) => setpassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -92,7 +135,7 @@ export default function loginpage() {
                   forgot password?
                 </Link>
               </div>
-
+ 
               <button
                 type="submit"
                 className="w-full bg-[#800000] text-white py-4 rounded-xl font-normal text-sm uppercase tracking-widest hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] mt-2 font-poppins"
