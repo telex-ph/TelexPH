@@ -119,10 +119,9 @@ export default function DashboardLayout({
                 {!iscollapsed && <span className="uppercase tracking-wide">careers</span>}
               </div>
               {!iscollapsed && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${isassignmentsopen ? 'rotate-180' : 'opacity-40'}`}><path d="m6 9 6 6 6-6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isassignmentsopen ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6"/></svg>
               )}
             </button>
-            
             {!iscollapsed && isassignmentsopen && (
               <div className={`ml-8 mt-2 border-l-2 space-y-1 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
                 {['Pending', 'Submitted', 'Feedback'].map((sub) => (
