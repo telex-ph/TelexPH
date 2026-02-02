@@ -95,7 +95,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <form onSubmit={handlelogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[#800000] tracking-wider mb-2 ml-1 font-poppins">
                   Email Address
