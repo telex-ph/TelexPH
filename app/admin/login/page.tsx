@@ -12,18 +12,16 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
-  // Solusyon para sa Hydration Error
   useEffect(() => {
     setMounted(true)
   }, [])
  
-  const handleLogin = async (e: React.FormEvent) => {
+  const handlelogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
  
     try {
-      // Naka-point na ito sa Port 3000 (Backend)
       const response = await fetch(`http://localhost:3000/auth/authenticate`, {
         method: 'POST',
         headers: {
@@ -42,7 +40,9 @@ export default function LoginPage() {
         throw new Error(data.error || 'Authentication failed')
       }
  
-      router.push('/dashboard') 
+      // REDIRECTION FIX: Dahil ang path ay /app/admin/dashboard
+      router.push('/admin/dashboard') 
+      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during login')
     } finally {
@@ -50,7 +50,6 @@ export default function LoginPage() {
     }
   }
 
-  // Wag mag-render hangga't hindi mounted para iwas mismatch sa fonts
   if (!mounted) return null;
  
   return (
@@ -93,6 +92,11 @@ export default function LoginPage() {
               <p className="text-gray-400 text-sm font-normal font-open-sans">
                 secure verification required. please provide your administrative login details.
               </p>
+              {error && (
+                <p className="text-red-500 text-xs mt-2 font-bold uppercase tracking-tight italic">
+                  {error}
+                </p>
+              )}
             </div>
 
             <form onSubmit={handlelogin} className="space-y-4">
@@ -138,16 +142,21 @@ export default function LoginPage() {
  
               <button
                 type="submit"
-                className="w-full bg-[#800000] text-white py-4 rounded-xl font-normal text-sm uppercase tracking-widest hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] mt-2 font-poppins"
+                disabled={isLoading}
+                className={`w-full bg-[#800000] text-white py-4 rounded-xl font-normal text-sm uppercase tracking-widest hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] mt-2 font-poppins flex items-center justify-center gap-2 ${isLoading ? 'opacity-70' : ''}`}
               >
-                Sign In
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Processing...
+                  </>
+                ) : 'Sign In'}
               </button>
             </form>
           </div>
         </div>
 
         <div className="hidden md:flex md:w-1/2 bg-[#fafafa] relative items-center justify-center border-l border-gray-50 overflow-hidden flex-col">
-          
           <div className="relative z-10 w-full h-[65%] flex items-center justify-center p-6">
             <div className="relative w-full h-full scale-[1.15] transition-transform duration-1000 animate-gentle-float">
               <Image 
@@ -159,13 +168,11 @@ export default function LoginPage() {
               />
             </div>
           </div>
-
           <div className="relative z-20 text-center px-10 pb-12">
             <p className="text-gray-500 text-sm font-normal max-w-[380px] mx-auto leading-relaxed font-poppins">
               this system is strictly for administrative use. all access attempts are monitored and unauthorized entry is prohibited.
             </p>
           </div>
-
           <div className="absolute top-10 right-10 w-40 h-40 border border-[#800000]/5 rounded-full" />
           <div className="absolute bottom-[-5%] left-[-5%] w-72 h-72 bg-[#800000]/5 rounded-full blur-3xl" />
         </div>
