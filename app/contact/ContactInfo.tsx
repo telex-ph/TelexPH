@@ -113,7 +113,7 @@ const ContactInfo: React.FC = () => {
             </a>
 
             <a
-              href="mailto:partnerships@telexph.com"
+              href="mailto:business@telexph.com"
               className={`${FONT_CLASSES.rubikRegular} block transition-colors`}
               style={{
                 fontFamily: FONTS.rubik,
@@ -126,7 +126,7 @@ const ContactInfo: React.FC = () => {
                 (e.currentTarget.style.color = secondaryTextColor)
               }
             >
-              partnerships@telexph.com
+              business@telexph.com
             </a>
           </div>
         </div>
