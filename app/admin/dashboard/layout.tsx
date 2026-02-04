@@ -12,10 +12,10 @@ export default function DashboardLayout({
   children: ReactNode
 }) {
   const pathname = usePathname()
-  const [isassignmentsopen, setisassignmentsopen] = useState(false)
   const [isdarkmode, setisdarkmode] = useState(false)
   const [issidebarcollapsed, setissidebarcollapsed] = useState(false)
   const [ismobilemenuopen, setismobilemenuopen] = useState(false)
+  const [isblogdropdownopen, setisblogdropdownopen] = useState(false)
   
   const [isheaderdropdownopen, setisheaderdropdownopen] = useState(false)
   const dropdownref = useRef<HTMLDivElement>(null)
@@ -26,7 +26,7 @@ export default function DashboardLayout({
 
   const togglesidebar = () => {
     setissidebarcollapsed(!issidebarcollapsed)
-    if (!issidebarcollapsed) setisassignmentsopen(false)
+    if (!issidebarcollapsed) setisblogdropdownopen(false)
   }
 
   useEffect(() => {
@@ -39,28 +39,53 @@ export default function DashboardLayout({
     return () => document.removeEventListener("mousedown", handleclickoutside)
   }, [])
 
-  const getnavstyle = (path: string) => {
-    const isactive = pathname === path
+  useEffect(() => {
+    setismobilemenuopen(false)
+  }, [pathname])
+
+  const getnavstyle = (path: string, hasdropdown: boolean = false) => {
+    const isactive = pathname === path || (hasdropdown && pathname.startsWith(path))
     const collapsedpadding = issidebarcollapsed ? 'lg:justify-center lg:px-0' : 'px-4'
     
     if (isactive) {
-      return `bg-[#800000] text-white shadow-md -translate-y-[1px] border-none px-4 ${collapsedpadding}`
+      return `bg-[#800000] text-white shadow-md border-none ${collapsedpadding}`
     }
+    
     return isdarkmode 
-      ? `text-gray-500 hover:text-white hover:bg-white/5 border-none px-4 ${collapsedpadding}` 
-      : `text-gray-400 hover:text-[#800000] hover:bg-gray-50 border-none px-4 ${collapsedpadding}`
+      ? `text-gray-500 hover:text-white hover:bg-white/5 border-none ${collapsedpadding}` 
+      : `text-gray-400 hover:text-[#800000] hover:bg-gray-50 border-none ${collapsedpadding}`
+  }
+
+  const getsubnavstyle = (path: string) => {
+    const isactive = pathname === path
+    if (isactive) {
+      return `bg-[#800000] text-white shadow-sm rounded-xl`
+    }
+    return isdarkmode
+      ? `text-gray-500 hover:text-white hover:bg-white/5`
+      : `text-gray-400 hover:text-[#800000] hover:bg-gray-50`
   }
 
   const navitems = [
     { 
       name: 'Blogs', 
       path: '/admin/dashboard/blogs', 
+      hasdropdown: true,
+      subitems: [
+        { name: 'Add Blog', path: '/admin/dashboard/blogs' },
+        { name: 'Blog List', path: '/admin/dashboard/blogs/list' }
+      ],
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M8 7h6" /><path d="M8 11h8" /></svg> 
     },
     { 
       name: 'Case Studies', 
       path: '/admin/dashboard/CaseStudies', 
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg> 
+    },
+    { 
+      name: 'Careers', 
+      path: '/admin/dashboard/careers', 
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> 
     },
   ]
 
@@ -75,12 +100,17 @@ export default function DashboardLayout({
               className={`transition-all duration-300 object-contain ${iscollapsed ? 'w-10 h-10' : 'w-14 h-14'}`} 
             />
           </div>
-          {!iscollapsed && (
-            <span className={`text-lg uppercase tracking-tighter transition-colors ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+          {(!iscollapsed || ismobilemenuopen) && (
+            <span className={`text-lg uppercase font-bold tracking-tighter transition-colors ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
               TELEX
             </span>
           )}
         </Link>
+        {ismobilemenuopen && (
+            <button onClick={() => setismobilemenuopen(false)} className="lg:hidden p-2 text-gray-400 bg-transparent border-none">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+        )}
       </div>
       
       <nav className={`flex-1 space-y-3 overflow-y-auto no-scrollbar pt-2 transition-all duration-300 ${iscollapsed ? 'px-2' : 'px-6'}`}>
@@ -92,21 +122,58 @@ export default function DashboardLayout({
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
-          {!iscollapsed && <span className="tracking-wide">Dashboard</span>}
+          {(!iscollapsed || ismobilemenuopen) && <span className="tracking-wide uppercase font-medium">Dashboard</span>}
         </Link>
 
         <div className="space-y-2">
           {navitems.map((item) => (
-            <Link 
-              key={item.name} 
-              href={item.path}
-              className={`w-full flex items-center rounded-2xl text-[12px] transition-all duration-300 active:scale-95 border-none outline-none no-underline ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle(item.path)}`}
-            >
-              <div className={`flex items-center ${iscollapsed ? '' : 'gap-4'}`}>
-                <span className="shrink-0">{item.icon}</span>
-                {!iscollapsed && <span className="tracking-wide">{item.name}</span>}
-              </div>
-            </Link>
+            <div key={item.name} className="flex flex-col">
+              {item.hasdropdown ? (
+                <>
+                  <button 
+                    onClick={() => setisblogdropdownopen(!isblogdropdownopen)}
+                    className={`w-full flex items-center rounded-2xl text-[12px] transition-all duration-300 active:scale-95 border-none outline-none cursor-pointer ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle(item.path, true)}`}
+                  >
+                    <div className={`flex items-center ${iscollapsed ? '' : 'gap-4'}`}>
+                      <span className="shrink-0">{item.icon}</span>
+                      {(!iscollapsed || ismobilemenuopen) && <span className="tracking-wide uppercase font-medium">{item.name}</span>}
+                    </div>
+                    {(!iscollapsed || ismobilemenuopen) && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-300 ${isblogdropdownopen ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9" /></svg>
+                    )}
+                  </button>
+                  
+                  <div className={`overflow-hidden transition-all duration-300 ${isblogdropdownopen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="relative ml-8 mt-1 flex flex-col">
+                      <div className={`absolute left-0 top-0 bottom-4 w-px ${isdarkmode ? 'bg-white/10' : 'bg-gray-200'}`} />
+                      
+                      {item.subitems?.map((sub) => (
+                        <Link 
+                          key={sub.name} 
+                          href={sub.path}
+                          className={`group relative flex items-center py-2.5 pl-6 pr-4 no-underline transition-all active:scale-95 my-1 mx-2 ${getsubnavstyle(sub.path)}`}
+                        >
+                          <div className={`absolute left-[-8px] w-4 h-px top-1/2 ${isdarkmode ? 'bg-white/10' : 'bg-gray-200'} rounded-tr-lg`} />
+                          <span className={`text-[10px] uppercase tracking-wider font-bold transition-colors`}>
+                            {sub.name}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <Link 
+                  href={item.path}
+                  className={`w-full flex items-center rounded-2xl text-[12px] transition-all duration-300 active:scale-95 border-none outline-none no-underline ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle(item.path)}`}
+                >
+                  <div className={`flex items-center ${iscollapsed ? '' : 'gap-4'}`}>
+                    <span className="shrink-0">{item.icon}</span>
+                    {(!iscollapsed || ismobilemenuopen) && <span className="tracking-wide uppercase font-medium">{item.name}</span>}
+                  </div>
+                </Link>
+              )}
+            </div>
           ))}
         </div>
       </nav>
@@ -115,9 +182,9 @@ export default function DashboardLayout({
         <div className={`flex items-center text-[12px] py-4 ${iscollapsed ? 'justify-center' : 'justify-between px-4'}`}>
           <div className={`flex items-center gap-4 transition-colors ${isdarkmode ? 'text-white' : 'text-gray-500'}`}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-            {!iscollapsed && <span className="tracking-wide">Dark Mode</span>}
+            {(!iscollapsed || ismobilemenuopen) && <span className="tracking-wide uppercase font-bold">Dark Mode</span>}
           </div>
-          {!iscollapsed && (
+          {(!iscollapsed || ismobilemenuopen) && (
             <div 
               onClick={toggledarkmode}
               className={`w-8 h-4 rounded-full relative cursor-pointer transition-all duration-500 active:scale-75 border-none ${isdarkmode ? 'bg-[#800000]' : 'bg-gray-300'}`}
@@ -129,11 +196,11 @@ export default function DashboardLayout({
         
         <div className={`flex items-center p-3 rounded-2xl border-none mt-2 shadow-sm transition-all hover:shadow-md cursor-pointer ${iscollapsed ? 'justify-center' : 'justify-between'} ${isdarkmode ? 'bg-[#202020]' : 'bg-white'}`}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#800000] rounded-xl flex items-center justify-center text-white text-xs uppercase border-none shrink-0">aj</div>
-            {!iscollapsed && (
+            <div className="w-10 h-10 bg-[#800000] rounded-xl flex items-center justify-center text-white text-xs font-bold uppercase border-none shrink-0 shadow-lg shadow-maroon-900/20">aj</div>
+            {(!iscollapsed || ismobilemenuopen) && (
               <div className="flex flex-col text-left">
-                <span className={`text-[12px] uppercase transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>alex johnson</span>
-                <span className="text-[10px] tracking-tighter text-gray-400">Administrator</span>
+                <span className={`text-[12px] font-bold uppercase transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Alex Johnson</span>
+                <span className="text-[10px] font-medium tracking-tighter text-gray-400">Administrator</span>
               </div>
             )}
           </div>
@@ -154,10 +221,19 @@ export default function DashboardLayout({
         <SidebarContent iscollapsed={issidebarcollapsed} />
       </aside>
 
+      <div 
+        className={`lg:hidden fixed inset-0 bg-black/50 z-[40] transition-opacity duration-300 ${ismobilemenuopen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} 
+        onClick={() => setismobilemenuopen(false)}
+      />
+
+      <aside className={`lg:hidden fixed left-0 top-0 bottom-0 w-72 z-[50] transition-transform duration-300 ease-in-out transform flex flex-col ${ismobilemenuopen ? 'translate-x-0' : '-translate-x-full'} ${isdarkmode ? 'bg-[#181818]' : 'bg-white'}`}>
+        <SidebarContent iscollapsed={false} />
+      </aside>
+
       <main className="flex-1 flex flex-col h-full overflow-hidden w-full">
         <header className={`h-24 flex items-center justify-between px-6 lg:px-10 shrink-0 transition-colors duration-500 ${isdarkmode ? 'bg-[#181818]' : 'bg-white border-b border-gray-50'}`}>
           <div className="flex items-center gap-4">
-            <button onClick={() => setismobilemenuopen(true)} className="lg:hidden p-2 rounded-xl text-gray-400 bg-transparent border-none">
+            <button onClick={() => setismobilemenuopen(true)} className="lg:hidden p-2.5 rounded-2xl text-gray-400 bg-gray-50 border-none transition-all active:scale-90">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
             </button>
             <button onClick={togglesidebar} className={`hidden lg:block p-2.5 rounded-2xl border-none transition-all active:scale-95 cursor-pointer ${isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-50 text-gray-400'}`}>
@@ -173,7 +249,7 @@ export default function DashboardLayout({
             
             <div className={`hidden sm:flex items-center gap-4 px-6 py-3 rounded-full lg:w-[450px] ${isdarkmode ? 'bg-[#202020]' : 'bg-gray-50'}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              <input type="text" placeholder="Search For Courses, Resources Etc.." className={`bg-transparent outline-none text-[12px] w-full border-none ${isdarkmode ? 'text-gray-300' : 'text-gray-500'}`} />
+              <input type="text" placeholder="Search for articles, tools etc.." className={`bg-transparent outline-none text-[12px] w-full border-none uppercase font-semibold ${isdarkmode ? 'text-gray-300' : 'text-gray-500'}`} />
             </div>
 
             <div className="relative" ref={dropdownref}>
