@@ -208,41 +208,11 @@ export default function adminpage() {
   }
 
   const stats = [
-    { 
-      label: 'total case study views', 
-      value: statsloading ? '...' : formatNumber(casestudystats.totalAllTime), 
-      subValue: statsloading ? '' : `${formatNumber(casestudystats.totalUnique)} unique views`,
-      color: 'bg-[#800000]', 
-      textColor: 'text-white' 
-    },
-    { 
-      label: 'daily views', 
-      value: statsloading ? '...' : casestudystats.daily.toString(), 
-      subValue: 'today', 
-      color: 'bg-transparent', 
-      textColor: 'text-gray-800' 
-    },
-    { 
-      label: 'weekly views', 
-      value: statsloading ? '...' : formatNumber(casestudystats.weekly), 
-      subValue: 'last 7 days', 
-      color: 'bg-transparent', 
-      textColor: 'text-gray-800' 
-    },
-    { 
-      label: 'monthly views', 
-      value: statsloading ? '...' : formatNumber(casestudystats.monthly), 
-      subValue: 'last 30 days', 
-      color: 'bg-transparent', 
-      textColor: 'text-gray-800' 
-    },
-    { 
-      label: 'yearly views', 
-      value: statsloading ? '...' : formatNumber(casestudystats.yearly), 
-      subValue: 'last 365 days', 
-      color: 'bg-transparent', 
-      textColor: 'text-gray-800' 
-    },
+    { label: 'total shipments', value: '18,250', color: 'bg-[#800000]', textColor: 'text-white' },
+    { label: 'active shipments', value: '880', subValue: '14% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'completed', value: '16,456', subValue: '81% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'returned', value: '912', subValue: '5% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'revenue', value: '$96', subValue: '14% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
   ]
 
   const transactions = [
@@ -289,7 +259,6 @@ export default function adminpage() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* clickable date picker */}
           <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-2xl shadow-sm">
             <label htmlFor="date-picker" className="text-[10px] text-gray-500 bold-text whitespace-nowrap">date range:</label>
             <input 
@@ -310,27 +279,18 @@ export default function adminpage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
         {stats.map((stat, index) => (
-          <div
-            key={index}
-            className={`p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-2 transition-all hover:shadow-lg ${stat.color}`}
-          >
-            <p className={`text-[10px] uppercase tracking-wider ${stat.textColor === 'text-white' ? 'text-white/70' : 'text-gray-400'} bold-text`}>
-              {stat.label}
-            </p>
-            <p className={`text-3xl tracking-tight ${stat.textColor} bold-text`}>
-              {stat.value}
-            </p>
-            {stat.subValue && (
-              <p className={`text-[10px] ${stat.textColor === 'text-white' ? 'text-white/60' : 'text-gray-400'}`}>
-                {stat.subValue}
-              </p>
-            )}
+          <div key={index} className={`${stat.color} p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-32 transition-all hover:shadow-md cursor-default`}>
+            <p className={`text-[10px] tracking-wider ${stat.textColor} opacity-70 bold-text`}>{stat.label}</p>
+            <div>
+              <h3 className={`text-2xl ${stat.textColor} bold-text`}>{stat.value}</h3>
+              {stat.subValue && <p className="text-[9px] text-gray-400">{stat.subValue}</p>}
+            </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
-        <div className="lg:col-span-2 bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+        <div className="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h4 className="text-gray-800 bold-text">shipment overview</h4>
@@ -360,7 +320,7 @@ export default function adminpage() {
           </div>
         </div>
 
-        <div className="bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center justify-center">
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50 flex flex-col items-center justify-center">
           <h4 className="text-gray-800 w-full mb-8 text-left bold-text">popular categories</h4>
           <div className="relative w-48 h-48 mb-8">
             <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
@@ -392,7 +352,7 @@ export default function adminpage() {
         </div>
       </div>
 
-      <div className="w-full bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+      <div className="w-full bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h4 className="text-gray-800 bold-text">engagement metrics</h4>
@@ -458,7 +418,7 @@ export default function adminpage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full pb-10">
-        <div className="bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
           <div className="flex justify-between items-center mb-8">
             <h4 className="text-gray-800 bold-text">recent transactions</h4>
             <button className="text-[10px] text-[#800000] uppercase tracking-wider hover:underline">view all</button>
@@ -484,7 +444,7 @@ export default function adminpage() {
           </div>
         </div>
 
-        <div className="bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
           <h4 className="text-gray-800 mb-8 bold-text">regional performance</h4>
           <div className="space-y-6">
             {[
