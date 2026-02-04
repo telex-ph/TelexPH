@@ -10,7 +10,7 @@ export default function Logout({ isdarkmode }: logoutprops) {
   const router = useRouter()
 
   const handlelogout = () => {
-    router.push('/login')
+    router.push('/admin/login')
   }
 
   return (
