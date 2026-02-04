@@ -1,6 +1,6 @@
 'use client'
 
-import react, { useState } from 'react'
+import react, { useState, useEffect } from 'react'
 import {
   AreaChart,
   Area,
@@ -11,25 +11,208 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-const engagementdata = [
-  { name: 'jan', views: 4000, likes: 2400 },
-  { name: 'feb', views: 3000, likes: 1398 },
-  { name: 'mar', views: 2000, likes: 6800 },
-  { name: 'apr', views: 2780, likes: 3908 },
-  { name: 'may', views: 1890, likes: 4800 },
-  { name: 'jun', views: 2390, likes: 3800 },
-  { name: 'jul', views: 3490, likes: 4300 },
-]
+// Type definitions for analytics data
+interface DailyView {
+  date: string
+  count: number
+}
+
+interface CaseStudyAnalytics {
+  resourceId: string
+  dailyViews: DailyView[]
+  viewCount: number
+}
+
+interface EngagementData {
+  name: string
+  views: number
+  likes: number
+}
+
+interface CaseStudyStats {
+  totalAllTime: number
+  totalUnique: number
+  daily: number
+  weekly: number
+  monthly: number
+  yearly: number
+}
 
 export default function adminpage() {
   const [selecteddate, setselecteddate] = useState('2026-01-28')
+  const [engagementdata, setengagementdata] = useState<EngagementData[]>([
+    { name: 'jan', views: 0, likes: 0 },
+    { name: 'feb', views: 0, likes: 0 },
+    { name: 'mar', views: 0, likes: 0 },
+    { name: 'apr', views: 0, likes: 0 },
+    { name: 'may', views: 0, likes: 0 },
+    { name: 'jun', views: 0, likes: 0 },
+    { name: 'jul', views: 0, likes: 0 },
+  ])
+  const [casestudystats, setcasestudystats] = useState<CaseStudyStats>({
+    totalAllTime: 0,
+    totalUnique: 0,
+    daily: 0,
+    weekly: 0,
+    monthly: 0,
+    yearly: 0,
+  })
+  const [loading, setloading] = useState(true)
+  const [statsloading, setstatsloading] = useState(true)
+  const [error, seterror] = useState<string | null>(null)
+
+  // Fetch case study summary stats
+  useEffect(() => {
+    const fetchCaseStudyStats = async () => {
+      try {
+        setstatsloading(true)
+        seterror(null)
+        
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
+        
+        console.log('🔍 Fetching case study stats...')
+        console.log('Token available:', token ? 'Yes' : 'No')
+        
+        const response = await fetch('http://localhost:3000/api/dashboard/stats/casestudies-summary', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        })
+
+        console.log('📊 Response status:', response.status)
+        console.log('📊 Response ok:', response.ok)
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('❌ Error response:', errorText)
+          throw new Error(`Failed to fetch case study stats: ${response.status} - ${errorText}`)
+        }
+
+        const data = await response.json()
+        console.log('✅ Case study stats received:', data)
+        setcasestudystats(data)
+        
+      } catch (error) {
+        console.error('❌ Error fetching case study stats:', error)
+        seterror(error instanceof Error ? error.message : 'Unknown error')
+        // Keep default values instead of throwing
+      } finally {
+        setstatsloading(false)
+      }
+    }
+
+    fetchCaseStudyStats()
+  }, [])
+
+  // Fetch analytics data from backend
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        setloading(true)
+        
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
+        
+        console.log('🔍 Fetching analytics...')
+        
+        // Fetch all case study analytics
+        const response = await fetch('http://localhost:3000/api/dashboard/analytics?resourceType=casestudy&limit=100', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        })
+
+        console.log('📈 Analytics response status:', response.status)
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('❌ Analytics error response:', errorText)
+          throw new Error(`Failed to fetch analytics: ${response.status}`)
+        }
+
+        const data = await response.json()
+        console.log('✅ Analytics data received:', data)
+        
+        // Process the data to aggregate by month
+        const monthlyData = processAnalyticsData(data.data || [])
+        setengagementdata(monthlyData)
+        
+      } catch (error) {
+        console.error('❌ Error fetching analytics:', error)
+        // Keep default data if fetch fails
+      } finally {
+        setloading(false)
+      }
+    }
+
+    fetchAnalytics()
+  }, [])
+
+  // Process analytics data into monthly aggregates
+  const processAnalyticsData = (analyticsArray: any[]): EngagementData[] => {
+    const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    const currentYear = new Date().getFullYear()
+    
+    // Initialize monthly data
+    const monthlyViews: { [key: string]: number } = {}
+    monthNames.forEach(month => {
+      monthlyViews[month] = 0
+    })
+
+    // Aggregate views by month
+    analyticsArray.forEach((analytics: any) => {
+      if (analytics.dailyViews && Array.isArray(analytics.dailyViews)) {
+        analytics.dailyViews.forEach((dailyView: DailyView) => {
+          const date = new Date(dailyView.date)
+          const monthIndex = date.getMonth()
+          const year = date.getFullYear()
+          
+          // Only count views from current year
+          if (year === currentYear) {
+            const monthName = monthNames[monthIndex]
+            monthlyViews[monthName] += dailyView.count || 0
+          }
+        })
+      }
+    })
+
+    // Convert to chart format (last 7 months)
+    const currentMonth = new Date().getMonth()
+    const result: EngagementData[] = []
+    
+    for (let i = 6; i >= 0; i--) {
+      const monthIndex = (currentMonth - i + 12) % 12
+      const monthName = monthNames[monthIndex]
+      result.push({
+        name: monthName,
+        views: monthlyViews[monthName],
+        likes: Math.floor(monthlyViews[monthName] * 0.6) // Simulate likes as 60% of views
+      })
+    }
+
+    return result
+  }
+
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M'
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K'
+    }
+    return num.toString()
+  }
 
   const stats = [
     { label: 'total shipments', value: '18,250', color: 'bg-[#800000]', textColor: 'text-white' },
-    { label: 'active shipments', value: '880', subValue: '14% of total', color: 'bg-white', textColor: 'text-gray-800' },
-    { label: 'completed', value: '16,456', subValue: '81% of total', color: 'bg-white', textColor: 'text-gray-800' },
-    { label: 'returned', value: '912', subValue: '5% of total', color: 'bg-white', textColor: 'text-gray-800' },
-    { label: 'revenue', value: '$96', subValue: '14% of total', color: 'bg-white', textColor: 'text-gray-800' },
+    { label: 'active shipments', value: '880', subValue: '14% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'completed', value: '16,456', subValue: '81% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'returned', value: '912', subValue: '5% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'revenue', value: '$96', subValue: '14% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
   ]
 
   const transactions = [
@@ -68,6 +251,11 @@ export default function adminpage() {
           <p className="text-[11px] tracking-wide italic text-gray-400">
             your analytics are looking great today — keep pushing for those targets!
           </p>
+          {error && (
+            <p className="text-[10px] text-red-500 italic">
+              ⚠️ Error loading stats: {error}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -81,16 +269,17 @@ export default function adminpage() {
               className="text-[10px] text-gray-800 bg-transparent border-none outline-none uppercase cursor-pointer"
             />
           </div>
-          <button className="flex items-center gap-2 px-6 py-2.5 bg-[#800000] text-white rounded-2xl shadow-lg hover:bg-[#600000] transition-all transform hover:scale-[1.02] active:scale-95">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span className="text-[10px] bold-text uppercase tracking-wider">export analytics</span>
+          
+          {/* export button */}
+          <button className="px-4 py-2 text-[10px] bg-[#800000] text-white rounded-2xl shadow-sm hover:bg-[#a00000] transition-all uppercase tracking-wider border-none cursor-pointer">
+            Export
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
         {stats.map((stat, index) => (
-          <div key={index} className={`${stat.color} p-6 rounded-[2rem] shadow-sm border border-gray-50 flex flex-col justify-between h-32 transition-all hover:shadow-md cursor-default`}>
+          <div key={index} className={`${stat.color} p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-32 transition-all hover:shadow-md cursor-default`}>
             <p className={`text-[10px] tracking-wider ${stat.textColor} opacity-70 bold-text`}>{stat.label}</p>
             <div>
               <h3 className={`text-2xl ${stat.textColor} bold-text`}>{stat.value}</h3>
@@ -167,7 +356,7 @@ export default function adminpage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h4 className="text-gray-800 bold-text">engagement metrics</h4>
-            <p className="text-[10px] text-gray-400">visualizing blog views vs likes</p>
+            <p className="text-[10px] text-gray-400">case study views from analytics</p>
           </div>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -178,6 +367,9 @@ export default function adminpage() {
               <div className="w-2 h-2 rounded-full bg-[#6b7280]" />
               <span className="text-[10px] text-gray-500">likes</span>
             </div>
+            {loading && (
+              <span className="text-[10px] text-gray-400 italic">loading data...</span>
+            )}
           </div>
         </div>
         <div className="h-72 w-full">
