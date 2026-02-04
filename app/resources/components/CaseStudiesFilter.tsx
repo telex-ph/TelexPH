@@ -185,8 +185,9 @@ export default function CaseStudiesFilter() {
     fetchData();
   }, []);
 
-  // Combine hardcoded resources with API case studies
-  const allResources = [...hardcodedResources, ...apiCaseStudies];
+  // Combine hardcoded resources with API case studies - FILTER OUT non-active API case studies
+  const activeApiCaseStudies = apiCaseStudies.filter((cs: any) => cs.status === "Active");
+  const allResources = [...hardcodedResources, ...activeApiCaseStudies];
 
   const filteredCards = useMemo(() => {
     return allResources.filter((card) => {
