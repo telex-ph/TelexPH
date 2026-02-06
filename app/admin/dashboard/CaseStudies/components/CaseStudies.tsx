@@ -761,8 +761,15 @@ const handlesubmit = async () => {
     { name: 'Scheduled', count: records.filter(r => r.status === 'Scheduled').length }
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#171717]">
+  return ( 
+    <div className="flex flex-col items-start justify-start p-4 space-y-4 min-h-screen bg-[#f8f9fa] dark:bg-transparent" style={{ fontFamily: "'Poppins', sans-serif" }}> 
+      <style jsx global>{` 
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Poppins', sans-serif !important; text-transform: none; font-weight: 400 !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+
       {error && (
         <div className="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-2xl shadow-lg z-50 text-sm font-bold">
           {error}
@@ -805,9 +812,9 @@ const handlesubmit = async () => {
       {/* NEW: Date Selection Modal - Shows case studies for selected date */}
       {showdatemodal && selecteddatedata && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white dark:bg-[#1f1f1f] rounded-[2rem] p-8 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h3 className="text-xl font-bold text-gray-900">
                 {new Date(selecteddatedata.date).toLocaleDateString('en-US', { 
                   month: 'long', 
                   day: 'numeric', 
@@ -873,7 +880,7 @@ const handlesubmit = async () => {
             <div className="flex justify-end mt-6 pt-6 border-t border-gray-200 dark:border-white/10">
               <button
                 onClick={() => setshowdatemodal(false)}
-                className="px-6 py-2 bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-white rounded-xl font-bold hover:bg-gray-300 dark:hover:bg-white/20 transition-colors text-sm"
+                className="px-6 py-2 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-colors text-sm"
               >
                 Close
               </button>
@@ -989,509 +996,432 @@ const handlesubmit = async () => {
         </div>
       )}
 
-      {/* Calendar Modal (Fullscreen) */}
+{/* Calendar Modal (Fullscreen) */}
       {showcalendarmodal && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-8">
-          <div className="bg-white dark:bg-[#1f1f1f] rounded-[3rem] p-12 max-w-6xl w-full shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white">Calendar View</h3>
-              <button
-                onClick={() => setshowcalendarmodal(false)}
-                className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-8 font-['Poppins']">
+          <div className="bg-white rounded-[3rem] overflow-hidden max-w-7xl w-full shadow-2xl flex h-[85vh]">
+            
+            {/* Left Side: Calendar Grid */}
+            <div className="flex-[2] p-10 flex flex-col border-r border-gray-50">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-gray-800">Calendar</h3>
+                <p className="text-[10px] text-gray-400 font-medium mt-1">Select a date to view details</p>
+              </div>
 
-            <div className="flex gap-3 overflow-x-auto no-scrollbar mb-8">
-              {months.map((m, idx) => (
-                <span
-                  key={m}
-                  onClick={() => setselectedmonthindex(idx)}
-                  className={`px-6 py-2 rounded-full text-sm font-bold cursor-pointer whitespace-nowrap ${
-                    idx === selectedmonthindex ? 'bg-[#800000] text-white' : 'text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  {m}
-                </span>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-7 gap-4 text-center mb-8">
-              {daysshort.map(day => (
-                <span key={day} className="text-gray-400 text-sm font-bold uppercase">{day}</span>
-              ))}
-              {calendardata.map((d, i) => (
-                <div 
-                  key={i} 
-                  className="relative py-3 flex items-center justify-center h-16"
-                  onClick={() => handleDateClick(d)}
-                >
-                  {d.markedDates && d.markedDates.length > 0 && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {d.markedDates.map((mark, idx) => (
-                        <div
-                          key={idx}
-                          className={`absolute w-12 h-12 rounded-full ${mark.color} opacity-30`}
-                          style={{
-                            transform: d.markedDates.length > 1
-                              ? `translateX(${(idx - (d.markedDates.length - 1) / 2) * 8}px)`
-                              : 'none'
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
+              {/* Month Selector */}
+              <div className="flex gap-1 mb-8 p-1 bg-gray-50/50 rounded-2xl border border-gray-100">
+                {months.map((m, idx) => (
                   <span
-                    className={`relative z-10 w-12 h-12 flex items-center justify-center rounded-full text-lg ${
-                      d.istoday
-                        ? 'border-2 border-[#800000] font-bold'
-                        : d.currentmonth
-                        ? 'text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10'
-                        : 'text-gray-400'
+                    key={m}
+                    onClick={() => setselectedmonthindex(idx)}
+                    className={`flex-1 text-center py-2 rounded-xl text-[10px] font-bold cursor-pointer transition-all duration-200 whitespace-nowrap ${
+                      idx === selectedmonthindex 
+                        ? 'bg-[#800000] text-white shadow-sm' 
+                        : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
-                    {d.day}
+                    {m.charAt(0).toUpperCase() + m.substring(1, 3).toLowerCase()}
                   </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-center gap-6 border-t pt-6">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">ACTIVE</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#800000]"></div>
-                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">COMPLETED</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-400"></div>
-                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">DRAFT</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-orange-400"></div>
-                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">SCHEDULED</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-[1400px] mx-auto p-8">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Case Studies</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Manage and analyze your research records</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
-          <div className="lg:col-span-2 bg-white dark:bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-50 dark:border-white/5">
-            <h4 className="text-sm font-bold tracking-tight mb-6" style={{ color: '#4a5565' }}>
-              {isEditMode ? 'Edit Case Study' : 'New Case Study'}
-            </h4>
-
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              <div>
-<label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-  Title * <span className="text-gray-400">({title.length}/30)</span>
-</label>
-<input
-  type="text"
-  value={title}
-  onChange={handleTitleChange}
-  maxLength={30}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5"
-                  placeholder="Enter case study title"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">Subtitle</label>
-                <input
-                  type="text"
-                  value={subtitle}
-                  onChange={(e) => setsubtitle(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5"
-                  placeholder="Enter subtitle (optional)"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              <div>
-<label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-  Author * <span className="text-[9px] text-gray-400">(letters, spaces, -, ', . only)</span>
-</label>
-<input
-  type="text"
-  value={author}
-  onChange={handleAuthorChange}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5"
-                  placeholder="Enter author name"
-                />
-              </div>
-              
-              <div className="relative">
-                <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">Category *</label>
-                <div
-                  onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5 cursor-pointer flex items-center justify-between"
-                >
-                  <div className="flex flex-wrap gap-1">
-                    {categories.length > 0 ? (
-                      categories.map(cat => (
-                        <span key={cat} className="px-2 py-1 bg-[#800000] text-white rounded-lg text-xs font-bold">
-                          {cat}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-gray-400">Select categories</span>
-                    )}
-                  </div>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
-                </div>
-                
-                {showCategoryDropdown && (
-                  <div className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1f1f1f] border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-2">
-                    {availableCategories.map(cat => (
-                      <div
-                        key={cat}
-                        onClick={() => handleCategoryToggle(cat)}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl cursor-pointer"
-                      >
-                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                          categories.includes(cat) 
-                            ? 'bg-[#800000] border-[#800000]' 
-                            : 'border-gray-300 dark:border-white/20'
-                        }`}>
-                          {categories.includes(cat) && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                              <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                          )}
-                        </div>
-                        <span className="text-sm">{cat}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">Status *</label>
-                <select
-                  value={status}
-                  onChange={(e) => setstatus(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Draft">Draft</option>
-                  <option value="Scheduled">Scheduled</option>
-                </select>
-              </div>
-              <div>
-<label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-  Cover Image * <span className="text-[9px] text-gray-400">(JPEG, JPG, PNG, WEBP)</span>
-</label>
-<input
-  ref={fileref}
-  type="file"
-  accept=".jpg,.jpeg,.png,.webp"
-  onChange={handleimagechange}
-  className="hidden"
-/>
-<div className="flex gap-2">
-  <button
-    onClick={() => fileref.current?.click()}
-    className="flex-1 px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm hover:border-[#800000] transition-colors bg-white dark:bg-white/5 text-left"
-  >
-    {selectedimage ? '✓ Image selected' : 'Choose image'}
-  </button>
-  {selectedimage && (
-    <button
-      onClick={handleCancelImage}
-      className="px-4 py-3 border border-red-200 dark:border-red-900/20 rounded-2xl text-sm hover:border-red-500 transition-colors bg-white dark:bg-white/5 text-red-600"
-      title="Cancel image"
-    >
-      ✕
-    </button>
-  )}
-</div>
-              </div>
-            </div>
-
-            {selectedimage && (
-  <div 
-    className="mb-6 relative group"
-    onPaste={handleImagePaste}
-  >
-    <img src={selectedimage} alt="Preview" className="w-full h-48 object-cover rounded-2xl" />
-    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center">
-      <p className="text-white text-sm font-bold">Click "Choose image" to change or paste a new image</p>
-    </div>
-  </div>
-)}
-
-{!selectedimage && (
-  <div 
-    className="mb-6 p-8 border-2 border-dashed border-gray-300 dark:border-white/20 rounded-2xl text-center cursor-pointer hover:border-[#800000] transition-colors"
-    onClick={() => fileref.current?.click()}
-    onPaste={handleImagePaste}
-  >
-    <p className="text-sm text-gray-500 dark:text-gray-400 font-bold">
-      Click to choose or paste an image (Ctrl/Cmd+V)
-    </p>
-    <p className="text-xs text-gray-400 mt-2">JPEG, JPG, PNG, WEBP only</p>
-  </div>
-)}
-
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-  Start Date <span className="text-[9px] text-gray-400">(defaults to today)</span>
-</label>
-<input
-  type="date"
-  value={startdate}
-  onChange={handleStartDateChange}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5"
-                />
-              </div>
-              <div>
-  <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-    End Date <span className="text-[9px] text-gray-400">(must be after start date)</span>
-  </label>
-  <input
-    type="date"
-    value={enddate}
-    min={startdate} // ADD THIS: Disables dates before start date in the calendar
-    onChange={handleEndDateChange}
-    disabled={isunfinished}
-    className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5 disabled:opacity-50"
-  />
-</div>
-            </div>
-
-            <div className="mb-6">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isunfinished}
-                  onChange={(e) => setisunfinished(e.target.checked)}
-                  className="w-4 h-4 text-[#800000] border-gray-300 rounded focus:ring-[#800000]"
-                />
-                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Mark as Unfinished</span>
-              </label>
-            </div>
-
-            {status === 'Scheduled' && (
-              <div className="grid grid-cols-2 gap-6 mb-6 p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-900/20">
-                <div>
-                  <label className="block text-[10px] text-orange-700 dark:text-orange-400 font-bold mb-2 uppercase tracking-wide">Schedule Date *</label>
-                  <input
-                    type="date"
-                    value={scheduledate}
-                    onChange={(e) => handleScheduleDateChange(e.target.value)}
-                    className="w-full px-4 py-3 border border-orange-200 dark:border-orange-900/20 rounded-2xl text-sm focus:outline-none focus:border-orange-500 bg-white dark:bg-white/5"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] text-orange-700 dark:text-orange-400 font-bold mb-2 uppercase tracking-wide">Schedule Time *</label>
-                  <input
-                    type="time"
-                    value={scheduletime}
-                    onChange={(e) => handleScheduleTimeChange(e.target.value)}
-                    className="w-full px-4 py-3 border border-orange-200 dark:border-orange-900/20 rounded-2xl text-sm focus:outline-none focus:border-orange-500 bg-white dark:bg-white/5"
-                  />
-                </div>
-                {timeError && (
-                  <div className="col-span-2 text-xs text-red-600 dark:text-red-400 font-bold">
-                    {timeError}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="space-y-6 mb-6">
-<h5 className="text-sm font-bold text-gray-700 dark:text-gray-300">
-  Content Sections {status === 'Draft' ? '(Minimum 1 Required) *' : '(5 Required) *'}
-</h5>              {[1, 2, 3, 4, 5].map((num) => {
-                const topicValue = eval(`topic${num}`);
-                const contentValue = eval(`content${num}`);
-                const setTopicFunc = eval(`settopic${num}`);
-                const setContentFunc = eval(`setcontent${num}`);
-                
-                return (
-                  <div key={num} className="p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10">
-
-<h6 className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-4 uppercase tracking-wide">
-  Section {num} {status !== 'Draft' || num === 1 ? '*' : <span className="text-gray-400 font-normal lowercase">(optional)</span>}
-</h6>
-
-               <div className="space-y-4">
-                      <div>
-<label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-  Topic/Subtitle {status !== 'Draft' && '*'}
-</label>                        <input
-                          type="text"
-                          value={topicValue}
-                          onChange={(e) => setTopicFunc(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5"
-                          placeholder={`Enter topic for section ${num}`}
-                        />
-                      </div>
-                      <div>
-<label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">
-  Content {status !== 'Draft' && '*'}
-</label>                        <textarea
-                          value={contentValue}
-                          onChange={(e) => setContentFunc(e.target.value)}
-                          rows={4}
-                          className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5 resize-none"
-                          placeholder={`Enter content for section ${num}`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 mb-6">
-              <div>
-                <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">Challenge *</label>
-                <textarea
-                  value={challenge}
-                  onChange={(e) => setchallenge(e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5 resize-none"
-                  placeholder="Describe the challenge..."
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] text-gray-500 font-bold mb-2 uppercase tracking-wide">Solution *</label>
-                <textarea
-                  value={solution}
-                  onChange={(e) => setsolution(e.target.value)}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-[#800000] bg-white dark:bg-white/5 resize-none"
-                  placeholder="Describe the solution..."
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              {isEditMode && (
-                <button
-                  onClick={resetform}
-                  className="flex-1 px-6 py-4 bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-white rounded-2xl font-bold hover:bg-gray-300 dark:hover:bg-white/20 transition-colors"
-                >
-                  Cancel Edit
-                </button>
-              )}
-              <button
-                onClick={() => setshowconfirmmodal(true)}
-                disabled={isloading}
-                className="flex-1 px-6 py-4 bg-[#800000] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors disabled:opacity-50"
-              >
-                {isloading ? 'Saving...' : (isEditMode ? 'Update Case Study' : 'Create Case Study')}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-50 dark:border-white/5">
-              <h4 className="text-gray-800 dark:text-white text-sm font-bold mb-6">Quick Stats</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: 'Active', val: records.filter(r => r.status === 'Active').length, sub: 'Ongoing' },
-                  { label: 'Done', val: records.filter(r => r.status === 'Completed').length, sub: 'Complete' },
-                  { label: 'Draft', val: records.filter(r => r.status === 'Draft').length, sub: 'Drafts' },
-                  { label: 'Schedule', val: records.filter(r => r.status === 'Scheduled').length, sub: 'Scheduled' }
-                ].map((s) => (
-                  <div key={s.label} className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl flex flex-col items-center border border-gray-100 dark:border-white/10">
-                    <span className="text-2xl font-bold text-[#800000]">{s.val}</span>
-                    <span className="text-[8px] text-gray-400 font-bold uppercase">{s.label}</span>
-                  </div>
                 ))}
               </div>
-              <div className="grid grid-cols-1 gap-3 mt-3">
-                <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl flex flex-col items-center border border-gray-100 dark:border-white/10">
-                  <span className="text-3xl font-bold text-[#800000]">{records.length}</span>
-                  <span className="text-[9px] text-gray-400 font-bold uppercase">Total</span>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white dark:bg-transparent p-8 rounded-[2.5rem] shadow-sm border border-gray-50 dark:border-white/5">
-              <div className="flex items-center justify-between mb-6">
-                <h4 className="text-gray-800 dark:text-white text-sm font-bold">Timeline & Events</h4>
-                <button 
-                  onClick={() => setshowcalendarmodal(true)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                  title="View Fullscreen Calendar"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-600 dark:text-gray-400" strokeWidth="2">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                  </svg>
-                </button>
-              </div>
-              <div className="flex gap-2 overflow-x-auto no-scrollbar mb-6">
-                {months.map((m, idx) => (
-                  <span key={m} onClick={() => setselectedmonthindex(idx)} className={`px-4 py-1.5 rounded-full text-[10px] font-bold cursor-pointer whitespace-nowrap ${idx === selectedmonthindex ? 'bg-[#800000] text-white' : 'text-gray-400 hover:text-gray-600'}`}>{m}</span>
+              {/* Day Labels */}
+              <div className="grid grid-cols-7 gap-4 text-center mb-4">
+                {daysshort.map(day => (
+                  <span key={day} className="text-[#800000] text-[10px] font-black uppercase opacity-40">
+                    {day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}
+                  </span>
                 ))}
               </div>
-              <div className="grid grid-cols-7 gap-y-3 text-center">
-                {daysshort.map(day => <span key={day} className="text-gray-400 text-[9px] font-bold uppercase">{day}</span>)}
+
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-3 flex-1">
                 {calendardata.map((d, i) => (
                   <div 
                     key={i} 
-                    className="relative py-1 flex items-center justify-center h-9"
+                    className={`group relative rounded-[1.5rem] transition-all duration-200 border flex items-center justify-center ${
+                      d.currentmonth ? 'bg-white border-gray-100 hover:border-[#800000]/10 hover:shadow-md cursor-pointer' : 'bg-transparent border-transparent opacity-20'
+                    }`}
                     onClick={() => handleDateClick(d)}
                   >
-                    {d.markedDates && d.markedDates.length > 0 && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        {d.markedDates.map((mark, idx) => (
-                          <div 
-                            key={idx} 
-                            className={`absolute w-7 h-7 rounded-full ${mark.color} opacity-30`}
-                            style={{ 
-                              transform: d.markedDates.length > 1 
-                                ? `translateX(${(idx - (d.markedDates.length - 1) / 2) * 4}px)` 
-                                : 'none' 
-                            }}
-                          />
-                        ))}
-                      </div>
-                    )}
-<span className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-full text-[12px] ${
-  d.istoday 
-    ? 'ring-2 ring-blue-500 ring-offset-2 bg-blue-50 dark:bg-blue-900/20 font-bold text-blue-600 dark:text-blue-400' 
-    : d.currentmonth 
-    ? 'text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10' 
-    : 'text-gray-400'
-}`}>                      {d.day}
+                    <div className="absolute top-2 right-2 flex -space-x-1">
+                      {d.markedDates && d.markedDates.length > 0 && d.markedDates.map((mark, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-1.5 h-1.5 rounded-full border border-white ${mark.color}`}
+                        />
+                      ))}
+                    </div>
+                    <span
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs transition-all ${
+                        d.istoday
+                          ? 'bg-[#800000] text-white font-bold shadow-lg'
+                          : d.currentmonth
+                          ? 'text-gray-500 font-semibold'
+                          : 'text-gray-300'
+                      }`}
+                    >
+                      {d.day}
                     </span>
                   </div>
                 ))}
               </div>
-              <div className="mt-6 flex justify-center gap-4 border-t pt-4">
-                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div><span className="text-[8px] font-bold text-gray-400">ACTIVE</span></div>
-                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-[#800000]"></div><span className="text-[8px] font-bold text-gray-400">COMPLETED</span></div>
-                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-rose-400"></div><span className="text-[8px] font-bold text-gray-400">DRAFT</span></div>
-                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-orange-400"></div><span className="text-[8px] font-bold text-gray-400">SCHED</span></div>
-              </div>
             </div>
+
+            {/* Right Side: Details Panel */}
+            <div className="flex-1 bg-gray-50/50 p-12 flex flex-col relative overflow-hidden">
+              <button
+                onClick={() => setshowcalendarmodal(false)}
+                className="absolute top-10 right-10 p-2 rounded-full bg-white text-gray-400 hover:text-red-600 shadow-sm transition-all"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+
+              {/* Top Title and Subtext */}
+              <div className="mt-12 mb-8">
+                <h3 className="text-[18px] font-bold text-gray-800">Event Details</h3>
+                <p className="text-[11px] text-gray-400 font-medium leading-relaxed mt-1">
+                  Stay updated with our project timeline and milestone completions.
+                </p>
+              </div>
+
+              {/* Main Info Section */}
+              <div className="space-y-8">
+                {/* Tip Box */}
+                <div className="p-6 bg-[#800000]/5 rounded-[2rem] border border-[#800000]/10">
+                  <p className="text-[10px] text-[#800000] font-bold uppercase mb-1">Tip</p>
+                  <p className="text-[10px] text-gray-500 leading-relaxed">Click on any highlighted date to view associated case studies or project updates.</p>
+                </div>
+
+                {/* Legend Section */}
+                <div className="grid grid-cols-2 gap-y-4 px-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">Active</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-[#800000]"></div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">Completed</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-rose-400"></div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">Draft</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">Scheduled</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flexible spacer */}
+              <div className="flex-1"></div>
+            </div>
+
           </div>
         </div>
+      )}
+      
+      {/* Main Content Area */}
+      <div className="w-full max-w-7xl mx-auto space-y-6 overflow-y-auto">
+
+      <div className="space-y-2 px-2">
+        <h2 className="text-xl leading-none tracking-tight font-bold" style={{ color: '#4a5565' }}>
+            Admin Control Center
+        </h2>
+        <p className="text-[11px] tracking-wide italic text-gray-400 dark:text-gray-500">
+            Manage Your Administrative Profile And System Security Credentials.
+        </p>
+      </div>
+
+{/* section: case study entry form - container perfectly matched with quick stats border and padding */}
+<div className="flex flex-col gap-6 font-['Poppins',_sans-serif]">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {/* quick stats card */}
+    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
+      <div className="mb-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <h4 className="text-sm font-bold text-[#4a5565] uppercase tracking-wider">
+              Quick Stats
+            </h4>
+            <p className="text-[10px] text-gray-400">
+              current system overview and counts
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest block">Total</span>
+            <span className="text-2xl font-black text-[#800000] leading-none">{records.length}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          { label: 'Active', val: records.filter(r => r.status === 'Active').length, icon: '⚡' },
+          { label: 'Done', val: records.filter(r => r.status === 'Completed').length, icon: 'Check' },
+          { label: 'Draft', val: records.filter(r => r.status === 'Draft').length, icon: '📝' },
+          { label: 'Schedule', val: records.filter(r => r.status === 'Scheduled').length, icon: '📅' }
+        ].map((s) => (
+          <div key={s.label} className="bg-white p-6 rounded-[1.75rem] border border-gray-100 shadow-sm flex items-center justify-between group">
+            <div>
+              <span className="text-[10px] text-gray-400 font-black uppercase tracking-tighter block mb-1">{s.label}</span>
+              <div className="text-3xl font-black text-[#1e293b]">{s.val}</div>
+            </div>
+            <div className="w-10 h-10 bg-[#800000] rounded-2xl flex items-center justify-center shadow-lg shadow-[#800000]/20">
+              {s.icon === 'Check' ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              ) : <span className="text-white text-xl">{s.icon}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* timeline section */}
+    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
+      <div className="mb-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <h4 className="text-sm font-bold text-[#4a5565] uppercase tracking-wider">
+              Timeline & Events
+            </h4>
+            <p className="text-[10px] text-gray-400">
+              Scheduled activities and research milestones
+            </p>
+          </div>
+          <button 
+            onClick={() => setshowcalendarmodal(true)}
+            className="p-2.5 rounded-xl hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-100"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a5565" strokeWidth="2.5">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div className="flex gap-2 overflow-x-auto no-scrollbar mb-6">
+        {months.map((m, idx) => (
+          <span 
+            key={m} 
+            onClick={() => setselectedmonthindex(idx)} 
+            className={`px-4 py-2 rounded-2xl text-[10px] font-bold cursor-pointer whitespace-nowrap transition-all ${idx === selectedmonthindex ? 'bg-[#800000] text-white shadow-md' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}
+          >
+            {m}
+          </span>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-y-3 text-center">
+        {daysshort.map(day => (
+          <span key={day} className="text-gray-400 text-[9px] font-black uppercase">{day.substring(0, 1)}</span>
+        ))}
+        {calendardata.map((d, i) => (
+          <div key={i} className="relative py-1 flex items-center justify-center h-9 cursor-pointer" onClick={() => handleDateClick(d)}>
+            {d.markedDates && d.markedDates.length > 0 && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                {d.markedDates.map((mark, idx) => (
+                  <div key={idx} className={`absolute w-7 h-7 rounded-full ${mark.color} opacity-20`} style={{ transform: d.markedDates.length > 1 ? `translateX(${(idx - (d.markedDates.length - 1) / 2) * 4}px)` : 'none' }} />
+                ))}
+              </div>
+            )}
+            <span className={`relative z-10 w-8 h-8 flex items-center justify-center rounded-xl text-[12px] transition-all ${d.istoday ? 'bg-[#800000] font-bold text-white shadow-lg shadow-[#800000]/20' : d.currentmonth ? 'text-gray-700 cursor-pointer hover:bg-gray-100 font-bold' : 'text-gray-200'}`}>
+              {d.day}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div><span className="text-[8px] font-bold text-gray-400 uppercase">ACTIVE</span></div>
+        <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-[#800000]"></div><span className="text-[8px] font-bold text-gray-400 uppercase">COMPLETED</span></div>
+        <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-rose-400"></div><span className="text-[8px] font-bold text-gray-400 uppercase">DRAFT</span></div>
+        <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-orange-400"></div><span className="text-[8px] font-bold text-gray-400 uppercase">SCHED</span></div>
+      </div>
+    </div>
+  </div>
+
+<div className="space-y-6 font-['Poppins',_sans-serif]">
+  <div className="bg-white p-8 rounded-[2.5rem] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.08)] border border-gray-100">
+    {/* Header */}
+    <div className="flex items-center justify-between mb-8 border-b border-gray-50 pb-5">
+      <div>
+        <h4 className="text-lg font-bold text-gray-800">
+          {isEditMode ? 'Edit Case Study' : 'New Case Study'}
+        </h4>
+        <p className="text-[11px] text-gray-400">Manage research database details</p>
+      </div>
+      <div className="px-4 py-1.5 bg-maroon-50 border border-maroon-100 rounded-full">
+        <span className="text-[10px] font-black text-[#800000] uppercase tracking-wider">
+          {status}
+        </span>
+      </div>
+    </div>
+
+    {/* Section 1: Basic Info */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+      <div className="md:col-span-2">
+        <label className="block text-[11px] text-gray-500 font-bold mb-2 uppercase">Title * ({title.length}/30)</label>
+        <input type="text" value={title} onChange={handleTitleChange} maxLength={30} className="w-full px-5 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl text-[13px] focus:outline-none focus:border-[#800000] focus:bg-white transition-all shadow-sm" placeholder="Analysis Title" />
+      </div>
+      <div>
+        <label className="block text-[11px] text-gray-500 font-bold mb-2 uppercase">Subtitle</label>
+        <input type="text" value={subtitle} onChange={(e) => setsubtitle(e.target.value)} className="w-full px-5 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl text-[13px] focus:outline-none focus:border-[#800000] focus:bg-white transition-all shadow-sm" placeholder="Subtitle" />
+      </div>
+    </div>
+
+    {/* Section 2: Details Row */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+      <div>
+        <label className="block text-[11px] text-gray-500 font-bold mb-2 uppercase">Author *</label>
+        <input type="text" value={author} onChange={handleAuthorChange} className="w-full px-5 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl text-[13px] focus:outline-none focus:border-[#800000] focus:bg-white transition-all shadow-sm" placeholder="Full Name" />
+      </div>
+      <div className="relative">
+        <label className="block text-[11px] text-gray-500 font-bold mb-2 uppercase">Category *</label>
+        <div onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full px-5 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl text-[13px] cursor-pointer flex items-center justify-between min-h-[46px] shadow-sm">
+          <div className="flex flex-wrap gap-1.5">
+            {categories.length > 0 ? categories.map(cat => (
+              <span key={cat} className="px-2.5 py-0.5 bg-[#800000] text-white rounded-lg text-[9px] font-bold uppercase">{cat}</span>
+            )) : <span className="text-gray-400 italic">Select...</span>}
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        {showCategoryDropdown && (
+          <div className="absolute z-20 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl p-3 grid grid-cols-2 gap-2">
+            {availableCategories.map(cat => (
+              <div key={cat} onClick={() => handleCategoryToggle(cat)} className="flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors">
+                <div className={`w-3.5 h-3.5 rounded border-2 ${categories.includes(cat) ? 'bg-[#800000] border-[#800000]' : 'border-gray-200'}`} />
+                <span className="text-xs text-gray-600 font-medium">{cat}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block text-[11px] text-gray-500 font-bold mb-2 uppercase">Status *</label>
+        <select value={status} onChange={(e) => setstatus(e.target.value)} className="w-full px-5 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl text-[13px] focus:outline-none focus:border-[#800000] font-bold text-gray-700 shadow-sm appearance-none cursor-pointer">
+          <option value="Active">Active</option>
+          <option value="Completed">Completed</option>
+          <option value="Draft">Draft</option>
+          <option value="Scheduled">Scheduled</option>
+        </select>
+      </div>
+    </div>
+
+    {/* Section 3: Image & Dates Dashboard */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 p-6 bg-gray-50/30 rounded-[2rem] border border-gray-100 shadow-inner">
+      <div className="space-y-4">
+        <label className="block text-[11px] text-gray-400 font-bold uppercase tracking-widest">Case Study Thumbnail</label>
+        <div 
+          className="relative h-32 w-full border-2 border-dashed border-gray-200 rounded-[1.5rem] flex flex-col items-center justify-center bg-white hover:border-[#800000] transition-all cursor-pointer group overflow-hidden shadow-sm"
+          onClick={() => fileref.current?.click()}
+        >
+          {selectedimage ? (
+            <img src={selectedimage} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+          ) : (
+            <div className="text-center">
+              <span className="text-[10px] font-bold text-gray-400 group-hover:text-[#800000]">CHOOSE IMAGE FILE</span>
+              <p className="text-[8px] text-gray-300 mt-1">PNG, JPG, WEBP</p>
+            </div>
+          )}
+        </div>
+        <input ref={fileref} type="file" accept=".jpg,.jpeg,.png,.webp" onChange={handleimagechange} className="hidden" />
+      </div>
+
+      <div className="flex flex-col justify-center space-y-5">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[10px] text-gray-400 font-bold mb-2 uppercase">Timeline Start</label>
+            <input type="date" value={startdate} onChange={handleStartDateChange} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#800000] shadow-sm" />
+          </div>
+          <div>
+            <label className="block text-[10px] text-gray-400 font-bold mb-2 uppercase">Timeline End</label>
+            <input type="date" value={enddate} min={startdate} onChange={handleEndDateChange} disabled={isunfinished} className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#800000] disabled:opacity-30 shadow-sm" />
+          </div>
+        </div>
+        <label className="flex items-center gap-3 self-end cursor-pointer group">
+          <input type="checkbox" checked={isunfinished} onChange={(e) => setisunfinished(e.target.checked)} className="peer hidden" />
+          <div className="w-5 h-5 rounded-lg border-2 border-gray-200 peer-checked:bg-[#800000] peer-checked:border-[#800000] transition-all" />
+          <span className="text-[11px] text-gray-500 font-bold uppercase tracking-tight">Project Unfinished</span>
+        </label>
+      </div>
+    </div>
+
+    {/* Section 4: Content blocks - Redesigned to be more systematic */}
+    <div className="mb-10">
+      <div className="flex items-center justify-between mb-5 border-b border-gray-100 pb-3">
+        <h5 className="text-[12px] font-black text-gray-700 uppercase tracking-widest">
+          Content Framework
+        </h5>
+        <span className="text-[10px] text-gray-400 font-bold">
+          {status === 'Draft' ? 'Minimum 1 Entry Required' : 'All 5 Sections Required'}
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-4">
+        {[1, 2, 3, 4, 5].map((num) => {
+          const topicValue = eval(`topic${num}`);
+          const contentValue = eval(`content${num}`);
+          const setTopicFunc = eval(`settopic${num}`);
+          const setContentFunc = eval(`setcontent${num}`);
+          const isRequired = status !== 'Draft' || num === 1;
+          
+          return (
+            <div key={num} className={`group grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-3xl border transition-all duration-300 ${isRequired ? 'bg-white border-gray-100 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)]' : 'bg-gray-50/40 border-transparent opacity-60'}`}>
+              <div className="md:col-span-1 flex items-center justify-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${isRequired ? 'bg-[#800000] text-white shadow-lg shadow-maroon-100' : 'bg-gray-200 text-gray-400'}`}>
+                  0{num}
+                </div>
+              </div>
+              <div className="md:col-span-4">
+                <input type="text" value={topicValue} onChange={(e) => setTopicFunc(e.target.value)} className="w-full px-0 py-2 text-[13px] font-bold text-gray-800 focus:outline-none border-b border-transparent focus:border-[#800000] bg-transparent transition-colors" placeholder={`Subtitle for Section ${num}`} />
+                <label className="text-[8px] text-gray-300 uppercase font-black tracking-widest mt-1 block">Topic Header</label>
+              </div>
+              <div className="md:col-span-7">
+                <textarea value={contentValue} onChange={(e) => setContentFunc(e.target.value)} rows={2} className="w-full px-5 py-3 bg-gray-50/50 rounded-2xl text-[12px] text-gray-600 focus:outline-none focus:bg-white focus:shadow-inner transition-all resize-none" placeholder="Provide detailed analytical content here..." />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Section 5: Challenge & Solution Summary */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 pt-6">
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-6 bg-red-400 rounded-full" />
+          <label className="text-[11px] text-gray-500 font-black uppercase tracking-widest">Key Challenge</label>
+        </div>
+        <textarea value={challenge} onChange={(e) => setchallenge(e.target.value)} rows={4} className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[2rem] text-[13px] text-gray-600 focus:outline-none focus:border-red-200 focus:bg-white shadow-sm resize-none transition-all" placeholder="What was the main obstacle?" />
+      </div>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-6 bg-green-400 rounded-full" />
+          <label className="text-[11px] text-gray-500 font-black uppercase tracking-widest">Final Solution</label>
+        </div>
+        <textarea value={solution} onChange={(e) => setsolution(e.target.value)} rows={4} className="w-full px-6 py-4 bg-gray-50/50 border border-gray-100 rounded-[2rem] text-[13px] text-gray-600 focus:outline-none focus:border-green-200 focus:bg-white shadow-sm resize-none transition-all" placeholder="How was it resolved?" />
+      </div>
+    </div>
+
+    {/* Actions */}
+    <div className="flex items-center justify-end gap-5 pt-8 border-t border-gray-50">
+      {isEditMode && (
+        <button onClick={resetform} className="text-xs font-black text-gray-400 hover:text-gray-600 transition-colors uppercase tracking-widest">
+          Discard Changes
+        </button>
+      )}
+      <button onClick={() => setshowconfirmmodal(true)} disabled={isloading} className="px-12 py-4 bg-[#800000] text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-maroon-200 hover:scale-[1.02] hover:bg-[#600000] transition-all active:scale-95 disabled:opacity-50">
+        {isloading ? 'Processing...' : (isEditMode ? 'Update Database' : 'Publish Study')}
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
 
         <div className="w-full mt-16 pb-20">
           <div className="px-2 mb-6">
@@ -1545,7 +1475,7 @@ const handlesubmit = async () => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-transparent p-12 rounded-[4rem] shadow-sm border border-gray-100 dark:border-white/5 min-h-[400px]">
+          <div className="bg-white p-12 rounded-[4rem] shadow-sm border border-gray-100 dark:border-white/5 min-h-[400px]">
             {filteredrecords.length === 0 ? <p className="text-center text-[11px] text-gray-300 mt-20 tracking-widest uppercase font-bold">No records found</p> : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredrecords.map((rec) => (
