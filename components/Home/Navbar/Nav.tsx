@@ -90,23 +90,29 @@ const Nav = ({ openNav }: Props) => {
     { id: "legal", label: "Legal", items: ["Privacy Policy", "Terms of Service", "Compliance"] },
   ];
 
-  const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
-    { 
-      id: "news", 
-      label: "Industry Use Cases", 
-      items: [
-        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
-        { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
-        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
-        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
-        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
-        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
-        { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
-      ]
-    },
-    { id: "help", label: "Support", items: ["FAQs", "Contact Support", "Documentation"] },
-  ];
+const resourcesMegaData = [
+  { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
+  { 
+    id: "news", 
+    label: "Industry Use Cases", 
+    items: [
+      { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
+      { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
+      { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
+      { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
+      { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
+      { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
+      { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
+    ]
+  },
+  { 
+    id: "blogs", 
+    label: "Blogs", 
+    items: [
+      { label: "Blogs Overview", url: "/resources/Blogs" },
+    ] 
+  },
+];
 
 
 const careersMegaData = [
