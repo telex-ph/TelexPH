@@ -397,7 +397,7 @@ const handleAuthorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const newValue = e.target.value;
-  if (newValue.length <= 30) {
+  if (newValue.length <= 50) {
     settitle(newValue);
   }
 };
