@@ -39,11 +39,42 @@ interface ContentSection {
   content: string;
 }
 
-export default function AddBlogs() {
+export default function AddBlogs() { 
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const actualFileRef = useRef<File | null>(null);
+  
+  // Dark mode state
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Check for dark mode on mount
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const darkMode = document.documentElement.classList.contains('dark');
+      setIsDarkMode(darkMode);
+    };
+    
+    checkDarkMode();
+    
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  // Form state
   const [title, setTitle] = useState('');
-  const [authorName, setAuthorName] = useState('');
-  const [mainCategory, setMainCategory] = useState('');
-  const [subcategory, setSubcategory] = useState('');
+  const [authorName, setAuthorName] = useState(''); // Changed: Direct string name
+  const [mainCategory, setMainCategory] = useState<string>('');
+  const [subcategory, setSubcategory] = useState<string>('');
   const [shortDescription, setShortDescription] = useState('');
   const [mainContentTitle, setMainContentTitle] = useState('');
   const [mainContentText, setMainContentText] = useState('');
@@ -52,75 +83,47 @@ export default function AddBlogs() {
   ]);
   const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>('draft');
   const [scheduledDate, setScheduledDate] = useState('');
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  const fileRef = useRef<HTMLInputElement>(null);
-  const actualFileRef = useRef<File | null>(null);
-  
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isCompressing, setIsCompressing] = useState(false);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsCompressing(true);
-    try {
-      // Create image element
-      const img = new Image();
+    if (file) {
+      actualFileRef.current = file;
+      setIsCompressing(true);
       const reader = new FileReader();
-      
-      await new Promise((resolve, reject) => {
-        reader.onload = (e) => {
-          img.src = e.target?.result as string;
-          img.onload = resolve;
-          img.onerror = reject;
+      reader.onloadend = () => {
+        const img = new Image();
+        img.src = reader.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          const maxWidth = 800; 
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = (maxWidth / width) * height;
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          if (ctx) {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            setSelectedImage(canvas.toDataURL('image/jpeg', 0.7));
+            setIsCompressing(false);
+          }
         };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      // Create canvas and compress
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      
-      canvas.width = img.width;
-      canvas.height = img.height;
-      
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      setSelectedImage(canvas.toDataURL('image/jpeg', 0.7));
-
-      // Convert canvas to blob then to File
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.7);
-      });
-      
-      const compressedFile = new File([blob], file.name, {
-        type: 'image/jpeg',
-        lastModified: Date.now()
-      });
-      
-      actualFileRef.current = compressedFile;
-    } catch (error) {
-      console.error('Error compressing image:', error);
-      alert('Failed to compress image. Please try another image.');
-    } finally {
-      setIsCompressing(false);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const triggerBrowse = () => fileRef.current?.click();
-
-  const handleMainCategoryChange = (category: string) => {
-    setMainCategory(category);
-    setSubcategory(''); // Reset subcategory when main category changes
-  };
-
-  const getAvailableSubcategories = () => {
-    return mainCategory ? SUBCATEGORIES[mainCategory as keyof typeof SUBCATEGORIES] || [] : [];
-  };
 
   const addContentSection = () => {
     setContentSections([...contentSections, { title: '', content: '' }]);
@@ -138,32 +141,58 @@ export default function AddBlogs() {
     setContentSections(updated);
   };
 
-  const getTotalWordCount = () => {
-    return contentSections.reduce((total, section) => {
-      const sectionWords = (section.title + ' ' + section.content).split(/\s+/).filter(Boolean).length;
-      return total + sectionWords;
-    }, 0);
+  const handleMainCategoryChange = (category: string) => {
+    setMainCategory(category);
+    setSubcategory('');
   };
 
-  const handleSubmitClick = () => {
-    setShowConfirmModal(true);
+  const getAvailableSubcategories = () => {
+    return mainCategory ? SUBCATEGORIES[mainCategory as keyof typeof SUBCATEGORIES] || [] : [];
   };
 
-  const handleSubmit = async () => {
+  const handleFinalConfirm = async () => {
+    if (!actualFileRef.current) {
+      setErrorMessage('Please upload an image');
+      setShowConfirmModal(false);
+      setShowErrorModal(true);
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      console.log('🚀 Starting blog submission...');
-      
-      if (!actualFileRef.current) {
-        throw new Error('Please select an image');
-      }
-
       const formData = new FormData();
       
+      // Build mainContent array: main content + additional sections
+      const allMainContent = [];
+      
+      // Add the main content section first (if filled)
+      if (mainContentTitle.trim() && mainContentText.trim()) {
+        allMainContent.push({
+          title: mainContentTitle.trim(),
+          content: mainContentText.trim()
+        });
+      }
+      
+      // Add additional content sections
+      contentSections.forEach(section => {
+        if (section.title.trim() && section.content.trim()) {
+          allMainContent.push({
+            title: section.title.trim(),
+            content: section.content.trim()
+          });
+        }
+      });
+      
+      // Append form fields
       formData.append('title', title.trim());
-      formData.append('author', authorName.trim());
+      formData.append('author', authorName.trim()); // Send plain text
       formData.append('mainCategory', mainCategory);
       formData.append('subcategory', subcategory);
       formData.append('shortDescription', shortDescription.trim());
+      // Important: We still send as JSON string because FormData only accepts strings/blobs.
+      // The backend controller will now parse this manually.
+      formData.append('mainContent', JSON.stringify(allMainContent)); 
       formData.append('status', status);
       
       if (status === 'scheduled' && scheduledDate) {
@@ -229,104 +258,146 @@ export default function AddBlogs() {
     } catch (error: unknown) {
       console.error('❌ Error creating blog:', error);
       if (error instanceof Error) {
-        alert(error.message);
+        setErrorMessage(error.message);
       } else {
-        alert('An unexpected error occurred. Please try again.');
+        setErrorMessage('Unknown error occurred');
       }
+      setShowConfirmModal(false);
+      setShowErrorModal(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const cardShadow = { 
-    boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.05)' 
+  const isFormValid = () => {
+    const hasMainContent = mainContentTitle.trim() && mainContentText.trim();
+    const hasValidSections = contentSections.some(section => 
+      section.title.trim() && section.content.trim()
+    );
+    const hasAnyContent = hasMainContent || hasValidSections;
+    
+    const baseValid = title.trim() && authorName.trim() && mainCategory && subcategory && 
+                     shortDescription.trim() && selectedImage && hasAnyContent;
+    
+    if (status === 'scheduled') {
+      return baseValid && scheduledDate;
+    }
+    
+    return baseValid;
   };
 
-  const hasAnyContent = contentSections.some(section => section.title.trim() || section.content.trim());
-  
-  const isReadyToSubmit = title.trim() && 
-                         authorName.trim() && 
-                         mainCategory && 
-                         subcategory && 
-                         shortDescription.trim() && selectedImage && hasAnyContent;
+  const getTotalWordCount = () => {
+    let count = 0;
+    
+    if (mainContentText.trim()) {
+      count += mainContentText.split(/\s+/).filter(word => word.length > 0).length;
+    }
+    
+    count += contentSections.reduce((total, section) => {
+      return total + section.content.split(/\s+/).filter(word => word.length > 0).length;
+    }, 0);
+    
+    return count;
+  };
+
+  const cardShadow = {
+    boxShadow: isDarkMode 
+      ? '0 0 40px rgba(0,0,0,0.3)' 
+      : '0 0 40px rgba(0,0,0,0.04)'
+  };
 
   return (
-    <div className={`flex flex-col items-start justify-start p-8 space-y-6 min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-transparent'}`} style={{ fontFamily: "'poppins', sans-serif" }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=poppins:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'poppins', sans-serif !important; font-weight: 400; }
-        .bold-text { font-weight: 700 !important; }
-        .no-capitalize { text-transform: lowercase !important; }
-      `}</style>
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
-        <div className="space-y-2">
-          <h2 className={`text-xl leading-none tracking-tight ${isDarkMode ? 'text-gray-100' : 'text-gray-600'}`}>
-            Create New Blog Post
-          </h2>
-          <p className={`text-[11px] tracking-wide italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-            Share insights and stories with your audience
-          </p>
-        </div>
-        <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className={`px-4 py-2 rounded-xl text-[10px] transition-all ${
-            isDarkMode 
-              ? 'bg-gray-800 text-gray-300 hover:bg-gray-750' 
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          {isDarkMode ? '☀️ Light' : '🌙 Dark'}
-        </button>
+    <div className={`min-h-screen p-4 md:p-6 lg:p-10 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="max-w-7xl mx-auto mb-8">
+        <h1 className={`text-xl md:text-2xl tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Create New Blog Post</h1>
+        <p className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Share your insights with the world</p>
       </div>
 
-      {/* Main Grid */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Column - Sidebar Info */}
-        <div className="lg:col-span-4 space-y-6">
-          
-          {/* Stats Card */}
-          <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 rounded-[2.5rem] border`}>
-            <h4 className={`text-sm tracking-tight text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Post Statistics</h4>
-            <p className={`text-[10px] mb-6 text-left ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Real-time content insights</p>
-            
-            <div className="space-y-5">
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>WORDS</span>
-                <span className={`text-[11px] font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{getTotalWordCount()}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SECTIONS</span>
-                <span className={`text-[11px] font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{contentSections.length}</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>READ TIME</span>
-                <span className={`text-[11px] font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{Math.ceil(getTotalWordCount() / 200) || 1} MIN</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className={`text-[10px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>STATUS</span>
-                <span className={`text-[9px] px-3 py-1 rounded-full ${
-                  status === 'published' ? 'bg-[#800000] text-white' :
-                  status === 'scheduled' ? 'bg-orange-400 text-white' :
-                  'bg-rose-400 text-white'
-                }`}>
-                  {status}
-                </span>
-              </div>
+      {/* Confirm Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className={`${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'} rounded-3xl p-8 max-w-md w-full shadow-2xl`}>
+            <h3 className={`text-lg mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Confirm Publication</h3>
+            <p className={`text-[11px] mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              Are you sure you want to save this blog entry? This action will {status === 'published' ? 'publish' : status === 'scheduled' ? 'schedule' : 'save as draft'} your blog.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowConfirmModal(false)} 
+                disabled={isSubmitting}
+                className={`flex-1 px-6 py-3 rounded-xl text-[10px] transition-all ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleFinalConfirm}
+                disabled={isSubmitting}
+                className={`flex-1 px-6 py-3 rounded-xl text-[10px] text-white transition-all ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#800000] hover:bg-[#600000] shadow-lg shadow-[#800000]/30'}`}
+              >
+                {isSubmitting ? 'Saving...' : 'Confirm'}
+              </button>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Header Image Upload - INCREASED HEIGHT */}
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className={`${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'} rounded-3xl p-8 max-w-md w-full shadow-2xl`}>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">✓</span>
+              </div>
+              <h3 className={`text-lg mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Success!</h3>
+              <p className={`text-[11px] mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Your blog has been {status === 'published' ? 'published' : status === 'scheduled' ? 'scheduled' : 'saved as draft'} successfully.
+              </p>
+              <button 
+                onClick={() => setShowSuccessModal(false)}
+                className="px-8 py-3 bg-[#800000] text-white rounded-xl text-[10px] shadow-lg shadow-[#800000]/30 hover:bg-[#600000] transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className={`${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'} rounded-3xl p-8 max-w-md w-full shadow-2xl`}>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl text-red-600">✕</span>
+              </div>
+              <h3 className={`text-lg mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Error</h3>
+              <p className={`text-[11px] mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} whitespace-pre-wrap`}>
+                {errorMessage}
+              </p>
+              <button 
+                onClick={() => setShowErrorModal(false)}
+                className="px-8 py-3 bg-red-600 text-white rounded-xl text-[10px] shadow-lg hover:bg-red-700 transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-4 space-y-6">
+          {/* Header Image Upload */}
           <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 rounded-[2.5rem] border`}>
-            <h4 className={`text-sm tracking-tight text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Featured Image</h4>
-            <p className={`text-[10px] mb-4 text-left ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Upload blog header photo</p>
+            <h4 className={`text-sm tracking-tight text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Project Header Image</h4>
+            <p className={`text-[10px] mb-4 text-left ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Upload Featured Project Photo</p>
             
             <div 
               onClick={triggerBrowse}
-              className={`relative rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group overflow-hidden ${isDarkMode ? 'bg-gray-800 hover:bg-gray-750 border-gray-700' : 'bg-gray-50 hover:bg-gray-100 border-gray-200'} border-2 border-dashed h-64`}
+              className={`relative rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group overflow-hidden ${isDarkMode ? 'bg-gray-800 hover:bg-gray-750 border-gray-700' : 'bg-gray-50 hover:bg-gray-100 border-gray-200'} border-2 border-dashed`}
+              style={{ aspectRatio: '16/9' }}
             >
               {isCompressing ? (
                 <div className="flex flex-col items-center gap-3">
@@ -360,289 +431,215 @@ export default function AddBlogs() {
 
           {/* Publishing Options */}
           <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 rounded-[2.5rem] border`}>
-            <h4 className={`text-sm tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Publishing</h4>
-            <p className={`text-[10px] mb-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Schedule or publish now</p>
+            <h4 className={`text-sm tracking-tight text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Publishing Options</h4>
+            <p className={`text-[10px] mb-4 text-left ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Set Visibility And Status</p>
             
-            <div className="space-y-3">
-              <div className="relative">
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as any)}
-                  className={`w-full p-3 rounded-xl text-[10px] outline-none cursor-pointer transition-all appearance-none ${
-                    isDarkMode 
-                      ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
-                      : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
-                  } border`}
+            <div className="flex flex-col gap-1.5">
+              {(['draft', 'published', 'scheduled'] as const).map(s => (
+                <button 
+                  key={s} 
+                  onClick={() => setStatus(s)} 
+                  className={`w-full p-3 rounded-xl text-[10px] text-left transition-all capitalize ${status === s ? 'bg-[#800000] text-white shadow-lg' : isDarkMode ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-400 hover:bg-gray-50'}`}
                 >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                  <option value="scheduled">Scheduled</option>
-                </select>
-                <div className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${isDarkMode ? 'opacity-30' : 'opacity-40'}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m6 9 6 6 6-6"/></svg>
-                </div>
-              </div>
+                  {s}
+                </button>
+              ))}
+            </div>
 
-              {status === 'scheduled' && (
-                <input
-                  type="datetime-local"
+            {status === 'scheduled' && (
+              <div className={`mt-4 pt-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} border-t`}>
+                <label className={`text-[9px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Schedule Date & Time</label>
+                <input 
+                  type="datetime-local" 
                   value={scheduledDate}
                   onChange={(e) => setScheduledDate(e.target.value)}
-                  className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
-                    isDarkMode 
-                      ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
-                      : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
-                  } border`}
+                  className={`w-full p-3 text-[10px] rounded-xl ${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-gray-50'}`}
                 />
+              </div>
+            )}
+          </div>
+
+          {/* Categories */}
+          <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 rounded-[2.5rem] border`}>
+            <h4 className={`text-sm tracking-tight text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Categories</h4>
+            <p className={`text-[10px] mb-4 text-left ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Organize Your Content</p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Main Category</label>
+                <select 
+                  value={mainCategory}
+                  onChange={(e) => handleMainCategoryChange(e.target.value)}
+                  className={`w-full p-3 text-[10px] rounded-xl ${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-gray-50'}`}
+                >
+                  <option value="">Select Main Category</option>
+                  {Object.values(MAIN_CATEGORIES).map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              {mainCategory && (
+                <div>
+                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Subcategory</label>
+                  <select 
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                    className={`w-full p-3 text-[10px] rounded-xl ${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-gray-50'}`}
+                  >
+                    <option value="">Select Subcategory</option>
+                    {getAvailableSubcategories().map(subcat => (
+                      <option key={subcat} value={subcat}>{subcat}</option>
+                    ))}
+                  </select>
+                </div>
               )}
             </div>
           </div>
-
-          {/* Author Card */}
-          <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 rounded-[2.5rem] border`}>
-            <h4 className={`text-sm tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Author</h4>
-            <p className={`text-[10px] mb-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Who's writing this?</p>
-            
-            <input
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              type="text"
-              placeholder="Enter author name..."
-              className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all no-capitalize ${
-                isDarkMode 
-                  ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
-                  : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
-              } border`}
-            />
-          </div>
         </div>
 
-        {/* Right Column - Main Content */}
         <div className="lg:col-span-8">
-          <form onSubmit={(e) => { e.preventDefault(); handleSubmitClick(); }} className="space-y-6">
-            <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border flex flex-col h-full`}>
-              
-              <h4 className={`text-sm tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Blog Details</h4>
-              <p className={`text-[10px] mb-8 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Fill in the core information</p>
+          <div style={cardShadow} className={`${isDarkMode ? 'bg-[#1e293b] border-gray-700' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border flex flex-col h-full`}>
+            <div className="flex-grow space-y-4">
+              <div>
+                <h4 className={`text-sm tracking-tight text-left ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Content Editorial</h4>
+                <p className={`text-[10px] mb-6 text-left ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Draft And Refine Your Masterpiece Here</p>
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                      <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Blog Headline</label>
+                      <input 
+                        value={title} 
+                        onChange={(e) => setTitle(e.target.value)} 
+                        type="text" 
+                        placeholder="Enter Headline..." 
+                        className={`w-full p-4 text-[11px] outline-none bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                      />
+                    </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="col-span-2">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>TITLE</label>
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    type="text"
-                    placeholder="Enter blog title..."
-                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all no-capitalize ${
-                      isDarkMode 
-                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
-                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
-                    } border shadow-sm`}
-                  />
-                </div>
+                    <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                      <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Author</label>
+                      {/* CHANGED: Text Input instead of Select */}
+                      <input 
+                        value={authorName} 
+                        onChange={(e) => setAuthorName(e.target.value)} 
+                        type="text" 
+                        placeholder="Enter Author Name..." 
+                        className={`w-full p-4 text-[11px] outline-none bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                      />
+                    </div>
+                  </div>
 
-                <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>MAIN CATEGORY</label>
-                  <div className="relative">
-                    <select
-                      value={mainCategory}
-                      onChange={(e) => handleMainCategoryChange(e.target.value)}
-                      className={`w-full p-4 rounded-2xl text-[11px] outline-none cursor-pointer transition-all appearance-none ${
-                        isDarkMode 
-                          ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
-                          : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
-                      } border shadow-sm`}
+                  <div className={`border-b pb-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Short Description</label>
+                    <textarea 
+                      value={shortDescription} 
+                      onChange={(e) => setShortDescription(e.target.value)} 
+                      placeholder="Enter A Brief Description..." 
+                      className={`w-full p-4 text-[11px] outline-none resize-none leading-relaxed bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                      rows={3}
+                    />
+                  </div>
+
+                  {/* Main Content Section */}
+                  <div className={`border rounded-2xl p-4 space-y-3 ${isDarkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-100 bg-gray-50/50'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
+                      <label className={`text-[9px] tracking-widest ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>MAIN CONTENT (Required)</label>
+                    </div>
+                    
+                    <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Main Title</label>
+                      <input 
+                        value={mainContentTitle} 
+                        onChange={(e) => setMainContentTitle(e.target.value)} 
+                        type="text" 
+                        placeholder="Enter Main Content Title..." 
+                        className={`w-full p-3 text-[10px] outline-none bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Main Content</label>
+                      <textarea 
+                        value={mainContentText} 
+                        onChange={(e) => setMainContentText(e.target.value)} 
+                        placeholder="Write Your Main Content..." 
+                        className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                        rows={8}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Additional Content Sections */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <label className={`text-[9px] block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Additional Sections (Optional)</label>
+                      <span className="text-[8px] text-[#800000] mr-1">
+                        Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
+                      </span>
+                    </div>
+
+                    {contentSections.map((section, index) => (
+                      <div key={index} className={`border rounded-2xl p-4 space-y-3 relative ${isDarkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-100 bg-gray-50/50'}`}>
+                        {contentSections.length > 1 && (
+                          <button
+                            onClick={() => removeContentSection(index)}
+                            className={`absolute top-2 right-2 hover:text-red-600 text-[10px] rounded-full w-6 h-6 flex items-center justify-center transition-colors ${isDarkMode ? 'text-red-400 bg-red-900/20 hover:bg-red-900/30' : 'text-red-400 bg-red-50 hover:bg-red-100'}`}
+                          >
+                            ×
+                          </button>
+                        )}
+                        
+                        <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                          <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
+                          <input 
+                            value={section.title} 
+                            onChange={(e) => updateContentSection(index, 'title', e.target.value)} 
+                            type="text" 
+                            placeholder="Enter Section Title..." 
+                            className={`w-full p-3 text-[10px] outline-none bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
+                          <textarea 
+                            value={section.content} 
+                            onChange={(e) => updateContentSection(index, 'content', e.target.value)} 
+                            placeholder="Write Your Content..." 
+                            className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isDarkMode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                            rows={6}
+                          />
+                        </div>
+                      </div>
+                    ))}
+
+                    <button
+                      onClick={addContentSection}
+                      className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${isDarkMode ? 'border-gray-600 text-gray-500 hover:border-[#800000] hover:text-[#800000]' : 'border-gray-200 text-gray-400 hover:border-[#800000] hover:text-[#800000]'}`}
                     >
-                      <option value="">Select Category</option>
-                      {Object.values(MAIN_CATEGORIES).map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
-                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDarkMode ? 'opacity-30' : 'opacity-40'}`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m6 9 6 6 6-6"/></svg>
-                    </div>
+                      + Add Another Section
+                    </button>
                   </div>
                 </div>
-
-                <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SUBCATEGORY</label>
-                  <div className="relative">
-                    <select
-                      value={subcategory}
-                      onChange={(e) => setSubcategory(e.target.value)}
-                      disabled={!mainCategory}
-                      className={`w-full p-4 rounded-2xl text-[11px] outline-none cursor-pointer transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed ${
-                        isDarkMode 
-                          ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
-                          : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
-                      } border shadow-sm`}
-                    >
-                      <option value="">Select Subcategory</option>
-                      {getAvailableSubcategories().map(subcat => (
-                        <option key={subcat} value={subcat}>{subcat}</option>
-                      ))}
-                    </select>
-                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${isDarkMode ? 'opacity-30' : 'opacity-40'}`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m6 9 6 6 6-6"/></svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-span-2">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SHORT DESCRIPTION</label>
-                  <textarea
-                    value={shortDescription}
-                    onChange={(e) => setShortDescription(e.target.value)}
-                    placeholder="Brief summary of your blog..."
-                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all no-capitalize resize-none ${
-                      isDarkMode 
-                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
-                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
-                    } border shadow-sm`}
-                    rows={3}
-                  />
-                </div>
-
-                {/* Content Sections */}
-                <div className="col-span-2 space-y-4 mt-4">
-                  <div className="flex justify-between items-center">
-                    <label className={`text-[8px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>CONTENT SECTIONS</label>
-                    <span className="text-[8px] text-[#800000] font-bold">
-                      Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
-                    </span>
-                  </div>
-
-                  {contentSections.map((section, index) => (
-                    <div key={index} className={`border rounded-2xl p-6 space-y-4 relative ${
-                      isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50/50 border-gray-200'
-                    }`}>
-                      {contentSections.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeContentSection(index)}
-                          className="absolute top-4 right-4 hover:text-red-600 text-[10px] rounded-full w-7 h-7 flex items-center justify-center transition-colors text-red-400 bg-red-50 hover:bg-red-100"
-                        >
-                          ×
-                        </button>
-                      )}
-                      
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                        <label className={`text-[9px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                          SECTION {index + 1}
-                        </label>
-                      </div>
-
-                      <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
-                        <input
-                          value={section.title}
-                          onChange={(e) => updateContentSection(index, 'title', e.target.value)}
-                          type="text"
-                          placeholder="Enter section title..."
-                          className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all no-capitalize ${
-                            isDarkMode 
-                              ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
-                              : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
-                          } border`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
-                        <textarea
-                          value={section.content}
-                          onChange={(e) => updateContentSection(index, 'content', e.target.value)}
-                          placeholder="Write your content..."
-                          className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all no-capitalize resize-none ${
-                            isDarkMode 
-                              ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
-                              : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
-                          } border`}
-                          rows={6}
-                        />
-                      </div>
-                    </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={addContentSection}
-                    className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${
-                      isDarkMode 
-                        ? 'border-gray-700 text-gray-500 hover:border-[#800000] hover:text-[#800000]' 
-                        : 'border-gray-300 text-gray-500 hover:border-[#800000] hover:text-[#800000]'
-                    }`}
-                  >
-                    + Add Another Section
-                  </button>
-                </div>
-              </div>
-
-              <div className={`flex justify-end gap-3 pt-8 border-t mt-8 ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                <button
-                  type="submit"
-                  disabled={!isReadyToSubmit}
-                  className="px-12 py-3 text-[10px] bg-[#800000] text-white rounded-2xl shadow-lg shadow-[#800000]/20 bold-text hover:bg-[#600000] transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Publish Blog
-                </button>
               </div>
             </div>
-          </form>
+
+            <div className={`flex justify-between items-center pt-6 mt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-50'}`}>
+              <p className={`text-[10px] italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Review Your Entry Before Finalizing.</p>
+              <button 
+                onClick={() => setShowConfirmModal(true)} 
+                disabled={!isFormValid() || isSubmitting}
+                className={`px-10 py-3 text-[10px] rounded-xl transition-all ${isFormValid() && !isSubmitting ? 'bg-[#800000] text-white shadow-md shadow-[#800000]/30' : isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Blog Entry'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Confirm Modal */}
-      {showConfirmModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'} rounded-3xl p-8 max-w-md w-full shadow-2xl`}>
-            <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Publication</h3>
-            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-6`}>
-              Are you ready to publish "{title}"?
-            </p>
-            
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                className={`flex-1 px-6 py-3 rounded-xl text-sm transition-all ${
-                  isDarkMode 
-                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-750' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="flex-1 px-6 py-3 bg-[#800000] text-white rounded-xl hover:bg-[#600000] transition-all text-sm font-medium"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Success Modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'} rounded-3xl p-8 max-w-md w-full shadow-2xl text-center`}>
-            <div className="text-green-500 text-6xl mb-4">✓</div>
-            <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>Success!</h3>
-            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-6`}>
-              Your blog has been published successfully.
-            </p>
-            
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="px-8 py-3 bg-[#800000] text-white rounded-xl hover:bg-[#600000] transition-all text-sm font-medium"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

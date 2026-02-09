@@ -1,6 +1,6 @@
 'use client'
  
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 
 // Category definitions matching backend
 const MAIN_CATEGORIES = {
@@ -41,15 +41,27 @@ interface ContentSection {
  
 interface EditBlogsProps {
   blog: any;
-  onsave: (updatedblog: any) => void;
-  oncancel: () => void;
+  onClose: () => void;
+  onSave: () => void;
 }
  
-export default function EditBlogs({ blog, onsave, oncancel }: EditBlogsProps) {
-  const [editingblog, seteditingblog] = useState({ ...blog });
+export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
+  const [title, setTitle] = useState(blog.title || '');
+  const [authorName, setAuthorName] = useState(blog.author || '');
+  const [mainCategories, setMainCategories] = useState<string[]>(
+    blog.mainCategory ? [blog.mainCategory] : []
+  );
+  const [subcategories, setSubcategories] = useState<string[]>(
+    blog.subcategory ? [blog.subcategory] : []
+  );
+  const [shortDescription, setShortDescription] = useState(blog.shortDescription || '');
+  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>(blog.status || 'draft');
+  const [scheduledDate, setScheduledDate] = useState(
+    blog.scheduledDate ? new Date(blog.scheduledDate).toISOString().slice(0, 16) : ''
+  );
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
   const fileref = useRef<HTMLInputElement>(null);
-
-  // ✅ FIX: Store actual File object, not base64 string
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string>(blog.picture || '');
 
@@ -80,19 +92,35 @@ export default function EditBlogs({ blog, onsave, oncancel }: EditBlogsProps) {
     setContentSections(updated);
   };
 
-  const handleMainCategoryChange = (category: string) => {
-    seteditingblog({ 
-      ...editingblog, 
-      mainCategory: category,
-      subcategory: '' // Reset subcategory when main category changes
+  const handleMainCategoryToggle = (category: string) => {
+    setMainCategories(prev => {
+      if (prev.includes(category)) {
+        const updated = prev.filter(c => c !== category);
+        const categorySubcats = SUBCATEGORIES[category as keyof typeof SUBCATEGORIES] || [];
+        setSubcategories(prevSubs => prevSubs.filter(sub => !categorySubcats.includes(sub)));
+        return updated;
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  const handleSubcategoryToggle = (subcategory: string) => {
+    setSubcategories(prev => {
+      if (prev.includes(subcategory)) {
+        return prev.filter(s => s !== subcategory);
+      } else {
+        return [...prev, subcategory];
+      }
     });
   };
 
   const getAvailableSubcategories = () => {
-    return editingblog.mainCategory ? SUBCATEGORIES[editingblog.mainCategory as keyof typeof SUBCATEGORIES] || [] : [];
+    return mainCategories.flatMap(category => 
+      SUBCATEGORIES[category as keyof typeof SUBCATEGORIES] || []
+    );
   };
 
-  // Calculate total word count for reading time
   const getTotalWordCount = () => {
     return contentSections.reduce((total, section) => {
       const sectionWords = (section.title + ' ' + section.content).split(/\s+/).filter(Boolean).length;
@@ -100,28 +128,64 @@ export default function EditBlogs({ blog, onsave, oncancel }: EditBlogsProps) {
     }, 0);
   };
  
-  const handlesubmit = (e: React.FormEvent) => {
+  const handlesubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // ✅ FIX: Include the actual File object in updated blog
-    const updatedBlog = {
-      ...editingblog,
-      mainContent: contentSections,
-      // Pass the actual File object (not base64 string)
-      pictureFile: selectedFile, // New field for the File object
-    };
-    
-    onsave(updatedBlog);
+    try {
+      const formData = new FormData();
+      
+      // Add basic fields
+      if (title !== blog.title) formData.append('title', title.trim());
+      if (authorName !== blog.author) formData.append('author', authorName.trim());
+      if (mainCategories[0] !== blog.mainCategory) formData.append('mainCategory', mainCategories[0] || '');
+      if (subcategories[0] !== blog.subcategory) formData.append('subcategory', subcategories[0] || '');
+      if (shortDescription !== blog.shortDescription) formData.append('shortDescription', shortDescription.trim());
+      if (status !== blog.status) formData.append('status', status);
+      
+      // Add categories arrays
+      formData.append('allMainCategories', JSON.stringify(mainCategories));
+      formData.append('allSubcategories', JSON.stringify(subcategories));
+      
+      // ✅ FIX: Properly stringify mainContent
+      const validContentSections = contentSections.filter(section => 
+        section.title.trim() || section.content.trim()
+      );
+      formData.append('mainContent', JSON.stringify(validContentSections));
+      
+      if (status === 'scheduled' && scheduledDate) {
+        formData.append('scheduledDate', new Date(scheduledDate).toISOString());
+      }
+      
+      // Add file if selected
+      if (selectedFile) {
+        formData.append('picture', selectedFile);
+      }
+
+      const response = await fetch(`http://localhost:3000/api/blogs/${blog._id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update blog');
+      }
+
+      alert('Blog updated successfully!');
+      onSave(); // Refresh the blog list
+      onClose();
+    } catch (error) {
+      console.error('Error updating blog:', error);
+      alert(error instanceof Error ? error.message : 'Failed to update blog');
+    }
   };
  
-  // ✅ FIX: Store actual File object and create preview
   const handleimagechange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Store the actual File object
       setSelectedFile(file);
       
-      // Create preview URL for display
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
@@ -138,343 +202,361 @@ export default function EditBlogs({ blog, onsave, oncancel }: EditBlogsProps) {
       default: return 'bg-gray-100';
     }
   };
+
+  const cardShadow = { 
+    boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.05)' 
+  };
  
   return (
-    <div className="flex flex-col items-start justify-start p-8 space-y-8 min-h-screen bg-transparent" style={{ fontFamily: "'poppins', sans-serif" }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=poppins:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'poppins', sans-serif !important; font-weight: 400; }
-        .bold-text { font-weight: 700 !important; }
-        .no-capitalize { text-transform: lowercase !important; }
-      `}</style>
- 
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
-        <div className="space-y-2">
-          <h2 className="text-xl leading-none tracking-tight text-gray-600">
-            Edit Blog Details
-          </h2>
-          <p className="text-[11px] tracking-wide italic text-gray-400">
-            Reviewing your research progress — your contributions are shaping meaningful solutions!
-          </p>
-        </div>
-      </div>
- 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
- 
-        <div className="lg:col-span-4 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 min-h-[380px] flex flex-col">
-          <h4 className="text-sm font-bold tracking-tight" style={{ color: '#4a5565' }}>Post Information</h4>
-          <p className="text-[10px] text-gray-400 mb-8">Real-time entry insights</p>
-         
-          <div className="flex-grow flex flex-col space-y-6">
-            <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
-              <div className="flex flex-col items-start text-left space-y-2">
-                <div className="flex gap-2 bg-gray-200/50 p-1.5 rounded-xl text-[10px] w-fit">
-                  <span className="px-2 text-gray-500 font-medium">Current Status</span>
-                </div>
-                <div className="mt-1">
-                  <span className={`${getstatuscolor(editingblog.status)} px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider uppercase`}>
-                    {editingblog.status || 'Draft'}
-                  </span>
-                </div>
-              </div>
-            </div>
- 
-            <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              </div>
-              <div className="flex flex-col items-start text-left space-y-1">
-                <div className="flex gap-2 bg-gray-200/50 p-1.5 rounded-xl text-[10px] w-fit">
-                  <span className="px-2 text-gray-500 font-medium">Author</span>
-                </div>
-                <div className="text-[11px] mt-1">
-                  <span className="text-gray-700 font-semibold">{editingblog.author || 'Unknown'}</span>
-                </div>
-              </div>
-            </div>
- 
-            <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-              </div>
-              <div className="flex flex-col items-start text-left space-y-1">
-                <div className="flex gap-2 bg-gray-200/50 p-1.5 rounded-xl text-[10px] w-fit">
-                  <span className="px-2 text-gray-500 font-medium">Created</span>
-                </div>
-                <div className="text-[11px] mt-1">
-                  <span className="text-gray-700 font-semibold">
-                    {editingblog.createdAt ? new Date(editingblog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
-                  </span>
-                </div>
-              </div>
-            </div>
- 
-            <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-              </div>
-              <div className="flex flex-col items-start text-left space-y-1">
-                <div className="flex gap-2 bg-gray-200/50 p-1.5 rounded-xl text-[10px] w-fit">
-                  <span className="px-2 text-gray-500 font-medium">Est. Read Time</span>
-                </div>
-                <div className="text-[11px] mt-1">
-                  <span className="text-[#800000] font-bold">
-                    {Math.ceil(getTotalWordCount() / 200) || 1} Min
-                  </span>
-                </div>
-              </div>
+    <div className={`min-h-screen p-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="max-w-7xl mx-auto">
+        {/* Header with Back Button */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onClose}
+              className={`p-3 rounded-xl transition-all ${
+                isDarkMode 
+                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+              style={cardShadow}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <div>
+              <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>
+                Edit Blog
+              </h1>
+              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                Update your blog content
+              </p>
             </div>
           </div>
+          
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`p-3 rounded-xl transition-all ${
+              isDarkMode 
+                ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+            style={cardShadow}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
         </div>
- 
-        <div className="lg:col-span-8 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-          <form onSubmit={handlesubmit} className="space-y-8">
-            <div>
-              <h3 className="text-sm font-bold tracking-tight mb-2" style={{ color: '#4a5565' }}>Cover Image</h3>
-              <p className="text-[10px] text-gray-400 mb-6">Upload a featured image for your blog</p>
-             
-              <div className="relative">
-                <input 
-                  ref={fileref} 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleimagechange}
-                  className="hidden" 
-                />
-                <div 
-                  onClick={() => fileref.current?.click()} 
-                  className="cursor-pointer relative w-full h-64 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200 overflow-hidden hover:border-[#800000] transition-all group"
-                >
-                  {previewImage ? (
-                    <>
-                      <img 
-                        src={previewImage} 
-                        alt="Cover Preview" 
+
+        <div className={`rounded-3xl p-8 transition-all ${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'}`} style={cardShadow}>
+          <form onSubmit={handlesubmit}>
+            {/* Featured Image */}
+            <div className="mb-8">
+              <label className={`text-[8px] mb-4 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>FEATURED IMAGE</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  {previewImage && (
+                    <div className="relative h-64 rounded-2xl overflow-hidden border-2 border-[#800000]/20 mb-4">
+                      <img
+                        src={previewImage}
+                        alt="Preview"
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <div className="text-white text-center space-y-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                          <p className="text-[10px] font-semibold">Click to change image</p>
-                          {selectedFile && (
-                            <p className="text-[9px] text-green-300">✓ New image selected</p>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-4"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                      <p className="text-[11px] font-semibold">Click to upload cover image</p>
-                      <p className="text-[9px] mt-1">PNG, JPG up to 10MB</p>
                     </div>
                   )}
+                  <input
+                    ref={fileref}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleimagechange}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileref.current?.click()}
+                    className={`w-full py-3 px-4 border-2 border-dashed rounded-2xl transition-all flex items-center justify-center gap-3 ${
+                      isDarkMode 
+                        ? 'border-gray-700 hover:border-[#800000] bg-gray-800/50 text-gray-400 hover:text-gray-200' 
+                        : 'border-gray-300 hover:border-[#800000] bg-gray-50 text-gray-600 hover:text-gray-800'
+                    } cursor-pointer`}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm">Change Image</span>
+                  </button>
+                </div>
+
+                {/* Blog Info Card */}
+                <div className={`h-64 rounded-2xl p-6 ${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'} border`}>
+                  <h4 className={`text-sm font-bold mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Post Information</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Current Status</label>
+                      <span className={`${getstatuscolor(status)} px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase inline-block`}>
+                        {status}
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Reading Time</label>
+                      <p className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {Math.ceil(getTotalWordCount() / 200) || 1} min read
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Created</label>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {new Date(blog.createdAt).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          year: 'numeric' 
+                        })}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="col-span-2">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                  <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Title</span>
-                </div>
-                <input
-                  value={editingblog.title || ''}
-                  onChange={(e) => seteditingblog({...editingblog, title: e.target.value})}
-                  type="text"
-                  placeholder="enter blog title..."
-                  className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none focus:bg-white focus:border-[#800000] focus:ring-1 focus:ring-[#800000]/10 transition-all no-capitalize shadow-sm"
-                />
-              </div>
-
-              <div className="col-span-1">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                  <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Author</span>
-                </div>
-                <input
-                  value={editingblog.author || ''}
-                  onChange={(e) => seteditingblog({...editingblog, author: e.target.value})}
-                  type="text"
-                  placeholder="enter author name..."
-                  className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none focus:bg-white focus:border-[#800000] focus:ring-1 focus:ring-[#800000]/10 transition-all no-capitalize shadow-sm"
-                />
-              </div>
-
-              <div className="col-span-1">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                  <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Status</span>
-                </div>
-                <div className="relative">
-                  <select
-                    value={editingblog.status || 'draft'}
-                    onChange={(e) => seteditingblog({...editingblog, status: e.target.value})}
-                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none cursor-pointer focus:bg-white focus:border-[#800000] transition-all appearance-none shadow-sm"
-                  >
-                    <option value="draft">draft</option>
-                    <option value="published">published</option>
-                    <option value="scheduled">scheduled</option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                  <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Main Category</span>
-                </div>
-                <div className="relative">
-                  <select
-                    value={editingblog.mainCategory || ''}
-                    onChange={(e) => handleMainCategoryChange(e.target.value)}
-                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none cursor-pointer focus:bg-white focus:border-[#800000] transition-all appearance-none shadow-sm"
-                  >
-                    <option value="">Select Category</option>
-                    {Object.values(MAIN_CATEGORIES).map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                  <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Subcategory</span>
-                </div>
-                <div className="relative">
-                  <select
-                    value={editingblog.subcategory || ''}
-                    onChange={(e) => seteditingblog({...editingblog, subcategory: e.target.value})}
-                    disabled={!editingblog.mainCategory}
-                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none cursor-pointer focus:bg-white focus:border-[#800000] transition-all appearance-none shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="">Select Subcategory</option>
-                    {getAvailableSubcategories().map(subcat => (
-                      <option key={subcat} value={subcat}>{subcat}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-2">
-                <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                  <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Short Description</span>
-                </div>
-                <textarea
-                  value={editingblog.shortDescription || ''}
-                  onChange={(e) => seteditingblog({...editingblog, shortDescription: e.target.value})}
-                  placeholder="enter a brief description..."
-                  className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none focus:bg-white focus:border-[#800000] focus:ring-1 focus:ring-[#800000]/10 transition-all no-capitalize shadow-sm resize-none"
-                  rows={3}
-                />
-              </div>
-
-              {editingblog.status === 'scheduled' && (
-                <div className="col-span-2">
-                  <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] mb-2 w-fit border border-gray-200">
-                    <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Scheduled Date</span>
-                  </div>
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Title */}
+                <div>
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>BLOG TITLE</label>
                   <input
-                    type="datetime-local"
-                    value={editingblog.scheduledDate ? new Date(editingblog.scheduledDate).toISOString().slice(0, 16) : ''}
-                    onChange={(e) => seteditingblog({...editingblog, scheduledDate: e.target.value})}
-                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl text-[11px] text-gray-800 outline-none focus:bg-white focus:border-[#800000] focus:ring-1 focus:ring-[#800000]/10 transition-all shadow-sm"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    type="text"
+                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
+                      isDarkMode 
+                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
+                    } border shadow-sm`}
                   />
                 </div>
-              )}
 
-              {/* Main Content Sections */}
-              <div className="col-span-2 space-y-4 mt-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2 bg-gray-100 p-1.5 rounded-xl text-[10px] w-fit border border-gray-200">
-                    <span className="px-2 text-gray-600 font-semibold uppercase tracking-wider">Content Sections</span>
-                  </div>
-                  <span className="text-[8px] text-[#800000] font-bold">
-                    Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
-                  </span>
+                {/* Author */}
+                <div>
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>AUTHOR NAME</label>
+                  <input
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    type="text"
+                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
+                      isDarkMode 
+                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
+                    } border shadow-sm`}
+                  />
                 </div>
 
-                {contentSections.map((section, index) => (
-                  <div key={index} className="border border-gray-200 rounded-2xl p-6 space-y-4 relative bg-gray-50/50">
-                    {contentSections.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeContentSection(index)}
-                        className="absolute top-4 right-4 hover:text-red-600 text-[10px] rounded-full w-7 h-7 flex items-center justify-center transition-colors text-red-400 bg-red-50 hover:bg-red-100"
-                      >
-                        ×
-                      </button>
-                    )}
-                    
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                      <label className="text-[9px] tracking-widest text-gray-500">
-                        SECTION {index + 1}
-                      </label>
-                    </div>
-
-                    <div>
-                      <label className="text-[8px] mb-1 block tracking-widest ml-1 text-gray-400">Section Title</label>
-                      <input
-                        value={section.title}
-                        onChange={(e) => updateContentSection(index, 'title', e.target.value)}
-                        type="text"
-                        placeholder="enter section title..."
-                        className="w-full p-3 bg-white border border-gray-200 rounded-xl text-[10px] text-gray-800 outline-none focus:border-[#800000] transition-all no-capitalize"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[8px] mb-1 block tracking-widest ml-1 text-gray-400">Section Content</label>
-                      <textarea
-                        value={section.content}
-                        onChange={(e) => updateContentSection(index, 'content', e.target.value)}
-                        placeholder="write your content..."
-                        className="w-full p-3 bg-white border border-gray-200 rounded-xl text-[10px] text-gray-800 outline-none focus:border-[#800000] transition-all no-capitalize resize-none"
-                        rows={6}
-                      />
+                {/* Categories */}
+                <div className="col-span-1">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>MAIN CATEGORIES</label>
+                  <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} shadow-sm`}>
+                    <div className="space-y-2">
+                      {Object.values(MAIN_CATEGORIES).map(category => (
+                        <label key={category} className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={mainCategories.includes(category)}
+                            onChange={() => handleMainCategoryToggle(category)}
+                            className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
+                          />
+                          <span className={`text-[11px] transition-colors ${
+                            mainCategories.includes(category)
+                              ? 'text-[#800000] font-semibold'
+                              : isDarkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
+                          }`}>
+                            {category}
+                          </span>
+                        </label>
+                      ))}
                     </div>
                   </div>
-                ))}
+                </div>
 
+                <div className="col-span-1">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SUBCATEGORIES</label>
+                  <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} shadow-sm min-h-[180px]`}>
+                    {mainCategories.length === 0 ? (
+                      <p className={`text-[10px] text-center ${isDarkMode ? 'text-gray-600' : 'text-gray-400'} py-8`}>
+                        Select a main category first
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {getAvailableSubcategories().map(subcat => (
+                          <label key={subcat} className="flex items-center gap-3 cursor-pointer group">
+                            <input
+                              type="checkbox"
+                              checked={subcategories.includes(subcat)}
+                              onChange={() => handleSubcategoryToggle(subcat)}
+                              className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
+                            />
+                            <span className={`text-[11px] transition-colors ${
+                              subcategories.includes(subcat)
+                                ? 'text-[#800000] font-semibold'
+                                : isDarkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
+                            }`}>
+                              {subcat}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Short Description */}
+                <div className="col-span-2">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SHORT DESCRIPTION</label>
+                  <textarea
+                    value={shortDescription}
+                    onChange={(e) => setShortDescription(e.target.value)}
+                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all resize-none ${
+                      isDarkMode 
+                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
+                    } border shadow-sm`}
+                    rows={3}
+                  />
+                </div>
+
+                {/* Status */}
+                <div className="col-span-1">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>STATUS</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as any)}
+                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all appearance-none cursor-pointer ${
+                      isDarkMode 
+                        ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
+                        : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
+                    } border shadow-sm`}
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="scheduled">Scheduled</option>
+                  </select>
+                </div>
+
+                {status === 'scheduled' && (
+                  <div className="col-span-1">
+                    <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SCHEDULED DATE</label>
+                    <input
+                      type="datetime-local"
+                      value={scheduledDate}
+                      onChange={(e) => setScheduledDate(e.target.value)}
+                      className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
+                        isDarkMode 
+                          ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
+                          : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
+                      } border shadow-sm`}
+                    />
+                  </div>
+                )}
+
+                {/* Content Sections */}
+                <div className="col-span-2 space-y-4 mt-4">
+                  <div className="flex justify-between items-center">
+                    <label className={`text-[8px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>CONTENT SECTIONS</label>
+                    <span className="text-[8px] text-[#800000] font-bold">
+                      Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
+                    </span>
+                  </div>
+
+                  {contentSections.map((section, index) => (
+                    <div key={index} className={`border rounded-2xl p-6 space-y-4 relative ${
+                      isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50/50 border-gray-200'
+                    }`}>
+                      {contentSections.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeContentSection(index)}
+                          className="absolute top-4 right-4 hover:text-red-600 text-[10px] rounded-full w-7 h-7 flex items-center justify-center transition-colors text-red-400 bg-red-50 hover:bg-red-100"
+                        >
+                          ×
+                        </button>
+                      )}
+                      
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
+                        <label className={`text-[9px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                          SECTION {index + 1}
+                        </label>
+                      </div>
+
+                      <div>
+                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
+                        <input
+                          value={section.title}
+                          onChange={(e) => updateContentSection(index, 'title', e.target.value)}
+                          type="text"
+                          className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
+                            isDarkMode 
+                              ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                              : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
+                          } border`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
+                        <textarea
+                          value={section.content}
+                          onChange={(e) => updateContentSection(index, 'content', e.target.value)}
+                          className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all resize-none ${
+                            isDarkMode 
+                              ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                              : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
+                          } border`}
+                          rows={6}
+                        />
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={addContentSection}
+                    className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${
+                      isDarkMode 
+                        ? 'border-gray-700 text-gray-500 hover:border-[#800000] hover:text-[#800000]' 
+                        : 'border-gray-300 text-gray-500 hover:border-[#800000] hover:text-[#800000]'
+                    }`}
+                  >
+                    + Add Another Section
+                  </button>
+                </div>
+              </div>
+
+              <div className={`flex justify-end gap-3 pt-8 border-t mt-8 ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                 <button
                   type="button"
-                  onClick={addContentSection}
-                  className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-[10px] text-gray-500 hover:border-[#800000] hover:text-[#800000] transition-all"
+                  onClick={onClose}
+                  className={`px-8 py-3 text-[10px] rounded-2xl transition-all uppercase tracking-wider ${
+                    isDarkMode 
+                      ? 'bg-gray-800 text-gray-300 hover:bg-gray-750' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
                 >
-                  + Add Another Section
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-12 py-3 text-[10px] bg-[#800000] text-white rounded-2xl shadow-lg shadow-[#800000]/20 hover:bg-[#600000] transition-all uppercase tracking-wider font-bold"
+                >
+                  Save Changes
                 </button>
               </div>
-            </div>
- 
-            <div className="flex justify-end gap-3 pt-8 border-t border-gray-100 mt-8">
-              <button
-                type="button"
-                onClick={oncancel}
-                className="px-8 py-3 text-[10px] bg-gray-100 text-gray-500 rounded-2xl bold-text hover:bg-gray-200 transition-all uppercase tracking-wider"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-12 py-3 text-[10px] bg-[#800000] text-white rounded-2xl shadow-lg shadow-[#800000]/20 bold-text hover:bg-[#600000] transition-all uppercase tracking-wider"
-              >
-                Confirm & Publish
-              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }
