@@ -628,84 +628,84 @@ export default function ListBlogs() {
         </div>
       )}
 
-      {/* Blog View Modal */}
+      {/* Blog View Modal - COMPACT VERSION */}
       {viewingblog && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-4xl w-full shadow-2xl my-8">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 rounded-t-2xl flex items-center justify-between z-10">
-              <div className="flex items-center gap-3">
-                <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getstatusstyles(viewingblog.status)}`}>
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl my-8">
+            {/* Modal Header - Compact */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
+              <div className="flex items-center gap-2">
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${getstatusstyles(viewingblog.status)}`}>
                   {viewingblog.status}
                 </span>
-                <span className="text-sm font-medium text-gray-500">{viewingblog.mainCategory}</span>
-                <span className="text-sm text-gray-400">• {viewingblog.subcategory}</span>
+                <span className="text-xs font-medium text-gray-500">{viewingblog.mainCategory}</span>
+                <span className="text-xs text-gray-400">• {viewingblog.subcategory}</span>
               </div>
               <button
                 onClick={closeviewmodal}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            {/* Modal Content */}
-            <div className="px-8 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-              {/* Featured Image */}
+            {/* Modal Content - Compact */}
+            <div className="px-6 py-4 max-h-[calc(100vh-180px)] overflow-y-auto">
+              {/* Featured Image - Smaller */}
               {viewingblog.picture && (
-                <div className="mb-8 rounded-xl overflow-hidden">
+                <div className="mb-4 rounded-xl overflow-hidden">
                   <img
                     src={viewingblog.picture}
                     alt={viewingblog.title}
-                    className="w-full h-96 object-cover"
+                    className="w-full h-48 object-cover"
                   />
                 </div>
               )}
 
-              {/* Blog Title */}
-              <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+              {/* Blog Title - Smaller */}
+              <h1 className="text-2xl font-bold text-gray-900 mb-3 leading-tight">
                 {viewingblog.title}
               </h1>
 
-              {/* Blog Meta */}
-              <div className="flex items-center gap-6 text-sm text-gray-600 mb-8 pb-6 border-b border-gray-200">
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Blog Meta - Compact */}
+              <div className="flex items-center gap-4 text-xs text-gray-600 mb-4 pb-3 border-b border-gray-200">
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span>{formatdate(viewingblog.createdAt)}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>{calculatereadingtime(viewingblog.mainContent)} min read</span>
                 </div>
               </div>
 
-              {/* Short Description */}
-              <div className="mb-8">
-                <p className="text-xl text-gray-700 leading-relaxed font-medium italic border-l-4 border-[#800000] pl-6 py-2 text-justify">
+              {/* Short Description - Compact */}
+              <div className="mb-4">
+                <p className="text-sm text-gray-700 leading-relaxed font-medium italic border-l-3 border-[#800000] pl-4 py-2">
                   {viewingblog.shortDescription}
                 </p>
               </div>
 
-              {/* Main Content Sections */}
-              <div className="prose prose-lg max-w-none">
+              {/* Main Content Sections - Compact */}
+              <div className="prose prose-sm max-w-none">
                 {viewingblog.mainContent && Array.isArray(viewingblog.mainContent) && viewingblog.mainContent.map((section: any, index: number) => (
-                  <div key={index} className="mb-8">
+                  <div key={index} className="mb-4">
                     {section.title && (
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4 mt-8">
+                      <h2 className="text-lg font-bold text-gray-900 mb-2 mt-4">
                         {section.title}
                       </h2>
                     )}
                     {section.content && (
-                      <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-justify">
+                      <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
                         {section.content.split('\n').map((paragraph: string, pIndex: number) => (
                           paragraph.trim() && (
-                            <p key={pIndex} className="mb-4">
+                            <p key={pIndex} className="mb-3">
                               {paragraph}
                             </p>
                           )
@@ -717,11 +717,11 @@ export default function ListBlogs() {
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-8 py-4 rounded-b-2xl flex justify-end gap-3">
+            {/* Modal Footer - Compact */}
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-3 rounded-b-2xl flex justify-end gap-2">
               <button
                 onClick={closeviewmodal}
-                className="px-6 py-2.5 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                className="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium"
               >
                 Close
               </button>
@@ -730,7 +730,7 @@ export default function ListBlogs() {
                   closeviewmodal();
                   handleedit(viewingblog);
                 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 font-medium shadow-md"
+                className="px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 text-sm font-medium shadow-md"
               >
                 Edit Blog
               </button>

@@ -143,8 +143,8 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
       if (status !== blog.status) formData.append('status', status);
       
       // Add categories arrays
-      formData.append('allMainCategories', JSON.stringify(mainCategories));
-      formData.append('allSubcategories', JSON.stringify(subcategories));
+      formData.append('mainCategories', JSON.stringify(mainCategories));
+      formData.append('subcategories', JSON.stringify(subcategories));
       
       // ✅ FIX: Properly stringify mainContent
       const validContentSections = contentSections.filter(section => 
