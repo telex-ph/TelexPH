@@ -9,104 +9,59 @@ import BlogsFilter from "./components/BlogsFilter";
 import BlogsList from "./components/BlogsList";
 import BlogsArticle from "./components/BlogsArticle"; 
 
-// Define the Blog interface based on your backend model
-interface IContentSection {
-  title: string;
-  content: string;
-}
-
-interface IBlog {
-  _id: string;
-  title: string;
-  slug: string;
-  author: string;
-  mainCategory: string;
-  subcategory: string;
-  shortDescription: string;
-  mainContent: IContentSection[];
-  picture: string;
-  status: "published" | "draft" | "scheduled";
-  scheduledDate?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default function BlogsPage() {
+  // Existing Nav States
   const [showNav, setShowNav] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Article View States
   const [isArticleView, setIsArticleView] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<IBlog | null>(null);
+  const [selectedPost, setSelectedPost] = useState<any>(null);
 
-  // State for blogs data
-  const [blogs, setBlogs] = useState<IBlog[]>([]);
+  // --- NEW: Data Fetching States ---
+  const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // API base URL - adjust this to your backend URL
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const openNavHandler = () => setShowNav(true);
+  const closeNavHandler = () => setShowNav(false);
 
-  // Fetch blogs from backend
+  // API Fetching
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const getBlogs = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        // Build query parameters
-        const params = new URLSearchParams();
+        // Sinisiguro nating tama ang URL ng backend mo
+        const response = await fetch("http://localhost:3000/api/blogs");
+        const data = await response.json();
         
-        // Add search query if exists
-        if (searchQuery) {
-          params.append('search', searchQuery);
-        }
-
-        // Add category filter if not 'All'
-        if (activeTab !== 'All') {
-          // Map frontend tabs to backend categories
-          const categoryMap: { [key: string]: string } = {
-            'Insights': 'Industry-Specific Insights',
-            'News': 'Company Culture & Updates',
-            'Tutorials': 'Main Service Categories',
-            'Webinars': 'Business Growth & Strategy',
-          };
-          
-          const mainCategory = categoryMap[activeTab];
-          if (mainCategory) {
-            params.append('mainCategory', mainCategory);
-          }
-        }
-
-        // Only fetch published blogs for public view
-        params.append('status', 'published');
-
-        const url = `${API_BASE_URL}/blogs${params.toString() ? '?' + params.toString() : ''}`;
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch blogs: ${response.statusText}`);
-        }
-
-        const data: IBlog[] = await response.json();
-        setBlogs(data);
-      } catch (err) {
-        console.error('Error fetching blogs:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch blogs');
+        // I-filter lang ang mga 'published' para sa public view
+        const publishedOnly = data.filter((b: any) => b.status === "published");
+        setBlogs(publishedOnly);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBlogs();
-  }, [searchQuery, activeTab]); // Re-fetch when search or tab changes
+    getBlogs();
+  }, []);
 
-  const openNavHandler = () => setShowNav(true);
-  const closeNavHandler = () => setShowNav(false);
+  // Filtering Logic (Applying search and tabs to the fetched data)
+  const filteredBlogs = blogs.filter((blog) => {
+    const matchesTab = activeTab === "All" || 
+                       blog.mainCategory === activeTab || 
+                       blog.subcategory === activeTab;
+    
+    const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          blog.shortDescription.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const handleArticleClick = (post: IBlog) => {
+    return matchesTab && matchesSearch;
+  });
+
+  const handleArticleClick = (post: any) => {
     setSelectedPost(post);
     setIsArticleView(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -126,11 +81,12 @@ export default function BlogsPage() {
       <main className="pb-20">
         {isArticleView ? (
           <div className="animate-in fade-in duration-500">
+            {/* Added allBlogs and onArticleClick props since your BlogsArticle.tsx requires them for the sidebar */}
             <BlogsArticle 
               post={selectedPost} 
-              onBack={handleBackToList}
+              onBack={handleBackToList} 
+              allBlogs={blogs} 
               onArticleClick={handleArticleClick}
-              allBlogs={blogs}
             />
           </div>
         ) : (
@@ -147,45 +103,15 @@ export default function BlogsPage() {
               />
               
               {loading ? (
-                <div className="flex justify-center items-center min-h-[400px]">
-                  <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-gray-200 border-t-[#800000] rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-500 font-medium">Loading blogs...</p>
-                  </div>
-                </div>
-              ) : error ? (
-                <div className="flex justify-center items-center min-h-[400px]">
-                  <div className="text-center max-w-md">
-                    <div className="text-red-500 text-5xl mb-4">⚠️</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Error Loading Blogs</h3>
-                    <p className="text-gray-600 mb-4">{error}</p>
-                    <button 
-                      onClick={() => window.location.reload()}
-                      className="px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors"
-                    >
-                      Retry
-                    </button>
-                  </div>
-                </div>
-              ) : blogs.length === 0 ? (
-                <div className="flex justify-center items-center min-h-[400px]">
-                  <div className="text-center max-w-md">
-                    <div className="text-gray-300 text-6xl mb-4">📝</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">No Blogs Found</h3>
-                    <p className="text-gray-600">
-                      {searchQuery 
-                        ? `No blogs match your search "${searchQuery}"`
-                        : `No ${activeTab.toLowerCase()} blogs available at the moment.`
-                      }
-                    </p>
-                  </div>
+                <div className="flex justify-center py-20">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#800000]"></div>
                 </div>
               ) : (
                 <BlogsList 
-                  blogs={blogs}
+                  blogs={filteredBlogs} // Gamit na ang actual filtered data
                   onArticleClick={handleArticleClick}
                   searchQuery={searchQuery}
-                  viewMode={viewMode}
+                  viewMode={viewMode} // Added missing viewMode prop
                 />
               )}
             </div>
