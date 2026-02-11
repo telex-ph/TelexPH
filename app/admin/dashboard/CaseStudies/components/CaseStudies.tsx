@@ -128,10 +128,10 @@ export default function CaseStudies() {
         {/* Header */}
         <div className="space-y-1">
           <h2 className={`text-2xl font-semibold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
-            Admin Control Center
+            Case Study
           </h2>
           <p className={`text-xs italic ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-            Manage Your Administrative Profile And System Security Credentials.
+            Manage Your Case Studies: Create, Edit, and Organize Your Research Projects with Ease
           </p>
         </div>
 

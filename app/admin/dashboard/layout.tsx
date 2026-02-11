@@ -49,6 +49,7 @@ interface UserData {
   profilePicture?: string
   department: number
   role: number
+  darkMode?: boolean // Added optional type for incoming DB data
 }
 
 export default function DashboardLayout({
@@ -61,7 +62,10 @@ export default function DashboardLayout({
   const [isdarkmode, setisdarkmode] = useState(false)
   const [issidebarcollapsed, setissidebarcollapsed] = useState(false)
   const [ismobilemenuopen, setismobilemenuopen] = useState(false)
-  const [isblogdropdownopen, setisblogdropdownopen] = useState(false)
+  
+  // FIXED: Changed to object to track multiple dropdowns
+  const [opendropdowns, setopendropdowns] = useState<{ [key: string]: boolean }>({})
+  
   const [isactivitylogsopen, setisactivitylogsopen] = useState(false)
   const [unreadcount, setunreadcount] = useState(0)
   
@@ -74,13 +78,51 @@ export default function DashboardLayout({
   const [isLoadingUser, setIsLoadingUser] = useState(true)
   const [authError, setAuthError] = useState(false)
 
-  const toggledarkmode = () => {
-    setisdarkmode(!isdarkmode)
+  // 1. ADDED: Check Local Storage on Mount (Prevents flashing)
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setisdarkmode(true);
+    }
+  }, []);
+
+  // 2. MODIFIED: Toggle function with API call and LocalStorage save
+  const toggledarkmode = async () => {
+    const newMode = !isdarkmode;
+    
+    // Immediate UI Update (Optimistic)
+    setisdarkmode(newMode);
+    
+    // Save to Local Storage
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+
+    // Save to Database
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/theme`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Important for cookies
+        body: JSON.stringify({ darkMode: newMode }),
+      });
+    } catch (error) {
+      console.error('Failed to sync theme with database:', error);
+      // We don't revert state here to keep UI responsive, as local storage is safe enough
+    }
   }
 
   const togglesidebar = () => {
     setissidebarcollapsed(!issidebarcollapsed)
-    if (!issidebarcollapsed) setisblogdropdownopen(false)
+    if (!issidebarcollapsed) setopendropdowns({}) // Close all dropdowns when sidebar collapses
+  }
+
+  // FIXED: Function to toggle specific dropdown
+  const toggledropdown = (itemname: string) => {
+    setopendropdowns(prev => ({
+      ...prev,
+      [itemname]: !prev[itemname]
+    }))
   }
 
   // Fetch user data and check authentication
@@ -109,6 +151,14 @@ export default function DashboardLayout({
 
         const data = await response.json()
         setUserData(data)
+        
+        // 3. ADDED: Sync state with Database preference if available
+        if (data.darkMode !== undefined) {
+           setisdarkmode(data.darkMode);
+           // Also update local storage to match DB
+           localStorage.setItem('theme', data.darkMode ? 'dark' : 'light');
+        }
+
         setAuthError(false)
       } catch (error) {
         console.error('Error fetching user data:', error)
@@ -198,7 +248,8 @@ export default function DashboardLayout({
   // Loading state
   if (isLoadingUser) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#f8f9fa]">
+      // MODIFIED: Adjusted loading background to match theme preference if known
+      <div className={`flex h-screen items-center justify-center ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'}`}>
         <div className="text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#800000] border-r-transparent"></div>
           <p className="mt-4 text-sm text-gray-500">Loading...</p>
@@ -223,7 +274,8 @@ export default function DashboardLayout({
     return `${userData.firstName || ''} ${userData.lastName || ''}`.trim()
   }
 
-  const navigationitems = [
+  // MODIFIED: Base navigation items - all items that are always visible
+  const baseNavigationItems = [
     {
       name: 'Dashboard',
       path: '/admin/dashboard',
@@ -248,13 +300,25 @@ export default function DashboardLayout({
       name: 'Activity Logs',
       path: '/admin/dashboard/ActivityLogs',
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-    },
-    {
-      name: 'Users',
-      path: '/admin/users',
-      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
     }
   ]
+
+  // MODIFIED: Admins item - only for Main Administrator (role 1)
+  const adminsMenuItem = {
+    name: 'Admins',
+    path: '/admin/dashboard/admin-management',
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+    hasDropdown: true,
+    subItems: [
+      { name: 'Add Admin', path: '/admin/dashboard/admin-management/add' },
+      { name: 'Admin List', path: '/admin/dashboard/admin-management' }
+    ]
+  }
+
+  // MODIFIED: Conditionally build navigation items based on user role
+  const navigationitems = userData.role === 1 
+    ? [...baseNavigationItems, adminsMenuItem] // Main Administrator - show all items including Admins
+    : baseNavigationItems // Regular Administrator - show only base items
 
   const SidebarContent = ({ iscollapsed }: { iscollapsed: boolean }) => (
     <>
@@ -290,8 +354,9 @@ export default function DashboardLayout({
             <div key={item.name}>
               {item.hasDropdown ? (
                 <>
+                  {/* FIXED: Use item.name as unique key for toggledropdown */}
                   <button
-                    onClick={() => setisblogdropdownopen(!isblogdropdownopen)}
+                    onClick={() => toggledropdown(item.name)}
                     className={`w-full flex items-center rounded-2xl text-[12px] transition-all duration-300 active:scale-95 border-none outline-none ${iscollapsed ? 'justify-center py-3.5' : 'justify-between py-3.5'} ${getnavstyle(item.path, true)}`}
                   >
                     <div className={`flex items-center ${iscollapsed ? '' : 'gap-4'}`}>
@@ -299,11 +364,11 @@ export default function DashboardLayout({
                       {(!iscollapsed || ismobilemenuopen) && <span className="tracking-wide uppercase font-medium">{item.name}</span>}
                     </div>
                     {(!iscollapsed || ismobilemenuopen) && (
-                      <svg className={`w-4 h-4 transition-transform ${isblogdropdownopen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9" /></svg>
+                      <svg className={`w-4 h-4 transition-transform ${opendropdowns[item.name] ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9" /></svg>
                     )}
                   </button>
                   
-                  <div className={`overflow-hidden transition-all duration-300 ${isblogdropdownopen && (!iscollapsed || ismobilemenuopen) ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+                  <div className={`overflow-hidden transition-all duration-300 ${opendropdowns[item.name] && (!iscollapsed || ismobilemenuopen) ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                     <div className="py-2 space-y-1">
                       {item.subItems?.map((sub) => (
                         <Link 
