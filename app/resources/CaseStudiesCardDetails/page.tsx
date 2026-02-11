@@ -178,13 +178,7 @@ function CaseStudyDetailsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white">
           
           <div className="lg:col-span-8">
-            <div className="flex gap-3 mb-8 print:hidden">
-              {[FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaLink].map((Icon, i) => (
-                <div key={i} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-[#a10000] hover:text-white transition-all text-gray-500">
-                  <Icon size={14} />
-                </div>
-              ))}
-            </div>
+            
 
             <article className="space-y-12">
               {study.body.map((item: any, idx: number) => (
@@ -242,27 +236,7 @@ function CaseStudyDetailsContent() {
               </p>
             </div>
 
-            <div className="bg-[#f9f9f9] p-10 border-l-4" style={{ borderColor: COLORS.primary }}>
-              <h3 
-                className="text-xl font-bold uppercase mb-6" 
-                style={{ fontFamily: FONTS.poppins, color: COLORS.black }}
-              >
-                Result
-              </h3>
-              <ul className="space-y-4">
-                {study.resultsSummary.map((res: string, i: number) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span style={{ color: COLORS.primary }} className="font-bold">•</span>
-                    <span 
-                      style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.8) }}
-                      className="leading-tight font-medium"
-                    >
-                      {res}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            
           </div>
         </div>
 

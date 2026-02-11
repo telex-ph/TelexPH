@@ -4,6 +4,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { HiChevronRight } from "react-icons/hi2";
+import { 
+  FaFacebookF, 
+  FaTwitter, 
+  FaLinkedinIn, 
+  FaEnvelope, 
+  FaLink,
+  FaHeart,
+  FaRegHeart
+} from "react-icons/fa";
 import { FONTS, getColorWithOpacity } from "@/constant/styles";
 
 import Nav from "@/components/Home/Navbar/Nav";
@@ -19,6 +28,7 @@ interface CaseStudy {
   status: string;
   tags: string[];
   author: string;
+  likesCount?: number;
 }
 
 // Fallback data in case API fails
@@ -31,11 +41,37 @@ const FALLBACK_DATA = {
   author: "",
 };
 
+// API like function
+async function likeCaseStudy(id: string) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/${id}/like`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      return { success: false, error: data.error, alreadyLiked: data.alreadyLiked };
+    }
+    
+    return { success: true, likesCount: data.likesCount };
+  } catch (error) {
+    console.error('Error liking case study:', error);
+    return { success: false, error: 'Failed to like case study' };
+  }
+}
+
 export default function DetailsHeader() {
   const [showNav, setShowNav] = useState(false);
   const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
   
   const searchParams = useSearchParams();
   const slug = searchParams.get("slug"); // Get slug from URL params
@@ -69,6 +105,13 @@ export default function DetailsHeader() {
 
         const data = await response.json();
         setCaseStudy(data);
+        setLikesCount(data.likesCount || 0);
+
+        // Check if user has already liked (stored in localStorage)
+        if (data._id) {
+          const likedStudies = JSON.parse(localStorage.getItem('likedCaseStudies') || '[]');
+          setHasLiked(likedStudies.includes(data._id));
+        }
       } catch (err) {
         console.error("Error fetching case study:", err);
         setError(true);
@@ -79,6 +122,37 @@ export default function DetailsHeader() {
 
     fetchCaseStudy();
   }, [slug, id]);
+
+  const handleLike = async () => {
+    if (isLiking || hasLiked || !caseStudy?._id) return;
+    
+    setIsLiking(true);
+    
+    const result = await likeCaseStudy(caseStudy._id);
+    
+    if (result.success) {
+      // Update likes count
+      setLikesCount(result.likesCount || likesCount + 1);
+      setHasLiked(true);
+      
+      // Store in localStorage
+      const likedStudies = JSON.parse(localStorage.getItem('likedCaseStudies') || '[]');
+      likedStudies.push(caseStudy._id);
+      localStorage.setItem('likedCaseStudies', JSON.stringify(likedStudies));
+    } else if (result.alreadyLiked) {
+      // User already liked from this IP
+      setHasLiked(true);
+      
+      // Store in localStorage to prevent UI confusion
+      const likedStudies = JSON.parse(localStorage.getItem('likedCaseStudies') || '[]');
+      if (!likedStudies.includes(caseStudy._id)) {
+        likedStudies.push(caseStudy._id);
+        localStorage.setItem('likedCaseStudies', JSON.stringify(likedStudies));
+      }
+    }
+    
+    setIsLiking(false);
+  };
 
   // Prepare display data
   const displayData = caseStudy
@@ -234,6 +308,68 @@ export default function DetailsHeader() {
           </div>
         </div>
       </section>
+
+      {/* Social Icons and Like Button Section */}
+      {!loading && !error && caseStudy && (
+        <div className="container mx-auto px-4 sm:px-6 md:px-12 py-6 print:hidden">
+          <div className="flex items-center gap-3">
+            {/* Social Share Icons */}
+            <div 
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-blue-600 hover:text-white transition-all text-gray-500"
+              title="Share on Facebook"
+            >
+              <FaFacebookF size={14} />
+            </div>
+            
+            <div 
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-blue-400 hover:text-white transition-all text-gray-500"
+              title="Share on Twitter"
+            >
+              <FaTwitter size={14} />
+            </div>
+            
+            <div 
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-blue-700 hover:text-white transition-all text-gray-500"
+              title="Share on LinkedIn"
+            >
+              <FaLinkedinIn size={14} />
+            </div>
+            
+            <div 
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-600 hover:text-white transition-all text-gray-500"
+              title="Share via Email"
+            >
+              <FaEnvelope size={14} />
+            </div>
+            
+            <div 
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-600 hover:text-white transition-all text-gray-500"
+              title="Copy Link"
+            >
+              <FaLink size={14} />
+            </div>
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-gray-300 mx-2"></div>
+
+            {/* Like Button */}
+            <button
+              onClick={handleLike}
+              disabled={hasLiked || isLiking}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                hasLiked 
+                  ? 'bg-red-100 text-red-600 cursor-not-allowed' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600 cursor-pointer'
+              }`}
+              style={{ fontFamily: FONTS.openSans }}
+              title={hasLiked ? 'You liked this' : 'Like this case study'}
+            >
+              {hasLiked ? <FaHeart size={18} /> : <FaRegHeart size={18} />}
+              <span>{likesCount} {likesCount === 1 ? 'Like' : 'Likes'}</span>
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

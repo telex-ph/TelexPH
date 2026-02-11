@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { useDarkMode } from './layout'
 
 // Type definitions for analytics data
 interface DailyView {
@@ -38,7 +39,10 @@ interface CaseStudyStats {
   yearly: number
 }
 
+type ResourceFilter = 'all' | 'blog' | 'casestudy';
+
 export default function adminpage() {
+  const { isdarkmode } = useDarkMode()
   const [selecteddate, setselecteddate] = useState('2026-01-28')
   const [engagementdata, setengagementdata] = useState<EngagementData[]>([
     { name: 'jan', views: 0, likes: 0 },
@@ -60,6 +64,7 @@ export default function adminpage() {
   const [loading, setloading] = useState(true)
   const [statsloading, setstatsloading] = useState(true)
   const [error, seterror] = useState<string | null>(null)
+  const [resourceFilter, setResourceFilter] = useState<ResourceFilter>('all')
 
   // Fetch case study summary stats
   useEffect(() => {
@@ -107,18 +112,18 @@ export default function adminpage() {
     fetchCaseStudyStats()
   }, [])
 
-  // Fetch analytics data from backend
+  // Fetch engagement metrics from backend
   useEffect(() => {
-    const fetchAnalytics = async () => {
+    const fetchEngagementMetrics = async () => {
       try {
         setloading(true)
         
         const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
         
-        console.log('🔍 Fetching analytics...')
+        console.log('🔍 Fetching engagement metrics...', { resourceFilter })
         
-        // Fetch all case study analytics
-        const response = await fetch('http://localhost:3000/api/dashboard/analytics?resourceType=casestudy&limit=100', {
+        // Fetch engagement metrics with filter
+        const response = await fetch(`http://localhost:3000/api/dashboard/engagement-metrics?resourceType=${resourceFilter}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -127,248 +132,191 @@ export default function adminpage() {
           credentials: 'include'
         })
 
-        console.log('📈 Analytics response status:', response.status)
+        console.log('📈 Engagement metrics response status:', response.status)
 
         if (!response.ok) {
           const errorText = await response.text()
-          console.error('❌ Analytics error response:', errorText)
-          throw new Error(`Failed to fetch analytics: ${response.status}`)
+          console.error('❌ Engagement metrics error response:', errorText)
+          throw new Error(`Failed to fetch engagement metrics: ${response.status}`)
         }
 
         const data = await response.json()
-        console.log('✅ Analytics data received:', data)
+        console.log('✅ Engagement metrics received:', data)
         
-        // Process the data to aggregate by month
-        const monthlyData = processAnalyticsData(data.data || [])
-        setengagementdata(monthlyData)
+        setengagementdata(data)
         
       } catch (error) {
-        console.error('❌ Error fetching analytics:', error)
+        console.error('❌ Error fetching engagement metrics:', error)
         // Keep default data if fetch fails
       } finally {
         setloading(false)
       }
     }
 
-    fetchAnalytics()
-  }, [])
-
-  // Process analytics data into monthly aggregates
-  const processAnalyticsData = (analyticsArray: any[]): EngagementData[] => {
-    const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-    const currentYear = new Date().getFullYear()
-    
-    // Initialize monthly data
-    const monthlyViews: { [key: string]: number } = {}
-    monthNames.forEach(month => {
-      monthlyViews[month] = 0
-    })
-
-    // Aggregate views by month
-    analyticsArray.forEach((analytics: any) => {
-      if (analytics.dailyViews && Array.isArray(analytics.dailyViews)) {
-        analytics.dailyViews.forEach((dailyView: DailyView) => {
-          const date = new Date(dailyView.date)
-          const monthIndex = date.getMonth()
-          const year = date.getFullYear()
-          
-          // Only count views from current year
-          if (year === currentYear) {
-            const monthName = monthNames[monthIndex]
-            monthlyViews[monthName] += dailyView.count || 0
-          }
-        })
-      }
-    })
-
-    // Convert to chart format (last 7 months)
-    const currentMonth = new Date().getMonth()
-    const result: EngagementData[] = []
-    
-    for (let i = 6; i >= 0; i--) {
-      const monthIndex = (currentMonth - i + 12) % 12
-      const monthName = monthNames[monthIndex]
-      result.push({
-        name: monthName,
-        views: monthlyViews[monthName],
-        likes: Math.floor(monthlyViews[monthName] * 0.6) // Simulate likes as 60% of views
-      })
-    }
-
-    return result
-  }
-
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M'
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K'
-    }
-    return num.toString()
-  }
+    fetchEngagementMetrics()
+  }, [resourceFilter]) // Re-fetch when filter changes
 
   const stats = [
-    { label: 'total shipments', value: '18,250', color: 'bg-[#800000]', textColor: 'text-white' },
-    { label: 'active shipments', value: '880', subValue: '14% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
-    { label: 'completed', value: '16,456', subValue: '81% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
-    { label: 'returned', value: '912', subValue: '5% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
-    { label: 'revenue', value: '$96', subValue: '14% of total', color: 'bg-transparent', textColor: 'text-gray-800' },
+    { label: 'total views', value: casestudystats.totalAllTime.toLocaleString(), subValue: `${casestudystats.totalUnique.toLocaleString()} Unique`, color: isdarkmode ? 'bg-gradient-to-br from-purple-900/40 to-transparent' : 'bg-gradient-to-br from-purple-50 to-white', textColor: isdarkmode ? 'text-purple-300' : 'text-purple-800' },
+    { label: 'today', value: casestudystats.daily.toLocaleString(), color: isdarkmode ? 'bg-gradient-to-br from-blue-900/40 to-transparent' : 'bg-gradient-to-br from-blue-50 to-white', textColor: isdarkmode ? 'text-blue-300' : 'text-blue-800' },
+    { label: 'this week', value: casestudystats.weekly.toLocaleString(), color: isdarkmode ? 'bg-gradient-to-br from-green-900/40 to-transparent' : 'bg-gradient-to-br from-green-50 to-white', textColor: isdarkmode ? 'text-green-300' : 'text-green-800' },
+    { label: 'this month', value: casestudystats.monthly.toLocaleString(), color: isdarkmode ? 'bg-gradient-to-br from-orange-900/40 to-transparent' : 'bg-gradient-to-br from-orange-50 to-white', textColor: isdarkmode ? 'text-orange-300' : 'text-orange-800' },
+    { label: 'this year', value: casestudystats.yearly.toLocaleString(), color: isdarkmode ? 'bg-gradient-to-br from-red-900/40 to-transparent' : 'bg-gradient-to-br from-red-50 to-white', textColor: isdarkmode ? 'text-red-300' : 'text-red-800' },
   ]
 
   const transactions = [
-    { id: '#8801', customer: 'marcus levy', date: 'jan 22, 2026', amount: '$420.00', status: 'completed' },
-    { id: '#8802', customer: 'elena rose', date: 'jan 22, 2026', amount: '$150.50', status: 'pending' },
-    { id: '#8803', customer: 'julian vance', date: 'jan 21, 2026', amount: '$890.00', status: 'completed' },
+    { customer: 'john smith', date: 'jan 25, 2026', amount: '$1,240', status: 'completed' },
+    { customer: 'sarah jones', date: 'jan 24, 2026', amount: '$890', status: 'pending' },
+    { customer: 'mike wilson', date: 'jan 23, 2026', amount: '$2,150', status: 'completed' },
+    { customer: 'emma davis', date: 'jan 22, 2026', amount: '$675', status: 'completed' },
   ]
 
   return (
-    <div className="flex flex-col items-start justify-start p-8 space-y-8 min-h-screen bg-transparent" style={{ fontFamily: "'poppins', sans-serif" }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=poppins:wght@300;400;500;600;700&display=swap');
-        
-        * {
-          font-family: 'poppins', sans-serif !important;
-          text-transform: capitalize;
-          font-weight: 400;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .bold-text {
-          font-weight: 700 !important;
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          cursor: pointer;
-          filter: invert(0.5);
-        }
-      `}</style>
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
-        <div className="space-y-2">
-          <h2 className="text-xl leading-none tracking-tight text-gray-600">
-            welcome back alex!
-          </h2>
-          <p className="text-[11px] tracking-wide italic text-gray-400">
-            your analytics are looking great today — keep pushing for those targets!
-          </p>
-          {error && (
-            <p className="text-[10px] text-red-500 italic">
-              ⚠️ Error loading stats: {error}
-            </p>
-          )}
+    <div className={`w-full p-6 rounded-[3rem] border-2 shadow-sm transition-colors duration-500 ${isdarkmode ? 'bg-[#181818] border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className={`text-2xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Dashboard overview</h2>
+          <p className={`text-[11px] mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Realtime case study analytics</p>
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-2xl shadow-sm">
-            <label htmlFor="date-picker" className="text-[10px] text-gray-500 bold-text whitespace-nowrap">date range:</label>
-            <input 
-              id="date-picker"
-              type="date" 
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <input
+              type="date"
               value={selecteddate}
               onChange={(e) => setselecteddate(e.target.value)}
-              className="text-[10px] text-gray-800 bg-transparent border-none outline-none uppercase cursor-pointer"
+              className={`w-48 px-5 py-2.5 rounded-xl border text-[11px] shadow-sm cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-[#800000]/20 ${isdarkmode ? 'bg-[#202020] border-white/10 text-gray-300 hover:border-white/20' : 'bg-white border-gray-100 text-gray-600 hover:border-gray-200'}`}
             />
           </div>
-          
-          {/* export button */}
-          <button className="px-4 py-2 text-[10px] bg-[#800000] text-white rounded-2xl shadow-sm hover:bg-[#a00000] transition-all uppercase tracking-wider border-none cursor-pointer">
-            Export
-          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full">
-        {stats.map((stat, index) => (
-          <div key={index} className={`${stat.color} p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-32 transition-all hover:shadow-md cursor-default`}>
-            <p className={`text-[10px] tracking-wider ${stat.textColor} opacity-70 bold-text`}>{stat.label}</p>
-            <div>
-              <h3 className={`text-2xl ${stat.textColor} bold-text`}>{stat.value}</h3>
-              {stat.subValue && <p className="text-[9px] text-gray-400">{stat.subValue}</p>}
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full mb-6">
+        {stats.map((stat, i) => (
+          <div key={i} className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${stat.color} ${isdarkmode ? 'border-white/5' : 'border-gray-50'}`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>{stat.label}</p>
+            <p className={`text-3xl bold-text transition-colors ${stat.textColor}`}>{stat.value}</p>
+            {stat.subValue && (
+              <p className={`text-[10px] mt-2 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>{stat.subValue}</p>
+            )}
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
-        <div className="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
-          <div className="flex justify-between items-center mb-10">
-            <div>
-              <h4 className="text-gray-800 bold-text">shipment overview</h4>
-              <p className="text-[10px] text-gray-400">monthly delivery performance</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mb-6">
+        <div className={`lg:col-span-2 p-8 rounded-[2.5rem] shadow-sm border transition-all ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-50'}`}>
+          <h4 className={`mb-8 text-left bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Performance overview</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div className={`p-6 rounded-2xl border transition-all ${isdarkmode ? 'bg-[#181818] border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+              <p className={`text-[9px] uppercase tracking-widest mb-2 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>revenue</p>
+              <p className={`text-2xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>$12,482</p>
+              <p className="text-[10px] text-green-500 mt-1">+12.5% from Last Month</p>
             </div>
-            <div className="flex gap-2 bg-gray-50 p-1.5 rounded-xl text-[10px]">
-              <span className="px-4 py-1.5 cursor-pointer">week</span>
-              <span className="px-4 py-1.5 cursor-pointer">month</span>
-              <span className="px-4 py-1.5 bg-[#800000] text-white rounded-lg shadow-md cursor-pointer transition-all">year</span>
+            <div className={`p-6 rounded-2xl border transition-all ${isdarkmode ? 'bg-[#181818] border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+              <p className={`text-[9px] uppercase tracking-widest mb-2 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>orders</p>
+              <p className={`text-2xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>1,248</p>
+              <p className="text-[10px] text-green-500 mt-1">+8.2% from Last Month</p>
             </div>
-          </div>
-          
-          <div className="h-64 flex items-end justify-between gap-3 px-4">
-            {[60, 40, 85, 50, 70, 90, 65, 80, 45, 75, 55, 95].map((height, i) => (
-              <div key={i} className="flex flex-col items-center gap-3 w-full group">
-                <div className="w-full bg-gray-50 rounded-full h-48 relative overflow-hidden">
-                  <div 
-                    className="absolute bottom-0 w-full bg-[#800000] rounded-full transition-all duration-500 group-hover:bg-[#a00000]" 
-                    style={{ height: `${height}%` }} 
-                  >
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-white/40 rounded-full" />
-                  </div>
-                </div>
-                <span className="text-[9px] text-gray-400 uppercase">{['j','f','m','a','m','j','j','a','s','o','n','d'][i]}</span>
-              </div>
-            ))}
+            <div className={`p-6 rounded-2xl border transition-all ${isdarkmode ? 'bg-[#181818] border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+              <p className={`text-[9px] uppercase tracking-widest mb-2 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>avg. order</p>
+              <p className={`text-2xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>$9.80</p>
+              <p className="text-[10px] text-red-500 mt-1">-3.1% from Last month</p>
+            </div>
+            <div className={`p-6 rounded-2xl border transition-all ${isdarkmode ? 'bg-[#181818] border-white/5' : 'bg-gray-50 border-gray-100'}`}>
+              <p className={`text-[9px] uppercase tracking-widest mb-2 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>customers</p>
+              <p className={`text-2xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>892</p>
+              <p className="text-[10px] text-green-500 mt-1">+15.3% from Last Month</p>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50 flex flex-col items-center justify-center">
-          <h4 className="text-gray-800 w-full mb-8 text-left bold-text">popular categories</h4>
+        <div className={`flex flex-col items-center p-8 rounded-[2.5rem] shadow-sm border transition-all ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-50'}`}>
+          <h4 className={`w-full mb-8 text-left bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Popular Categories</h4>
           <div className="relative w-48 h-48 mb-8">
             <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-              <circle cx="18" cy="18" r="16" fill="none" stroke="#f3f4f6" strokeWidth="4" />
+              <circle cx="18" cy="18" r="16" fill="none" stroke={isdarkmode ? '#2a2a2a' : '#f3f4f6'} strokeWidth="4" />
               <circle cx="18" cy="18" r="16" fill="none" stroke="#800000" strokeWidth="4" strokeDasharray="75, 100" />
               <circle cx="18" cy="18" r="16" fill="none" stroke="#ff8c00" strokeWidth="4" strokeDasharray="15, 100" strokeDashoffset="-75" />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl text-gray-800 bold-text">82%</span>
-              <span className="text-[9px] text-gray-400 uppercase">growth</span>
+              <span className={`text-2xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>82%</span>
+              <span className={`text-[9px] uppercase transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Growth</span>
             </div>
           </div>
           <div className="w-full space-y-4">
             <div className="flex items-center justify-between text-[11px]">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#800000]" />
-                <span className="text-gray-500">appliances</span>
+                <span className={`transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Appliances</span>
               </div>
-              <span className="text-gray-800 bold-text">75%</span>
+              <span className={`bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>75%</span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#ff8c00]" />
-                <span className="text-gray-500">accessories</span>
+                <span className={`transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Accessories</span>
               </div>
-              <span className="text-gray-800 bold-text">15%</span>
+              <span className={`bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>15%</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
+      <div className={`w-full p-8 rounded-[2.5rem] shadow-sm border mt-6 transition-all ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-50'}`}>
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h4 className="text-gray-800 bold-text">engagement metrics</h4>
-            <p className="text-[10px] text-gray-400">case study views from analytics</p>
+            <h4 className={`bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Engagement Metrics</h4>
+            <p className={`text-[10px] transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              {resourceFilter === 'all' && 'Views and Likes from Blogs & Case Studies'}
+              {resourceFilter === 'blog' && 'Views and Likes from Blogs Only'}
+              {resourceFilter === 'casestudy' && 'Views and Likes from Case Studies Only'}
+            </p>
           </div>
           <div className="flex items-center gap-6">
+            {/* Resource Type Filter */}
+            <div className={`flex gap-2 p-1.5 rounded-xl text-[10px] transition-all ${isdarkmode ? 'bg-[#181818]' : 'bg-gray-50'}`}>
+              <button
+                onClick={() => setResourceFilter('all')}
+                className={`px-4 py-1.5 rounded-lg transition-all ${
+                  resourceFilter === 'all' 
+                    ? 'bg-[#800000] text-white shadow-md' 
+                    : isdarkmode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setResourceFilter('blog')}
+                className={`px-4 py-1.5 rounded-lg transition-all ${
+                  resourceFilter === 'blog' 
+                    ? 'bg-[#800000] text-white shadow-md' 
+                    : isdarkmode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Blogs
+              </button>
+              <button
+                onClick={() => setResourceFilter('casestudy')}
+                className={`px-4 py-1.5 rounded-lg transition-all ${
+                  resourceFilter === 'casestudy' 
+                    ? 'bg-[#800000] text-white shadow-md' 
+                    : isdarkmode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Case Studies
+              </button>
+            </div>
+
+            {/* Legend */}
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#800000]" />
-              <span className="text-[10px] text-gray-500">views</span>
+              <span className={`text-[10px] transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>views</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#6b7280]" />
-              <span className="text-[10px] text-gray-500">likes</span>
+              <span className={`text-[10px] transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>likes</span>
             </div>
             {loading && (
-              <span className="text-[10px] text-gray-400 italic">loading data...</span>
+              <span className={`text-[10px] italic transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>loading data...</span>
             )}
           </div>
         </div>
@@ -381,21 +329,28 @@ export default function adminpage() {
                   <stop offset="95%" stopColor="#800000" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isdarkmode ? '#2a2a2a' : '#f3f4f6'} />
               <XAxis 
                 dataKey="name" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fontSize: 10, fill: '#9ca3af' }} 
+                tick={{ fontSize: 10, fill: isdarkmode ? '#6b7280' : '#9ca3af' }} 
                 dy={10}
               />
               <YAxis 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fontSize: 10, fill: '#9ca3af' }} 
+                tick={{ fontSize: 10, fill: isdarkmode ? '#6b7280' : '#9ca3af' }} 
               />
               <Tooltip 
-                contentStyle={{ borderRadius: '15px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
+                contentStyle={{ 
+                  borderRadius: '15px', 
+                  border: 'none', 
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', 
+                  fontSize: '12px',
+                  backgroundColor: isdarkmode ? '#202020' : '#ffffff',
+                  color: isdarkmode ? '#e5e7eb' : '#1f2937'
+                }}
               />
               <Area 
                 type="monotone" 
@@ -417,26 +372,26 @@ export default function adminpage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full pb-10">
-        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full pb-10 mt-6">
+        <div className={`p-8 rounded-[2.5rem] shadow-sm border transition-all ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-50'}`}>
           <div className="flex justify-between items-center mb-8">
-            <h4 className="text-gray-800 bold-text">recent transactions</h4>
-            <button className="text-[10px] text-[#800000] uppercase tracking-wider hover:underline">view all</button>
+            <h4 className={`bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Recent transactions</h4>
+            <button className="text-[10px] text-[#800000] uppercase tracking-wider hover:underline">View all</button>
           </div>
           <div className="space-y-4">
             {transactions.map((t, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+              <div key={i} className={`flex items-center justify-between p-4 rounded-2xl transition-all border ${isdarkmode ? 'hover:bg-white/5 border-transparent hover:border-white/10' : 'hover:bg-gray-50 border-transparent hover:border-gray-100'}`}>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[10px] text-[#800000] uppercase">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-[10px] text-[#800000] uppercase ${isdarkmode ? 'bg-white/10' : 'bg-gray-100'}`}>
                     {t.customer.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div>
-                    <p className="text-xs text-gray-800">{t.customer}</p>
-                    <p className="text-[10px] text-gray-400">{t.date}</p>
+                    <p className={`text-xs transition-colors ${isdarkmode ? 'text-gray-300' : 'text-gray-800'}`}>{t.customer}</p>
+                    <p className={`text-[10px] transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>{t.date}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-800 bold-text">{t.amount}</p>
+                  <p className={`text-xs bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>{t.amount}</p>
                   <p className={`text-[9px] uppercase ${t.status === 'completed' ? 'text-green-500' : 'text-orange-500'}`}>{t.status}</p>
                 </div>
               </div>
@@ -444,8 +399,8 @@ export default function adminpage() {
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-50">
-          <h4 className="text-gray-800 mb-8 bold-text">regional performance</h4>
+        <div className={`p-8 rounded-[2.5rem] shadow-sm border transition-all ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-50'}`}>
+          <h4 className={`mb-8 bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Regional performance</h4>
           <div className="space-y-6">
             {[
               { country: 'united states', percentage: 85, color: 'bg-[#800000]' },
@@ -454,11 +409,11 @@ export default function adminpage() {
               { country: 'australia', percentage: 30, color: 'bg-[#800000]' },
             ].map((reg, i) => (
               <div key={i} className="space-y-2">
-                <div className="flex justify-between text-[10px] uppercase text-gray-500">
+                <div className={`flex justify-between text-[10px] uppercase transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
                   <span>{reg.country}</span>
                   <span>{reg.percentage}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
+                <div className={`h-1.5 w-full rounded-full overflow-hidden ${isdarkmode ? 'bg-white/10' : 'bg-gray-50'}`}>
                   <div 
                     className={`h-full ${reg.color} rounded-full`} 
                     style={{ width: `${reg.percentage}%` }}
