@@ -1,6 +1,7 @@
 'use client'
  
 import React, { useState, useRef } from 'react'
+import { useDarkMode } from '../../layout' // Import the dark mode hook
 
 // Category definitions matching backend
 const MAIN_CATEGORIES = {
@@ -59,7 +60,9 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
   const [scheduledDate, setScheduledDate] = useState(
     blog.scheduledDate ? new Date(blog.scheduledDate).toISOString().slice(0, 16) : ''
   );
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Use dark mode from layout context
+  const { isdarkmode } = useDarkMode();
   
   const fileref = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -180,12 +183,11 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
       alert(error instanceof Error ? error.message : 'Failed to update blog');
     }
   };
- 
-  const handleimagechange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handlefilechange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
@@ -193,198 +195,136 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
       reader.readAsDataURL(file);
     }
   };
- 
-  const getstatuscolor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'published': return 'bg-[#800000]';
-      case 'scheduled': return 'bg-orange-400';
-      case 'draft': return 'bg-rose-400';
-      default: return 'bg-gray-100';
-    }
-  };
 
-  const cardShadow = { 
-    boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.05)' 
-  };
- 
   return (
-    <div className={`min-h-screen p-8 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="max-w-7xl mx-auto">
-        {/* Header with Back Button */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onClose}
-              className={`p-3 rounded-xl transition-all ${
-                isDarkMode 
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-              style={cardShadow}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
-            <div>
-              <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>
-                Edit Blog
-              </h1>
-              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Update your blog content
-              </p>
-            </div>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-3xl max-w-6xl w-full shadow-2xl my-8 transition-colors duration-300`}>
+        {/* Header */}
+        <div className={`sticky top-0 ${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-200'} border-b px-8 py-6 rounded-t-3xl flex items-center justify-between z-10`}>
+          <div>
+            <h2 className={`text-2xl font-bold ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>Edit Blog Post</h2>
+            <p className={`text-sm mt-1 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Make changes to your article</p>
           </div>
-          
           <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className={`p-3 rounded-xl transition-all ${
-              isDarkMode 
-                ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
-                : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
-            style={cardShadow}
+            onClick={onClose}
+            className={`p-2 ${isdarkmode ? 'hover:bg-[#252525] text-gray-400' : 'hover:bg-gray-100 text-gray-600'} rounded-full transition-colors`}
           >
-            {isDarkMode ? '☀️' : '🌙'}
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
-        <div className={`rounded-3xl p-8 transition-all ${isDarkMode ? 'bg-[#1e293b]' : 'bg-white'}`} style={cardShadow}>
+        {/* Content */}
+        <div className="px-8 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
           <form onSubmit={handlesubmit}>
-            {/* Featured Image */}
-            <div className="mb-8">
-              <label className={`text-[8px] mb-4 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>FEATURED IMAGE</label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  {previewImage && (
-                    <div className="relative h-64 rounded-2xl overflow-hidden border-2 border-[#800000]/20 mb-4">
-                      <img
-                        src={previewImage}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
+            <div className="space-y-6">
+              {/* Image Upload */}
+              <div>
+                <label className={`text-[9px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>FEATURED IMAGE</label>
+                <div 
+                  onClick={() => fileref.current?.click()}
+                  className={`relative border-2 border-dashed rounded-2xl overflow-hidden cursor-pointer transition-all ${
+                    isdarkmode 
+                      ? 'border-white/10 hover:border-white/10 bg-[#252525]/30' 
+                      : 'border-gray-200 hover:border-gray-300 bg-gray-50'
+                  }`}
+                  style={{ aspectRatio: '16/9' }}
+                >
+                  {previewImage ? (
+                    <>
+                      <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <p className="text-white text-sm font-medium">Click to change image</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isdarkmode ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
+                        <svg className={`w-8 h-8 ${isdarkmode ? 'text-gray-400' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className={`text-sm font-semibold ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>Click to upload</p>
+                        <p className={`text-xs mt-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>PNG, JPG up to 10MB</p>
+                      </div>
                     </div>
                   )}
-                  <input
-                    ref={fileref}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleimagechange}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileref.current?.click()}
-                    className={`w-full py-3 px-4 border-2 border-dashed rounded-2xl transition-all flex items-center justify-center gap-3 ${
-                      isDarkMode 
-                        ? 'border-gray-700 hover:border-[#800000] bg-gray-800/50 text-gray-400 hover:text-gray-200' 
-                        : 'border-gray-300 hover:border-[#800000] bg-gray-50 text-gray-600 hover:text-gray-800'
-                    } cursor-pointer`}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-sm">Change Image</span>
-                  </button>
                 </div>
-
-                {/* Blog Info Card */}
-                <div className={`h-64 rounded-2xl p-6 ${isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'} border`}>
-                  <h4 className={`text-sm font-bold mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Post Information</h4>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Current Status</label>
-                      <span className={`${getstatuscolor(status)} px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase inline-block`}>
-                        {status}
-                      </span>
-                    </div>
-
-                    <div>
-                      <label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Reading Time</label>
-                      <p className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {Math.ceil(getTotalWordCount() / 200) || 1} min read
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Created</label>
-                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {new Date(blog.createdAt).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric', 
-                          year: 'numeric' 
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <input
+                  ref={fileref}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlefilechange}
+                  className="hidden"
+                />
               </div>
-            </div>
 
-            <div className="space-y-8">
+              {/* Form Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Title */}
-                <div>
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>BLOG TITLE</label>
+                <div className="col-span-2">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>BLOG TITLE</label>
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     type="text"
                     className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
-                      isDarkMode 
-                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                      isdarkmode 
+                        ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
                         : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
                     } border shadow-sm`}
+                    placeholder="Enter blog title..."
                   />
                 </div>
 
                 {/* Author */}
-                <div>
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>AUTHOR NAME</label>
+                <div className="col-span-1">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>AUTHOR NAME</label>
                   <input
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
                     type="text"
                     className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
-                      isDarkMode 
-                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                      isdarkmode 
+                        ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
                         : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
                     } border shadow-sm`}
+                    placeholder="Enter author name..."
                   />
                 </div>
 
-                {/* Categories */}
+                {/* Main Categories */}
                 <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>MAIN CATEGORIES</label>
-                  <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} shadow-sm`}>
-                    <div className="space-y-2">
-                      {Object.values(MAIN_CATEGORIES).map(category => (
-                        <label key={category} className="flex items-center gap-3 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={mainCategories.includes(category)}
-                            onChange={() => handleMainCategoryToggle(category)}
-                            className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
-                          />
-                          <span className={`text-[11px] transition-colors ${
-                            mainCategories.includes(category)
-                              ? 'text-[#800000] font-semibold'
-                              : isDarkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
-                          }`}>
-                            {category}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>MAIN CATEGORIES</label>
+                  <div className={`p-4 rounded-2xl border ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} shadow-sm space-y-2`}>
+                    {Object.values(MAIN_CATEGORIES).map(cat => (
+                      <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={mainCategories.includes(cat)}
+                          onChange={() => handleMainCategoryToggle(cat)}
+                          className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
+                        />
+                        <span className={`text-[11px] transition-colors ${
+                          mainCategories.includes(cat)
+                            ? 'text-[#800000] font-semibold'
+                            : isdarkmode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
+                        }`}>
+                          {cat}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SUBCATEGORIES</label>
-                  <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} shadow-sm min-h-[180px]`}>
+                {/* Subcategories */}
+                <div className="col-span-2">
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SUBCATEGORIES</label>
+                  <div className={`p-4 rounded-2xl border ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} shadow-sm min-h-[180px]`}>
                     {mainCategories.length === 0 ? (
-                      <p className={`text-[10px] text-center ${isDarkMode ? 'text-gray-600' : 'text-gray-400'} py-8`}>
+                      <p className={`text-[10px] text-center ${isdarkmode ? 'text-gray-600' : 'text-gray-400'} py-8`}>
                         Select a main category first
                       </p>
                     ) : (
@@ -400,7 +340,7 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
                             <span className={`text-[11px] transition-colors ${
                               subcategories.includes(subcat)
                                 ? 'text-[#800000] font-semibold'
-                                : isDarkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
+                                : isdarkmode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
                             }`}>
                               {subcat}
                             </span>
@@ -413,13 +353,13 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
 
                 {/* Short Description */}
                 <div className="col-span-2">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SHORT DESCRIPTION</label>
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SHORT DESCRIPTION</label>
                   <textarea
                     value={shortDescription}
                     onChange={(e) => setShortDescription(e.target.value)}
                     className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all resize-none ${
-                      isDarkMode 
-                        ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                      isdarkmode 
+                        ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
                         : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
                     } border shadow-sm`}
                     rows={3}
@@ -428,13 +368,13 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
 
                 {/* Status */}
                 <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>STATUS</label>
+                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>STATUS</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
                     className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all appearance-none cursor-pointer ${
-                      isDarkMode 
-                        ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
+                      isdarkmode 
+                        ? 'bg-[#252525] text-gray-300 border-white/10 focus:border-[#800000]' 
                         : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
                     } border shadow-sm`}
                   >
@@ -446,14 +386,14 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
 
                 {status === 'scheduled' && (
                   <div className="col-span-1">
-                    <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>SCHEDULED DATE</label>
+                    <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SCHEDULED DATE</label>
                     <input
                       type="datetime-local"
                       value={scheduledDate}
                       onChange={(e) => setScheduledDate(e.target.value)}
                       className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
-                        isDarkMode 
-                          ? 'bg-gray-800 text-gray-300 border-gray-700 focus:border-[#800000]' 
+                        isdarkmode 
+                          ? 'bg-[#252525] text-gray-300 border-white/10 focus:border-[#800000]' 
                           : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
                       } border shadow-sm`}
                     />
@@ -463,7 +403,7 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
                 {/* Content Sections */}
                 <div className="col-span-2 space-y-4 mt-4">
                   <div className="flex justify-between items-center">
-                    <label className={`text-[8px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>CONTENT SECTIONS</label>
+                    <label className={`text-[8px] tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>CONTENT SECTIONS</label>
                     <span className="text-[8px] text-[#800000] font-bold">
                       Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
                     </span>
@@ -471,13 +411,17 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
 
                   {contentSections.map((section, index) => (
                     <div key={index} className={`border rounded-2xl p-6 space-y-4 relative ${
-                      isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50/50 border-gray-200'
+                      isdarkmode ? 'bg-[#252525]/50 border-white/10' : 'bg-gray-50/50 border-gray-200'
                     }`}>
                       {contentSections.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeContentSection(index)}
-                          className="absolute top-4 right-4 hover:text-red-600 text-[10px] rounded-full w-7 h-7 flex items-center justify-center transition-colors text-red-400 bg-red-50 hover:bg-red-100"
+                          className={`absolute top-4 right-4 hover:text-red-600 text-[10px] rounded-full w-7 h-7 flex items-center justify-center transition-colors ${
+                            isdarkmode 
+                              ? 'text-red-400 bg-red-900/20 hover:bg-red-900/30' 
+                              : 'text-red-400 bg-red-50 hover:bg-red-100'
+                          }`}
                         >
                           ×
                         </button>
@@ -485,33 +429,33 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
                       
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                        <label className={`text-[9px] tracking-widest ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                        <label className={`text-[9px] tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>
                           SECTION {index + 1}
                         </label>
                       </div>
 
                       <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
+                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
                         <input
                           value={section.title}
                           onChange={(e) => updateContentSection(index, 'title', e.target.value)}
                           type="text"
                           className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
-                            isDarkMode 
-                              ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                            isdarkmode 
+                              ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
                               : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
                           } border`}
                         />
                       </div>
 
                       <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
+                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
                         <textarea
                           value={section.content}
                           onChange={(e) => updateContentSection(index, 'content', e.target.value)}
                           className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all resize-none ${
-                            isDarkMode 
-                              ? 'bg-gray-800 text-gray-300 border-gray-700 placeholder-gray-600 focus:border-[#800000]' 
+                            isdarkmode 
+                              ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
                               : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
                           } border`}
                           rows={6}
@@ -524,8 +468,8 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
                     type="button"
                     onClick={addContentSection}
                     className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${
-                      isDarkMode 
-                        ? 'border-gray-700 text-gray-500 hover:border-[#800000] hover:text-[#800000]' 
+                      isdarkmode 
+                        ? 'border-white/10 text-gray-500 hover:border-[#800000] hover:text-[#800000]' 
                         : 'border-gray-300 text-gray-500 hover:border-[#800000] hover:text-[#800000]'
                     }`}
                   >
@@ -534,13 +478,13 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
                 </div>
               </div>
 
-              <div className={`flex justify-end gap-3 pt-8 border-t mt-8 ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
+              <div className={`flex justify-end gap-3 pt-8 border-t mt-8 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
                 <button
                   type="button"
                   onClick={onClose}
                   className={`px-8 py-3 text-[10px] rounded-2xl transition-all uppercase tracking-wider ${
-                    isDarkMode 
-                      ? 'bg-gray-800 text-gray-300 hover:bg-gray-750' 
+                    isdarkmode 
+                      ? 'bg-[#252525] text-gray-300 hover:bg-[#2a2a2a]' 
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >

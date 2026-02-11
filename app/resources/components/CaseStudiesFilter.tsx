@@ -19,7 +19,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 // API Functions
 async function getAllCaseStudies() {
   try {
-    const response = await fetch(`${API_BASE_URL}/casestudies`);
+    const response = await fetch(`${API_BASE_URL}/api/casestudies`); // ✅ FIXED: Added /api prefix
     if (!response.ok) throw new Error('Failed to fetch case studies');
     return response.json();
   } catch (error) {
@@ -187,7 +187,7 @@ export default function CaseStudiesFilter() {
 
   // Combine hardcoded resources with API case studies - FILTER OUT non-active API case studies
   const activeApiCaseStudies = apiCaseStudies.filter((cs: any) => cs.status === "Active");
-  const allResources = [...hardcodedResources, ...activeApiCaseStudies];
+  const allResources = [...hardcodedResources, ...activeApiCaseStudies]; // ✅ Only show Active case studies
 
   const filteredCards = useMemo(() => {
     return allResources.filter((card) => {
@@ -315,7 +315,18 @@ export default function CaseStudiesFilter() {
                       ${viewMode === "grid" ? "w-full max-w-[300px] h-[320px]" : "w-full max-w-5xl h-[180px] flex flex-row"}`}
                   >
                     <div className={viewMode === "grid" ? "absolute top-0 w-full h-[150px]" : "w-[300px] h-full"}>
-                      <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                      <img 
+                        src={card.image} 
+                        alt={card.title} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to default image if the cover image fails to load
+                          const target = e.target as HTMLImageElement;
+                          if (target.src !== "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800") {
+                            target.src = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800";
+                          }
+                        }}
+                      />
                     </div>
 
                     <div 

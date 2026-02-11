@@ -1,0 +1,151 @@
+import React from 'react';
+import { useDarkMode } from '../../layout';
+import { CaseStudy } from './types';
+import { getstatuscolor, getcategorybadgecolor } from './helpers';
+
+interface PreviewModalProps {
+  isOpen: boolean;
+  data: CaseStudy | null;
+  onClose: () => void;
+}
+
+export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClose }) => {
+  const { isdarkmode } = useDarkMode();
+
+  if (!isOpen || !data) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4 overflow-y-auto">
+      <div className={`rounded-[3rem] p-12 max-w-4xl w-full shadow-2xl my-8 max-h-[90vh] overflow-y-auto ${isdarkmode ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+        <div className="flex justify-between items-start mb-6">
+          <h3 className={`text-3xl font-bold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+            {data.title}
+          </h3>
+          <button
+            onClick={onClose}
+            className={`p-2 rounded-full transition-colors ${isdarkmode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        {data.image && (
+          <div className="w-full h-80 rounded-[2rem] overflow-hidden mb-8">
+            <img 
+              src={data.image} 
+              className="w-full h-full object-cover" 
+              alt={data.title}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+
+        <div className="mb-8">
+          {data.subtitle && (
+            <p className={`text-xl mb-4 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              {data.subtitle}
+            </p>
+          )}
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
+            <span className={`text-xs px-4 py-2 rounded-2xl font-bold text-white ${getstatuscolor(data.status)}`}>
+              {data.status}
+            </span>
+            {data.categories && data.categories.map((cat: string, idx: number) => (
+              <span key={idx} className={`text-xs px-4 py-2 rounded-2xl font-bold text-white ${getcategorybadgecolor(cat)}`}>
+                {cat}
+              </span>
+            ))}
+          </div>
+          <p className={`text-sm mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+            By {data.author}
+          </p>
+          <p className={`text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {data.start} — {data.isUnfinished ? 'Unfinished' : data.end}
+          </p>
+          {data.status === 'Scheduled' && data.scheduleDate && (
+            <p className={`text-sm font-bold mt-2 ${isdarkmode ? 'text-orange-400' : 'text-orange-600'}`}>
+              Scheduled for: {data.scheduleDate} at {data.scheduleTime}
+            </p>
+          )}
+        </div>
+
+        {/* Challenge Section */}
+        {data.challenge && (
+          <div className="mb-8">
+            <h4 className={`text-xl font-bold mb-4 ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+              Challenge
+            </h4>
+            <p className={`text-sm p-6 rounded-2xl whitespace-pre-wrap ${isdarkmode ? 'bg-red-900/10 text-gray-400' : 'bg-red-50 text-gray-600'}`}>
+              {data.challenge}
+            </p>
+          </div>
+        )}
+
+        {/* Solution Section */}
+        {data.solution && (
+          <div className="mb-8">
+            <h4 className={`text-xl font-bold mb-4 ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+              Solution
+            </h4>
+            <p className={`text-sm p-6 rounded-2xl whitespace-pre-wrap ${isdarkmode ? 'bg-emerald-900/10 text-gray-400' : 'bg-emerald-50 text-gray-600'}`}>
+              {data.solution}
+            </p>
+          </div>
+        )}
+
+        {/* Result Section */}
+        {data.result && (
+          <div className="mb-8">
+            <h4 className={`text-xl font-bold mb-4 ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+              Result
+            </h4>
+            <p className={`text-sm p-6 rounded-2xl whitespace-pre-wrap ${isdarkmode ? 'bg-blue-900/10 text-gray-400' : 'bg-blue-50 text-gray-600'}`}>
+              {data.result}
+            </p>
+          </div>
+        )}
+
+        {/* Content Sections */}
+        <div className="mb-8">
+          <h4 className={`text-xl font-bold mb-4 ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+            Content Sections
+          </h4>
+          {[1, 2, 3, 4, 5].map(num => {
+            const topic = data[`topic${num}` as keyof CaseStudy];
+            const content = data[`content${num}` as keyof CaseStudy];
+            if (!topic && !content) return null;
+            return (
+              <div key={num} className={`mb-6 p-6 rounded-2xl ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`}>
+                {topic && (
+                  <h5 className={`text-lg font-bold mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+                    {topic as string}
+                  </h5>
+                )}
+                {content && (
+                  <p className={`text-sm whitespace-pre-wrap ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {content as string}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+          <button
+            onClick={onClose}
+            className="px-8 py-3 bg-[#800000] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors"
+          >
+            Close Preview
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
