@@ -50,13 +50,19 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
     });
   };
 
-  // Initialize like count and check like status
+  // Initialize like count, check like status, AND track view
   useEffect(() => {
     if (post) {
       setLikeCount(post.likeCount || 0);
       checkLikeStatus();
+
+      // 👁️ TRACK VIEW: I-call ang GET /:id endpoint ng backend
+      // Ang endpoint na ito ay nag-rerecord na ng view sa Analytics collection
+      // (non-blocking — hindi naaapektuhan ang display kahit mag-fail)
+      fetch(`http://localhost:3000/api/blogs/${post._id}`)
+        .catch((err) => console.error("⚠️ View tracking failed (non-critical):", err));
     }
-  }, [post]);
+  }, [post._id]); // Nag-re-run ulit kapag nagbago ang blog (e.g. nag-click ng ibang article)
 
   // Check if current user has liked this blog
   const checkLikeStatus = async () => {

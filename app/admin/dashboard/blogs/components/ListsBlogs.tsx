@@ -275,8 +275,8 @@ export default function ListBlogs() {
     <div className={`min-h-screen ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-gray-50'} p-6 transition-colors duration-500`}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className={`text-4xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Blog Management</h1>
-          <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and organize your blog posts</p>
+          <h1 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Blog Management</h1>
+          <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and organize your blog posts</p>
         </div>
 
         {/* Filters and Tabs */}
@@ -287,7 +287,7 @@ export default function ListBlogs() {
               <button
                 key={tab.value}
                 onClick={() => handletabchange(tab.value)}
-                className={`px-6 py-2.5 rounded-xl font-medium transition-all ${
+                className={`px-6 py-2.5 rounded-xl text-[10px] transition-all ${
                   activetab === tab.value
                     ? 'bg-[#800000] text-white shadow-lg'
                     : isdarkmode ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -301,11 +301,11 @@ export default function ListBlogs() {
           {/* Category Filters */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className={`text-xs mb-2 block font-semibold tracking-wider ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>FILTER BY MAIN CATEGORY</label>
+              <label className={`text-[9px] mb-2 block tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>FILTER BY MAIN CATEGORY</label>
               <select
                 value={selectedmaincategory}
                 onChange={(e) => handlemaincategorychange(e.target.value)}
-                className={`w-full p-3 rounded-xl text-sm outline-none transition-all ${
+                className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
                   isdarkmode 
                     ? 'bg-[#252525] text-gray-200 border-white/10 focus:border-[#800000]' 
                     : 'bg-gray-50 text-gray-800 border-gray-200 focus:border-[#800000]'
@@ -319,12 +319,12 @@ export default function ListBlogs() {
             </div>
 
             <div>
-              <label className={`text-xs mb-2 block font-semibold tracking-wider ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>FILTER BY SUBCATEGORY</label>
+              <label className={`text-[9px] mb-2 block tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>FILTER BY SUBCATEGORY</label>
               <select
                 value={selectedsubcategory}
                 onChange={(e) => handlesubcategorychange(e.target.value)}
                 disabled={selectedmaincategory === 'All'}
-                className={`w-full p-3 rounded-xl text-sm outline-none transition-all ${
+                className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
                   isdarkmode 
                     ? 'bg-[#252525] text-gray-200 border-white/10 focus:border-[#800000]' 
                     : 'bg-gray-50 text-gray-800 border-gray-200 focus:border-[#800000]'
@@ -374,7 +374,7 @@ export default function ListBlogs() {
           </div>
         ) : error ? (
           <div className={`${isdarkmode ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'} border rounded-2xl p-8 text-center transition-colors duration-500`}>
-            <p className={`font-medium ${isdarkmode ? 'text-red-400' : 'text-red-600'}`}>{error}</p>
+            <p className={`text-[10px] bold-text ${isdarkmode ? 'text-red-400' : 'text-red-600'}`}>{error}</p>
             <button
               onClick={loadblogs}
               className={`mt-4 px-6 py-2 rounded-lg transition-colors ${
@@ -389,8 +389,8 @@ export default function ListBlogs() {
         ) : currentblogs.length === 0 ? (
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-12 text-center shadow-sm transition-colors duration-500`}>
             <div className="text-6xl mb-4">📝</div>
-            <h3 className={`text-xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>No blogs found</h3>
-            <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Try adjusting your filters or create a new blog post</p>
+            <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>No blogs found</h3>
+            <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Try adjusting your filters or create a new blog post</p>
           </div>
         ) : (
           <>
@@ -410,7 +410,7 @@ export default function ListBlogs() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                       <div className="absolute top-3 left-3">
-                        <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getstatusstyles(blog.status)}`}>
+                        <span className={`px-3 py-1.5 rounded-full text-[10px] bold-text ${getstatusstyles(blog.status)}`}>
                           {blog.status}
                         </span>
                       </div>
@@ -419,11 +419,11 @@ export default function ListBlogs() {
                     {/* Blog Content */}
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="flex items-center gap-2 mb-3 flex-wrap">
-                        <span className="text-xs px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full font-medium flex items-center gap-1">
+                        <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text flex items-center gap-1">
                           {getCategoryIcon(blog.mainCategory)} {blog.mainCategory}
                         </span>
                         {blog.subcategory && (
-                          <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                          <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
                             isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
                           }`}>
                             {blog.subcategory}
@@ -431,15 +431,15 @@ export default function ListBlogs() {
                         )}
                       </div>
 
-                      <h3 className={`text-lg font-bold mb-2 line-clamp-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                      <h3 className={`bold-text mb-2 line-clamp-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
                         {blog.title}
                       </h3>
                       
-                      <p className={`text-sm mb-4 line-clamp-2 flex-grow ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <p className={`text-[10px] mb-4 line-clamp-2 flex-grow ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                         {blog.shortDescription}
                       </p>
 
-                      <div className={`flex items-center gap-4 text-xs mb-4 pb-4 border-t pt-4 ${isdarkmode ? 'text-gray-500 border-white/10' : 'text-gray-500 border-gray-100'}`}>
+                      <div className={`flex items-center gap-4 text-[10px] mb-4 pb-4 border-t pt-4 ${isdarkmode ? 'text-gray-500 border-white/10' : 'text-gray-500 border-gray-100'}`}>
                         <div className="flex items-center gap-1.5">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -457,7 +457,7 @@ export default function ListBlogs() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleview(blog)}
-                          className={`flex-1 px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${
+                          className={`flex-1 px-4 py-2 rounded-lg transition-colors text-[10px] flex items-center justify-center gap-2 ${
                             isdarkmode 
                               ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' 
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -471,7 +471,7 @@ export default function ListBlogs() {
                         </button>
                         <button
                           onClick={() => handleedit(blog)}
-                          className="flex-1 px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                          className="flex-1 px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px] flex items-center justify-center gap-2"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -480,7 +480,7 @@ export default function ListBlogs() {
                         </button>
                         <button
                           onClick={() => confirmdelete(blog._id)}
-                          className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${
+                          className={`px-4 py-2 rounded-lg transition-colors text-[10px] flex items-center justify-center gap-2 ${
                             isdarkmode 
                               ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' 
                               : 'bg-red-50 text-red-500 hover:bg-red-100'
@@ -516,31 +516,31 @@ export default function ListBlogs() {
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <div className="flex items-center gap-2 mb-2">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getstatusstyles(blog.status)}`}>
+                              <span className={`px-3 py-1 rounded-full text-[10px] bold-text ${getstatusstyles(blog.status)}`}>
                                 {blog.status}
                               </span>
-                              <span className="text-xs px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full font-medium">
+                              <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text">
                                 {blog.mainCategory}
                               </span>
                               {blog.subcategory && (
-                                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                                <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
                                   isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
                                 }`}>
                                   {blog.subcategory}
                                 </span>
                               )}
                             </div>
-                            <h3 className={`text-xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                            <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
                               {blog.title}
                             </h3>
-                            <p className={`text-sm mb-3 line-clamp-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className={`text-[10px] mb-3 line-clamp-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                               {blog.shortDescription}
                             </p>
                           </div>
                         </div>
 
                         <div className={`flex items-center justify-between pt-3 border-t ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                          <div className={`flex items-center gap-4 text-xs ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>
+                          <div className={`flex items-center gap-4 text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>
                             <div className="flex items-center gap-1.5">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -558,7 +558,7 @@ export default function ListBlogs() {
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleview(blog)}
-                              className={`px-6 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                              className={`px-6 py-2 rounded-lg transition-colors text-[10px] flex items-center gap-2 ${
                                 isdarkmode 
                                   ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' 
                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -572,7 +572,7 @@ export default function ListBlogs() {
                             </button>
                             <button
                               onClick={() => handleedit(blog)}
-                              className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-sm font-medium flex items-center gap-2"
+                              className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px] flex items-center gap-2"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -581,7 +581,7 @@ export default function ListBlogs() {
                             </button>
                             <button
                               onClick={() => confirmdelete(blog._id)}
-                              className={`px-6 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
+                              className={`px-6 py-2 rounded-lg transition-colors text-[10px] flex items-center gap-2 ${
                                 isdarkmode 
                                   ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' 
                                   : 'bg-red-500 text-white hover:bg-red-600'
@@ -654,8 +654,8 @@ export default function ListBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl transition-colors duration-500`}>
             <div className="text-center mb-6">
               <div className="text-red-500 text-6xl mb-4">⚠️</div>
-              <h3 className={`text-2xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Deletion</h3>
-              <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Deletion</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Are you sure you want to delete this blog? This action cannot be undone.
               </p>
             </div>
@@ -663,7 +663,7 @@ export default function ListBlogs() {
             <div className="flex gap-3">
               <button
                 onClick={canceldelete}
-                className={`flex-1 px-6 py-3 rounded-lg transition-colors font-medium ${
+                className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[10px] ${
                   isdarkmode 
                     ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -673,7 +673,7 @@ export default function ListBlogs() {
               </button>
               <button
                 onClick={() => handledelete(blogtodelete)}
-                className={`flex-1 px-6 py-3 rounded-lg transition-colors font-medium ${
+                className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[10px] ${
                   isdarkmode 
                     ? 'bg-red-700 text-white hover:bg-red-600' 
                     : 'bg-red-500 text-white hover:bg-red-600'
@@ -693,11 +693,11 @@ export default function ListBlogs() {
             {/* Modal Header - Compact */}
             <div className={`sticky top-0 ${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-200'} border-b px-6 py-4 rounded-t-2xl flex items-center justify-between z-10`}>
               <div className="flex items-center gap-2">
-                <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${getstatusstyles(viewingblog.status)}`}>
+                <span className={`px-2.5 py-1 rounded-full text-[10px] bold-text ${getstatusstyles(viewingblog.status)}`}>
                   {viewingblog.status}
                 </span>
-                <span className={`text-xs font-medium ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>{viewingblog.mainCategory}</span>
-                <span className={`text-xs ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>• {viewingblog.subcategory}</span>
+                <span className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>{viewingblog.mainCategory}</span>
+                <span className={`text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>• {viewingblog.subcategory}</span>
               </div>
               <button
                 onClick={closeviewmodal}
@@ -725,12 +725,12 @@ export default function ListBlogs() {
               )}
 
               {/* Blog Title - Smaller */}
-              <h1 className={`text-2xl font-bold mb-3 leading-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+              <h1 className={`bold-text mb-3 leading-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
                 {viewingblog.title}
               </h1>
 
               {/* Blog Meta - Compact */}
-              <div className={`flex items-center gap-4 text-xs mb-4 pb-3 border-b ${isdarkmode ? 'text-gray-500 border-white/10' : 'text-gray-600 border-gray-200'}`}>
+              <div className={`flex items-center gap-4 text-[10px] mb-4 pb-3 border-b ${isdarkmode ? 'text-gray-500 border-white/10' : 'text-gray-600 border-gray-200'}`}>
                 <div className="flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -747,7 +747,7 @@ export default function ListBlogs() {
 
               {/* Short Description - Compact */}
               <div className="mb-4">
-                <p className={`text-sm leading-relaxed font-medium italic border-l-3 border-[#800000] pl-4 py-2 ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <p className={`text-[10px] leading-relaxed bold-text italic border-l-3 border-[#800000] pl-4 py-2 ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {viewingblog.shortDescription}
                 </p>
               </div>
@@ -757,12 +757,12 @@ export default function ListBlogs() {
                 {viewingblog.mainContent && Array.isArray(viewingblog.mainContent) && viewingblog.mainContent.map((section: any, index: number) => (
                   <div key={index} className="mb-4">
                     {section.title && (
-                      <h2 className={`text-lg font-bold mb-2 mt-4 ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+                      <h2 className={`bold-text mb-2 mt-4 ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
                         {section.title}
                       </h2>
                     )}
                     {section.content && (
-                      <div className={`text-sm leading-relaxed whitespace-pre-wrap ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <div className={`text-[10px] leading-relaxed whitespace-pre-wrap ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
                         {section.content.split('\n').map((paragraph: string, pIndex: number) => (
                           paragraph.trim() && (
                             <p key={pIndex} className="mb-3">
@@ -781,7 +781,7 @@ export default function ListBlogs() {
             <div className={`sticky bottom-0 ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} border-t px-6 py-3 rounded-b-2xl flex justify-end gap-2`}>
               <button
                 onClick={closeviewmodal}
-                className={`px-4 py-2 border-2 rounded-lg transition-colors text-sm font-medium ${
+                className={`px-4 py-2 border-2 rounded-lg transition-colors text-[10px] ${
                   isdarkmode 
                     ? 'bg-transparent border-white/10 text-gray-300 hover:bg-[#2a2a2a]' 
                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100'
@@ -794,7 +794,7 @@ export default function ListBlogs() {
                   closeviewmodal();
                   handleedit(viewingblog);
                 }}
-                className="px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 text-sm font-medium shadow-md"
+                className="px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 text-[10px] shadow-md"
               >
                 Edit Blog
               </button>

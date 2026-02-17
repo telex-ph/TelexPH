@@ -41,11 +41,12 @@ const FALLBACK_DATA = {
   author: "",
 };
 
-// API like function
-async function likeCaseStudy(id: string) {
+// ✅ FIXED: API like/unlike function
+async function toggleLikeCaseStudy(id: string, isLiked: boolean) {
   try {
+    const method = isLiked ? 'DELETE' : 'POST'; // 👈 Toggle between POST/DELETE
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/${id}/like`, {
-      method: 'POST',
+      method: method,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -54,13 +55,25 @@ async function likeCaseStudy(id: string) {
     const data = await response.json();
     
     if (!response.ok) {
-      return { success: false, error: data.error, alreadyLiked: data.alreadyLiked };
+      return { success: false, error: data.error };
     }
     
-    return { success: true, likesCount: data.likesCount };
+    return { success: true, likesCount: data.likesCount, hasLiked: data.hasLiked };
   } catch (error) {
-    console.error('Error liking case study:', error);
-    return { success: false, error: 'Failed to like case study' };
+    console.error('Error toggling like:', error);
+    return { success: false, error: 'Failed to toggle like' };
+  }
+}
+
+// ✅ NEW: Check like status from API
+async function checkLikeStatus(id: string) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/${id}/like-status`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error checking like status:', error);
+    return { hasLiked: false, likesCount: 0 };
   }
 }
 
@@ -74,8 +87,8 @@ export default function DetailsHeader() {
   const [isLiking, setIsLiking] = useState(false);
   
   const searchParams = useSearchParams();
-  const slug = searchParams.get("slug"); // Get slug from URL params
-  const id = searchParams.get("id"); // Get id from URL params (fallback)
+  const slug = searchParams.get("slug");
+  const id = searchParams.get("id");
   
   const bodyTextColor = getColorWithOpacity("dark", 0.7);
   const targetMaroon = "rgb(161, 0, 0)";
@@ -88,7 +101,6 @@ export default function DetailsHeader() {
         
         let response;
         
-        // Fetch by slug (preferred) or by ID
         if (slug) {
           response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/fetch/${slug}`);
         } else if (id) {
@@ -107,10 +119,11 @@ export default function DetailsHeader() {
         setCaseStudy(data);
         setLikesCount(data.likesCount || 0);
 
-        // Check if user has already liked (stored in localStorage)
+        // ✅ FIXED: Check like status from API instead of localStorage
         if (data._id) {
-          const likedStudies = JSON.parse(localStorage.getItem('likedCaseStudies') || '[]');
-          setHasLiked(likedStudies.includes(data._id));
+          const likeStatus = await checkLikeStatus(data._id);
+          setHasLiked(likeStatus.hasLiked);
+          setLikesCount(likeStatus.likesCount);
         }
       } catch (err) {
         console.error("Error fetching case study:", err);
@@ -123,32 +136,17 @@ export default function DetailsHeader() {
     fetchCaseStudy();
   }, [slug, id]);
 
-  const handleLike = async () => {
-    if (isLiking || hasLiked || !caseStudy?._id) return;
+  // ✅ FIXED: Handle like/unlike toggle
+  const handleLikeToggle = async () => {
+    if (isLiking || !caseStudy?._id) return; // 👈 Removed hasLiked check
     
     setIsLiking(true);
     
-    const result = await likeCaseStudy(caseStudy._id);
+    const result = await toggleLikeCaseStudy(caseStudy._id, hasLiked);
     
     if (result.success) {
-      // Update likes count
-      setLikesCount(result.likesCount || likesCount + 1);
-      setHasLiked(true);
-      
-      // Store in localStorage
-      const likedStudies = JSON.parse(localStorage.getItem('likedCaseStudies') || '[]');
-      likedStudies.push(caseStudy._id);
-      localStorage.setItem('likedCaseStudies', JSON.stringify(likedStudies));
-    } else if (result.alreadyLiked) {
-      // User already liked from this IP
-      setHasLiked(true);
-      
-      // Store in localStorage to prevent UI confusion
-      const likedStudies = JSON.parse(localStorage.getItem('likedCaseStudies') || '[]');
-      if (!likedStudies.includes(caseStudy._id)) {
-        likedStudies.push(caseStudy._id);
-        localStorage.setItem('likedCaseStudies', JSON.stringify(likedStudies));
-      }
+      setLikesCount(result.likesCount || 0);
+      setHasLiked(result.hasLiked || false);
     }
     
     setIsLiking(false);
@@ -249,7 +247,7 @@ export default function DetailsHeader() {
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 sm:px-6 md:px-12">
-          <div className="max-w-[280px] sm:max-w-md md:max-w-xl lg:max-w-2xl">
+          <div className="max-w-[280px] sm:max-w-md md:max-xl lg:max-w-2xl">
             <div className="mb-1 md:mb-2">
               <span
                 className="text-[10px] md:text-xs uppercase tracking-[0.3em] font-black inline-block"
@@ -352,17 +350,17 @@ export default function DetailsHeader() {
             {/* Divider */}
             <div className="h-6 w-px bg-gray-300 mx-2"></div>
 
-            {/* Like Button */}
+            {/* ✅ FIXED: Like/Unlike Button - Always clickable */}
             <button
-              onClick={handleLike}
-              disabled={hasLiked || isLiking}
+              onClick={handleLikeToggle}
+              disabled={isLiking}  // 👈 Only disabled while processing
               className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all ${
                 hasLiked 
-                  ? 'bg-red-100 text-red-600 cursor-not-allowed' 
+                  ? 'bg-red-100 text-red-600 hover:bg-red-200 cursor-pointer' 
                   : 'bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600 cursor-pointer'
-              }`}
+              } ${isLiking ? 'opacity-50 cursor-wait' : ''}`}
               style={{ fontFamily: FONTS.openSans }}
-              title={hasLiked ? 'You liked this' : 'Like this case study'}
+              title={hasLiked ? 'Click to unlike' : 'Like this case study'}
             >
               {hasLiked ? <FaHeart size={18} /> : <FaRegHeart size={18} />}
               <span>{likesCount} {likesCount === 1 ? 'Like' : 'Likes'}</span>

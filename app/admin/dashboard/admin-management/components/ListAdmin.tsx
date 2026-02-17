@@ -231,10 +231,10 @@ export default function ListAdmin() {
       <div className={`mb-8 rounded-3xl p-8 transition-colors duration-500 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`} style={cardShadow}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className={`text-3xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+            <h1 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
               👥 Admin Management
             </h1>
-            <p className={`text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`text-[11px] mt-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
               Manage your team administrators and their permissions
             </p>
           </div>
@@ -284,13 +284,13 @@ export default function ListAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Department Filter */}
           <div>
-            <label className={`block text-xs font-semibold mb-2 uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <label className={`block text-[9px] uppercase tracking-widest mb-2 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
               Department
             </label>
             <select
               value={selectedDepartment}
               onChange={(e) => handleDepartmentChange(e.target.value)}
-              className={`w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              className={`w-full px-4 py-3 rounded-xl text-[11px] transition-colors ${
                 isdarkmode 
                   ? 'bg-[#2a2a2a] text-gray-200 border-white/10' 
                   : 'bg-gray-50 text-gray-700 border-gray-200'
@@ -307,13 +307,13 @@ export default function ListAdmin() {
 
           {/* Role Filter */}
           <div>
-            <label className={`block text-xs font-semibold mb-2 uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <label className={`block text-[9px] uppercase tracking-widest mb-2 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
               Role
             </label>
             <select
               value={selectedRole}
               onChange={(e) => handleRoleChange(e.target.value)}
-              className={`w-full px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              className={`w-full px-4 py-3 rounded-xl text-[11px] transition-colors ${
                 isdarkmode 
                   ? 'bg-[#2a2a2a] text-gray-200 border-white/10' 
                   : 'bg-gray-50 text-gray-700 border-gray-200'
@@ -338,17 +338,17 @@ export default function ListAdmin() {
           </div>
         ) : error ? (
           <div className={`text-center py-12 rounded-2xl ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
-            <p className="text-red-500 mb-4">{error}</p>
+            <p className="text-red-500 text-[11px] mb-4">{error}</p>
             <button
               onClick={loadAdmins}
-              className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors"
+              className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[11px] bold-text"
             >
               Retry
             </button>
           </div>
         ) : filteredAdmins.length === 0 ? (
           <div className={`text-center py-12 rounded-2xl ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
-            <p className={`text-lg ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
               No administrators found
             </p>
           </div>
@@ -367,7 +367,7 @@ export default function ListAdmin() {
                   >
                     {/* Admin Avatar */}
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="w-16 h-16 bg-[#800000] rounded-2xl flex items-center justify-center text-white text-xl font-bold uppercase shadow-lg overflow-hidden">
+                      <div className="w-16 h-16 bg-[#800000] rounded-2xl flex items-center justify-center text-white text-xl bold-text uppercase shadow-lg overflow-hidden">
                         {admin.profilePicture ? (
                           <img src={admin.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
@@ -375,10 +375,10 @@ export default function ListAdmin() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className={`text-lg font-bold ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                        <h3 className={`text-xs bold-text ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
                           {admin.firstName} {admin.lastName}
                         </h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${getRoleStyles(admin.role)}`}>
+                        <span className={`px-3 py-1 rounded-full text-[10px] bold-text inline-block mt-1 ${getRoleStyles(admin.role)}`}>
                           {roles[admin.role]}
                         </span>
                       </div>
@@ -387,8 +387,8 @@ export default function ListAdmin() {
                     {/* Admin Info */}
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">{getDepartmentIcon(admin.department)}</span>
-                        <span className={`text-sm font-medium ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <span className="text-xl">{getDepartmentIcon(admin.department)}</span>
+                        <span className={`text-[11px] ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
                           {departments[admin.department]}
                         </span>
                       </div>
@@ -396,7 +396,7 @@ export default function ListAdmin() {
                         <svg className={`w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        <span className={`text-xs ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
                           {admin.email}
                         </span>
                       </div>
@@ -404,7 +404,7 @@ export default function ListAdmin() {
                         <svg className={`w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        <span className={`text-xs ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
                           {admin.contactNumber}
                         </span>
                       </div>
@@ -417,7 +417,7 @@ export default function ListAdmin() {
                           e.stopPropagation();
                           handleEdit(admin);
                         }}
-                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`flex-1 px-4 py-2 rounded-lg text-[10px] bold-text transition-colors ${
                           isdarkmode 
                             ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' 
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -430,7 +430,7 @@ export default function ListAdmin() {
                           e.stopPropagation();
                           confirmDelete(admin._id);
                         }}
-                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`flex-1 px-4 py-2 rounded-lg text-[10px] bold-text transition-colors ${
                           isdarkmode 
                             ? 'bg-red-900/20 text-red-400 hover:bg-red-900/30' 
                             : 'bg-red-50 text-red-600 hover:bg-red-100'
@@ -447,19 +447,19 @@ export default function ListAdmin() {
                 <table className="w-full">
                   <thead className={`${isdarkmode ? 'bg-[#252525]' : 'bg-gray-50'}`}>
                     <tr>
-                      <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <th className={`px-6 py-4 text-left text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Administrator
                       </th>
-                      <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <th className={`px-6 py-4 text-left text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Department
                       </th>
-                      <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <th className={`px-6 py-4 text-left text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Role
                       </th>
-                      <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <th className={`px-6 py-4 text-left text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Contact
                       </th>
-                      <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <th className={`px-6 py-4 text-left text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Actions
                       </th>
                     </tr>
@@ -475,7 +475,7 @@ export default function ListAdmin() {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#800000] rounded-xl flex items-center justify-center text-white text-sm font-bold uppercase overflow-hidden">
+                            <div className="w-10 h-10 bg-[#800000] rounded-xl flex items-center justify-center text-white text-[10px] bold-text uppercase overflow-hidden">
                               {admin.profilePicture ? (
                                 <img src={admin.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                               ) : (
@@ -483,10 +483,10 @@ export default function ListAdmin() {
                               )}
                             </div>
                             <div>
-                              <p className={`font-semibold ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
+                              <p className={`text-xs bold-text ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
                                 {admin.firstName} {admin.lastName}
                               </p>
-                              <p className={`text-xs ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+                              <p className={`text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                                 {admin.email}
                               </p>
                             </div>
@@ -495,18 +495,18 @@ export default function ListAdmin() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <span className="text-xl">{getDepartmentIcon(admin.department)}</span>
-                            <span className={`text-sm ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <span className={`text-[11px] ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
                               {departments[admin.department]}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleStyles(admin.role)}`}>
+                          <span className={`px-3 py-1 rounded-full text-[10px] bold-text ${getRoleStyles(admin.role)}`}>
                             {roles[admin.role]}
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <span className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                             {admin.contactNumber}
                           </span>
                         </td>
@@ -517,7 +517,7 @@ export default function ListAdmin() {
                                 e.stopPropagation();
                                 handleEdit(admin);
                               }}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                              className={`px-3 py-1.5 rounded-lg text-[10px] bold-text transition-colors ${
                                 isdarkmode 
                                   ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' 
                                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -530,7 +530,7 @@ export default function ListAdmin() {
                                 e.stopPropagation();
                                 confirmDelete(admin._id);
                               }}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                              className={`px-3 py-1.5 rounded-lg text-[10px] bold-text transition-colors ${
                                 isdarkmode 
                                   ? 'bg-red-900/20 text-red-400 hover:bg-red-900/30' 
                                   : 'bg-red-50 text-red-600 hover:bg-red-100'
@@ -553,7 +553,7 @@ export default function ListAdmin() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
+                  className={`px-4 py-2 rounded-lg transition-colors text-[10px] bold-text ${
                     isdarkmode 
                       ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] disabled:opacity-50 disabled:cursor-not-allowed' 
                       : 'bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
@@ -566,7 +566,7 @@ export default function ListAdmin() {
                   <button
                     key={index + 1}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
+                    className={`px-4 py-2 rounded-lg transition-colors text-[10px] bold-text ${
                       currentPage === index + 1
                         ? 'bg-[#800000] text-white'
                         : isdarkmode 
@@ -581,7 +581,7 @@ export default function ListAdmin() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
+                  className={`px-4 py-2 rounded-lg transition-colors text-[10px] bold-text ${
                     isdarkmode 
                       ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] disabled:opacity-50 disabled:cursor-not-allowed' 
                       : 'bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
@@ -601,8 +601,8 @@ export default function ListAdmin() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl transition-colors duration-500`}>
             <div className="text-center mb-6">
               <div className="text-red-500 text-6xl mb-4">⚠️</div>
-              <h3 className={`text-2xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Deletion</h3>
-              <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Confirm Deletion</h3>
+              <p className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Are you sure you want to delete this administrator? This action cannot be undone.
               </p>
             </div>
@@ -610,7 +610,7 @@ export default function ListAdmin() {
             <div className="flex gap-3">
               <button
                 onClick={cancelDelete}
-                className={`flex-1 px-6 py-3 rounded-lg transition-colors font-medium ${
+                className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[11px] bold-text ${
                   isdarkmode 
                     ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -620,7 +620,7 @@ export default function ListAdmin() {
               </button>
               <button
                 onClick={() => handleDelete(adminToDelete)}
-                className={`flex-1 px-6 py-3 rounded-lg transition-colors font-medium ${
+                className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[11px] bold-text ${
                   isdarkmode 
                     ? 'bg-red-700 text-white hover:bg-red-600' 
                     : 'bg-red-500 text-white hover:bg-red-600'
@@ -639,7 +639,7 @@ export default function ListAdmin() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl max-w-2xl w-full shadow-2xl my-8 transition-colors duration-500`}>
             <div className={`sticky top-0 ${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-200'} border-b px-6 py-4 rounded-t-2xl flex items-center justify-between z-10`}>
               <div className="flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleStyles(viewingAdmin.role)}`}>
+                <span className={`px-3 py-1 rounded-full text-[10px] bold-text ${getRoleStyles(viewingAdmin.role)}`}>
                   {roles[viewingAdmin.role]}
                 </span>
               </div>
@@ -657,7 +657,7 @@ export default function ListAdmin() {
 
             <div className="px-6 py-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 bg-[#800000] rounded-2xl flex items-center justify-center text-white text-2xl font-bold uppercase shadow-lg overflow-hidden">
+                <div className="w-20 h-20 bg-[#800000] rounded-2xl flex items-center justify-center text-white text-2xl bold-text uppercase shadow-lg overflow-hidden">
                   {viewingAdmin.profilePicture ? (
                     <img src={viewingAdmin.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
@@ -665,10 +665,10 @@ export default function ListAdmin() {
                   )}
                 </div>
                 <div>
-                  <h2 className={`text-2xl font-bold ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+                  <h2 className={`text-2xl bold-text ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
                     {viewingAdmin.firstName} {viewingAdmin.lastName}
                   </h2>
-                  <p className={`text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className={`text-[11px] mt-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                     {departments[viewingAdmin.department]}
                   </p>
                 </div>
@@ -676,28 +676,28 @@ export default function ListAdmin() {
 
               <div className="space-y-4">
                 <div>
-                  <label className={`text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                     Email Address
                   </label>
-                  <p className={`mt-1 ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
+                  <p className={`mt-1 text-xs ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
                     {viewingAdmin.email}
                   </p>
                 </div>
 
                 <div>
-                  <label className={`text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                     Contact Number
                   </label>
-                  <p className={`mt-1 ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
+                  <p className={`mt-1 text-xs ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
                     {viewingAdmin.contactNumber}
                   </p>
                 </div>
 
                 <div>
-                  <label className={`text-xs font-semibold uppercase tracking-wider ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                     Created Date
                   </label>
-                  <p className={`mt-1 ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
+                  <p className={`mt-1 text-xs ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>
                     {formatDate(viewingAdmin.createdAt)}
                   </p>
                 </div>
@@ -707,7 +707,7 @@ export default function ListAdmin() {
             <div className={`sticky bottom-0 ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} border-t px-6 py-3 rounded-b-2xl flex justify-end gap-2`}>
               <button
                 onClick={closeViewModal}
-                className={`px-4 py-2 border-2 rounded-lg transition-colors text-sm font-medium ${
+                className={`px-4 py-2 border-2 rounded-lg transition-colors text-[10px] bold-text ${
                   isdarkmode 
                     ? 'bg-transparent border-white/10 text-gray-300 hover:bg-[#2a2a2a]' 
                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100'
@@ -720,7 +720,7 @@ export default function ListAdmin() {
                   closeViewModal();
                   handleEdit(viewingAdmin);
                 }}
-                className="px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 text-sm font-medium shadow-md"
+                className="px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 text-[10px] bold-text shadow-md"
               >
                 Edit Admin
               </button>

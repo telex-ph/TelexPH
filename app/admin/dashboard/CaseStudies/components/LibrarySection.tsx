@@ -66,12 +66,12 @@ export const LibrarySection: React.FC<LibrarySectionProps> = ({
                   ? status === 'All' 
                     ? 'bg-gray-800 text-white shadow-md'
                     : status === 'Active'
-                    ? 'bg-green-600 text-white shadow-md'
+                    ? 'bg-[#10B981] text-white shadow-md'
                     : status === 'Completed'
-                    ? 'bg-blue-600 text-white shadow-md'
+                    ? 'bg-[#3B82F6] text-white shadow-md'
                     : status === 'Draft'
-                    ? 'bg-pink-400 text-white shadow-md'
-                    : 'bg-purple-600 text-white shadow-md'
+                    ? 'bg-[#9CA3AF] text-white shadow-md'
+                    : 'bg-[#F59E0B] text-white shadow-md'
                   : `${isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333333]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`
               }`}
             >
@@ -96,12 +96,12 @@ export const LibrarySection: React.FC<LibrarySectionProps> = ({
                 className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
                   isSelected
                     ? category === 'Technology'
-                      ? 'bg-indigo-600 text-white shadow-md'
+                      ? 'bg-[#0EA5E9] text-white shadow-md'
                       : category === 'Logistics'
-                      ? 'bg-orange-600 text-white shadow-md'
+                      ? 'bg-[#FF6B4A] text-white shadow-md'
                       : category === 'Analytics'
-                      ? 'bg-cyan-600 text-white shadow-md'
-                      : 'bg-teal-600 text-white shadow-md'
+                      ? 'bg-[#A855F7] text-white shadow-md'
+                      : 'bg-[#06B6D4] text-white shadow-md'
                     : `${isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333333]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`
                 }`}
               >

@@ -7,29 +7,33 @@ interface PreviewModalProps {
   isOpen: boolean;
   data: CaseStudy | null;
   onClose: () => void;
+  onEdit: (study: CaseStudy) => void;
 }
 
-export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClose }) => {
+export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClose, onEdit }) => {
   const { isdarkmode } = useDarkMode();
 
   if (!isOpen || !data) return null;
 
+  const handleEdit = () => {
+    // Scroll to top smoothly
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    // Call the edit handler and close modal
+    onEdit(data);
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4 overflow-y-auto">
-      <div className={`rounded-[3rem] p-12 max-w-4xl w-full shadow-2xl my-8 max-h-[90vh] overflow-y-auto ${isdarkmode ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] p-4 overflow-y-auto no-scrollbar">
+      <div className={`rounded-[3rem] p-12 max-w-4xl w-full shadow-2xl my-8 max-h-[90vh] overflow-y-auto no-scrollbar ${isdarkmode ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
         <div className="flex justify-between items-start mb-6">
           <h3 className={`text-3xl font-bold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
             {data.title}
           </h3>
-          <button
-            onClick={onClose}
-            className={`p-2 rounded-full transition-colors ${isdarkmode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
+          
         </div>
 
         {data.image && (
@@ -138,6 +142,16 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClos
         </div>
 
         <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+          <button
+            onClick={handleEdit}
+            className={`px-8 py-3 rounded-2xl font-bold transition-colors ${
+              isdarkmode 
+                ? 'bg-orange-600 text-white hover:bg-orange-700' 
+                : 'bg-orange-600 text-white hover:bg-orange-700'
+            }`}
+          >
+            Edit Case Study
+          </button>
           <button
             onClick={onClose}
             className="px-8 py-3 bg-[#800000] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors"

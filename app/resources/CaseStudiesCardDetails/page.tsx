@@ -13,6 +13,7 @@ import {
   FaLink,
   FaFilePdf
 } from "react-icons/fa";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
 import { COLORS, FONTS, getColorWithOpacity } from "@/constant/styles";
 
 // API Configuration
@@ -57,7 +58,7 @@ const HARDCODED_CONTENT_DATA: Record<string, any> = {
 // API fetch function
 async function getCaseStudyById(id: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}/casestudies/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/casestudies/${id}`);
     if (!response.ok) throw new Error('Failed to fetch case study');
     return response.json();
   } catch (error) {
@@ -73,6 +74,11 @@ function CaseStudyDetailsContent() {
   const [study, setStudy] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApiData, setIsApiData] = useState(false);
+  
+  // ✅ NEW: Like/Unlike States
+  const [likesCount, setLikesCount] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
 
   useEffect(() => {
     async function loadCaseStudy() {
@@ -123,6 +129,10 @@ function CaseStudyDetailsContent() {
           
           setStudy(transformedStudy);
           setIsApiData(true);
+          
+          // ✅ NEW: Initialize like count and check status
+          setLikesCount(apiData.likesCount || 0);
+          checkLikeStatus();
         } else {
           // Fallback to default hardcoded data
           setStudy(HARDCODED_CONTENT_DATA["6"]);
@@ -135,6 +145,46 @@ function CaseStudyDetailsContent() {
 
     loadCaseStudy();
   }, [id]);
+
+  // ✅ NEW: Check if user has liked this case study
+  const checkLikeStatus = async () => {
+    if (!isApiData) return; // Only check for API data
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/casestudies/${id}/like-status`);
+      const data = await response.json();
+      setHasLiked(data.hasLiked);
+      setLikesCount(data.likesCount);
+    } catch (error) {
+      console.error("Error checking like status:", error);
+    }
+  };
+
+  // ✅ NEW: Handle like/unlike toggle
+  const handleLikeToggle = async () => {
+    if (isLiking || !isApiData) return; // Prevent multiple clicks and only work with API data
+    
+    setIsLiking(true);
+    
+    try {
+      const url = `${API_BASE_URL}/api/casestudies/${id}/like`;
+      const method = hasLiked ? 'DELETE' : 'POST';
+      
+      const response = await fetch(url, { method });
+      const data = await response.json();
+      
+      if (response.ok) {
+        setLikesCount(data.likesCount);
+        setHasLiked(data.hasLiked);
+      } else {
+        console.error("Error toggling like:", data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   const handlePrintPDF = () => {
     window.print();
@@ -178,8 +228,6 @@ function CaseStudyDetailsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white">
           
           <div className="lg:col-span-8">
-            
-
             <article className="space-y-12">
               {study.body.map((item: any, idx: number) => (
                 <div key={idx} className="break-inside-avoid">
@@ -235,8 +283,6 @@ function CaseStudyDetailsContent() {
                 {study.solution}
               </p>
             </div>
-
-            
           </div>
         </div>
 

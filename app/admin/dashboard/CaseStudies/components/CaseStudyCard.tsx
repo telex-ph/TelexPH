@@ -22,12 +22,22 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
   // Get status badge color
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-600';
-      case 'Completed': return 'bg-blue-600';
-      case 'Draft': return 'bg-pink-400';
-      case 'Scheduled': return 'bg-purple-600';
+      case 'Active': return 'bg-[#10B981]';
+      case 'Completed': return 'bg-[#3B82F6]';
+      case 'Draft': return 'bg-[#9CA3AF]';
+      case 'Scheduled': return 'bg-[#F59E0B]';
       default: return 'bg-gray-600';
     }
+  };
+
+  const handleEdit = () => {
+    // Scroll to top smoothly
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    // Call the edit handler
+    onEdit();
   };
 
   return (
@@ -74,7 +84,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
       {/* Date Range */}
       <p className={`text-xs mb-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-        {study.start} — {study.isUnfinished ? 'Unfinished' : study.end}
+        {study.start} – {study.isUnfinished ? 'Unfinished' : study.end}
       </p>
 
       {/* Spacer */}
@@ -105,7 +115,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
           {/* Edit */}
           <button
-            onClick={onEdit}
+            onClick={handleEdit}
             className={`p-2 rounded-lg transition-colors ${
               isEditing
                 ? 'text-red-900 bg-red-100 dark:bg-red-900/20'
