@@ -303,9 +303,24 @@ export const FormSection: React.FC<FormSectionProps> = ({
 
       {/* Categories */}
       <div className="mb-6">
-        <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
-          Categories *
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className={`block text-xs font-semibold ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+            Categories *
+          </label>
+          {formData.categories.length > 0 && (
+            <button
+              type="button"
+              onClick={() => onFormChange('categories', [])}
+              className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors ${
+                isdarkmode
+                  ? 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Clear
+            </button>
+          )}
+        </div>
         <div className="relative">
           <button
             type="button"
@@ -430,22 +445,6 @@ export const FormSection: React.FC<FormSectionProps> = ({
             value={formData.solution}
             onChange={(e) => onFormChange('solution', e.target.value)}
             placeholder="Describe the solution or approach"
-            rows={4}
-            className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none ${
-              isdarkmode 
-                ? 'bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900' 
-                : 'bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900'
-            }`}
-          />
-        </div>
-        <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
-            Result
-          </label>
-          <textarea
-            value={formData.result}
-            onChange={(e) => onFormChange('result', e.target.value)}
-            placeholder="Describe the outcome or results"
             rows={4}
             className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none ${
               isdarkmode 

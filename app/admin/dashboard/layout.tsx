@@ -349,7 +349,7 @@ export default function DashboardLayout({
         )}
       </div>
 
-      <nav className={`flex-1 overflow-y-auto py-8 space-y-2 transition-all duration-300 ${iscollapsed ? 'px-2' : 'px-6'}`}>
+      <nav className={`flex-1 overflow-y-auto no-scrollbar py-8 space-y-2 transition-all duration-300 ${iscollapsed ? 'px-2' : 'px-6'}`}>
         <div className={`text-[10px] font-black uppercase tracking-widest mb-4 transition-colors ${iscollapsed ? 'text-center' : 'px-4'} ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
           {!iscollapsed && 'Main Menu'}
         </div>
@@ -422,7 +422,7 @@ export default function DashboardLayout({
           )}
         </div>
         
-        <div className={`flex items-center p-3 rounded-2xl border-none mt-2 shadow-sm transition-all hover:shadow-md cursor-pointer ${iscollapsed ? 'justify-center' : 'justify-between'} ${isdarkmode ? 'bg-[#202020]' : 'bg-white'}`}>
+        <Link href="/admin/dashboard/profile" className={`flex items-center p-3 rounded-2xl border-none mt-2 shadow-sm transition-all hover:shadow-md cursor-pointer no-underline active:scale-95 ${iscollapsed ? 'justify-center' : 'justify-between'} ${isdarkmode ? 'bg-[#202020]' : 'bg-white'}`}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#800000] rounded-xl flex items-center justify-center text-white text-xs font-bold uppercase border-none shrink-0 shadow-lg shadow-maroon-900/20 overflow-hidden">
               {userData.profilePicture ? (
@@ -442,7 +442,7 @@ export default function DashboardLayout({
               </div>
             )}
           </div>
-        </div>
+        </Link>
       </div>
     </>
   )
