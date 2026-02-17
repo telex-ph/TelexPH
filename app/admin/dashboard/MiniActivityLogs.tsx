@@ -131,11 +131,11 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
 
   const getactionbadgecolor = (action: string) => {
     const colors: { [key: string]: string } = {
-      'CREATED': 'bg-green-500',
-      'UPDATED': 'bg-purple-500',
-      'DELETED': 'bg-red-500',
-      'LOGIN': 'bg-blue-500',
-      'LOGOUT': 'bg-gray-500'
+      'CREATED': 'bg-[#00A651]',
+      'UPDATED': 'bg-[#0066CC]',
+      'DELETED': 'bg-[#8B0000]',
+      'LOGIN': 'bg-[#4B0082]',
+      'LOGOUT': 'bg-[#996633]'
     }
     return colors[action] || 'bg-gray-500'
   }

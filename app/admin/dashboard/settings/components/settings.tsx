@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useDarkMode } from '../../layout' // Import the dark mode hook
 
 // Helper functions to map department and role numbers to strings
 const getDepartmentName = (dept: number): string => {
@@ -36,6 +37,7 @@ interface UserData {
 
 export default function AdminSettings() {
   const router = useRouter()
+  const { isdarkmode } = useDarkMode() // Get dark mode state from context
   const [activetab, setactivetab] = useState('profile')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -221,7 +223,7 @@ export default function AdminSettings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-400">Loading...</div>
+        <div className={`text-lg ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Loading...</div>
       </div>
     )
   }
@@ -231,8 +233,10 @@ export default function AdminSettings() {
       <div className="max-w-[1400px] mx-auto px-4 py-6 md:py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-xl md:text-2xl text-[#800000] dark:text-white mb-2 tracking-tight">Admin Settings</h1>
-          <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+          <h1 className={`text-xl md:text-2xl mb-2 tracking-tight transition-colors ${isdarkmode ? 'text-white' : 'text-black'}`}>
+            Admin Settings
+          </h1>
+          <p className={`text-[11px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
             Configure Your Administrator Account
           </p>
         </div>
@@ -278,7 +282,7 @@ export default function AdminSettings() {
               </nav>
 
               <div className="mt-6 pt-6 border-t border-gray-100 dark:border-white/10">
-                <p className="text-[9px] text-gray-400 dark:text-gray-600 italic px-4">
+                <p className={`text-[9px] italic px-4 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
                   All Changes Made To Admin Profiles Are Logged For Security Auditing Purposes.
                 </p>
               </div>
@@ -321,59 +325,71 @@ export default function AdminSettings() {
                         </label>
                         <button 
                           onClick={() => setProfilePicture('')}
-                          className="px-5 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 rounded-lg text-[10px] hover:bg-gray-50 dark:hover:bg-white/10 transition-all"
+                          className={`px-5 py-2 border rounded-lg text-[10px] transition-all ${isdarkmode ? 'bg-white/5 border-white/20 text-white hover:bg-white/10' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                         >
                           Remove
                         </button>
                       </div>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-600 italic">Recommended Size: 400x400px. Formats: Jpg, Png.</p>
+                      <p className={`text-[10px] italic transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        Recommended Size: 400x400px. Formats: Jpg, Png.
+                      </p>
                     </div>
                   </div>
 
                   {/* Form Fields Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">First Name</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        First Name
+                      </label>
                       <input 
                         type="text" 
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white' : 'bg-gray-50 border border-gray-200 text-black'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Last Name</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Last Name
+                      </label>
                       <input 
                         type="text" 
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white' : 'bg-gray-50 border border-gray-200 text-black'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Admin Email</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Admin Email
+                      </label>
                       <input 
                         type="email" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white' : 'bg-gray-50 border border-gray-200 text-black'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Contact Number</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Contact Number
+                      </label>
                       <input 
                         type="text" 
                         value={contactNumber}
                         onChange={(e) => setContactNumber(e.target.value)}
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white' : 'bg-gray-50 border border-gray-200 text-black'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Department</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Department
+                      </label>
                       <select
                         value={department}
                         onChange={(e) => setDepartment(Number(e.target.value))}
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20"
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white' : 'bg-gray-50 border border-gray-200 text-black'}`}
                       >
                         <option value={1}>Compliance</option>
                         <option value={2}>Innovation</option>
@@ -383,8 +399,10 @@ export default function AdminSettings() {
                       </select>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Assigned Role</label>
-                      <div className="w-full p-3.5 bg-gray-100/50 dark:bg-white/5 rounded-xl text-[12px] text-[#800000] dark:text-[#cc0000]">
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Assigned Role
+                      </label>
+                      <div className={`w-full p-3.5 bg-gray-100/50 dark:bg-white/5 rounded-xl text-[12px] transition-colors ${isdarkmode ? 'text-[#ff6666]' : 'text-[#800000]'}`}>
                         {userData && getRoleName(userData.role)}
                       </div>
                     </div>
@@ -416,33 +434,39 @@ export default function AdminSettings() {
                   
                   <div className="space-y-5">
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Current Password</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Current Password
+                      </label>
                       <input 
                         type="password" 
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="••••••••" 
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white placeholder-gray-600' : 'bg-gray-50 border border-gray-200 text-black placeholder-gray-400'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">New Secure Password</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        New Secure Password
+                      </label>
                       <input 
                         type="password" 
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="••••••••" 
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white placeholder-gray-600' : 'bg-gray-50 border border-gray-200 text-black placeholder-gray-400'}`}
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] text-gray-400 dark:text-gray-500 px-1 uppercase tracking-widest">Confirm New Password</label>
+                      <label className={`text-[10px] px-1 uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Confirm New Password
+                      </label>
                       <input 
                         type="password" 
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••" 
-                        className="w-full p-3.5 bg-gray-50 dark:bg-white/5 border-none rounded-xl text-[12px] text-gray-600 dark:text-white outline-none focus:ring-1 ring-[#800000]/20" 
+                        className={`w-full p-3.5 rounded-xl text-[12px] outline-none focus:ring-1 ring-[#800000]/20 transition-colors ${isdarkmode ? 'bg-white/5 border-none text-white placeholder-gray-600' : 'bg-gray-50 border border-gray-200 text-black placeholder-gray-400'}`}
                       />
                     </div>
                     <div className="pt-4">

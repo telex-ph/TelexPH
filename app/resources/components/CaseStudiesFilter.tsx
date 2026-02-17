@@ -16,10 +16,25 @@ import {
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
+// ✅ NEW: Random Profile Picture Generator
+function generateRandomProfiles(seed: string | number, count: number = 3) {
+  const profiles = [];
+  // Convert seed to a consistent number
+  const seedNum = typeof seed === 'string' ? seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : seed;
+  
+  for (let i = 0; i < count; i++) {
+    // Generate a random number between 1-70 based on seed
+    const randomNum = ((seedNum + i * 13) % 70) + 1;
+    profiles.push(`https://i.pravatar.cc/150?img=${randomNum}`);
+  }
+  
+  return profiles;
+}
+
 // API Functions
 async function getAllCaseStudies() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/casestudies`); // ✅ FIXED: Added /api prefix
+    const response = await fetch(`${API_BASE_URL}/api/casestudies`);
     if (!response.ok) throw new Error('Failed to fetch case studies');
     return response.json();
   } catch (error) {
@@ -31,7 +46,7 @@ async function getAllCaseStudies() {
 export default function CaseStudiesFilter() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All Status");
+  const [statusFilter, setStatusFilter] = useState("Active");
   const [tagFilter, setTagFilter] = useState("Filter by tag");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
@@ -120,29 +135,22 @@ export default function CaseStudiesFilter() {
       
       // Transform API data to match the expected format
       const transformedApiData = apiData.map((item: any) => {
-        // ✅ FIXED: Properly extract text from nested objects
         let description = "";
         
-        // Try to get description from challenge array first
         if (Array.isArray(item.challenge) && item.challenge.length > 0) {
-          // Extract text from first challenge object
           description = item.challenge[0]?.text || "";
         } 
-        // Fallback to first section if challenge is empty
         else if (Array.isArray(item.sections) && item.sections.length > 0) {
           description = item.sections[0]?.text || "";
         }
-        // Final fallback to solution
         else if (Array.isArray(item.solution) && item.solution.length > 0) {
           description = item.solution[0]?.text || "";
         }
         
-        // Truncate description to 150 characters
         if (description.length > 150) {
           description = description.substring(0, 150) + "...";
         }
 
-        // Map status from backend to frontend format
         const statusMap: Record<string, string> = {
           "active": "Active",
           "completed": "Completed",
@@ -150,7 +158,6 @@ export default function CaseStudiesFilter() {
           "scheduled": "Scheduled"
         };
 
-        // Map tags - pick first tag if multiple exist
         const tagMap: Record<string, string> = {
           "technology": "Technology",
           "logistics": "Logistics",
@@ -185,26 +192,39 @@ export default function CaseStudiesFilter() {
     fetchData();
   }, []);
 
-  // Combine hardcoded resources with API case studies - FILTER OUT non-active API case studies
-  const activeApiCaseStudies = apiCaseStudies.filter((cs: any) => cs.status === "Active");
-  const allResources = [...hardcodedResources, ...activeApiCaseStudies]; // ✅ Only show Active case studies
+  const allResources = useMemo(() => {
+    return [...apiCaseStudies, ...hardcodedResources];
+  }, [apiCaseStudies]);
 
   const filteredCards = useMemo(() => {
-    return allResources.filter((card) => {
-      const matchesTab = activeTab === "All" || card.type === activeTab;
-      const matchesSearch = card.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            card.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "All Status" || card.status === statusFilter;
-      const matchesTag = tagFilter === "Filter by tag" || card.tag === tagFilter;
-      return matchesTab && matchesSearch && matchesStatus && matchesTag;
-    });
-  }, [activeTab, searchQuery, statusFilter, tagFilter, allResources]);
+    let cards = allResources;
+
+    if (activeTab !== "All") {
+      cards = cards.filter((r) => r.type === activeTab);
+    }
+
+    if (searchQuery) {
+      cards = cards.filter((r) =>
+        r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== "All Status") {
+      cards = cards.filter((r) => r.status === statusFilter);
+    }
+
+    if (tagFilter !== "Filter by tag") {
+      cards = cards.filter((r) => r.tag === tagFilter);
+    }
+
+    return cards;
+  }, [allResources, activeTab, searchQuery, statusFilter, tagFilter]);
 
   const handleReset = () => {
     setSearchQuery("");
     setStatusFilter("All Status");
     setTagFilter("Filter by tag");
-    setActiveTab("All");
   };
 
   const toggleExpand = (id: number) => {
@@ -308,6 +328,9 @@ export default function CaseStudiesFilter() {
             {filteredCards.length > 0 ? (
               filteredCards.map((card) => {
                 const isExpanded = expandedCardId === card.id;
+                // ✅ Generate random profiles based on card ID
+                const profilePictures = generateRandomProfiles(card.id, 3);
+                
                 return (
                   <div 
                     key={card.id} 
@@ -320,7 +343,6 @@ export default function CaseStudiesFilter() {
                         alt={card.title} 
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          // Fallback to default image if the cover image fails to load
                           const target = e.target as HTMLImageElement;
                           if (target.src !== "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800") {
                             target.src = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800";
@@ -351,10 +373,11 @@ export default function CaseStudiesFilter() {
                           <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-3">{card.description}</p>
                         </div>
                         <div className="mt-auto pb-6 flex justify-between items-center">
+                          {/* ✅ FIXED: Use generated random profile pictures */}
                           <div className="flex -space-x-1.5">
-                            {[1, 2, 3].map((i) => (
+                            {profilePictures.map((profileUrl, i) => (
                               <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                                <img src={`https://i.pravatar.cc/100?img=${card.id + i + 15}`} alt="user" />
+                                <img src={profileUrl} alt={`user-${i}`} className="w-full h-full object-cover" />
                               </div>
                             ))}
                           </div>

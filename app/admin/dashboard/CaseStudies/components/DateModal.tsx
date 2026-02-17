@@ -27,8 +27,8 @@ export const DateModal: React.FC<DateModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-      <div className={`rounded-[2rem] p-8 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto ${isdarkmode ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4 no-scrollbar">
+      <div className={`rounded-[2rem] p-8 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto no-scrollbar ${isdarkmode ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
         <div className="flex justify-between items-center mb-6">
           <h3 className={`text-xl font-bold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
             {formattedDate}

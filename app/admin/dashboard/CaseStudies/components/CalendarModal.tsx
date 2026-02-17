@@ -44,10 +44,10 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
     
     const markedDates = studiesOnDate.map(study => {
       switch (study.status) {
-        case 'Active': return { color: 'bg-cyan-400' };
-        case 'Completed': return { color: 'bg-red-900' };
-        case 'Draft': return { color: 'bg-pink-400' };
-        case 'Scheduled': return { color: 'bg-orange-400' };
+        case 'Active': return { color: 'bg-[#10B981]' };
+        case 'Completed': return { color: 'bg-[#3B82F6]' };
+        case 'Draft': return { color: 'bg-[#9CA3AF]' };
+        case 'Scheduled': return { color: 'bg-[#F59E0B]' };
         default: return { color: 'bg-gray-400' };
       }
     });
@@ -67,13 +67,13 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-8">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-8 no-scrollbar">
       <div className={`rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl ${
         isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'
       }`}>
         <div className="flex flex-col md:flex-row h-full max-h-[85vh]">
           {/* Left Side: Calendar */}
-          <div className={`flex-[3] p-8 overflow-y-auto ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+          <div className={`flex-[3] p-8 overflow-y-auto no-scrollbar ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
             <div className="mb-6">
               <h3 className={`text-xl font-semibold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
                 Calendar
@@ -157,7 +157,7 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
           </div>
 
           {/* Right Side: Details Panel */}
-          <div className={`flex-[2] p-8 flex flex-col relative overflow-y-auto ${
+          <div className={`flex-[2] p-8 flex flex-col relative overflow-y-auto no-scrollbar ${
             isdarkmode ? 'bg-[#222222]' : 'bg-gray-50'
           }`}>
             <button
@@ -201,25 +201,25 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></div>
                   <span className={`text-xs font-medium ${isdarkmode ? 'text-gray-300' : 'text-gray-600'}`}>
                     Active
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-900"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]"></div>
                   <span className={`text-xs font-medium ${isdarkmode ? 'text-gray-300' : 'text-gray-600'}`}>
                     Completed
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-pink-400"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#9CA3AF]"></div>
                   <span className={`text-xs font-medium ${isdarkmode ? 'text-gray-300' : 'text-gray-600'}`}>
                     Draft
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-orange-400"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></div>
                   <span className={`text-xs font-medium ${isdarkmode ? 'text-gray-300' : 'text-gray-600'}`}>
                     Scheduled
                   </span>

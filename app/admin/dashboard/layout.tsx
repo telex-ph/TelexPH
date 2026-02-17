@@ -292,6 +292,11 @@ export default function DashboardLayout({
       ]
     },
     {
+      name: 'Services',
+      path: '/admin/dashboard/Services',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    },
+    {
       name: 'Case Studies',
       path: '/admin/dashboard/CaseStudies',
       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
@@ -446,7 +451,7 @@ export default function DashboardLayout({
     <DarkModeContext.Provider value={{ isdarkmode, toggledarkmode }}>
       <div className={`flex h-screen overflow-hidden antialiased transition-colors duration-500 ${isdarkmode ? 'bg-[#0f0f0f] text-gray-400' : 'bg-[#f8f9fa] text-gray-600'}`} style={{ fontFamily: "'Poppins', sans-serif" }}>
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
           body { font-family: 'Poppins', sans-serif; font-weight: 400; }
           .no-scrollbar::-webkit-scrollbar { display: none; }
         `}</style>
@@ -500,10 +505,7 @@ export default function DashboardLayout({
                 )}
               </div>
               
-              <div className={`hidden sm:flex items-center gap-4 px-6 py-3 rounded-full lg:w-[450px] ${isdarkmode ? 'bg-[#202020]' : 'bg-gray-50'}`}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                <input type="text" placeholder="Search for articles, tools etc.." className={`bg-transparent outline-none text-[12px] w-full border-none uppercase font-semibold ${isdarkmode ? 'text-gray-300' : 'text-gray-500'}`} />
-              </div>
+              
 
               <div className="relative" ref={dropdownref}>
                 <button 

@@ -264,22 +264,22 @@ export default function ActivityLogs() {
 
   const getactionbadgecolor = (action: string) => {
     switch (action) {
-      case 'CREATED': return 'bg-emerald-600'
-      case 'UPDATED': return 'bg-blue-600'
-      case 'DELETED': return 'bg-red-600'
-      case 'LOGIN': return 'bg-purple-600'
-      case 'LOGOUT': return 'bg-orange-600'
-      default: return 'bg-gray-600'
+      case 'CREATED': return 'bg-[#00A651] text-white'
+      case 'UPDATED': return 'bg-[#0066CC] text-white'
+      case 'DELETED': return 'bg-[#8B0000] text-white'
+      case 'LOGIN': return 'bg-[#4B0082] text-white'
+      case 'LOGOUT': return 'bg-[#996633] text-white'
+      default: return 'bg-gray-600 text-white'
     }
   }
 
   const getmodulebadgecolor = (module: string) => {
     switch (module) {
-      case 'CASESTUDY': return 'bg-cyan-600'
-      case 'BLOGS': return 'bg-pink-600'
-      case 'ACCOUNT_SETTINGS': return 'bg-indigo-600'
-      case 'AUTH': return 'bg-violet-600'
-      default: return 'bg-gray-600'
+      case 'CASESTUDY': return 'bg-[#505050] text-white'
+      case 'BLOGS': return 'bg-[#8B0000] text-white'
+      case 'ACCOUNT_SETTINGS': return 'bg-[#4B0082] text-white'
+      case 'AUTH': return 'bg-[#505050] text-white'
+      default: return 'bg-gray-600 text-white'
     }
   }
 
@@ -308,107 +308,79 @@ export default function ActivityLogs() {
       className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 ${
         isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'
       }`}
-      style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        * { font-family: 'Inter', sans-serif !important; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
-
       {/* Error Message */}
       {error && (
-        <div className="fixed top-8 right-8 bg-red-600 text-white px-8 py-5 rounded-[1.5rem] shadow-2xl z-50 text-sm font-bold animate-slide-in border-2 border-red-500/20">
+        <div className="fixed top-8 right-8 bg-red-600 text-white px-8 py-5 rounded-[1.5rem] shadow-2xl z-50 text-[11px] bold-text animate-slide-in border-2 border-red-500/20">
           {error}
         </div>
       )}
 
       {/* Header */}
       <div className="w-full max-w-7xl mx-auto space-y-2">
-        <h2 className={`text-3xl font-black tracking-tight transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+        <h2 className={`text-2xl bold-text tracking-tight transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
           Activity Logs
         </h2>
-        <p className={`text-sm font-medium transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p className={`text-[11px] mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
           Monitor and track all system activities, admin actions, and user interactions in real-time.
         </p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Dashboard Overview Style */}
       {stats && (
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Total Logs */}
-          <div className={`rounded-[1.5rem] p-6 border transition-all duration-500 ${
-            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total Logs - Purple Theme */}
+          <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
+            isdarkmode 
+              ? 'bg-gradient-to-br from-purple-900/40 to-transparent border-white/5' 
+              : 'bg-gradient-to-br from-purple-50 to-white border-gray-50'
           }`}>
-            <div className="flex items-center justify-between mb-3">
-              <p className={`text-xs font-bold uppercase tracking-wider transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Total Logs
-              </p>
-              <div className={`p-2 rounded-xl ${isdarkmode ? 'bg-blue-500/10' : 'bg-blue-50'}`}>
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-            </div>
-            <p className={`text-3xl font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              total logs
+            </p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-purple-300' : 'text-purple-800'}`}>
               {stats.totalLogs.toLocaleString()}
             </p>
           </div>
 
-          {/* Unique Admins */}
-          <div className={`rounded-[1.5rem] p-6 border transition-all duration-500 ${
-            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+          {/* Unique Admins - Blue Theme */}
+          <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
+            isdarkmode 
+              ? 'bg-gradient-to-br from-blue-900/40 to-transparent border-white/5' 
+              : 'bg-gradient-to-br from-blue-50 to-white border-gray-50'
           }`}>
-            <div className="flex items-center justify-between mb-3">
-              <p className={`text-xs font-bold uppercase tracking-wider transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Unique Admins
-              </p>
-              <div className={`p-2 rounded-xl ${isdarkmode ? 'bg-purple-500/10' : 'bg-purple-50'}`}>
-                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-            </div>
-            <p className={`text-3xl font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              unique admins
+            </p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-blue-300' : 'text-blue-800'}`}>
               {stats.uniqueAdmins}
             </p>
           </div>
 
-          {/* Recent Activity */}
-          <div className={`rounded-[1.5rem] p-6 border transition-all duration-500 ${
-            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+          {/* Created - Green Theme */}
+          <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
+            isdarkmode 
+              ? 'bg-gradient-to-br from-green-900/40 to-transparent border-white/5' 
+              : 'bg-gradient-to-br from-green-50 to-white border-gray-50'
           }`}>
-            <div className="flex items-center justify-between mb-3">
-              <p className={`text-xs font-bold uppercase tracking-wider transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Created
-              </p>
-              <div className={`p-2 rounded-xl ${isdarkmode ? 'bg-emerald-500/10' : 'bg-emerald-50'}`}>
-                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-            </div>
-            <p className={`text-3xl font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              created
+            </p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-green-300' : 'text-green-800'}`}>
               {stats.actionCounts.created}
             </p>
           </div>
 
-          {/* Updates */}
-          <div className={`rounded-[1.5rem] p-6 border transition-all duration-500 ${
-            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+          {/* Updated - Orange Theme */}
+          <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
+            isdarkmode 
+              ? 'bg-gradient-to-br from-orange-900/40 to-transparent border-white/5' 
+              : 'bg-gradient-to-br from-orange-50 to-white border-gray-50'
           }`}>
-            <div className="flex items-center justify-between mb-3">
-              <p className={`text-xs font-bold uppercase tracking-wider transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-                Updated
-              </p>
-              <div className={`p-2 rounded-xl ${isdarkmode ? 'bg-blue-500/10' : 'bg-blue-50'}`}>
-                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </div>
-            </div>
-            <p className={`text-3xl font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              updated
+            </p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-orange-300' : 'text-orange-800'}`}>
               {stats.actionCounts.updated}
             </p>
           </div>
@@ -429,20 +401,20 @@ export default function ActivityLogs() {
                   placeholder="Search by admin email..."
                   value={searchquery}
                   onChange={(e) => setsearchquery(e.target.value)}
-                  className={`w-full px-5 py-3 rounded-[1rem] border-2 transition-all duration-300 font-medium ${
+                  className={`w-full px-5 py-3 rounded-[1rem] border-2 transition-all duration-300 text-[11px] ${
                     isdarkmode
-                      ? 'bg-[#202020] border-white/10 text-white placeholder-gray-500 focus:border-white/30'
-                      : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400'
+                      ? 'bg-[#202020] border-white/10 text-gray-300 placeholder-gray-500 focus:border-white/30'
+                      : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400'
                   } focus:outline-none`}
                 />
               </div>
               <select
                 value={sortby}
                 onChange={(e) => setsortby(e.target.value)}
-                className={`px-5 py-3 rounded-[1rem] border-2 transition-all duration-300 font-bold ${
+                className={`px-5 py-3 rounded-[1rem] border-2 transition-all duration-300 text-[11px] bold-text ${
                   isdarkmode
-                    ? 'bg-[#202020] border-white/10 text-white focus:border-white/30'
-                    : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-gray-400'
+                    ? 'bg-[#202020] border-white/10 text-gray-300 focus:border-white/30'
+                    : 'bg-gray-50 border-gray-200 text-gray-800 focus:border-gray-400'
                 } focus:outline-none cursor-pointer`}
               >
                 <option value="Newest">Newest First</option>
@@ -452,7 +424,7 @@ export default function ActivityLogs() {
 
             {/* Action Tabs */}
             <div>
-              <p className={`text-xs font-black uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                 Filter by Action
               </p>
               <div className="flex flex-wrap gap-2">
@@ -460,12 +432,12 @@ export default function ActivityLogs() {
                   <button
                     key={action}
                     onClick={() => setactivetab(action)}
-                    className={`px-5 py-2.5 rounded-full text-xs font-black transition-all ${
+                    className={`px-4 py-1.5 rounded-lg text-[10px] transition-all ${
                       activetab === action
-                        ? 'bg-[#800000] text-white shadow-lg'
+                        ? 'bg-[#800000] text-white shadow-md'
                         : isdarkmode
-                        ? 'bg-white/5 text-gray-400 hover:bg-white/10'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'text-gray-400 hover:bg-white/5'
+                        : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     {action}
@@ -476,7 +448,7 @@ export default function ActivityLogs() {
 
             {/* Module Filters */}
             <div>
-              <p className={`text-xs font-black uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                 Filter by Module
               </p>
               <div className="flex flex-wrap gap-2">
@@ -484,12 +456,12 @@ export default function ActivityLogs() {
                   <button
                     key={module}
                     onClick={() => togglemodulefilter(module)}
-                    className={`px-5 py-2.5 rounded-full text-xs font-black transition-all ${
+                    className={`px-4 py-1.5 rounded-lg text-[10px] transition-all ${
                       filteredmodules.includes(module)
-                        ? 'bg-[#800000] text-white shadow-lg'
+                        ? 'bg-[#800000] text-white shadow-md'
                         : isdarkmode
-                        ? 'bg-white/5 text-gray-400 hover:bg-white/10'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'text-gray-400 hover:bg-white/5'
+                        : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     {formatModuleName(module)}
@@ -510,7 +482,7 @@ export default function ActivityLogs() {
           {isloading && (
             <div className="p-20 text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-red-900 border-t-transparent"></div>
-              <p className={`mt-6 text-sm font-bold transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`mt-6 text-[11px] transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Loading activity logs...
               </p>
             </div>
@@ -522,10 +494,10 @@ export default function ActivityLogs() {
               <svg className={`mx-auto h-20 w-20 mb-6 transition-colors ${isdarkmode ? 'text-gray-700' : 'text-gray-300'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <p className={`text-base font-bold mb-2 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-[11px] bold-text mb-2 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 No activity logs found
               </p>
-              <p className={`text-sm transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <p className={`text-[10px] transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                 Try adjusting your filters or search query
               </p>
             </div>
@@ -538,19 +510,19 @@ export default function ActivityLogs() {
                 <table className="w-full">
                   <thead className={`border-b transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'}`}>
                     <tr>
-                      <th className={`px-8 py-5 text-left text-xs font-black uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <th className={`px-8 py-5 text-left text-[9px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Action
                       </th>
-                      <th className={`px-8 py-5 text-left text-xs font-black uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <th className={`px-8 py-5 text-left text-[9px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Module
                       </th>
-                      <th className={`px-8 py-5 text-left text-xs font-black uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <th className={`px-8 py-5 text-left text-[9px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Admin
                       </th>
-                      <th className={`px-8 py-5 text-left text-xs font-black uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <th className={`px-8 py-5 text-left text-[9px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Timestamp
                       </th>
-                      <th className={`px-8 py-5 text-right text-xs font-black uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <th className={`px-8 py-5 text-right text-[9px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         Details
                       </th>
                     </tr>
@@ -564,34 +536,34 @@ export default function ActivityLogs() {
                         }`}
                       >
                         <td className="px-8 py-5">
-                          <span className={`text-xs px-5 py-2 rounded-full font-black text-white ${getactionbadgecolor(log.action)}`}>
+                          <span className={`text-[10px] px-5 py-2 rounded-full bold-text ${getactionbadgecolor(log.action)}`}>
                             {formatAction(log.action)}
                           </span>
                         </td>
                         <td className="px-8 py-5">
-                          <span className={`text-xs px-5 py-2 rounded-full font-black text-white ${getmodulebadgecolor(log.module)}`}>
+                          <span className={`text-[10px] px-5 py-2 rounded-full bold-text ${getmodulebadgecolor(log.module)}`}>
                             {formatModuleName(log.module)}
                           </span>
                         </td>
                         <td className="px-8 py-5">
                           <div>
-                            <p className={`text-sm font-bold transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                            <p className={`text-xs bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
                               {getAdminName(log)}
                             </p>
-                            <p className={`text-xs font-medium mt-0.5 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            <p className={`text-[10px] mt-0.5 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
                               {log.admin}
                             </p>
                           </div>
                         </td>
                         <td className="px-8 py-5">
-                          <p className={`text-sm font-bold transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                          <p className={`text-xs bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
                             {new Date(getTimestamp(log)).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
                               year: 'numeric'
                             })}
                           </p>
-                          <p className={`text-xs font-medium mt-0.5 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <p className={`text-[10px] mt-0.5 transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
                             {new Date(getTimestamp(log)).toLocaleTimeString('en-US', {
                               hour: '2-digit',
                               minute: '2-digit'
@@ -604,7 +576,7 @@ export default function ActivityLogs() {
                               setselectedlog(log)
                               setshowdetailsmodal(true)
                             }}
-                            className={`px-5 py-2.5 rounded-[1rem] text-xs font-black transition-all hover:shadow-lg ${
+                            className={`px-5 py-2.5 rounded-[1rem] text-[10px] bold-text transition-all hover:shadow-lg ${
                               isdarkmode
                                 ? 'bg-white/10 text-white hover:bg-white/20'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -623,7 +595,7 @@ export default function ActivityLogs() {
               {pagination && (
                 <div className={`px-8 py-6 flex items-center justify-between border-t transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'}`}>
                   <div className="flex items-center gap-4">
-                    <p className={`text-sm font-bold transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className={`text-[10px] transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                       Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
                     </p>
                   </div>
@@ -631,7 +603,7 @@ export default function ActivityLogs() {
                     <button
                       onClick={handlePreviousPage}
                       disabled={pagination.page === 1}
-                      className={`px-5 py-2.5 rounded-[1rem] text-xs font-black transition-all ${
+                      className={`px-5 py-2.5 rounded-[1rem] text-[10px] bold-text transition-all ${
                         pagination.page === 1
                           ? 'opacity-40 cursor-not-allowed'
                           : isdarkmode
@@ -641,13 +613,13 @@ export default function ActivityLogs() {
                     >
                       Previous
                     </button>
-                    <span className={`text-sm font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                    <span className={`text-[10px] bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <button
                       onClick={handleNextPage}
                       disabled={pagination.page === pagination.totalPages}
-                      className={`px-5 py-2.5 rounded-[1rem] text-xs font-black transition-all ${
+                      className={`px-5 py-2.5 rounded-[1rem] text-[10px] bold-text transition-all ${
                         pagination.page === pagination.totalPages
                           ? 'opacity-40 cursor-not-allowed'
                           : isdarkmode
@@ -674,8 +646,8 @@ export default function ActivityLogs() {
             <div className="p-12">
               <div className="flex items-start justify-between mb-8">
                 <div className="flex-1">
-                  <h3 className={`text-2xl font-black mb-2 transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>Activity Details</h3>
-                  <p className={`text-sm font-medium transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Complete information about this activity log</p>
+                  <h3 className={`text-2xl bold-text mb-2 transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Activity Details</h3>
+                  <p className={`text-[11px] mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Complete information about this activity log</p>
                 </div>
                 <button
                   onClick={() => setshowdetailsmodal(false)}
@@ -691,10 +663,10 @@ export default function ActivityLogs() {
               <div className="space-y-6">
                 {/* Badges */}
                 <div className="flex gap-2.5">
-                  <span className={`text-xs px-5 py-2 rounded-full font-black text-white ${getactionbadgecolor(selectedlog.action)}`}>
+                  <span className={`text-[10px] px-5 py-2 rounded-full bold-text ${getactionbadgecolor(selectedlog.action)}`}>
                     {formatAction(selectedlog.action)}
                   </span>
-                  <span className={`text-xs px-5 py-2 rounded-full font-black text-white ${getmodulebadgecolor(selectedlog.module)}`}>
+                  <span className={`text-[10px] px-5 py-2 rounded-full bold-text ${getmodulebadgecolor(selectedlog.module)}`}>
                     {formatModuleName(selectedlog.module)}
                   </span>
                 </div>
@@ -704,14 +676,14 @@ export default function ActivityLogs() {
                   <div className="space-y-5">
                     {/* Performed By - Show First and Last Name */}
                     <div>
-                      <label className={`text-[10px] font-black uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Performed By</label>
-                      <p className={`text-xl font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>{getAdminName(selectedlog)}</p>
+                      <label className={`text-[9px] uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Performed By</label>
+                      <p className={`text-xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>{getAdminName(selectedlog)}</p>
                     </div>
 
                     {/* Timestamp */}
                     <div>
-                      <label className={`text-[10px] font-black uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Timestamp</label>
-                      <p className={`text-lg font-black transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                      <label className={`text-[9px] uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Timestamp</label>
+                      <p className={`text-lg bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
                         {new Date(getTimestamp(selectedlog)).toLocaleString('en-US', {
                           weekday: 'long',
                           year: 'numeric',
@@ -727,8 +699,8 @@ export default function ActivityLogs() {
                     {/* Description - What was changed */}
                     {selectedlog.description && (
                       <div>
-                        <label className={`text-[10px] font-black uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Description</label>
-                        <p className={`text-base font-medium leading-relaxed transition-colors ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <label className={`text-[9px] uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Description</label>
+                        <p className={`text-[11px] leading-relaxed transition-colors ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
                           {selectedlog.description}
                         </p>
                       </div>
@@ -739,13 +711,13 @@ export default function ActivityLogs() {
                 {/* Additional Information */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className={`rounded-2xl p-5 border transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-200'}`}>
-                    <label className={`text-xs font-bold uppercase tracking-wider mb-2 block transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Action Type</label>
-                    <p className={`text-sm font-bold transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>{getActionDescription(selectedlog)}</p>
+                    <label className={`text-[9px] uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Action Type</label>
+                    <p className={`text-xs bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>{getActionDescription(selectedlog)}</p>
                   </div>
 
                   <div className={`rounded-2xl p-5 border transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-white border-gray-200'}`}>
-                    <label className={`text-xs font-bold uppercase tracking-wider mb-2 block transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Module</label>
-                    <p className={`text-sm font-bold transition-colors ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>{formatModuleName(selectedlog.module)}</p>
+                    <label className={`text-[9px] uppercase tracking-widest mb-2 block transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Module</label>
+                    <p className={`text-xs bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>{formatModuleName(selectedlog.module)}</p>
                   </div>
                 </div>
               </div>
@@ -754,7 +726,7 @@ export default function ActivityLogs() {
               <div className={`flex justify-end gap-3 mt-8 pt-6 border-t transition-all duration-500 ${isdarkmode ? 'border-white/5' : 'border-gray-200'}`}>
                 <button
                   onClick={() => setshowdetailsmodal(false)}
-                  className="px-10 py-3.5 bg-[#800000] text-white rounded-[1.25rem] font-black text-sm hover:bg-[#600000] transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                  className="px-10 py-3.5 bg-[#800000] text-white rounded-[1.25rem] bold-text text-[11px] hover:bg-[#600000] transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                 >
                   Close
                 </button>

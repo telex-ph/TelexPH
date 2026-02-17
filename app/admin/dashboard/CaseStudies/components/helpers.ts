@@ -7,30 +7,30 @@ export const getCurrentDate = () => {
 
 export const getstatuscolor = (status: string) => {
   switch (status) {
-    case 'Active': return 'bg-green-600';
-    case 'Completed': return 'bg-blue-600';
-    case 'Draft': return 'bg-gray-600';
-    case 'Scheduled': return 'bg-purple-600';
+    case 'Active': return 'bg-[#10B981]';
+    case 'Completed': return 'bg-[#3B82F6]';
+    case 'Draft': return 'bg-[#9CA3AF]';
+    case 'Scheduled': return 'bg-[#F59E0B]';
     default: return 'bg-gray-500';
   }
 };
 
 export const getstatusbadgecolor = (status: string) => {
   switch (status) {
-    case 'Active': return 'bg-green-600';
-    case 'Completed': return 'bg-blue-600';
-    case 'Draft': return 'bg-gray-600';
-    case 'Scheduled': return 'bg-purple-600';
+    case 'Active': return 'bg-[#10B981]';
+    case 'Completed': return 'bg-[#3B82F6]';
+    case 'Draft': return 'bg-[#9CA3AF]';
+    case 'Scheduled': return 'bg-[#F59E0B]';
     default: return 'bg-gray-700';
   }
 };
 
 export const getcategorybadgecolor = (category: string) => {
   switch (category) {
-    case 'Technology': return 'bg-indigo-600';
-    case 'Logistics': return 'bg-orange-600';
-    case 'Analytics': return 'bg-cyan-600';
-    case 'Infrastructure': return 'bg-teal-600';
+    case 'Technology': return 'bg-[#0EA5E9]';
+    case 'Logistics': return 'bg-[#FF6B4A]';
+    case 'Analytics': return 'bg-[#A855F7]';
+    case 'Infrastructure': return 'bg-[#06B6D4]';
     default: return 'bg-gray-600';
   }
 };

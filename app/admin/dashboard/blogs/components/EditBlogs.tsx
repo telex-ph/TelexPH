@@ -1,506 +1,807 @@
 'use client'
  
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
+import EditBlogs from './EditBlogs'
 import { useDarkMode } from '../../layout' // Import the dark mode hook
-
-// Category definitions matching backend
-const MAIN_CATEGORIES = {
-  MAIN_SERVICE: "Main Service Categories",
-  INDUSTRY_INSIGHTS: "Industry-Specific Insights",
-  BUSINESS_GROWTH: "Business Growth & Strategy",
-  COMPANY_CULTURE: "Company Culture & Updates"
-} as const;
-
-const SUBCATEGORIES = {
-  "Main Service Categories": [
-    "Customer Experience (CX)",
-    "Back Office Solutions",
-    "Virtual Assistance",
-    "Sales & Lead Generation"
-  ],
-  "Industry-Specific Insights": [
-    "E-commerce Support",
-    "Real Estate Outsourcing",
-    "Healthcare BPO",
-    "Tech & SaaS Scaling"
-  ],
-  "Business Growth & Strategy": [
-    "Scale Smarter",
-    "Outsourcing 101",
-    "Cost Optimization"
-  ],
-  "Company Culture & Updates": [
-    "TelexPH Life",
-    "News & Press Releases"
-  ]
-};
-
-interface ContentSection {
-  title: string;
-  content: string;
-}
  
-interface EditBlogsProps {
-  blog: any;
-  onClose: () => void;
-  onSave: () => void;
-}
+export default function ListBlogs() {
+  const [blogs, setblogs] = useState<any[]>([]);
+  const [activetab, setactivetab] = useState('All');
+  const [viewmode, setviewmode] = useState<'grid' | 'list'>('grid');
+  const [blogtodelete, setblogtodelete] = useState<string | null>(null);
  
-export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
-  const [title, setTitle] = useState(blog.title || '');
-  const [authorName, setAuthorName] = useState(blog.author || '');
-  const [mainCategories, setMainCategories] = useState<string[]>(
-    blog.mainCategory ? [blog.mainCategory] : []
-  );
-  const [subcategories, setSubcategories] = useState<string[]>(
-    blog.subcategory ? [blog.subcategory] : []
-  );
-  const [shortDescription, setShortDescription] = useState(blog.shortDescription || '');
-  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>(blog.status || 'draft');
-  const [scheduledDate, setScheduledDate] = useState(
-    blog.scheduledDate ? new Date(blog.scheduledDate).toISOString().slice(0, 16) : ''
-  );
-  
+  const [isediting, setisediting] = useState(false);
+  const [selectedblog, setselectedblog] = useState<any>(null);
+
+  // New state for view modal
+  const [viewingblog, setviewingblog] = useState<any>(null);
+ 
+  const [currentpage, setcurrentpage] = useState(1);
+  const cardsperpage = 6;
+
+  // Add loading and error states
+  const [isloading, setisloading] = useState(true);
+  const [error, seterror] = useState<string | null>(null);
+
+  // NEW: Filter states for category and subcategory
+  const [selectedmaincategory, setselectedmaincategory] = useState<string>('All');
+  const [selectedsubcategory, setselectedsubcategory] = useState<string>('All');
+
   // Use dark mode from layout context
   const { isdarkmode } = useDarkMode();
-  
-  const fileref = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string>(blog.picture || '');
 
-  // Initialize content sections from blog data
-  const [contentSections, setContentSections] = useState<ContentSection[]>(() => {
-    if (blog.mainContent && Array.isArray(blog.mainContent) && blog.mainContent.length > 0) {
-      return blog.mainContent.map((section: any) => ({
-        title: section.title || '',
-        content: section.content || ''
-      }));
-    }
-    return [{ title: '', content: '' }];
-  });
+  // Replace with your actual API base URL
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-  const addContentSection = () => {
-    setContentSections([...contentSections, { title: '', content: '' }]);
+  // Category and subcategory data
+  const categories = {
+    'Main Service Categories': [
+      'Customer Experience (CX)',
+      'Back Office Solutions',
+      'Virtual Assistance',
+      'Sales & Lead Generation'
+    ],
+    'Industry-Specific Insights': [
+      'E-commerce Support',
+      'Real Estate Outsourcing',
+      'Healthcare BPO',
+      'Tech & SaaS Scaling'
+    ],
+    'Business Growth & Strategy': [
+      'Scale Smarter',
+      'Outsourcing 101',
+      'Cost Optimization'
+    ],
+    'Company Culture & Updates': [
+      'TelexPH Life',
+      'News & Press Releases'
+    ]
   };
 
-  const removeContentSection = (index: number) => {
-    if (contentSections.length > 1) {
-      setContentSections(contentSections.filter((_, i) => i !== index));
-    }
-  };
+  const mainCategories = Object.keys(categories);
 
-  const updateContentSection = (index: number, field: 'title' | 'content', value: string) => {
-    const updated = [...contentSections];
-    updated[index][field] = value;
-    setContentSections(updated);
-  };
+  // Status tabs data
+  const statusTabs = [
+    { label: 'All', value: 'All', count: blogs.length },
+    { label: 'Published', value: 'Published', count: blogs.filter(b => b.status?.toLowerCase() === 'published').length },
+    { label: 'Draft', value: 'Draft', count: blogs.filter(b => b.status?.toLowerCase() === 'draft').length },
+    { label: 'Scheduled', value: 'Scheduled', count: blogs.filter(b => b.status?.toLowerCase() === 'scheduled').length },
+  ];
 
-  const handleMainCategoryToggle = (category: string) => {
-    setMainCategories(prev => {
-      if (prev.includes(category)) {
-        const updated = prev.filter(c => c !== category);
-        const categorySubcats = SUBCATEGORIES[category as keyof typeof SUBCATEGORIES] || [];
-        setSubcategories(prevSubs => prevSubs.filter(sub => !categorySubcats.includes(sub)));
-        return updated;
-      } else {
-        return [...prev, category];
-      }
-    });
-  };
-
-  const handleSubcategoryToggle = (subcategory: string) => {
-    setSubcategories(prev => {
-      if (prev.includes(subcategory)) {
-        return prev.filter(s => s !== subcategory);
-      } else {
-        return [...prev, subcategory];
-      }
-    });
-  };
-
+  // Get available subcategories based on selected main category
   const getAvailableSubcategories = () => {
-    return mainCategories.flatMap(category => 
-      SUBCATEGORIES[category as keyof typeof SUBCATEGORIES] || []
-    );
+    if (selectedmaincategory === 'All') {
+      return Object.values(categories).flat();
+    }
+    return categories[selectedmaincategory as keyof typeof categories] || [];
   };
 
-  const getTotalWordCount = () => {
-    return contentSections.reduce((total, section) => {
-      const sectionWords = (section.title + ' ' + section.content).split(/\s+/).filter(Boolean).length;
-      return total + sectionWords;
-    }, 0);
+  const loadblogs = async () => {
+    try {
+      setisloading(true);
+      seterror(null);
+      
+      const queryParams = new URLSearchParams();
+      
+      if (selectedmaincategory !== 'All') {
+        queryParams.append('mainCategory', selectedmaincategory);
+      }
+      
+      if (selectedsubcategory !== 'All') {
+        queryParams.append('subcategory', selectedsubcategory);
+      }
+      
+      const queryString = queryParams.toString();
+      const url = `${API_BASE_URL}/blogs${queryString ? `?${queryString}` : ''}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized - Please login again');
+        }
+        throw new Error(`Failed to fetch blogs: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const activeblogs = data.filter((b: any) => 
+        b.status && b.status.toLowerCase() !== 'archived'
+      );
+      
+      setblogs(activeblogs);
+    } catch (err: any) {
+      console.error('Error loading blogs:', err);
+      seterror(err.message || 'Failed to load blogs. Please try again later.');
+      setblogs([]);
+    } finally {
+      setisloading(false);
+    }
   };
  
-  const handlesubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    loadblogs();
+  }, [selectedmaincategory, selectedsubcategory]);
+ 
+  useEffect(() => {
+    setcurrentpage(1);
+  }, [activetab, selectedmaincategory, selectedsubcategory]);
+
+  useEffect(() => {
+    if (selectedmaincategory !== 'All') {
+      const availableSubcategories = getAvailableSubcategories();
+      if (selectedsubcategory !== 'All' && !availableSubcategories.includes(selectedsubcategory)) {
+        setselectedsubcategory('All');
+      }
+    }
+  }, [selectedmaincategory]);
+ 
+  const cardshadow = { boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(0, 0, 0, 0.03)' };
+ 
+  const getstatusstyles = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'published': return 'bg-[#800000] text-white';
+      case 'scheduled': return 'bg-[#FF4500] text-white';
+      case 'draft': return 'bg-[#ca8a04] text-white';
+      default: return 'bg-gray-400 text-white';
+    }
+  };
+
+  const formatdate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+  };
+
+  const calculatereadingtime = (content: any[]) => {
+    if (!content || !Array.isArray(content)) return 5;
     
+    const totalwords = content.reduce((acc, section) => {
+      const sectionwords = (section.content || '').split(/\s+/).length;
+      return acc + sectionwords;
+    }, 0);
+    
+    const minutes = Math.ceil(totalwords / 200);
+    return Math.max(1, minutes);
+  };
+
+  const getCategoryIcon = (mainCategory: string) => {
+    const iconMap: Record<string, string> = {
+      'Main Service Categories': '🎯',
+      'Industry-Specific Insights': '💼',
+      'Business Growth & Strategy': '📈',
+      'Company Culture & Updates': '🏢',
+    };
+    return iconMap[mainCategory] || '📝';
+  };
+ 
+  const handletabchange = (tab: string) => {
+    setactivetab(tab);
+  };
+
+  const handlemaincategorychange = (category: string) => {
+    setselectedmaincategory(category);
+  };
+
+  const handlesubcategorychange = (subcategory: string) => {
+    setselectedsubcategory(subcategory);
+  };
+ 
+  const filteredblogs = activetab === 'All'
+    ? blogs
+    : blogs.filter(blog => {
+      const status = (blog.status || '').toLowerCase();
+      return status === activetab.toLowerCase();
+    });
+ 
+  const totalPages = Math.ceil(filteredblogs.length / cardsperpage);
+  const indexOfLastCard = currentpage * cardsperpage;
+  const indexOfFirstCard = indexOfLastCard - cardsperpage;
+  const currentblogs = filteredblogs.slice(indexOfFirstCard, indexOfLastCard);
+
+  const handlePageChange = (pageNumber: number) => {
+    setcurrentpage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+ 
+  const handleedit = (blog: any) => {
+    setselectedblog(blog);
+    setisediting(true);
+  };
+ 
+  const closeeditmodal = () => {
+    setisediting(false);
+    setselectedblog(null);
+  };
+ 
+  const handledelete = async (id: string) => {
     try {
-      const formData = new FormData();
-      
-      // Add basic fields
-      if (title !== blog.title) formData.append('title', title.trim());
-      if (authorName !== blog.author) formData.append('author', authorName.trim());
-      if (mainCategories[0] !== blog.mainCategory) formData.append('mainCategory', mainCategories[0] || '');
-      if (subcategories[0] !== blog.subcategory) formData.append('subcategory', subcategories[0] || '');
-      if (shortDescription !== blog.shortDescription) formData.append('shortDescription', shortDescription.trim());
-      if (status !== blog.status) formData.append('status', status);
-      
-      // Add categories arrays
-      formData.append('mainCategories', JSON.stringify(mainCategories));
-      formData.append('subcategories', JSON.stringify(subcategories));
-      
-      // ✅ FIX: Properly stringify mainContent
-      const validContentSections = contentSections.filter(section => 
-        section.title.trim() || section.content.trim()
-      );
-      formData.append('mainContent', JSON.stringify(validContentSections));
-      
-      if (status === 'scheduled' && scheduledDate) {
-        formData.append('scheduledDate', new Date(scheduledDate).toISOString());
-      }
-      
-      // Add file if selected
-      if (selectedFile) {
-        formData.append('picture', selectedFile);
-      }
-
-      const response = await fetch(`http://localhost:3000/api/blogs/${blog._id}`, {
-        method: 'PATCH',
+      const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+        method: 'DELETE',
         credentials: 'include',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update blog');
+        throw new Error('Failed to delete blog');
       }
-
-      alert('Blog updated successfully!');
-      onSave(); // Refresh the blog list
-      onClose();
-    } catch (error) {
-      console.error('Error updating blog:', error);
-      alert(error instanceof Error ? error.message : 'Failed to update blog');
+      
+      await loadblogs();
+      setblogtodelete(null);
+    } catch (err: any) {
+      console.error('Error deleting blog:', err);
+      alert(err.message || 'Failed to delete blog');
     }
   };
-
-  const handlefilechange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+ 
+  const confirmdelete = (id: string) => {
+    setblogtodelete(id);
+  };
+ 
+  const canceldelete = () => {
+    setblogtodelete(null);
   };
 
+  const handleview = (blog: any) => {
+    setviewingblog(blog);
+  };
+
+  const closeviewmodal = () => {
+    setviewingblog(null);
+  };
+
+  // If editing, show full-page edit view
+  if (isediting && selectedblog) {
+    return (
+      <EditBlogs
+        blog={selectedblog}
+        onClose={closeeditmodal}
+        onSave={loadblogs}
+      />
+    );
+  }
+ 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-3xl max-w-6xl w-full shadow-2xl my-8 transition-colors duration-300`}>
-        {/* Header */}
-        <div className={`sticky top-0 ${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-200'} border-b px-8 py-6 rounded-t-3xl flex items-center justify-between z-10`}>
-          <div>
-            <h2 className={`text-2xl font-bold ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>Edit Blog Post</h2>
-            <p className={`text-sm mt-1 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Make changes to your article</p>
-          </div>
-          <button
-            onClick={onClose}
-            className={`p-2 ${isdarkmode ? 'hover:bg-[#252525] text-gray-400' : 'hover:bg-gray-100 text-gray-600'} rounded-full transition-colors`}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+    <div className={`min-h-screen ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-gray-50'} p-6 transition-colors duration-500`}>
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Blog Management</h1>
+          <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Manage and organize your blog posts</p>
         </div>
 
-        {/* Content */}
-        <div className="px-8 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-          <form onSubmit={handlesubmit}>
-            <div className="space-y-6">
-              {/* Image Upload */}
-              <div>
-                <label className={`text-[9px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>FEATURED IMAGE</label>
-                <div 
-                  onClick={() => fileref.current?.click()}
-                  className={`relative border-2 border-dashed rounded-2xl overflow-hidden cursor-pointer transition-all ${
-                    isdarkmode 
-                      ? 'border-white/10 hover:border-white/10 bg-[#252525]/30' 
-                      : 'border-gray-200 hover:border-gray-300 bg-gray-50'
-                  }`}
-                  style={{ aspectRatio: '16/9' }}
-                >
-                  {previewImage ? (
-                    <>
-                      <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <p className="text-white text-sm font-medium">Click to change image</p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isdarkmode ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
-                        <svg className={`w-8 h-8 ${isdarkmode ? 'text-gray-400' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div className="text-center">
-                        <p className={`text-sm font-semibold ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>Click to upload</p>
-                        <p className={`text-xs mt-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>PNG, JPG up to 10MB</p>
+        {/* Filters and Tabs */}
+        <div className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} rounded-2xl p-6 mb-6 shadow-sm border transition-colors duration-500`}>
+          {/* Status Tabs */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {statusTabs.map(tab => (
+              <button
+                key={tab.value}
+                onClick={() => handletabchange(tab.value)}
+                className={`px-6 py-2.5 rounded-xl text-[10px] transition-all ${
+                  activetab === tab.value
+                    ? 'bg-[#800000] text-white shadow-lg'
+                    : isdarkmode ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
+
+          {/* Category Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className={`text-[9px] mb-2 block tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>FILTER BY MAIN CATEGORY</label>
+              <select
+                value={selectedmaincategory}
+                onChange={(e) => handlemaincategorychange(e.target.value)}
+                className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
+                  isdarkmode 
+                    ? 'bg-[#252525] text-gray-200 border-white/10 focus:border-[#800000]' 
+                    : 'bg-gray-50 text-gray-800 border-gray-200 focus:border-[#800000]'
+                } border focus:ring-2 focus:ring-[#800000]/20`}
+              >
+                <option value="All">All Categories</option>
+                {mainCategories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={`text-[9px] mb-2 block tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>FILTER BY SUBCATEGORY</label>
+              <select
+                value={selectedsubcategory}
+                onChange={(e) => handlesubcategorychange(e.target.value)}
+                disabled={selectedmaincategory === 'All'}
+                className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
+                  isdarkmode 
+                    ? 'bg-[#252525] text-gray-200 border-white/10 focus:border-[#800000]' 
+                    : 'bg-gray-50 text-gray-800 border-gray-200 focus:border-[#800000]'
+                } border focus:ring-2 focus:ring-[#800000]/20 disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <option value="All">All Subcategories</option>
+                {getAvailableSubcategories().map(subcat => (
+                  <option key={subcat} value={subcat}>{subcat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setviewmode('grid')}
+              className={`p-2 rounded-lg transition-all ${
+                viewmode === 'grid' 
+                  ? 'bg-[#800000] text-white' 
+                  : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setviewmode('list')}
+              className={`p-2 rounded-lg transition-all ${
+                viewmode === 'list' 
+                  ? 'bg-[#800000] text-white' 
+                  : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Blog Cards */}
+        {isloading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#800000]"></div>
+          </div>
+        ) : error ? (
+          <div className={`${isdarkmode ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'} border rounded-2xl p-8 text-center transition-colors duration-500`}>
+            <p className={`text-[10px] bold-text ${isdarkmode ? 'text-red-400' : 'text-red-600'}`}>{error}</p>
+            <button
+              onClick={loadblogs}
+              className={`mt-4 px-6 py-2 rounded-lg transition-colors ${
+                isdarkmode 
+                  ? 'bg-red-700 text-white hover:bg-red-600' 
+                  : 'bg-red-500 text-white hover:bg-red-600'
+              }`}
+            >
+              Retry
+            </button>
+          </div>
+        ) : currentblogs.length === 0 ? (
+          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-12 text-center shadow-sm transition-colors duration-500`}>
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>No blogs found</h3>
+            <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Try adjusting your filters or create a new blog post</p>
+          </div>
+        ) : (
+          <>
+            {viewmode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {currentblogs.map((blog) => (
+                  <div
+                    key={blog._id}
+                    className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full`}
+                    style={cardshadow}
+                  >
+                    {/* Blog Image */}
+                    <div className="relative h-48 overflow-hidden group flex-shrink-0">
+                      <img
+                        src={blog.picture || '/placeholder-blog.jpg'}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className={`px-3 py-1.5 rounded-full text-[10px] bold-text ${getstatusstyles(blog.status)}`}>
+                          {blog.status}
+                        </span>
                       </div>
                     </div>
-                  )}
+
+                    {/* Blog Content */}
+                    <div className="p-6 flex flex-col flex-grow">
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
+                        <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text flex items-center gap-1">
+                          {getCategoryIcon(blog.mainCategory)} {blog.mainCategory}
+                        </span>
+                        {blog.subcategory && (
+                          <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
+                            isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {blog.subcategory}
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 className={`bold-text mb-2 line-clamp-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                        {blog.title}
+                      </h3>
+                      
+                      <p className={`text-[10px] mb-4 line-clamp-2 flex-grow ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {blog.shortDescription}
+                      </p>
+
+                      <div className={`flex items-center gap-4 text-[10px] mb-4 pb-4 border-t pt-4 ${isdarkmode ? 'text-gray-500 border-white/10' : 'text-gray-500 border-gray-100'}`}>
+                        <div className="flex items-center gap-1.5">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span>{formatdate(blog.createdAt)}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span>{calculatereadingtime(blog.mainContent)} min</span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleview(blog)}
+                          className={`flex-1 px-4 py-2 rounded-lg transition-colors text-[10px] flex items-center justify-center gap-2 ${
+                            isdarkmode 
+                              ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' 
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleedit(blog)}
+                          className="flex-1 px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px] flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => confirmdelete(blog._id)}
+                          className={`px-4 py-2 rounded-lg transition-colors text-[10px] flex items-center justify-center gap-2 ${
+                            isdarkmode 
+                              ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' 
+                              : 'bg-red-50 text-red-500 hover:bg-red-100'
+                          }`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {currentblogs.map((blog) => (
+                  <div
+                    key={blog._id}
+                    className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-6 hover:shadow-xl transition-all duration-300`}
+                    style={cardshadow}
+                  >
+                    <div className="flex gap-6">
+                      <div className="w-48 h-32 rounded-xl overflow-hidden flex-shrink-0">
+                        <img
+                          src={blog.picture || '/placeholder-blog.jpg'}
+                          alt={blog.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      <div className="flex-grow">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className={`px-3 py-1 rounded-full text-[10px] bold-text ${getstatusstyles(blog.status)}`}>
+                                {blog.status}
+                              </span>
+                              <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text">
+                                {blog.mainCategory}
+                              </span>
+                              {blog.subcategory && (
+                                <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
+                                  isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                  {blog.subcategory}
+                                </span>
+                              )}
+                            </div>
+                            <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                              {blog.title}
+                            </h3>
+                            <p className={`text-[10px] mb-3 line-clamp-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {blog.shortDescription}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className={`flex items-center justify-between pt-3 border-t ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
+                          <div className={`flex items-center gap-4 text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>
+                            <div className="flex items-center gap-1.5">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span>{formatdate(blog.createdAt)}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span>{calculatereadingtime(blog.mainContent)} min read</span>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleview(blog)}
+                              className={`px-6 py-2 rounded-lg transition-colors text-[10px] flex items-center gap-2 ${
+                                isdarkmode 
+                                  ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#353535]' 
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleedit(blog)}
+                              className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px] flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => confirmdelete(blog._id)}
+                              className={`px-6 py-2 rounded-lg transition-colors text-[10px] flex items-center gap-2 ${
+                                isdarkmode 
+                                  ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' 
+                                  : 'bg-red-500 text-white hover:bg-red-600'
+                              }`}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <button
+                  onClick={() => handlePageChange(currentpage - 1)}
+                  disabled={currentpage === 1}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    isdarkmode 
+                      ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] disabled:opacity-50 disabled:cursor-not-allowed' 
+                      : 'bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
+                  }`}
+                >
+                  Previous
+                </button>
+                
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      currentpage === index + 1
+                        ? 'bg-[#800000] text-white'
+                        : isdarkmode 
+                          ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a]' 
+                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => handlePageChange(currentpage + 1)}
+                  disabled={currentpage === totalPages}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    isdarkmode 
+                      ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] disabled:opacity-50 disabled:cursor-not-allowed' 
+                      : 'bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {blogtodelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl transition-colors duration-500`}>
+            <div className="text-center mb-6">
+              <div className="text-red-500 text-6xl mb-4">⚠️</div>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Deletion</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Are you sure you want to delete this blog? This action cannot be undone.
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={canceldelete}
+                className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[10px] ${
+                  isdarkmode 
+                    ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handledelete(blogtodelete)}
+                className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[10px] ${
+                  isdarkmode 
+                    ? 'bg-red-700 text-white hover:bg-red-600' 
+                    : 'bg-red-500 text-white hover:bg-red-600'
+                }`}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blog View Modal - COMPACT VERSION */}
+      {viewingblog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl max-w-3xl w-full shadow-2xl my-8 transition-colors duration-500`}>
+            {/* Modal Header - Compact */}
+            <div className={`sticky top-0 ${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-200'} border-b px-6 py-4 rounded-t-2xl flex items-center justify-between z-10`}>
+              <div className="flex items-center gap-2">
+                <span className={`px-2.5 py-1 rounded-full text-[10px] bold-text ${getstatusstyles(viewingblog.status)}`}>
+                  {viewingblog.status}
+                </span>
+                <span className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>{viewingblog.mainCategory}</span>
+                <span className={`text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>• {viewingblog.subcategory}</span>
+              </div>
+              <button
+                onClick={closeviewmodal}
+                className={`p-1.5 rounded-full transition-colors ${
+                  isdarkmode ? 'hover:bg-[#2a2a2a] text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content - Compact */}
+            <div className="px-6 py-4 max-h-[calc(100vh-180px)] overflow-y-auto">
+              {/* Featured Image - Smaller */}
+              {viewingblog.picture && (
+                <div className="mb-4 rounded-xl overflow-hidden">
+                  <img
+                    src={viewingblog.picture}
+                    alt={viewingblog.title}
+                    className="w-full h-48 object-cover"
+                  />
                 </div>
-                <input
-                  ref={fileref}
-                  type="file"
-                  accept="image/*"
-                  onChange={handlefilechange}
-                  className="hidden"
-                />
+              )}
+
+              {/* Blog Title - Smaller */}
+              <h1 className={`bold-text mb-3 leading-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+                {viewingblog.title}
+              </h1>
+
+              {/* Blog Meta - Compact */}
+              <div className={`flex items-center gap-4 text-[10px] mb-4 pb-3 border-b ${isdarkmode ? 'text-gray-500 border-white/10' : 'text-gray-600 border-gray-200'}`}>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>{formatdate(viewingblog.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{calculatereadingtime(viewingblog.mainContent)} min read</span>
+                </div>
               </div>
 
-              {/* Form Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Title */}
-                <div className="col-span-2">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>BLOG TITLE</label>
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    type="text"
-                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
-                      isdarkmode 
-                        ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
-                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
-                    } border shadow-sm`}
-                    placeholder="Enter blog title..."
-                  />
-                </div>
+              {/* Short Description - Compact */}
+              <div className="mb-4">
+                <p className={`text-[10px] leading-relaxed bold-text italic border-l-3 border-[#800000] pl-4 py-2 ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {viewingblog.shortDescription}
+                </p>
+              </div>
 
-                {/* Author */}
-                <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>AUTHOR NAME</label>
-                  <input
-                    value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
-                    type="text"
-                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
-                      isdarkmode 
-                        ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
-                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
-                    } border shadow-sm`}
-                    placeholder="Enter author name..."
-                  />
-                </div>
-
-                {/* Main Categories */}
-                <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>MAIN CATEGORIES</label>
-                  <div className={`p-4 rounded-2xl border ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} shadow-sm space-y-2`}>
-                    {Object.values(MAIN_CATEGORIES).map(cat => (
-                      <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={mainCategories.includes(cat)}
-                          onChange={() => handleMainCategoryToggle(cat)}
-                          className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
-                        />
-                        <span className={`text-[11px] transition-colors ${
-                          mainCategories.includes(cat)
-                            ? 'text-[#800000] font-semibold'
-                            : isdarkmode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
-                        }`}>
-                          {cat}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Subcategories */}
-                <div className="col-span-2">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SUBCATEGORIES</label>
-                  <div className={`p-4 rounded-2xl border ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} shadow-sm min-h-[180px]`}>
-                    {mainCategories.length === 0 ? (
-                      <p className={`text-[10px] text-center ${isdarkmode ? 'text-gray-600' : 'text-gray-400'} py-8`}>
-                        Select a main category first
-                      </p>
-                    ) : (
-                      <div className="space-y-2">
-                        {getAvailableSubcategories().map(subcat => (
-                          <label key={subcat} className="flex items-center gap-3 cursor-pointer group">
-                            <input
-                              type="checkbox"
-                              checked={subcategories.includes(subcat)}
-                              onChange={() => handleSubcategoryToggle(subcat)}
-                              className="w-4 h-4 text-[#800000] rounded focus:ring-[#800000]"
-                            />
-                            <span className={`text-[11px] transition-colors ${
-                              subcategories.includes(subcat)
-                                ? 'text-[#800000] font-semibold'
-                                : isdarkmode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-900'
-                            }`}>
-                              {subcat}
-                            </span>
-                          </label>
+              {/* Main Content Sections - Compact */}
+              <div className="prose prose-sm max-w-none">
+                {viewingblog.mainContent && Array.isArray(viewingblog.mainContent) && viewingblog.mainContent.map((section: any, index: number) => (
+                  <div key={index} className="mb-4">
+                    {section.title && (
+                      <h2 className={`bold-text mb-2 mt-4 ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+                        {section.title}
+                      </h2>
+                    )}
+                    {section.content && (
+                      <div className={`text-[10px] leading-relaxed whitespace-pre-wrap ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {section.content.split('\n').map((paragraph: string, pIndex: number) => (
+                          paragraph.trim() && (
+                            <p key={pIndex} className="mb-3">
+                              {paragraph}
+                            </p>
+                          )
                         ))}
                       </div>
                     )}
                   </div>
-                </div>
-
-                {/* Short Description */}
-                <div className="col-span-2">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SHORT DESCRIPTION</label>
-                  <textarea
-                    value={shortDescription}
-                    onChange={(e) => setShortDescription(e.target.value)}
-                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all resize-none ${
-                      isdarkmode 
-                        ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
-                        : 'bg-gray-50 text-gray-800 border-gray-200 placeholder-gray-400 focus:bg-white focus:border-[#800000]'
-                    } border shadow-sm`}
-                    rows={3}
-                  />
-                </div>
-
-                {/* Status */}
-                <div className="col-span-1">
-                  <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>STATUS</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                    className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all appearance-none cursor-pointer ${
-                      isdarkmode 
-                        ? 'bg-[#252525] text-gray-300 border-white/10 focus:border-[#800000]' 
-                        : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
-                    } border shadow-sm`}
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="scheduled">Scheduled</option>
-                  </select>
-                </div>
-
-                {status === 'scheduled' && (
-                  <div className="col-span-1">
-                    <label className={`text-[8px] mb-2 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SCHEDULED DATE</label>
-                    <input
-                      type="datetime-local"
-                      value={scheduledDate}
-                      onChange={(e) => setScheduledDate(e.target.value)}
-                      className={`w-full p-4 rounded-2xl text-[11px] outline-none transition-all ${
-                        isdarkmode 
-                          ? 'bg-[#252525] text-gray-300 border-white/10 focus:border-[#800000]' 
-                          : 'bg-gray-50 text-gray-800 border-gray-200 focus:bg-white focus:border-[#800000]'
-                      } border shadow-sm`}
-                    />
-                  </div>
-                )}
-
-                {/* Content Sections */}
-                <div className="col-span-2 space-y-4 mt-4">
-                  <div className="flex justify-between items-center">
-                    <label className={`text-[8px] tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>CONTENT SECTIONS</label>
-                    <span className="text-[8px] text-[#800000] font-bold">
-                      Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
-                    </span>
-                  </div>
-
-                  {contentSections.map((section, index) => (
-                    <div key={index} className={`border rounded-2xl p-6 space-y-4 relative ${
-                      isdarkmode ? 'bg-[#252525]/50 border-white/10' : 'bg-gray-50/50 border-gray-200'
-                    }`}>
-                      {contentSections.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeContentSection(index)}
-                          className={`absolute top-4 right-4 hover:text-red-600 text-[10px] rounded-full w-7 h-7 flex items-center justify-center transition-colors ${
-                            isdarkmode 
-                              ? 'text-red-400 bg-red-900/20 hover:bg-red-900/30' 
-                              : 'text-red-400 bg-red-50 hover:bg-red-100'
-                          }`}
-                        >
-                          ×
-                        </button>
-                      )}
-                      
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                        <label className={`text-[9px] tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-500'}`}>
-                          SECTION {index + 1}
-                        </label>
-                      </div>
-
-                      <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
-                        <input
-                          value={section.title}
-                          onChange={(e) => updateContentSection(index, 'title', e.target.value)}
-                          type="text"
-                          className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all ${
-                            isdarkmode 
-                              ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
-                              : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
-                          } border`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
-                        <textarea
-                          value={section.content}
-                          onChange={(e) => updateContentSection(index, 'content', e.target.value)}
-                          className={`w-full p-3 rounded-xl text-[10px] outline-none transition-all resize-none ${
-                            isdarkmode 
-                              ? 'bg-[#252525] text-gray-300 border-white/10 placeholder-gray-600 focus:border-[#800000]' 
-                              : 'bg-white text-gray-800 border-gray-200 placeholder-gray-400 focus:border-[#800000]'
-                          } border`}
-                          rows={6}
-                        />
-                      </div>
-                    </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={addContentSection}
-                    className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${
-                      isdarkmode 
-                        ? 'border-white/10 text-gray-500 hover:border-[#800000] hover:text-[#800000]' 
-                        : 'border-gray-300 text-gray-500 hover:border-[#800000] hover:text-[#800000]'
-                    }`}
-                  >
-                    + Add Another Section
-                  </button>
-                </div>
-              </div>
-
-              <div className={`flex justify-end gap-3 pt-8 border-t mt-8 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className={`px-8 py-3 text-[10px] rounded-2xl transition-all uppercase tracking-wider ${
-                    isdarkmode 
-                      ? 'bg-[#252525] text-gray-300 hover:bg-[#2a2a2a]' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-12 py-3 text-[10px] bg-[#800000] text-white rounded-2xl shadow-lg shadow-[#800000]/20 hover:bg-[#600000] transition-all uppercase tracking-wider font-bold"
-                >
-                  Save Changes
-                </button>
+                ))}
               </div>
             </div>
-          </form>
+
+            {/* Modal Footer - Compact */}
+            <div className={`sticky bottom-0 ${isdarkmode ? 'bg-[#252525] border-white/10' : 'bg-gray-50 border-gray-200'} border-t px-6 py-3 rounded-b-2xl flex justify-end gap-2`}>
+              <button
+                onClick={closeviewmodal}
+                className={`px-4 py-2 border-2 rounded-lg transition-colors text-[10px] ${
+                  isdarkmode 
+                    ? 'bg-transparent border-white/10 text-gray-300 hover:bg-[#2a2a2a]' 
+                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  closeviewmodal();
+                  handleedit(viewingblog);
+                }}
+                className="px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg hover:from-[#600000] hover:to-[#400000] transition-all duration-200 text-[10px] shadow-md"
+              >
+                Edit Blog
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -68,8 +68,22 @@ export default function CaseStudies() {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         * { font-family: 'Inter', sans-serif !important; }
+        
+        /* Hide scrollbars globally but keep functionality */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .no-scrollbar { 
+          -ms-overflow-style: none; 
+          scrollbar-width: none; 
+        }
+        
+        /* Hide all scrollbars by default */
+        * {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        *::-webkit-scrollbar {
+          display: none;
+        }
       `}</style>
 
       {/* Error and Success Messages */}
@@ -105,6 +119,7 @@ export default function CaseStudies() {
         isOpen={modalState.showpreviewmodal}
         data={previewdata}
         onClose={() => updateModalState('showpreviewmodal', false)}
+        onEdit={handleedit}
       />
 
       <CalendarModal

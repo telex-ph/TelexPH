@@ -248,14 +248,14 @@ export default function AddBlogs() {
     <div className={`min-h-screen ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'} transition-colors duration-500`}>
       <div className="max-w-[95rem] mx-auto">
         <div className="mb-8">
-          <h1 className={`text-3xl font-bold tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>Create New Blog Post</h1>
-          <p className={`mt-2 text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Share your insights and expertise with the community</p>
+          <h1 className={`bold-text ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>Create New Blog Post</h1>
+          <p className={`mt-2 text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Share your insights and expertise with the community</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4 space-y-6">
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`text-sm tracking-tight mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Featured Image</h4>
+              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Featured Image</h4>
               <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Upload A Cover Photo For Your Article</p>
               
               <input
@@ -294,7 +294,7 @@ export default function AddBlogs() {
                       </svg>
                     </div>
                     <div className="text-center">
-                      <p className={`text-[11px] font-semibold ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>Click to upload</p>
+                      <p className={`text-[10px] bold-text ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>Click to upload</p>
                       <p className={`text-[9px] mt-1 ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>PNG, JPG up to 10MB</p>
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export default function AddBlogs() {
             </div>
 
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`text-sm tracking-tight mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Publishing Options</h4>
+              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Publishing Options</h4>
               <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Control When And How Your Post Goes Live</p>
               
               <div className="space-y-4">
@@ -335,7 +335,7 @@ export default function AddBlogs() {
             </div>
 
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`text-sm tracking-tight mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Categories</h4>
+              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Categories</h4>
               <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Organize Your Content With The Right Tags</p>
               
               <div className="space-y-4">
@@ -376,7 +376,7 @@ export default function AddBlogs() {
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border flex flex-col h-full`}>
               <div className="flex-grow space-y-4">
                 <div>
-                  <h4 className={`text-sm tracking-tight text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Content Editorial</h4>
+                  <h4 className={`bold-text text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Content Editorial</h4>
                   <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Draft And Refine Your Masterpiece Here</p>
                   
                   <div className="space-y-4">
@@ -388,7 +388,7 @@ export default function AddBlogs() {
                           onChange={(e) => setTitle(e.target.value)} 
                           type="text" 
                           placeholder="Enter Headline..." 
-                          className={`w-full p-4 text-[11px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
                         />
                       </div>
 
@@ -399,7 +399,7 @@ export default function AddBlogs() {
                           onChange={(e) => setAuthorName(e.target.value)} 
                           type="text" 
                           placeholder="Enter Author Name..." 
-                          className={`w-full p-4 text-[11px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
                         />
                       </div>
                     </div>
@@ -410,7 +410,7 @@ export default function AddBlogs() {
                         value={shortDescription} 
                         onChange={(e) => setShortDescription(e.target.value)} 
                         placeholder="Enter A Brief Description..." 
-                        className={`w-full p-4 text-[11px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                        className={`w-full p-4 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
                         rows={3}
                       />
                     </div>
@@ -518,8 +518,8 @@ export default function AddBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">📝</div>
-              <h3 className={`text-2xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Submission</h3>
-              <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Submission</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Are you ready to {status === 'published' ? 'publish' : status === 'scheduled' ? 'schedule' : 'save'} this blog post?
               </p>
             </div>
@@ -528,14 +528,14 @@ export default function AddBlogs() {
               <button
                 onClick={() => setShowConfirmModal(false)}
                 disabled={isSubmitting}
-                className={`flex-1 px-6 py-3 ${isdarkmode ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg transition-colors font-medium`}
+                className={`flex-1 px-6 py-3 ${isdarkmode ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg transition-colors text-[10px]`}
               >
                 Cancel
               </button>
               <button
                 onClick={handleFinalConfirm}
                 disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors font-medium disabled:opacity-50"
+                className="flex-1 px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px] disabled:opacity-50"
               >
                 {isSubmitting ? 'Saving...' : 'Confirm'}
               </button>
@@ -549,15 +549,15 @@ export default function AddBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">✅</div>
-              <h3 className={`text-2xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Success!</h3>
-              <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Success!</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Your blog post has been {status === 'published' ? 'published' : status === 'scheduled' ? 'scheduled' : 'saved'} successfully.
               </p>
             </div>
             
             <button
               onClick={() => setShowSuccessModal(false)}
-              className="w-full px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors font-medium"
+              className="w-full px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px]"
             >
               Close
             </button>
@@ -570,15 +570,15 @@ export default function AddBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">❌</div>
-              <h3 className={`text-2xl font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Error</h3>
-              <p className={`${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Error</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 {errorMessage || 'Something went wrong. Please try again.'}
               </p>
             </div>
             
             <button
               onClick={() => setShowErrorModal(false)}
-              className="w-full px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors font-medium"
+              className="w-full px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px]"
             >
               Close
             </button>
