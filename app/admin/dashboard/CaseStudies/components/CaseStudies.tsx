@@ -189,15 +189,6 @@ export default function CaseStudies() {
                 </div>
               </div>
 
-              <div className="text-center mb-8">
-                <div className={`text-xs font-medium mb-1 ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Total
-                </div>
-                <div className={`text-5xl font-bold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
-                  {records.length}
-                </div>
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 {/* Active */}
                 <div className={`p-4 rounded-2xl text-center ${
@@ -277,6 +268,15 @@ export default function CaseStudies() {
                       </svg>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="text-center mt-6">
+                <div className={`text-xs font-medium mb-1 ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Total
+                </div>
+                <div className={`text-5xl font-bold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                  {records.length}
                 </div>
               </div>
             </div>

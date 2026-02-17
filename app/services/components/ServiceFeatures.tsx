@@ -9,78 +9,80 @@ import {
   UserCheck,
   Briefcase,
   Share2,
+  Layout,
+  Loader2,
+  AlertCircle,
+  PackageSearch,
+  Calendar,
+  BookOpen,
+  Users,
+  Mail,
+  Filter,
+  Tag,
+  FileText,
+  Code,
 } from "lucide-react";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
 
-const services = [
-  {
-    title: "CUSTOMER SUPPORT OUTSOURCING",
-    description:
-      "Deliver exceptional customer experiences through voice, chat, and email channels. Our trained agents provide prompt, friendly, and knowledgeable assistance that strengthens your brand and builds customer loyalty—available 24/7 to keep your business running smoothly.",
-    icon: Headphones,
-    image: "/images/services1.webp",
-    bgColor: COLORS.white,
-    textColor: COLORS.black,
-    isDark: false,
-  },
-  {
-    title: "TECHNICAL HELPDESK",
-    description:
-      "We keep your systems running and your customers connected. Our experienced technical support specialists handle software troubleshooting, hardware issues, and user assistance with efficiency and precision—ensuring your business stays operational without downtime.",
-    icon: Monitor,
-    image: "/images/services2.webp",
-    bgColor: COLORS.dark,
-    textColor: COLORS.white,
-    isDark: true,
-  },
-  {
-    title: "SALES & LEAD GENERATION",
-    description:
-      "Accelerate your revenue growth with data-driven sales and lead generation campaigns. Our expert agents connect you with qualified leads, nurture prospects, and close deals, helping you achieve consistent growth and measurable ROI.",
-    icon: TrendingUp,
-    image: "/images/services3.webp",
-    bgColor: COLORS.dark,
-    textColor: COLORS.white,
-    isDark: true,
-  },
-  {
-    title: "VIRTUAL ASSISTANCE",
-    description:
-      "Focus on what matters most while we handle the rest. Our virtual assistants manage administrative tasks, calendar scheduling, research, and communication support, ensuring productivity and organization at every level of your business.",
-    icon: UserCheck,
-    image: "/images/services4.webp",
-    bgColor: COLORS.white,
-    textColor: COLORS.black,
-    isDark: false,
-  },
-  {
-    title: "BACK OFFICE OPERATIONS",
-    description:
-      "Simplify your back-end operations through efficient outsourcing. From data entry, payroll, and accounting to HR support and documentation, our team ensures accuracy, speed, and confidentiality—so you can focus on strategy and innovation.",
-    icon: Briefcase,
-    image: "/images/services5.webp",
-    bgColor: COLORS.white,
-    textColor: COLORS.black,
-    isDark: false,
-  },
-  {
-    title: "SOCIAL MEDIA MANAGEMENT",
-    description:
-      "Enhance your digital presence with creative content and smart marketing strategies. We handle your social media platforms, audience engagement, and brand storytelling to keep your business visible, relevant, and competitive online.",
-    icon: Share2,
-    image: "/images/services6.webp",
-    bgColor: COLORS.dark,
-    textColor: COLORS.white,
-    isDark: true,
-  },
-];
+// API URL - defaults to relative path which will be proxied by Next.js
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
+// Icon mapping based on serviceId
+const ICON_MAP: Record<string, any> = {
+  "ai-builder": PackageSearch,
+  "automation": Monitor,
+  "booking-appointment": Calendar,
+  "courses-products": BookOpen,
+  "crm": Users,
+  "csr": Headphones,
+  "email-marketing": Mail,
+  "funnel-builder": Filter,
+  "gray-label": Tag,
+  "social-media-management": Share2,
+  "survey-forms": FileText,
+  "tech-support": Monitor,
+  "web-development": Code,
+};
+
+// Fallback images based on serviceId
+const IMAGE_MAP: Record<string, string> = {
+  "ai-builder": "/images/services1.webp",
+  "automation": "/images/services2.webp",
+  "booking-appointment": "/images/services3.webp",
+  "courses-products": "/images/services4.webp",
+  "crm": "/images/services5.webp",
+  "csr": "/images/services6.webp",
+  "email-marketing": "/images/services1.webp",
+  "funnel-builder": "/images/services2.webp",
+  "gray-label": "/images/services3.webp",
+  "social-media-management": "/images/services4.webp",
+  "survey-forms": "/images/services5.webp",
+  "tech-support": "/images/services6.webp",
+  "web-development": "/images/services1.webp",
+};
+
+interface ServiceType {
+  _id: string;
+  serviceId: string;
+  title: string;
+  description: string;
+  icon: any;
+  image: string;
+  bgColor: string;
+  textColor: string;
+  isDark: boolean;
+  coverPhoto?: string | null;
+}
 
 const ServiceCard: React.FC<{
-  service: (typeof services)[0];
+  service: ServiceType;
   index: number;
 }> = ({ service, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   const IconComponent = service.icon;
+
+  // Determine if using base64 image
+  const isBase64Image = service.image.startsWith('data:image');
 
   return (
     <div
@@ -100,14 +102,23 @@ const ServiceCard: React.FC<{
 
       <div className="relative h-72 w-full overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 z-[1]" />
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          priority={index < 2}
-        />
+        {isBase64Image ? (
+          <img
+            src={service.image}
+            alt={service.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading={index < 2 ? "eager" : "lazy"}
+          />
+        ) : (
+          <Image
+            src={service.image}
+            alt={service.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            priority={index < 2}
+          />
+        )}
 
         <div
           className="absolute top-6 right-6 z-[2] p-4 rounded-2xl backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
@@ -163,7 +174,7 @@ const ServiceCard: React.FC<{
 };
 
 const CarouselPagination: React.FC<{
-  services: typeof services;
+  services: ServiceType[];
   activeIndex: number;
   scrollTo: (index: number) => void;
 }> = ({ services, activeIndex, scrollTo }) => {
@@ -188,7 +199,7 @@ const CarouselPagination: React.FC<{
   );
 };
 
-const ServiceCarousel: React.FC<{ services: typeof services }> = ({
+const ServiceCarousel: React.FC<{ services: ServiceType[] }> = ({
   services,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -234,7 +245,7 @@ const ServiceCarousel: React.FC<{ services: typeof services }> = ({
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {services.map((service, index) => (
-          <div key={index} className="flex-shrink-0 w-full snap-start">
+          <div key={service._id} className="flex-shrink-0 w-full snap-start">
             <ServiceCard service={service} index={index} />
           </div>
         ))}
@@ -249,6 +260,131 @@ const ServiceCarousel: React.FC<{ services: typeof services }> = ({
 };
 
 export default function ServiceFeatures() {
+  const [services, setServices] = useState<ServiceType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Helper function to process image source
+  const getImageSource = (coverPhoto: string | null | undefined, serviceId: string): string => {
+    console.log(`🔍 Processing image for ${serviceId}:`, {
+      hasCoverPhoto: !!coverPhoto,
+      coverPhotoLength: coverPhoto?.length,
+      coverPhotoPreview: coverPhoto?.substring(0, 50)
+    });
+
+    // If coverPhoto exists and is a valid string
+    if (coverPhoto && typeof coverPhoto === 'string' && coverPhoto.trim()) {
+      const trimmedPhoto = coverPhoto.trim();
+      
+      // Check if it's already a data URL
+      if (trimmedPhoto.startsWith('data:image')) {
+        console.log(`✅ Using data URL for ${serviceId}`);
+        return trimmedPhoto;
+      }
+      
+      // Check if it looks like base64 (common base64 characters)
+      if (trimmedPhoto.match(/^[A-Za-z0-9+/]+={0,2}$/) && trimmedPhoto.length > 100) {
+        console.log(`✅ Converting base64 to data URL for ${serviceId}`);
+        return `data:image/jpeg;base64,${trimmedPhoto}`;
+      }
+      
+      // Check if it's a regular URL (http/https)
+      if (trimmedPhoto.startsWith('http://') || trimmedPhoto.startsWith('https://')) {
+        console.log(`✅ Using external URL for ${serviceId}`);
+        return trimmedPhoto;
+      }
+      
+      // Check if it's a relative path
+      if (trimmedPhoto.startsWith('/')) {
+        console.log(`✅ Using relative path for ${serviceId}`);
+        return trimmedPhoto;
+      }
+    }
+    
+    // Fallback to IMAGE_MAP or default
+    const fallbackImage = IMAGE_MAP[serviceId] || "/images/services1.webp";
+    console.log(`⚠️ Using fallback image for ${serviceId}:`, fallbackImage);
+    return fallbackImage;
+  };
+
+  // Determine background styling based on index (alternating pattern)
+  const getServiceStyling = (index: number) => {
+    // Pattern: white, dark, dark, white, white, dark
+    const darkPattern = [1, 2, 5]; // indices that should be dark
+    const isDark = darkPattern.includes(index % 6);
+    
+    return {
+      bgColor: isDark ? COLORS.dark : COLORS.white,
+      textColor: isDark ? COLORS.white : COLORS.black,
+      isDark: isDark,
+    };
+  };
+
+  // Fetch services from API
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const apiUrl = `${API_BASE_URL}/api/services?isActive=true`;
+      console.log('🔍 Fetching services from:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📡 Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ API Error:', errorText);
+        throw new Error(`Failed to load services (${response.status})`);
+      }
+      
+      const data = await response.json();
+      console.log('✅ Received services data:', data);
+
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid response format');
+      }
+
+      // Map database fields to component structure
+      const mappedData = data.map((item: any, index: number) => {
+        console.log(`\n📦 Mapping service: ${item.serviceId}`);
+        console.log('Raw item:', JSON.stringify(item, null, 2));
+        
+        const imageSource = getImageSource(item.coverPhoto, item.serviceId);
+        const styling = getServiceStyling(index);
+        
+        return {
+          _id: item._id,
+          serviceId: item.serviceId,
+          title: item.name.toUpperCase(), // Match original format
+          description: item.description,
+          icon: ICON_MAP[item.serviceId] || Layout,
+          image: imageSource,
+          coverPhoto: item.coverPhoto,
+          ...styling,
+        };
+      });
+
+      console.log('\n📊 Final mapped services:', mappedData);
+      setServices(mappedData);
+    } catch (err: any) {
+      console.error("❌ Error loading services:", err);
+      setError(err.message || "Could not load services at this time");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
   return (
     <section
       className="py-20 md:py-24 relative overflow-hidden"
@@ -285,15 +421,53 @@ export default function ServiceFeatures() {
           </p>
         </div>
 
-        <div className="lg:hidden pb-2 overflow-visible">
-          <ServiceCarousel services={services} />
-        </div>
+        {loading ? (
+          <div className="flex flex-col justify-center items-center py-20 gap-4">
+            <Loader2 className="w-12 h-12 animate-spin" style={{ color: COLORS.primary }} />
+            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 animate-pulse`}>
+              Loading our services...
+            </p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+            <p className={`${FONT_CLASSES.openSansBold} text-gray-800 text-xl mb-2`}>
+              Something went wrong
+            </p>
+            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 mb-6`}>
+              {error}
+            </p>
+            <button 
+              onClick={fetchServices}
+              className={`${FONT_CLASSES.openSansBold} px-6 py-3 rounded-full text-white transition-all hover:scale-105`}
+              style={{ backgroundColor: COLORS.primary }}
+            >
+              Try Again
+            </button>
+          </div>
+        ) : services.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+            <p className={`${FONT_CLASSES.openSansBold} text-gray-800 text-xl mb-2`}>
+              No services available
+            </p>
+            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500`}>
+              Check back soon for updates
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="lg:hidden pb-2 overflow-visible">
+              <ServiceCarousel services={services} />
+            </div>
 
-        <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-10">
-          {services.map((service, index) => (
-            <ServiceCard key={index} service={service} index={index} />
-          ))}
-        </div>
+            <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-10">
+              {services.map((service, index) => (
+                <ServiceCard key={service._id} service={service} index={index} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

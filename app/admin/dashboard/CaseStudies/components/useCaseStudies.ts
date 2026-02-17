@@ -22,7 +22,7 @@ const transformBackendToFrontend = (backendData: any): CaseStudy => {
     result: backendData.solution && backendData.solution.length > 1
       ? backendData.solution[1].text
       : '',
-    categories: backendData.tags || [],
+    categories: (backendData.tags || []).map((t: string) => t.charAt(0).toUpperCase() + t.slice(1)),
     status: backendData.status.charAt(0).toUpperCase() + backendData.status.slice(1),
     start: backendData.startDate ? new Date(backendData.startDate).toISOString().split('T')[0] : '',
     end: backendData.endDate ? new Date(backendData.endDate).toISOString().split('T')[0] : '',

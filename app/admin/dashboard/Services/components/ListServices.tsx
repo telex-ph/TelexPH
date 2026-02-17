@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDarkMode } from '../../layout'
 
@@ -13,6 +13,7 @@ interface Service {
   description: string
   badge: string
   isActive: boolean
+  coverPhoto?: string | null
   updatedAt?: string
   createdAt?: string
 }
@@ -130,7 +131,105 @@ const defaultIcon = (
   </svg>
 )
 
-// Add Service Modal Component
+// ── COVER PHOTO UPLOADER ──────────────────────────────────────────────────────
+function CoverPhotoUploader({
+  isdarkmode,
+  value,
+  onChange,
+}: {
+  isdarkmode: boolean
+  value: string | null
+  onChange: (base64: string | null) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') onChange(reader.result)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFile(file)
+  }
+
+  return (
+    <div>
+      <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+        Cover Photo{' '}
+        <span className={`text-[9px] font-normal normal-case tracking-normal ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
+          (optional)
+        </span>
+      </label>
+
+      {value ? (
+        <div className="relative rounded-xl overflow-hidden" style={{ height: 140 }}>
+          <img src={value ?? ''} alt="Cover preview" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="px-3 py-1.5 rounded-lg bg-white text-gray-900 text-[10px] font-bold uppercase tracking-wide hover:bg-gray-100 transition-colors"
+            >
+              Change
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange(null)}
+              className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-[10px] font-bold uppercase tracking-wide hover:bg-red-600 transition-colors"
+            >
+              Remove
+            </button>
+          </div>
+          <div className="absolute bottom-2 right-2 pointer-events-none">
+            <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide bg-black/50 text-white">
+              Hover to change
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div
+          onClick={() => inputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          className={`w-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
+            isdarkmode
+              ? 'border-white/10 hover:border-white/20 bg-[#2a2a2a] hover:bg-[#333333]'
+              : 'border-gray-200 hover:border-[#800000]/40 bg-gray-50 hover:bg-white'
+          }`}
+          style={{ height: 100 }}
+        >
+          <svg className={`w-7 h-7 ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p className={`text-[10px] font-bold uppercase tracking-widest ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
+            Click or drag to upload
+          </p>
+          <p className={`text-[9px] ${isdarkmode ? 'text-gray-700' : 'text-gray-300'}`}>PNG, JPG, WEBP up to 5MB</p>
+        </div>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) handleFile(file)
+          e.target.value = ''
+        }}
+      />
+    </div>
+  )
+}
+
+// ── ADD SERVICE MODAL ─────────────────────────────────────────────────────────
 function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
   isOpen: boolean
   onClose: () => void
@@ -141,9 +240,18 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
     name: '',
     description: '',
     badge: '',
+    coverPhoto: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  // Reset form on close
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({ name: '', description: '', badge: '', coverPhoto: '' })
+      setError('')
+    }
+  }, [isOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -155,25 +263,23 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
 
       const response = await fetch('http://localhost:3000/api/services', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
           serviceId,
-          ...formData,
+          name: formData.name,
+          description: formData.description,
+          badge: formData.badge,
+          coverPhoto: formData.coverPhoto || null,
         }),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        if (response.status === 401) {
-          throw new Error('Session expired or not logged in. Please login again.')
-        }
+        if (response.status === 401) throw new Error('Session expired or not logged in. Please login again.')
         throw new Error(errorData.error || 'Failed to create service')
       }
 
-      setFormData({ name: '', description: '', badge: '' })
       onSuccess()
       onClose()
     } catch (err) {
@@ -186,32 +292,18 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      <div
-        className={`relative w-full max-w-2xl rounded-2xl shadow-2xl ${
-          isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'
-        }`}
+        className={`relative w-full max-w-2xl rounded-2xl shadow-2xl ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
+        style={{ maxHeight: '90vh', overflowY: 'auto' }}
       >
         <div className={`px-6 py-5 border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between">
-            <h2 className={`text-lg font-black uppercase tracking-tight ${
-              isdarkmode ? 'text-gray-100' : 'text-gray-900'
-            }`}>
+            <h2 className={`text-lg bold-text uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
               Add New Service
             </h2>
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-xl transition-all ${
-                isdarkmode
-                  ? 'hover:bg-white/5 text-gray-400 hover:text-gray-300'
-                  : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
-              }`}
-            >
+            <button onClick={onClose} className={`p-2 rounded-xl transition-all ${isdarkmode ? 'hover:bg-white/5 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'}`}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -227,23 +319,23 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
           )}
 
           <div className="space-y-4">
+            <CoverPhotoUploader
+              isdarkmode={isdarkmode}
+              value={formData.coverPhoto}
+              onChange={(val) => setFormData(prev => ({ ...prev, coverPhoto: val }))}
+            />
+
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${
-                isdarkmode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
+              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Service Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., AI Builder"
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${
-                  isdarkmode
-                    ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5'
-                    : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'
-                }`}
+                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
               />
               {formData.name && (
                 <p className={`mt-1 text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -253,65 +345,207 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
             </div>
 
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${
-                isdarkmode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
+              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Category Badge <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.badge}
-                onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
                 placeholder="e.g., AI & Tech, Marketing, Sales"
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${
-                  isdarkmode
-                    ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5'
-                    : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'
-                }`}
+                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
               />
             </div>
 
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${
-                isdarkmode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
+              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 required
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Describe the service..."
                 rows={4}
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none resize-none ${
-                  isdarkmode
-                    ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5'
-                    : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'
-                }`}
+                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
               />
             </div>
           </div>
 
           <div className="flex gap-3 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className={`flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-                isdarkmode
-                  ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            <button type="button" onClick={onClose} disabled={submitting}
+              className={`flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={submitting}
+            <button type="submit" disabled={submitting}
               className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-[#800000] text-white hover:bg-[#600000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? 'Creating...' : 'Create Service'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+// ── EDIT SERVICE MODAL ────────────────────────────────────────────────────────
+// KEY DESIGN: This component initialises its state directly from the `service`
+// prop passed in. The parent renders it with key={service._id}, which forces
+// React to fully unmount + remount every time a different service is edited.
+// This means useState runs fresh on every open, so coverPhoto (and all other
+// fields) are always correctly pre-populated without needing a useEffect.
+function EditServiceModal({ isOpen, onClose, onSuccess, isdarkmode, service }: {
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: () => void
+  isdarkmode: boolean
+  service: Service | null
+}) {
+  // ✅ FIX: state is seeded directly from service prop at mount time.
+  // Because the parent passes key={service._id}, this component remounts
+  // fresh every time a different service is selected — no stale data.
+  const [formData, setFormData] = useState({
+    name: service?.name ?? '',
+    description: service?.description ?? '',
+    badge: service?.badge ?? '',
+    coverPhoto: service?.coverPhoto ?? null,
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!service) return
+    setError('')
+    setSubmitting(true)
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/services/${service._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+          badge: formData.badge,
+          // ✅ FIX: always include coverPhoto so the controller can clear it when removed
+          coverPhoto: formData.coverPhoto || null,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        if (response.status === 401) throw new Error('Session expired or not logged in. Please login again.')
+        throw new Error(errorData.error || 'Failed to update service')
+      }
+
+      onSuccess()
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (!isOpen || !service) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className={`relative w-full max-w-2xl rounded-2xl shadow-2xl ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
+        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+      >
+        <div className={`px-6 py-5 border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-lg bold-text uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+                Edit Service
+              </h2>
+              <p className={`text-[10px] mt-0.5 font-mono ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
+                {service.serviceId}
+              </p>
+            </div>
+            <button onClick={onClose} className={`p-2 rounded-xl transition-all ${isdarkmode ? 'hover:bg-white/5 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'}`}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6">
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+              <p className="text-xs text-red-500">{error}</p>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {/* ✅ FIX: value is seeded from service.coverPhoto — shows existing photo immediately */}
+            <CoverPhotoUploader
+              isdarkmode={isdarkmode}
+              value={formData.coverPhoto}
+              onChange={(val) => setFormData(prev => ({ ...prev, coverPhoto: val }))}
+            />
+
+            <div>
+              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Service Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., AI Builder"
+                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+              />
+            </div>
+
+            <div>
+              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Category Badge <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.badge}
+                onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
+                placeholder="e.g., AI & Tech, Marketing, Sales"
+                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+              />
+            </div>
+
+            <div>
+              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                required
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe the service..."
+                rows={4}
+                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <button type="button" onClick={onClose} disabled={submitting}
+              className={`flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Cancel
+            </button>
+            <button type="submit" disabled={submitting}
+              className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-[#800000] text-white hover:bg-[#600000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
@@ -333,7 +567,8 @@ export default function ListServices() {
   const [viewmode, setviewmode] = useState<'grid' | 'list'>('grid')
   const [filtermode, setfiltermode] = useState<'all' | 'active' | 'inactive'>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  // NEW: sort state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingService, setEditingService] = useState<Service | null>(null)
   const [sortmode, setsortmode] = useState<SortMode>('alpha-asc')
 
   useEffect(() => {
@@ -365,9 +600,7 @@ export default function ListServices() {
     try {
       const response = await fetch(`http://localhost:3000/api/services/${service._id}/toggle`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       })
 
@@ -380,17 +613,25 @@ export default function ListServices() {
       if (!response.ok) throw new Error('Failed to toggle service status')
 
       const updatedService = await response.json()
-
-      setServices(services.map(s =>
-        s._id === updatedService._id ? updatedService : s
-      ))
+      setServices(services.map(s => s._id === updatedService._id ? updatedService : s))
     } catch (error) {
       console.error('Error toggling service status:', error)
       alert('Failed to update service status')
     }
   }
 
-  // NEW: sort helper applied after filter
+  const openEditModal = (e: React.MouseEvent, service: Service) => {
+    e.stopPropagation()
+    setEditingService(service)
+    setIsEditModalOpen(true)
+  }
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false)
+    setTimeout(() => setEditingService(null), 200)
+  }
+
+  // sort helper applied after filter
   const applysort = (list: Service[]): Service[] => {
     const sorted = [...list]
     switch (sortmode) {
@@ -437,7 +678,7 @@ export default function ListServices() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen" style={{ fontFamily: "'Poppins', sans-serif" }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#800000] mx-auto mb-4"></div>
           <p className={isdarkmode ? 'text-gray-400' : 'text-gray-600'}>Loading services...</p>
@@ -447,15 +688,20 @@ export default function ListServices() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
+        .bold-text { font-weight: 700; }
+      `}</style>
+
       <div className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <h1 className={`text-2xl font-black uppercase tracking-tight mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+            <h1 className={`text-2xl bold-text uppercase tracking-tight mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
               Services Management
             </h1>
-            <p className={`text-xs ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`text-[11px] mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
               Manage and configure all available services
             </p>
           </div>
@@ -488,101 +734,47 @@ export default function ListServices() {
                       : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'
                   }`}
                 />
-                <svg
-                  className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
 
               {/* Filter buttons */}
               <div className="flex gap-2">
-                <button
-                  onClick={() => setfiltermode('all')}
-                  className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    filtermode === 'all'
-                      ? 'bg-[#800000] text-white shadow-md'
-                      : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setfiltermode('active')}
-                  className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    filtermode === 'active'
-                      ? 'bg-emerald-500 text-white shadow-md'
-                      : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  Active
-                </button>
-                <button
-                  onClick={() => setfiltermode('inactive')}
-                  className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    filtermode === 'inactive'
-                      ? 'bg-gray-500 text-white shadow-md'
-                      : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  Inactive
-                </button>
+                <button onClick={() => setfiltermode('all')} className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${filtermode === 'all' ? 'bg-[#800000] text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>All</button>
+                <button onClick={() => setfiltermode('active')} className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${filtermode === 'active' ? 'bg-emerald-500 text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Active</button>
+                <button onClick={() => setfiltermode('inactive')} className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${filtermode === 'inactive' ? 'bg-gray-500 text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Inactive</button>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* NEW: Sort dropdown */}
+              {/* Sort dropdown */}
               <div className="relative">
                 <select
                   value={sortmode}
                   onChange={e => setsortmode(e.target.value as SortMode)}
-                  className={`pl-8 pr-3 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest appearance-none outline-none transition-all ${
-                    isdarkmode
-                      ? 'bg-[#2a2a2a] text-gray-300 border border-white/5 hover:bg-[#353535]'
-                      : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
-                  }`}
+                  className={`pl-8 pr-3 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest appearance-none outline-none transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-gray-300 border border-white/5 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'}`}
                 >
                   <option value="date-newest">Date Modified ↓</option>
                   <option value="date-oldest">Date Modified ↑</option>
                   <option value="alpha-asc">Name A → Z</option>
                   <option value="alpha-desc">Name Z → A</option>
                 </select>
-                {/* sort icon inside the select */}
-                <svg
-                  className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
                 </svg>
               </div>
 
               {/* View toggle */}
-              <button
-                onClick={() => setviewmode('grid')}
-                className={`p-2.5 rounded-xl transition-all ${
-                  viewmode === 'grid'
-                    ? 'bg-[#800000] text-white shadow-md'
-                    : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-                title="Grid View"
+              <button onClick={() => setviewmode('grid')} title="Grid View"
+                className={`p-2.5 rounded-xl transition-all ${viewmode === 'grid' ? 'bg-[#800000] text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
               </button>
-              <button
-                onClick={() => setviewmode('list')}
-                className={`p-2.5 rounded-xl transition-all ${
-                  viewmode === 'list'
-                    ? 'bg-[#800000] text-white shadow-md'
-                    : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-                title="List View"
+              <button onClick={() => setviewmode('list')} title="List View"
+                className={`p-2.5 rounded-xl transition-all ${viewmode === 'list' ? 'bg-[#800000] text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -599,7 +791,7 @@ export default function ListServices() {
         {filtered.length === 0 && (
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-16 text-center`} style={cardshadow}>
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className={`text-sm font-bold mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>No services found</h3>
+            <h3 className={`text-sm bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>No services found</h3>
             <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Try adjusting your search or filter</p>
           </div>
         )}
@@ -610,28 +802,36 @@ export default function ListServices() {
             {filtered.map(service => {
               const serviceColor = getServiceColor(service.badge)
               return (
-                // CHANGED: removed onClick and cursor-pointer — card is no longer clickable
                 <div
                   key={service._id}
                   className={`group rounded-2xl overflow-hidden transition-all duration-300 flex flex-col ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
                   style={cardshadow}
                 >
-                  <div className={`h-1.5 w-full bg-gradient-to-r ${serviceColor}`} />
+                  <div className={`h-1.5 w-full bg-gradient-to-r ${serviceColor} shrink-0`} />
 
                   <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-start justify-between mb-4">
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${serviceColor} text-white shadow-lg`}>
                         {serviceIcons[service.serviceId] || defaultIcon}
                       </div>
-                      <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
-                        isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {service.badge}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
+                          {service.badge}
+                        </span>
+                        {/* Edit button — fades in on card hover */}
+                        <button
+                          onClick={(e) => openEditModal(e, service)}
+                          title="Edit service"
+                          className={`p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100 ${isdarkmode ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700'}`}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
 
-                    {/* CHANGED: removed group-hover:text-[#800000] and transition-colors — title is plain text, not clickable */}
-                    <h3 className={`text-[13px] font-black uppercase tracking-tight mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                    <h3 className={`text-[13px] bold-text uppercase tracking-tight mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
                       {service.name}
                     </h3>
 
@@ -666,10 +866,9 @@ export default function ListServices() {
             {filtered.map(service => {
               const serviceColor = getServiceColor(service.badge)
               return (
-                // CHANGED: removed onClick and cursor-pointer — row is no longer clickable
                 <div
                   key={service._id}
-                  className={`group rounded-2xl p-5 transition-all duration-300 flex items-center gap-5 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
+                  className={`group rounded-2xl overflow-hidden transition-all duration-300 flex items-center gap-5 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
                   style={cardshadow}
                 >
                   <div className={`w-1 self-stretch rounded-full bg-gradient-to-b ${serviceColor} shrink-0`} />
@@ -678,15 +877,12 @@ export default function ListServices() {
                     {serviceIcons[service.serviceId] || defaultIcon}
                   </div>
 
-                  <div className="flex-grow min-w-0">
+                  <div className="flex-grow min-w-0 py-5">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      {/* CHANGED: removed group-hover:text-[#800000] and transition-colors — title is plain text, not clickable */}
-                      <h3 className={`text-[12px] font-black uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
+                      <h3 className={`text-[12px] bold-text uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
                         {service.name}
                       </h3>
-                      <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
-                        isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'
-                      }`}>
+                      <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
                         {service.badge}
                       </span>
                     </div>
@@ -695,13 +891,23 @@ export default function ListServices() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-3 shrink-0 pr-5">
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full shadow-sm transition-colors ${service.isActive ? 'bg-emerald-400 shadow-emerald-400/50' : 'bg-gray-400 shadow-gray-400/30'}`} />
                       <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors ${service.isActive ? (isdarkmode ? 'text-emerald-400' : 'text-emerald-500') : (isdarkmode ? 'text-gray-600' : 'text-gray-400')}`}>
                         {service.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
+                    {/* Edit button — fades in on row hover */}
+                    <button
+                      onClick={(e) => openEditModal(e, service)}
+                      title="Edit service"
+                      className={`p-2 rounded-lg transition-all opacity-0 group-hover:opacity-100 ${isdarkmode ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700'}`}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
                     <button
                       onClick={(e) => togglestatus(e, service.serviceId)}
                       className={`relative w-9 h-5 rounded-full transition-all duration-300 border-none outline-none cursor-pointer active:scale-90 z-10 ${service.isActive ? 'bg-emerald-400' : (isdarkmode ? 'bg-[#3a3a3a]' : 'bg-gray-200')}`}
@@ -721,6 +927,21 @@ export default function ListServices() {
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchServices}
         isdarkmode={isdarkmode}
+      />
+
+      {/*
+        ✅ KEY FIX: key={editingService?._id} forces React to fully unmount and
+        remount EditServiceModal every time a different service is opened.
+        This guarantees useState runs fresh with the new service's data,
+        so coverPhoto and all other fields are always correctly pre-populated.
+      */}
+      <EditServiceModal
+        key={editingService?._id ?? 'edit-modal'}
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onSuccess={fetchServices}
+        isdarkmode={isdarkmode}
+        service={editingService}
       />
     </div>
   )
