@@ -334,7 +334,7 @@ export default function ListServices() {
   const [filtermode, setfiltermode] = useState<'all' | 'active' | 'inactive'>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
   // NEW: sort state
-  const [sortmode, setsortmode] = useState<SortMode>('date-newest')
+  const [sortmode, setsortmode] = useState<SortMode>('alpha-asc')
 
   useEffect(() => {
     fetchServices()
