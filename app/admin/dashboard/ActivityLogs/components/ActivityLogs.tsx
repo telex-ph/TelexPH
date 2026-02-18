@@ -5,7 +5,7 @@ import { useDarkMode } from '../../layout'
 
 interface ActivityLog {
   _id: string
-  action: 'CREATED' | 'UPDATED' | 'DELETED' | 'LOGIN' | 'LOGOUT'
+  action: 'CREATED' | 'UPDATED' | 'DELETED' | 'ARCHIVED' | 'RESTORED' | 'LOGIN' | 'LOGOUT'
   module: 'CASESTUDY' | 'BLOGS' | 'ACCOUNT_SETTINGS' | 'AUTH'
   admin: string
   firstName: string
@@ -15,6 +15,7 @@ interface ActivityLog {
   createdAt?: string
   updatedAt?: string
   deletedAt?: string
+  archivedAt?: string
   loggedInAt?: string
   loggedOutAt?: string
 }
@@ -33,6 +34,8 @@ interface ActivityStats {
     created: number
     updated: number
     deleted: number
+    archived: number
+    restored: number
     login: number
     logout: number
   }
@@ -65,7 +68,7 @@ export default function ActivityLogs() {
   const [error, seterror] = useState<string | null>(null)
 
   const availableModules = ['CASESTUDY', 'BLOGS', 'ACCOUNT_SETTINGS', 'AUTH']
-  const actionTypes = ['All', 'CREATED', 'UPDATED', 'DELETED', 'LOGIN', 'LOGOUT']
+  const actionTypes = ['All', 'CREATED', 'UPDATED', 'DELETED', 'ARCHIVED', 'RESTORED', 'LOGIN', 'LOGOUT']
 
   // Fetch activity logs from backend
   const fetchActivityLogs = async () => {
@@ -226,12 +229,16 @@ export default function ActivityLogs() {
       if (action === 'CREATED') return 'New case study created'
       if (action === 'UPDATED') return 'Case study updated'
       if (action === 'DELETED') return 'Case study deleted'
+      if (action === 'ARCHIVED') return 'Case study archived'
+      if (action === 'RESTORED') return 'Case study restored from archive'
     }
     
     if (module === 'BLOGS') {
       if (action === 'CREATED') return 'New blog post created'
       if (action === 'UPDATED') return 'Blog post updated'
       if (action === 'DELETED') return 'Blog post deleted'
+      if (action === 'ARCHIVED') return 'Blog post archived'
+      if (action === 'RESTORED') return 'Blog post restored from archive'
     }
     
     return `${formatAction(action)} action performed`
@@ -259,6 +266,8 @@ export default function ActivityLogs() {
     if (log.action === 'CREATED' && log.createdAt) return log.createdAt
     if (log.action === 'UPDATED' && log.updatedAt) return log.updatedAt
     if (log.action === 'DELETED' && log.deletedAt) return log.deletedAt
+    if (log.action === 'ARCHIVED' && log.archivedAt) return log.archivedAt
+    if (log.action === 'RESTORED' && (log as any).restoredAt) return (log as any).restoredAt
     return log.createdAt || new Date().toISOString()
   }
 
@@ -267,6 +276,8 @@ export default function ActivityLogs() {
       case 'CREATED': return 'bg-[#00A651] text-white'
       case 'UPDATED': return 'bg-[#0066CC] text-white'
       case 'DELETED': return 'bg-[#8B0000] text-white'
+      case 'ARCHIVED': return 'bg-[#B45309] text-white'
+      case 'RESTORED': return 'bg-[#0891B2] text-white'
       case 'LOGIN': return 'bg-[#4B0082] text-white'
       case 'LOGOUT': return 'bg-[#996633] text-white'
       default: return 'bg-gray-600 text-white'
@@ -328,7 +339,7 @@ export default function ActivityLogs() {
 
       {/* Stats Cards - Dashboard Overview Style */}
       {stats && (
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           {/* Total Logs - Purple Theme */}
           <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
             isdarkmode 
@@ -382,6 +393,34 @@ export default function ActivityLogs() {
             </p>
             <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-orange-300' : 'text-orange-800'}`}>
               {stats.actionCounts.updated}
+            </p>
+          </div>
+
+          {/* Archived - Amber Theme */}
+          <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
+            isdarkmode 
+              ? 'bg-gradient-to-br from-amber-900/40 to-transparent border-white/5' 
+              : 'bg-gradient-to-br from-amber-50 to-white border-gray-50'
+          }`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              archived
+            </p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-amber-300' : 'text-amber-800'}`}>
+              {stats.actionCounts.archived ?? 0}
+            </p>
+          </div>
+
+          {/* Restored - Cyan Theme */}
+          <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
+            isdarkmode 
+              ? 'bg-gradient-to-br from-cyan-900/40 to-transparent border-white/5' 
+              : 'bg-gradient-to-br from-cyan-50 to-white border-gray-50'
+          }`}>
+            <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              restored
+            </p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-cyan-300' : 'text-cyan-800'}`}>
+              {stats.actionCounts.restored ?? 0}
             </p>
           </div>
         </div>

@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 interface ActivityLog {
   _id: string
-  action: 'CREATED' | 'UPDATED' | 'DELETED' | 'LOGIN' | 'LOGOUT'
+  action: 'CREATED' | 'UPDATED' | 'DELETED' | 'ARCHIVED' | 'LOGIN' | 'LOGOUT'
   module: 'CASESTUDY' | 'BLOGS' | 'ACCOUNT_SETTINGS' | 'AUTH'
   admin: string
   details: any
@@ -88,6 +88,8 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
         return log.updatedAt || ''
       case 'DELETED':
         return log.deletedAt || ''
+      case 'ARCHIVED':
+        return log.deletedAt || log.updatedAt || log.createdAt || ''
       case 'LOGIN':
         return log.loggedInAt || ''
       case 'LOGOUT':
@@ -134,6 +136,7 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
       'CREATED': 'bg-[#00A651]',
       'UPDATED': 'bg-[#0066CC]',
       'DELETED': 'bg-[#8B0000]',
+      'ARCHIVED': 'bg-[#B45309]',
       'LOGIN': 'bg-[#4B0082]',
       'LOGOUT': 'bg-[#996633]'
     }
@@ -149,7 +152,7 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
         return title || ''
       }
       
-      if (log.action === 'CREATED' || log.action === 'DELETED') {
+      if (log.action === 'CREATED' || log.action === 'DELETED' || log.action === 'ARCHIVED') {
         return log.details.title || log.details.slug || log.details.caseStudyId || ''
       }
       
@@ -231,6 +234,13 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    )}
+                    {log.action === 'ARCHIVED' && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                        <polyline points="21 8 21 21 3 21 3 8"/>
+                        <rect x="1" y="3" width="22" height="5"/>
+                        <line x1="10" y1="12" x2="14" y2="12"/>
                       </svg>
                     )}
                     {log.action === 'LOGIN' && (
