@@ -9,8 +9,8 @@ interface FormSectionProps {
   isEditMode: boolean;
   timeError: string | null;
   showCategoryDropdown: boolean;
-  fileRef: React.RefObject<HTMLInputElement>;
-  formRef?: React.RefObject<HTMLDivElement>;
+  fileRef: React.RefObject<HTMLInputElement | null>;
+  formRef?: React.RefObject<HTMLDivElement | null>;
   onFormChange: (field: keyof CaseStudyFormData, value: any) => void;
   onCategoryToggle: (category: string) => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -173,7 +173,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
                 Click to upload or paste image
               </p>
               <p className={`text-xs ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-                PNG, JPG, GIF up to 10MB
+                PNG, JPG, JPEG, WebP up to 10MB
               </p>
             </div>
           )}
@@ -181,7 +181,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
         <input
           ref={fileRef}
           type="file"
-          accept="image/*"
+          accept="image/png,image/jpeg,image/webp"
           onChange={onFileChange}
           className="hidden"
         />

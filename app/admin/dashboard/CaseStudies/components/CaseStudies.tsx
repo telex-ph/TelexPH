@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef } from 'react'
 import { useDarkMode } from '../../layout'
 import { useCaseStudies } from './useCaseStudies'
 import { FormSection } from './FormSection'
@@ -15,6 +15,8 @@ import { getCalendarDays } from './helpers'
 
 export default function CaseStudies() {
   const { isdarkmode } = useDarkMode();
+  const formRef = useRef<HTMLDivElement>(null);
+
   const {
     // States
     formData,
@@ -57,6 +59,15 @@ export default function CaseStudies() {
   const currentYear = new Date().getFullYear();
   const currentDay = new Date().getDate();
   const miniCalendarDays = getCalendarDays(currentMonth);
+
+  // Wrap handleedit to also scroll to form
+  const handleEditWithScroll = (study: Parameters<typeof handleedit>[0]) => {
+    handleedit(study);
+    // Use setTimeout to allow state update before scrolling
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
+  };
 
   return (
     <div 
@@ -119,7 +130,7 @@ export default function CaseStudies() {
         isOpen={modalState.showpreviewmodal}
         data={previewdata}
         onClose={() => updateModalState('showpreviewmodal', false)}
-        onEdit={handleedit}
+        onEdit={handleEditWithScroll}
       />
 
       <CalendarModal
@@ -160,6 +171,7 @@ export default function CaseStudies() {
               timeError={messageState.timeError}
               showCategoryDropdown={showCategoryDropdown}
               fileRef={fileref}
+              formRef={formRef}
               onFormChange={updateFormField}
               onCategoryToggle={togglecategory}
               onFileChange={handlefilechange}
@@ -202,8 +214,9 @@ export default function CaseStudies() {
                       {records.filter(r => r.status === 'Active').length}
                     </div>
                     <div className="p-2 bg-red-900 text-white rounded-full">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
                       </svg>
                     </div>
                   </div>
@@ -389,7 +402,7 @@ export default function CaseStudies() {
           onSortChange={(sort) => updateFilterState('sortby', sort)}
           onCategoryFilter={toggleCategoryFilter}
           onPreview={handlepreview}
-          onEdit={handleedit}
+          onEdit={handleEditWithScroll}
           onDelete={handledeleteclick}
         />
       </div>

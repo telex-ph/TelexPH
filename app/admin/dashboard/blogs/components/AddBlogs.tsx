@@ -35,6 +35,14 @@ const SUBCATEGORIES = {
   ]
 };
 
+// Validation constants
+const HEADLINE_MIN = 5;
+const HEADLINE_MAX = 40;
+const SHORT_DESC_MIN = 5;
+const SHORT_DESC_MAX = 55;
+const MAIN_CONTENT_MIN = 25;
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+
 interface ContentSection {
   title: string;
   content: string;
@@ -47,6 +55,7 @@ export default function AddBlogs() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isCompressing, setIsCompressing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageError, setImageError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
   const actualFileRef = useRef<File | null>(null);
   
@@ -70,40 +79,48 @@ export default function AddBlogs() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      actualFileRef.current = file;
-      setIsCompressing(true);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const img = new Image();
-        img.src = reader.result as string;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          const maxWidth = 800; 
-          let width = img.width;
-          let height = img.height;
+    if (!file) return;
 
-          if (width > maxWidth) {
-            height = (maxWidth / width) * height;
-            width = maxWidth;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          if (ctx) {
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            setSelectedImage(canvas.toDataURL('image/jpeg', 0.7));
-            setIsCompressing(false);
-          }
-        };
-      };
-      reader.readAsDataURL(file);
+    // Validate file type
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageError('Invalid file type. Only PNG, JPG, JPEG, and WebP are allowed.');
+      if (fileRef.current) fileRef.current.value = '';
+      return;
     }
+
+    setImageError('');
+    actualFileRef.current = file;
+    setIsCompressing(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const img = new Image();
+      img.src = reader.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const maxWidth = 800; 
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        if (ctx) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          setSelectedImage(canvas.toDataURL('image/jpeg', 0.7));
+          setIsCompressing(false);
+        }
+      };
+    };
+    reader.readAsDataURL(file);
   };
 
   const triggerBrowse = () => fileRef.current?.click();
@@ -202,6 +219,7 @@ export default function AddBlogs() {
       setStatus('draft');
       setScheduledDate('');
       setSelectedImage(null);
+      setImageError('');
       actualFileRef.current = null;
       if (fileRef.current) fileRef.current.value = '';
 
@@ -216,14 +234,40 @@ export default function AddBlogs() {
   };
 
   const isFormValid = () => {
+    const titleTrimmed = title.trim();
+    const authorTrimmed = authorName.trim();
+    const descTrimmed = shortDescription.trim();
+    const mainTitleTrimmed = mainContentTitle.trim();
+    const mainTextTrimmed = mainContentText.trim();
+
+    const titleValid = titleTrimmed.length >= HEADLINE_MIN && titleTrimmed.length <= HEADLINE_MAX;
+    const authorValid = authorTrimmed.length >= HEADLINE_MIN && authorTrimmed.length <= HEADLINE_MAX;
+    const descValid = descTrimmed.length >= SHORT_DESC_MIN && descTrimmed.length <= SHORT_DESC_MAX;
+    const mainTitleValid = mainTitleTrimmed.length === 0 || (mainTitleTrimmed.length >= HEADLINE_MIN && mainTitleTrimmed.length <= HEADLINE_MAX);
+    const mainTextValid = mainTextTrimmed.length >= MAIN_CONTENT_MIN;
+    const hasMainContent = mainTitleTrimmed.length > 0 || mainTextTrimmed.length > 0;
+
+    const sectionsValid = contentSections.every(section => {
+      const sTitleTrimmed = section.title.trim();
+      const sContentTrimmed = section.content.trim();
+      if (!sTitleTrimmed && !sContentTrimmed) return true;
+      const sTitleValid = sTitleTrimmed.length === 0 || (sTitleTrimmed.length >= HEADLINE_MIN && sTitleTrimmed.length <= HEADLINE_MAX);
+      const sContentValid = sContentTrimmed.length === 0 || sContentTrimmed.length >= MAIN_CONTENT_MIN;
+      return sTitleValid && sContentValid;
+    });
+
     return (
-      title.trim() &&
-      authorName.trim() &&
+      titleValid &&
+      authorValid &&
       mainCategory &&
       subcategory &&
-      shortDescription.trim() &&
-      (mainContentTitle.trim() || mainContentText.trim()) &&
+      descValid &&
+      hasMainContent &&
+      mainTitleValid &&
+      mainTextValid &&
       selectedImage &&
+      !imageError &&
+      sectionsValid &&
       (status !== 'scheduled' || scheduledDate)
     );
   };
@@ -244,6 +288,25 @@ export default function AddBlogs() {
 
   const cardShadow = { boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(0, 0, 0, 0.03)' };
 
+  // Reusable character counter + error display component
+  const CharCount = ({ value, max, min }: { value: string; max?: number; min: number }) => {
+    const trimmed = value.trim();
+    const hasContent = trimmed.length > 0;
+    const tooShort = hasContent && trimmed.length < min;
+    const tooLong = max !== undefined && trimmed.length > max;
+    const isError = tooShort || tooLong;
+    return (
+      <div className="flex justify-between items-center mt-0.5 px-1">
+        <span className={`text-[8px] ${isError ? 'text-red-500' : 'text-transparent select-none'}`}>
+          {tooShort ? `Min ${min} characters required.` : tooLong ? `Max ${max} characters allowed.` : '.'}
+        </span>
+        <span className={`text-[8px] ${tooLong ? 'text-red-500' : isdarkmode ? 'text-white/40' : 'text-black/40'}`}>
+          {max !== undefined ? `${trimmed.length}/${max}` : `${trimmed.length} chars`}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div className={`min-h-screen ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'} transition-colors duration-500`}>
       <div className="max-w-[95rem] mx-auto">
@@ -261,7 +324,7 @@ export default function AddBlogs() {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/*"
+                accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -269,7 +332,9 @@ export default function AddBlogs() {
               <div 
                 onClick={triggerBrowse}
                 className={`relative border-2 border-dashed rounded-2xl overflow-hidden cursor-pointer transition-all ${
-                  selectedImage 
+                  imageError
+                    ? 'border-red-500 bg-red-500/5'
+                    : selectedImage 
                     ? 'border-[#800000] bg-[#800000]/5' 
                     : isdarkmode ? 'border-white/10 hover:border-white/20 bg-[#252525]' : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
                 }`}
@@ -289,17 +354,20 @@ export default function AddBlogs() {
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isdarkmode ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
-                      <svg className={`w-7 h-7 ${isdarkmode ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-7 h-7 ${imageError ? 'text-red-500' : isdarkmode ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div className="text-center">
-                      <p className={`text-[10px] bold-text ${isdarkmode ? 'text-white' : 'text-black'}`}>Click to upload</p>
-                      <p className={`text-[9px] mt-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>PNG, JPG up to 10MB</p>
+                      <p className={`text-[10px] bold-text ${imageError ? 'text-red-500' : isdarkmode ? 'text-white' : 'text-black'}`}>Click to upload</p>
+                      <p className={`text-[9px] mt-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>PNG, JPG, JPEG, WebP only</p>
                     </div>
                   </div>
                 )}
               </div>
+              {imageError && (
+                <p className="text-red-500 text-[9px] mt-2 ml-1">{imageError}</p>
+              )}
             </div>
 
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
@@ -381,38 +449,50 @@ export default function AddBlogs() {
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Blog Headline</label>
-                        <input 
-                          value={title} 
-                          onChange={(e) => setTitle(e.target.value)} 
-                          type="text" 
-                          placeholder="Enter Headline..." 
-                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                        />
+                      <div>
+                        <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
+                          <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Blog Headline</label>
+                          <input 
+                            value={title} 
+                            onChange={(e) => setTitle(e.target.value)} 
+                            type="text"
+                            maxLength={HEADLINE_MAX}
+                            placeholder="Enter Headline..." 
+                            className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
+                          />
+                        </div>
+                        <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                       </div>
 
-                      <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Author</label>
-                        <input 
-                          value={authorName} 
-                          onChange={(e) => setAuthorName(e.target.value)} 
-                          type="text" 
-                          placeholder="Enter Author Name..." 
-                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                        />
+                      <div>
+                        <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
+                          <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Author</label>
+                          <input 
+                            value={authorName} 
+                            onChange={(e) => setAuthorName(e.target.value)} 
+                            type="text"
+                            maxLength={HEADLINE_MAX}
+                            placeholder="Enter Author Name..." 
+                            className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
+                          />
+                        </div>
+                        <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                       </div>
                     </div>
 
-                    <div className={`border-b pb-4 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                      <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Short Description</label>
-                      <textarea 
-                        value={shortDescription} 
-                        onChange={(e) => setShortDescription(e.target.value)} 
-                        placeholder="Enter A Brief Description..." 
-                        className={`w-full p-4 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                        rows={3}
-                      />
+                    <div>
+                      <div className={`border-b pb-4 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
+                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Short Description</label>
+                        <textarea 
+                          value={shortDescription} 
+                          onChange={(e) => setShortDescription(e.target.value)} 
+                          placeholder="Enter A Brief Description..."
+                          maxLength={SHORT_DESC_MAX}
+                          className={`w-full p-4 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
+                          rows={3}
+                        />
+                      </div>
+                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
                     </div>
 
                     <div className={`border rounded-2xl p-4 space-y-3 ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
@@ -421,15 +501,19 @@ export default function AddBlogs() {
                         <label className={`text-[9px] tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>MAIN CONTENT (Required)</label>
                       </div>
                       
-                      <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Title</label>
-                        <input 
-                          value={mainContentTitle} 
-                          onChange={(e) => setMainContentTitle(e.target.value)} 
-                          type="text" 
-                          placeholder="Enter Main Content Title..." 
-                          className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                        />
+                      <div>
+                        <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
+                          <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Title</label>
+                          <input 
+                            value={mainContentTitle} 
+                            onChange={(e) => setMainContentTitle(e.target.value)} 
+                            type="text"
+                            maxLength={HEADLINE_MAX}
+                            placeholder="Enter Main Content Title..." 
+                            className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
+                          />
+                        </div>
+                        <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                       </div>
 
                       <div>
@@ -441,6 +525,7 @@ export default function AddBlogs() {
                           className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                           rows={8}
                         />
+                        <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
                       </div>
                     </div>
 
@@ -463,15 +548,19 @@ export default function AddBlogs() {
                             </button>
                           )}
                           
-                          <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-                            <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Section Title</label>
-                            <input 
-                              value={section.title} 
-                              onChange={(e) => updateContentSection(index, 'title', e.target.value)} 
-                              type="text" 
-                              placeholder="Enter Section Title..." 
-                              className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                            />
+                          <div>
+                            <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
+                              <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Section Title</label>
+                              <input 
+                                value={section.title} 
+                                onChange={(e) => updateContentSection(index, 'title', e.target.value)} 
+                                type="text"
+                                maxLength={HEADLINE_MAX}
+                                placeholder="Enter Section Title..." 
+                                className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
+                              />
+                            </div>
+                            <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                           </div>
 
                           <div>
@@ -483,6 +572,7 @@ export default function AddBlogs() {
                               className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                               rows={6}
                             />
+                            <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
                           </div>
                         </div>
                       ))}

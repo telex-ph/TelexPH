@@ -299,6 +299,14 @@ export const useCaseStudies = () => {
   const handlefilechange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        updateMessageState('error', 'Invalid file type. Only PNG, JPG, JPEG, and WebP images are allowed.');
+        if (fileref.current) fileref.current.value = '';
+        setTimeout(() => updateMessageState('error', null), 4000);
+        return;
+      }
+      updateMessageState('error', null);
       updateFormField('selectedfile', file);
       const reader = new FileReader();
       reader.onloadend = () => {
