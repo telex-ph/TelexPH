@@ -418,13 +418,11 @@ export default function ListBlogs() {
                     {/* Blog Content */}
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="flex items-center gap-2 mb-3 flex-wrap">
-                        <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text flex items-center gap-1">
+                        <span className="text-[10px] px-2.5 py-1 bg-[#800000] text-white rounded-lg bold-text flex items-center gap-1">
                           {getCategoryIcon(blog.mainCategory)} {blog.mainCategory}
                         </span>
                         {blog.subcategory && (
-                          <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
-                            isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
-                          }`}>
+                          <span className="text-[10px] px-2.5 py-1 bg-[#800000]/70 text-white rounded-lg bold-text">
                             {blog.subcategory}
                           </span>
                         )}
@@ -518,13 +516,11 @@ export default function ListBlogs() {
                               <span className={`px-3 py-1 rounded-full text-[10px] bold-text ${getstatusstyles(blog.status)}`}>
                                 {blog.status}
                               </span>
-                              <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text">
+                              <span className="text-[10px] px-2.5 py-1 bg-[#800000] text-white rounded-lg bold-text">
                                 {blog.mainCategory}
                               </span>
                               {blog.subcategory && (
-                                <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
-                                  isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
-                                }`}>
+                                <span className="text-[10px] px-2.5 py-1 bg-[#800000]/70 text-white rounded-lg bold-text">
                                   {blog.subcategory}
                                 </span>
                               )}
