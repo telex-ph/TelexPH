@@ -8,7 +8,7 @@ export default function ListBlogs() {
   const [blogs, setblogs] = useState<any[]>([]);
   const [activetab, setactivetab] = useState('All');
   const [viewmode, setviewmode] = useState<'grid' | 'list'>('grid');
-  const [blogtodelete, setblogtodelete] = useState<string | null>(null);
+  const [blogtoarchive, setblogtoarchive] = useState<string | null>(null);
  
   const [isediting, setisediting] = useState(false);
   const [selectedblog, setselectedblog] = useState<any>(null);
@@ -110,9 +110,8 @@ export default function ListBlogs() {
       }
       
       const data = await response.json();
-      const activeblogs = data.filter((b: any) => 
-        b.status && b.status.toLowerCase() !== 'archived'
-      );
+      // Only show non-archived blogs — includes docs where isArchive is false OR doesn't exist yet
+      const activeblogs = data.filter((b: any) => b.isArchive !== true);
       
       setblogs(activeblogs);
     } catch (err: any) {
@@ -194,7 +193,7 @@ export default function ListBlogs() {
   const handlesubcategorychange = (subcategory: string) => {
     setselectedsubcategory(subcategory);
   };
- 
+
   const filteredblogs = activetab === 'All'
     ? blogs
     : blogs.filter(blog => {
@@ -222,10 +221,10 @@ export default function ListBlogs() {
     setselectedblog(null);
   };
  
-  const handledelete = async (id: string) => {
+  const handlearchive = async (id: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_BASE_URL}/blogs/${id}/archive`, {
+        method: 'PATCH',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
@@ -233,23 +232,23 @@ export default function ListBlogs() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to delete blog');
+        throw new Error('Failed to archive blog');
       }
       
       await loadblogs();
-      setblogtodelete(null);
+      setblogtoarchive(null);
     } catch (err: any) {
-      console.error('Error deleting blog:', err);
-      alert(err.message || 'Failed to delete blog');
+      console.error('Error archiving blog:', err);
+      alert(err.message || 'Failed to archive blog');
     }
   };
  
-  const confirmdelete = (id: string) => {
-    setblogtodelete(id);
+  const confirmarchive = (id: string) => {
+    setblogtoarchive(id);
   };
  
-  const canceldelete = () => {
-    setblogtodelete(null);
+  const cancelarchive = () => {
+    setblogtoarchive(null);
   };
 
   const handleview = (blog: any) => {
@@ -419,13 +418,11 @@ export default function ListBlogs() {
                     {/* Blog Content */}
                     <div className="p-6 flex flex-col flex-grow">
                       <div className="flex items-center gap-2 mb-3 flex-wrap">
-                        <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text flex items-center gap-1">
+                        <span className="text-[10px] px-2.5 py-1 bg-[#800000] text-white rounded-lg bold-text flex items-center gap-1">
                           {getCategoryIcon(blog.mainCategory)} {blog.mainCategory}
                         </span>
                         {blog.subcategory && (
-                          <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
-                            isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
-                          }`}>
+                          <span className="text-[10px] px-2.5 py-1 bg-[#800000]/70 text-white rounded-lg bold-text">
                             {blog.subcategory}
                           </span>
                         )}
@@ -479,15 +476,15 @@ export default function ListBlogs() {
                           Edit
                         </button>
                         <button
-                          onClick={() => confirmdelete(blog._id)}
+                          onClick={() => confirmarchive(blog._id)}
                           className={`px-4 py-2 rounded-lg transition-colors text-[10px] flex items-center justify-center gap-2 ${
                             isdarkmode 
-                              ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' 
-                              : 'bg-red-50 text-red-500 hover:bg-red-100'
+                              ? 'bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50' 
+                              : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
                           }`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                           </svg>
                         </button>
                       </div>
@@ -519,13 +516,11 @@ export default function ListBlogs() {
                               <span className={`px-3 py-1 rounded-full text-[10px] bold-text ${getstatusstyles(blog.status)}`}>
                                 {blog.status}
                               </span>
-                              <span className="text-[10px] px-2.5 py-1 bg-[#800000]/10 text-[#800000] rounded-full bold-text">
+                              <span className="text-[10px] px-2.5 py-1 bg-[#800000] text-white rounded-lg bold-text">
                                 {blog.mainCategory}
                               </span>
                               {blog.subcategory && (
-                                <span className={`text-[10px] px-2.5 py-1 rounded-full bold-text ${
-                                  isdarkmode ? 'bg-[#2a2a2a] text-gray-300' : 'bg-gray-100 text-gray-600'
-                                }`}>
+                                <span className="text-[10px] px-2.5 py-1 bg-[#800000]/70 text-white rounded-lg bold-text">
                                   {blog.subcategory}
                                 </span>
                               )}
@@ -580,17 +575,17 @@ export default function ListBlogs() {
                               Edit
                             </button>
                             <button
-                              onClick={() => confirmdelete(blog._id)}
+                              onClick={() => confirmarchive(blog._id)}
                               className={`px-6 py-2 rounded-lg transition-colors text-[10px] flex items-center gap-2 ${
                                 isdarkmode 
-                                  ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' 
-                                  : 'bg-red-500 text-white hover:bg-red-600'
+                                  ? 'bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50' 
+                                  : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
                               }`}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                               </svg>
-                              Delete
+                              Archive
                             </button>
                           </div>
                         </div>
@@ -648,21 +643,21 @@ export default function ListBlogs() {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {blogtodelete && (
+      {/* Archive Confirmation Modal */}
+      {blogtoarchive && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl transition-colors duration-500`}>
             <div className="text-center mb-6">
-              <div className="text-red-500 text-6xl mb-4">⚠️</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Deletion</h3>
+              <div className="text-yellow-500 text-6xl mb-4">📦</div>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Archive</h3>
               <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Are you sure you want to delete this blog? This action cannot be undone.
+                Are you sure you want to archive this blog? It will be hidden from the public but can be recovered later.
               </p>
             </div>
             
             <div className="flex gap-3">
               <button
-                onClick={canceldelete}
+                onClick={cancelarchive}
                 className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[10px] ${
                   isdarkmode 
                     ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' 
@@ -672,14 +667,14 @@ export default function ListBlogs() {
                 Cancel
               </button>
               <button
-                onClick={() => handledelete(blogtodelete)}
+                onClick={() => handlearchive(blogtoarchive)}
                 className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[10px] ${
                   isdarkmode 
-                    ? 'bg-red-700 text-white hover:bg-red-600' 
-                    : 'bg-red-500 text-white hover:bg-red-600'
+                    ? 'bg-yellow-700 text-white hover:bg-yellow-600' 
+                    : 'bg-yellow-500 text-white hover:bg-yellow-600'
                 }`}
               >
-                Delete
+                Archive
               </button>
             </div>
           </div>

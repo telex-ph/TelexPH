@@ -5,8 +5,8 @@ import Link from 'next/link'
 
 interface ActivityLog {
   _id: string
-  action: 'CREATED' | 'UPDATED' | 'DELETED' | 'LOGIN' | 'LOGOUT'
-  module: 'CASESTUDY' | 'BLOGS' | 'ACCOUNT_SETTINGS' | 'AUTH'
+  action: 'CREATED' | 'UPDATED' | 'DELETED' | 'ARCHIVED' | 'RESTORED' | 'LOGIN' | 'LOGOUT'
+  module: 'CASESTUDY' | 'BLOGS' | 'ACCOUNT_SETTINGS' | 'AUTH' | 'SERVICES'
   admin: string
   details: any
   readBy: string[]
@@ -15,6 +15,7 @@ interface ActivityLog {
   deletedAt?: string
   loggedInAt?: string
   loggedOutAt?: string
+  restoredAt?: string
 }
 
 interface MiniActivityLogsProps {
@@ -88,6 +89,10 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
         return log.updatedAt || ''
       case 'DELETED':
         return log.deletedAt || ''
+      case 'ARCHIVED':
+        return log.deletedAt || log.updatedAt || log.createdAt || ''
+      case 'RESTORED':
+        return log.restoredAt || log.updatedAt || log.createdAt || ''
       case 'LOGIN':
         return log.loggedInAt || ''
       case 'LOGOUT':
@@ -124,7 +129,8 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
       'CASESTUDY': 'Casestudy',
       'BLOGS': 'Blogs',
       'ACCOUNT_SETTINGS': 'Settings',
-      'AUTH': 'Auth'
+      'AUTH': 'Auth',
+      'SERVICES': 'Services'
     }
     return moduleMap[module] || module
   }
@@ -134,6 +140,8 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
       'CREATED': 'bg-[#00A651]',
       'UPDATED': 'bg-[#0066CC]',
       'DELETED': 'bg-[#8B0000]',
+      'ARCHIVED': 'bg-[#B45309]',
+      'RESTORED': 'bg-[#0E7490]',
       'LOGIN': 'bg-[#4B0082]',
       'LOGOUT': 'bg-[#996633]'
     }
@@ -149,7 +157,7 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
         return title || ''
       }
       
-      if (log.action === 'CREATED' || log.action === 'DELETED') {
+      if (log.action === 'CREATED' || log.action === 'DELETED' || log.action === 'ARCHIVED' || log.action === 'RESTORED') {
         return log.details.title || log.details.slug || log.details.caseStudyId || ''
       }
       
@@ -189,21 +197,32 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
     <div className="w-full max-w-md">
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-100">
-        <h3 className={`text-sm font-black uppercase tracking-wider ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+        <h3 className={`text-sm bold-text uppercase tracking-wider ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
           Activity Logs
         </h3>
         <p className="text-[10px] text-gray-400 mt-0.5">Recent admin activities</p>
       </div>
 
       {/* Logs List */}
-      <div className="max-h-[400px] overflow-y-auto">
+      <div
+        className="max-h-[400px] overflow-y-auto"
+        style={{
+          scrollbarWidth: 'none',       /* Firefox */
+          msOverflowStyle: 'none',      /* IE/Edge */
+        }}
+      >
+        <style>{`
+          .mini-activity-scroll::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
         {isloading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-[#800000]"></div>
           </div>
         ) : logs.length === 0 ? (
           <div className="px-6 py-12 text-center">
-            <p className="text-xs text-gray-400 font-medium">No recent activities</p>
+            <p className="text-xs text-gray-400 bold-text">No recent activities</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
@@ -233,6 +252,19 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                       </svg>
                     )}
+                    {log.action === 'ARCHIVED' && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                        <polyline points="21 8 21 21 3 21 3 8"/>
+                        <rect x="1" y="3" width="22" height="5"/>
+                        <line x1="10" y1="12" x2="14" y2="12"/>
+                      </svg>
+                    )}
+                    {log.action === 'RESTORED' && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                      </svg>
+                    )}
                     {log.action === 'LOGIN' && (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -252,16 +284,16 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-xs font-bold ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                      <span className={`text-xs bold-text ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
                         {getActionDescription(log)}
                       </span>
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold text-white ${getactionbadgecolor(log.action)}`}>
+                      <span className={`text-[9px] px-2 py-0.5 rounded-full bold-text text-white ${getactionbadgecolor(log.action)}`}>
                         {formatAction(log.action)}
                       </span>
                     </div>
                     
                     {getContentTitle(log) && (
-                      <p className="text-[11px] text-gray-500 font-medium mb-1 truncate">
+                      <p className="text-[11px] text-gray-500 bold-text mb-1 truncate">
                         {getContentTitle(log)}
                       </p>
                     )}
@@ -284,7 +316,7 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
         <Link 
           href="/admin/dashboard/ActivityLogs"
           onClick={onClose}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold transition-all no-underline ${
+          className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs bold-text transition-all no-underline ${
             isdarkmode 
               ? 'bg-white/5 text-gray-300 hover:bg-white/10' 
               : 'bg-gray-50 text-gray-700 hover:bg-gray-100'

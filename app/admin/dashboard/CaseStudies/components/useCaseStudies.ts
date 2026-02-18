@@ -490,35 +490,35 @@ export const useCaseStudies = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle delete click
+  // Handle archive click (replaces delete)
   const handledeleteclick = (rec: CaseStudy) => {
     setdeletetarget(rec);
     updateModalState('showdeletemodal', true);
   };
 
-  // Handle delete confirm
+  // Handle archive confirm
   const handledeleteconfirm = async () => {
     if (!deletetarget) return;
 
     try {
       updateLoadingState('isdeleting', true);
-      const response = await fetch(`${API_BASE_URL}/casestudies/${deletetarget.id}`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_BASE_URL}/casestudies/${deletetarget.id}/archive`, {
+        method: 'PATCH',
         credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Failed to delete');
+      if (!response.ok) throw new Error('Failed to archive');
 
       await fetchCaseStudies();
       updateModalState('showdeletemodal', false);
       setdeletetarget(null);
-      updateMessageState('success', 'Case study deleted successfully');
+      updateMessageState('success', 'Case study archived successfully');
 
       setTimeout(() => {
         updateMessageState('success', null);
       }, 3000);
     } catch (error) {
-      updateMessageState('error', 'Failed to delete case study');
+      updateMessageState('error', 'Failed to archive case study');
     } finally {
       updateLoadingState('isdeleting', false);
     }

@@ -248,15 +248,15 @@ export default function AddBlogs() {
     <div className={`min-h-screen ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'} transition-colors duration-500`}>
       <div className="max-w-[95rem] mx-auto">
         <div className="mb-8">
-          <h1 className={`bold-text ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>Create New Blog Post</h1>
-          <p className={`mt-2 text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>Share your insights and expertise with the community</p>
+          <h1 className={`bold-text ${isdarkmode ? 'text-white' : 'text-black'}`}>Create New Blog Post</h1>
+          <p className={`mt-2 text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>Share your insights and expertise with the community</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4 space-y-6">
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Featured Image</h4>
-              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Upload A Cover Photo For Your Article</p>
+              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Featured Image</h4>
+              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Upload A Cover Photo For Your Article</p>
               
               <input
                 ref={fileRef}
@@ -277,7 +277,7 @@ export default function AddBlogs() {
               >
                 {isCompressing ? (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Compressing...</div>
+                    <div className={`text-[11px] ${isdarkmode ? 'text-white' : 'text-black'}`}>Compressing...</div>
                   </div>
                 ) : selectedImage ? (
                   <>
@@ -289,13 +289,13 @@ export default function AddBlogs() {
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isdarkmode ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
-                      <svg className={`w-7 h-7 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-7 h-7 ${isdarkmode ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div className="text-center">
-                      <p className={`text-[10px] bold-text ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>Click to upload</p>
-                      <p className={`text-[9px] mt-1 ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>PNG, JPG up to 10MB</p>
+                      <p className={`text-[10px] bold-text ${isdarkmode ? 'text-white' : 'text-black'}`}>Click to upload</p>
+                      <p className={`text-[9px] mt-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>PNG, JPG up to 10MB</p>
                     </div>
                   </div>
                 )}
@@ -303,16 +303,16 @@ export default function AddBlogs() {
             </div>
 
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Publishing Options</h4>
-              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Control When And How Your Post Goes Live</p>
+              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Publishing Options</h4>
+              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Control When And How Your Post Goes Live</p>
               
               <div className="space-y-4">
                 <div>
-                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Status</label>
+                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Status</label>
                   <select 
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
-                    className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-gray-200 border-white/10' : 'bg-gray-50 border-gray-200'} border`}
+                    className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
@@ -322,12 +322,12 @@ export default function AddBlogs() {
 
                 {status === 'scheduled' && (
                   <div>
-                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Schedule Date</label>
+                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Schedule Date</label>
                     <input 
                       type="datetime-local"
                       value={scheduledDate}
                       onChange={(e) => setScheduledDate(e.target.value)}
-                      className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-gray-200 border-white/10' : 'bg-gray-50 border-gray-200'} border`}
+                      className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
                     />
                   </div>
                 )}
@@ -335,16 +335,16 @@ export default function AddBlogs() {
             </div>
 
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Categories</h4>
-              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Organize Your Content With The Right Tags</p>
+              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Categories</h4>
+              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Organize Your Content With The Right Tags</p>
               
               <div className="space-y-4">
                 <div>
-                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Main Category</label>
+                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Category</label>
                   <select 
                     value={mainCategory}
                     onChange={(e) => handleMainCategoryChange(e.target.value)}
-                    className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-gray-200 border-white/10' : 'bg-gray-50 border-gray-200'} border`}
+                    className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
                   >
                     <option value="">Select Category</option>
                     {Object.values(MAIN_CATEGORIES).map(cat => (
@@ -355,11 +355,11 @@ export default function AddBlogs() {
 
                 {mainCategory && (
                   <div>
-                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Subcategory</label>
+                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Subcategory</label>
                     <select 
                       value={subcategory}
                       onChange={(e) => setSubcategory(e.target.value)}
-                      className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-gray-200 border-white/10' : 'bg-gray-50 border-gray-200'} border`}
+                      className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
                     >
                       <option value="">Select Subcategory</option>
                       {getAvailableSubcategories().map(subcat => (
@@ -376,41 +376,41 @@ export default function AddBlogs() {
             <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border flex flex-col h-full`}>
               <div className="flex-grow space-y-4">
                 <div>
-                  <h4 className={`bold-text text-left ${isdarkmode ? 'text-gray-200' : 'text-gray-800'}`}>Content Editorial</h4>
-                  <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Draft And Refine Your Masterpiece Here</p>
+                  <h4 className={`bold-text text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Content Editorial</h4>
+                  <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Draft And Refine Your Masterpiece Here</p>
                   
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Blog Headline</label>
+                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Blog Headline</label>
                         <input 
                           value={title} 
                           onChange={(e) => setTitle(e.target.value)} 
                           type="text" 
                           placeholder="Enter Headline..." 
-                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                         />
                       </div>
 
                       <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Author</label>
+                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Author</label>
                         <input 
                           value={authorName} 
                           onChange={(e) => setAuthorName(e.target.value)} 
                           type="text" 
                           placeholder="Enter Author Name..." 
-                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                         />
                       </div>
                     </div>
 
                     <div className={`border-b pb-4 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                      <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Short Description</label>
+                      <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Short Description</label>
                       <textarea 
                         value={shortDescription} 
                         onChange={(e) => setShortDescription(e.target.value)} 
                         placeholder="Enter A Brief Description..." 
-                        className={`w-full p-4 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                        className={`w-full p-4 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                         rows={3}
                       />
                     </div>
@@ -418,27 +418,27 @@ export default function AddBlogs() {
                     <div className={`border rounded-2xl p-4 space-y-3 ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                        <label className={`text-[9px] tracking-widest ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>MAIN CONTENT (Required)</label>
+                        <label className={`text-[9px] tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>MAIN CONTENT (Required)</label>
                       </div>
                       
                       <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Main Title</label>
+                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Title</label>
                         <input 
                           value={mainContentTitle} 
                           onChange={(e) => setMainContentTitle(e.target.value)} 
                           type="text" 
                           placeholder="Enter Main Content Title..." 
-                          className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                         />
                       </div>
 
                       <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Main Content</label>
+                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Content</label>
                         <textarea 
                           value={mainContentText} 
                           onChange={(e) => setMainContentText(e.target.value)} 
                           placeholder="Write Your Main Content..." 
-                          className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                          className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                           rows={8}
                         />
                       </div>
@@ -446,8 +446,8 @@ export default function AddBlogs() {
 
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <label className={`text-[9px] block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Additional Sections (Optional)</label>
-                        <span className="text-[8px] text-[#800000] mr-1">
+                        <label className={`text-[9px] block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Additional Sections (Optional)</label>
+                        <span className={`text-[8px] mr-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>
                           Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
                         </span>
                       </div>
@@ -464,23 +464,23 @@ export default function AddBlogs() {
                           )}
                           
                           <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-                            <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Section Title</label>
+                            <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Section Title</label>
                             <input 
                               value={section.title} 
                               onChange={(e) => updateContentSection(index, 'title', e.target.value)} 
                               type="text" 
                               placeholder="Enter Section Title..." 
-                              className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                              className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                             />
                           </div>
 
                           <div>
-                            <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Section Content</label>
+                            <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Section Content</label>
                             <textarea 
                               value={section.content} 
                               onChange={(e) => updateContentSection(index, 'content', e.target.value)} 
                               placeholder="Write Your Content..." 
-                              className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-gray-200 placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
+                              className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
                               rows={6}
                             />
                           </div>
@@ -489,7 +489,7 @@ export default function AddBlogs() {
 
                       <button
                         onClick={addContentSection}
-                        className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${isdarkmode ? 'border-white/10 text-gray-500 hover:border-[#800000] hover:text-[#800000]' : 'border-gray-200 text-gray-400 hover:border-[#800000] hover:text-[#800000]'}`}
+                        className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${isdarkmode ? 'border-white/10 text-white hover:border-[#800000] hover:text-[#800000]' : 'border-gray-200 text-black hover:border-[#800000] hover:text-[#800000]'}`}
                       >
                         + Add Another Section
                       </button>
@@ -499,11 +499,11 @@ export default function AddBlogs() {
               </div>
 
               <div className={`flex justify-between items-center pt-6 mt-4 border-t ${isdarkmode ? 'border-white/10' : 'border-gray-50'}`}>
-                <p className={`text-[10px] italic ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Review Your Entry Before Finalizing.</p>
+                <p className={`text-[10px] italic ${isdarkmode ? 'text-white' : 'text-black'}`}>Review Your Entry Before Finalizing.</p>
                 <button 
                   onClick={() => setShowConfirmModal(true)} 
                   disabled={!isFormValid() || isSubmitting}
-                  className={`px-10 py-3 text-[10px] rounded-xl transition-all ${isFormValid() && !isSubmitting ? 'bg-[#800000] text-white shadow-md shadow-[#800000]/30' : isdarkmode ? 'bg-[#2a2a2a] text-gray-600 cursor-not-allowed' : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                  className={`px-10 py-3 text-[10px] rounded-xl transition-all ${isFormValid() && !isSubmitting ? 'bg-[#800000] text-white shadow-md shadow-[#800000]/30' : isdarkmode ? 'bg-[#2a2a2a] text-white cursor-not-allowed' : 'bg-gray-100 text-black cursor-not-allowed'}`}
                 >
                   {isSubmitting ? 'Saving...' : 'Save Blog Entry'}
                 </button>
@@ -518,8 +518,8 @@ export default function AddBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">📝</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Confirm Submission</h3>
-              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>Confirm Submission</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Are you ready to {status === 'published' ? 'publish' : status === 'scheduled' ? 'schedule' : 'save'} this blog post?
               </p>
             </div>
@@ -528,7 +528,7 @@ export default function AddBlogs() {
               <button
                 onClick={() => setShowConfirmModal(false)}
                 disabled={isSubmitting}
-                className={`flex-1 px-6 py-3 ${isdarkmode ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} rounded-lg transition-colors text-[10px]`}
+                className={`flex-1 px-6 py-3 ${isdarkmode ? 'bg-[#2a2a2a] text-white hover:bg-[#353535]' : 'bg-gray-200 text-black hover:bg-gray-300'} rounded-lg transition-colors text-[10px]`}
               >
                 Cancel
               </button>
@@ -549,8 +549,8 @@ export default function AddBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">✅</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Success!</h3>
-              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>Success!</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Your blog post has been {status === 'published' ? 'published' : status === 'scheduled' ? 'scheduled' : 'saved'} successfully.
               </p>
             </div>
@@ -570,8 +570,8 @@ export default function AddBlogs() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">❌</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>Error</h3>
-              <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>Error</h3>
+              <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 {errorMessage || 'Something went wrong. Please try again.'}
               </p>
             </div>
