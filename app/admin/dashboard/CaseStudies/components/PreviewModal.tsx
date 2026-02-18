@@ -16,12 +16,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClos
   if (!isOpen || !data) return null;
 
   const handleEdit = () => {
-    // Scroll to top smoothly
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-    // Call the edit handler and close modal
+    // Scroll is handled by the parent via handleEditWithScroll
     onEdit(data);
     onClose();
   };
@@ -70,7 +65,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClos
             By {data.author}
           </p>
           <p className={`text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-            {data.start} — {data.isUnfinished ? 'Unfinished' : data.end}
+            {data.start} â€" {data.isUnfinished ? 'Unfinished' : data.end}
           </p>
           {data.status === 'Scheduled' && data.scheduleDate && (
             <p className={`text-sm font-bold mt-2 ${isdarkmode ? 'text-orange-400' : 'text-orange-600'}`}>
