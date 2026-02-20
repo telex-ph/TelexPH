@@ -194,13 +194,27 @@ function AddServiceModal({
   onSuccess: () => void
   isdarkmode: boolean
 }) {
+<<<<<<< HEAD
   const [formData, setFormData] = useState({ name: '', description: '', badge: '', coverPhoto: '' })
+=======
+  const [formData, setFormData] = useState<{
+    name: string
+    description: string
+    badge: string
+    coverPhoto: string | null
+  }>({
+    name: '',
+    description: '',
+    badge: '',
+    coverPhoto: null,
+  })
+>>>>>>> ef8abcb58c50025fa1238c822d11505bbfd2b6e0
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ name: '', description: '', badge: '', coverPhoto: '' })
+      setFormData({ name: '', description: '', badge: '', coverPhoto: null })
       setError('')
     }
   }, [isOpen])

@@ -299,6 +299,14 @@ export const useCaseStudies = () => {
   const handlefilechange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        updateMessageState('error', 'Invalid file type. Only PNG, JPG, JPEG, and WebP images are allowed.');
+        if (fileref.current) fileref.current.value = '';
+        setTimeout(() => updateMessageState('error', null), 4000);
+        return;
+      }
+      updateMessageState('error', null);
       updateFormField('selectedfile', file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -490,35 +498,35 @@ export const useCaseStudies = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle delete click
+  // Handle archive click (replaces delete)
   const handledeleteclick = (rec: CaseStudy) => {
     setdeletetarget(rec);
     updateModalState('showdeletemodal', true);
   };
 
-  // Handle delete confirm
+  // Handle archive confirm
   const handledeleteconfirm = async () => {
     if (!deletetarget) return;
 
     try {
       updateLoadingState('isdeleting', true);
-      const response = await fetch(`${API_BASE_URL}/casestudies/${deletetarget.id}`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_BASE_URL}/casestudies/${deletetarget.id}/archive`, {
+        method: 'PATCH',
         credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Failed to delete');
+      if (!response.ok) throw new Error('Failed to archive');
 
       await fetchCaseStudies();
       updateModalState('showdeletemodal', false);
       setdeletetarget(null);
-      updateMessageState('success', 'Case study deleted successfully');
+      updateMessageState('success', 'Case study archived successfully');
 
       setTimeout(() => {
         updateMessageState('success', null);
       }, 3000);
     } catch (error) {
-      updateMessageState('error', 'Failed to delete case study');
+      updateMessageState('error', 'Failed to archive case study');
     } finally {
       updateLoadingState('isdeleting', false);
     }

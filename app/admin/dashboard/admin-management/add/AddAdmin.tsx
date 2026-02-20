@@ -43,6 +43,13 @@ export default function AddAdmin() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setErrorMessage('Invalid file type. Only JPG, JPEG, PNG, and WEBP are allowed.');
+        setShowErrorModal(true);
+        if (fileRef.current) fileRef.current.value = '';
+        return;
+      }
       actualFileRef.current = file;
       setIsCompressing(true);
       const reader = new FileReader();
@@ -169,10 +176,10 @@ export default function AddAdmin() {
       <div className={`mb-8 rounded-3xl p-8 transition-colors duration-500 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`} style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(0, 0, 0, 0.03)' }}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+            <h1 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>
               ➕ Add New Administrator
             </h1>
-            <p className={`text-[11px] mt-1 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+            <p className={`text-[11px] mt-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>
               Create a new administrator account
             </p>
           </div>
@@ -182,14 +189,14 @@ export default function AddAdmin() {
           {/* Left Column - Profile Picture */}
           <div className="lg:col-span-1">
             <div className={`border-2 border-dashed rounded-3xl p-6 transition-colors ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-200 bg-gray-50/50'}`}>
-              <label className={`block text-[9px] uppercase tracking-widest mb-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <label className={`block text-[9px] uppercase tracking-widest mb-4 ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Profile Picture (Optional)
               </label>
               
               <input 
                 ref={fileRef}
                 type="file" 
-                accept="image/*" 
+                accept="image/jpeg,image/jpg,image/png,image/webp" 
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -226,18 +233,18 @@ export default function AddAdmin() {
                   }`}
                 >
                   <div className="text-4xl mb-3">📸</div>
-                  <p className={`text-[11px] bold-text mb-1 ${isdarkmode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-[11px] bold-text mb-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>
                     Click to upload
                   </p>
-                  <p className={`text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    PNG, JPG or JPEG
+                  <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
+                    JPG, JPEG, PNG or WEBP
                   </p>
                 </div>
               )}
               
               {isCompressing && (
                 <div className="text-center mt-4">
-                  <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                     Compressing image...
                   </p>
                 </div>
@@ -251,12 +258,12 @@ export default function AddAdmin() {
             <div className={`border rounded-3xl p-6 space-y-4 ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>PERSONAL INFORMATION</label>
+                <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>PERSONAL INFORMATION</label>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>First Name *</label>
+                  <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>First Name *</label>
                   <input 
                     value={firstName} 
                     onChange={(e) => setFirstName(e.target.value)} 
@@ -264,14 +271,14 @@ export default function AddAdmin() {
                     placeholder="Enter first name..." 
                     className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                       isdarkmode 
-                        ? 'bg-[#1a1a1a] text-gray-200 placeholder-gray-600 border-white/10 focus:border-[#800000]' 
-                        : 'bg-white text-gray-800 placeholder-gray-400 border-gray-200 focus:border-[#800000]'
+                        ? 'bg-[#1a1a1a] text-white placeholder-gray-600 border-white/10 focus:border-[#800000]' 
+                        : 'bg-white text-black placeholder-gray-400 border-gray-200 focus:border-[#800000]'
                     }`}
                   />
                 </div>
                 
                 <div>
-                  <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Last Name *</label>
+                  <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Last Name *</label>
                   <input 
                     value={lastName} 
                     onChange={(e) => setLastName(e.target.value)} 
@@ -279,15 +286,15 @@ export default function AddAdmin() {
                     placeholder="Enter last name..." 
                     className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                       isdarkmode 
-                        ? 'bg-[#1a1a1a] text-gray-200 placeholder-gray-600 border-white/10 focus:border-[#800000]' 
-                        : 'bg-white text-gray-800 placeholder-gray-400 border-gray-200 focus:border-[#800000]'
+                        ? 'bg-[#1a1a1a] text-white placeholder-gray-600 border-white/10 focus:border-[#800000]' 
+                        : 'bg-white text-black placeholder-gray-400 border-gray-200 focus:border-[#800000]'
                     }`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Email Address *</label>
+                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Email Address *</label>
                 <input 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
@@ -295,14 +302,14 @@ export default function AddAdmin() {
                   placeholder="Enter email address..." 
                   className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                     isdarkmode 
-                      ? 'bg-[#1a1a1a] text-gray-200 placeholder-gray-600 border-white/10 focus:border-[#800000]' 
-                      : 'bg-white text-gray-800 placeholder-gray-400 border-gray-200 focus:border-[#800000]'
+                      ? 'bg-[#1a1a1a] text-white placeholder-gray-600 border-white/10 focus:border-[#800000]' 
+                      : 'bg-white text-black placeholder-gray-400 border-gray-200 focus:border-[#800000]'
                   }`}
                 />
               </div>
 
               <div>
-                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Contact Number *</label>
+                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Contact Number *</label>
                 <input 
                   value={contactNumber} 
                   onChange={(e) => setContactNumber(e.target.value)} 
@@ -310,8 +317,8 @@ export default function AddAdmin() {
                   placeholder="Enter contact number..." 
                   className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                     isdarkmode 
-                      ? 'bg-[#1a1a1a] text-gray-200 placeholder-gray-600 border-white/10 focus:border-[#800000]' 
-                      : 'bg-white text-gray-800 placeholder-gray-400 border-gray-200 focus:border-[#800000]'
+                      ? 'bg-[#1a1a1a] text-white placeholder-gray-600 border-white/10 focus:border-[#800000]' 
+                      : 'bg-white text-black placeholder-gray-400 border-gray-200 focus:border-[#800000]'
                   }`}
                 />
               </div>
@@ -321,18 +328,18 @@ export default function AddAdmin() {
             <div className={`border rounded-3xl p-6 space-y-4 ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>ROLE & DEPARTMENT</label>
+                <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>ROLE & DEPARTMENT</label>
               </div>
               
               <div>
-                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Department *</label>
+                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Department *</label>
                 <select
                   value={department}
                   onChange={(e) => setDepartment(parseInt(e.target.value))}
                   className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                     isdarkmode 
-                      ? 'bg-[#1a1a1a] text-gray-200 border-white/10 focus:border-[#800000]' 
-                      : 'bg-white text-gray-800 border-gray-200 focus:border-[#800000]'
+                      ? 'bg-[#1a1a1a] text-white border-white/10 focus:border-[#800000]' 
+                      : 'bg-white text-black border-gray-200 focus:border-[#800000]'
                   }`}
                 >
                   <option value="">Select Department</option>
@@ -345,14 +352,14 @@ export default function AddAdmin() {
               </div>
 
               <div>
-                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Role *</label>
+                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Role *</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(parseInt(e.target.value))}
                   className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                     isdarkmode 
-                      ? 'bg-[#1a1a1a] text-gray-200 border-white/10 focus:border-[#800000]' 
-                      : 'bg-white text-gray-800 border-gray-200 focus:border-[#800000]'
+                      ? 'bg-[#1a1a1a] text-white border-white/10 focus:border-[#800000]' 
+                      : 'bg-white text-black border-gray-200 focus:border-[#800000]'
                   }`}
                 >
                   <option value="">Select Role</option>
@@ -369,11 +376,11 @@ export default function AddAdmin() {
             <div className={`border rounded-3xl p-6 space-y-4 ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>SECURITY</label>
+                <label className={`text-[9px] uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>SECURITY</label>
               </div>
               
               <div>
-                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Password *</label>
+                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Password *</label>
                 <input 
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)} 
@@ -381,14 +388,14 @@ export default function AddAdmin() {
                   placeholder="Enter password..." 
                   className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                     isdarkmode 
-                      ? 'bg-[#1a1a1a] text-gray-200 placeholder-gray-600 border-white/10 focus:border-[#800000]' 
-                      : 'bg-white text-gray-800 placeholder-gray-400 border-gray-200 focus:border-[#800000]'
+                      ? 'bg-[#1a1a1a] text-white placeholder-gray-600 border-white/10 focus:border-[#800000]' 
+                      : 'bg-white text-black placeholder-gray-400 border-gray-200 focus:border-[#800000]'
                   }`}
                 />
               </div>
 
               <div>
-                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Confirm Password *</label>
+                <label className={`text-[9px] mb-2 block uppercase tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>Confirm Password *</label>
                 <input 
                   value={confirmPassword} 
                   onChange={(e) => setConfirmPassword(e.target.value)} 
@@ -396,8 +403,8 @@ export default function AddAdmin() {
                   placeholder="Confirm password..." 
                   className={`w-full p-3 text-[11px] outline-none rounded-xl border transition-colors ${
                     isdarkmode 
-                      ? 'bg-[#1a1a1a] text-gray-200 placeholder-gray-600 border-white/10 focus:border-[#800000]' 
-                      : 'bg-white text-gray-800 placeholder-gray-400 border-gray-200 focus:border-[#800000]'
+                      ? 'bg-[#1a1a1a] text-white placeholder-gray-600 border-white/10 focus:border-[#800000]' 
+                      : 'bg-white text-black placeholder-gray-400 border-gray-200 focus:border-[#800000]'
                   }`}
                 />
                 {password && confirmPassword && password !== confirmPassword && (
@@ -408,7 +415,7 @@ export default function AddAdmin() {
 
             {/* Submit Button */}
             <div className={`flex justify-between items-center pt-6 mt-4 border-t ${isdarkmode ? 'border-white/10' : 'border-gray-50'}`}>
-              <p className={`text-[10px] italic ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+              <p className={`text-[10px] italic ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Review Your Entry Before Finalizing.
               </p>
               <button 
@@ -435,10 +442,10 @@ export default function AddAdmin() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">👤</div>
-              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Confirm Creation
               </h3>
-              <p className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-[11px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Are you ready to create this administrator account?
               </p>
             </div>
@@ -449,8 +456,8 @@ export default function AddAdmin() {
                 disabled={isSubmitting}
                 className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[11px] bold-text ${
                   isdarkmode 
-                    ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-[#2a2a2a] text-white hover:bg-[#353535]' 
+                    : 'bg-gray-200 text-black hover:bg-gray-300'
                 }`}
               >
                 Cancel
@@ -473,10 +480,10 @@ export default function AddAdmin() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">✅</div>
-              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Success!
               </h3>
-              <p className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-[11px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Administrator account has been created successfully.
               </p>
             </div>
@@ -497,10 +504,10 @@ export default function AddAdmin() {
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">❌</div>
-              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 Error
               </h3>
-              <p className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-[11px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
                 {errorMessage || 'Something went wrong. Please try again.'}
               </p>
             </div>

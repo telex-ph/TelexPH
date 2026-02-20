@@ -8,7 +8,7 @@ export default function ListAdmin() {
   const [admins, setAdmins] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [adminToDelete, setAdminToDelete] = useState<string | null>(null);
+  const [adminToArchive, setAdminToArchive] = useState<string | null>(null);
  
   const [isEditing, setIsEditing] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
@@ -157,18 +157,18 @@ export default function ListAdmin() {
     closeEditModal();
   };
 
-  const confirmDelete = (id: string) => {
-    setAdminToDelete(id);
+  const confirmArchive = (id: string) => {
+    setAdminToArchive(id);
   };
 
-  const cancelDelete = () => {
-    setAdminToDelete(null);
+  const cancelArchive = () => {
+    setAdminToArchive(null);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleArchive = async (id: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_BASE_URL}/users/${id}/archive`, {
+        method: 'PATCH',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
@@ -176,14 +176,14 @@ export default function ListAdmin() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete admin');
+        throw new Error('Failed to archive admin');
       }
 
       loadAdmins();
-      setAdminToDelete(null);
+      setAdminToArchive(null);
     } catch (error) {
-      console.error('Error deleting admin:', error);
-      alert('Failed to delete admin');
+      console.error('Error archiving admin:', error);
+      alert('Failed to archive admin');
     }
   };
 
@@ -428,7 +428,7 @@ export default function ListAdmin() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          confirmDelete(admin._id);
+                          confirmArchive(admin._id);
                         }}
                         className={`flex-1 px-4 py-2 rounded-lg text-[10px] bold-text transition-colors ${
                           isdarkmode 
@@ -436,7 +436,7 @@ export default function ListAdmin() {
                             : 'bg-red-50 text-red-600 hover:bg-red-100'
                         }`}
                       >
-                        Delete
+                        Disable
                       </button>
                     </div>
                   </div>
@@ -528,7 +528,7 @@ export default function ListAdmin() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                confirmDelete(admin._id);
+                                confirmArchive(admin._id);
                               }}
                               className={`px-3 py-1.5 rounded-lg text-[10px] bold-text transition-colors ${
                                 isdarkmode 
@@ -536,7 +536,7 @@ export default function ListAdmin() {
                                   : 'bg-red-50 text-red-600 hover:bg-red-100'
                               }`}
                             >
-                              Delete
+                              Disable
                             </button>
                           </div>
                         </td>
@@ -595,21 +595,21 @@ export default function ListAdmin() {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {adminToDelete && (
+      {/* Disable Account Confirmation Modal */}
+      {adminToArchive && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl transition-colors duration-500`}>
             <div className="text-center mb-6">
-              <div className="text-red-500 text-6xl mb-4">⚠️</div>
-              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Confirm Deletion</h3>
+              <div className="text-red-500 text-6xl mb-4">🚫</div>
+              <h3 className={`text-2xl bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>Disable Account</h3>
               <p className={`text-[11px] ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Are you sure you want to delete this administrator? This action cannot be undone.
+                Are you sure you want to disable this administrator's account? They will no longer be able to access the system.
               </p>
             </div>
             
             <div className="flex gap-3">
               <button
-                onClick={cancelDelete}
+                onClick={cancelArchive}
                 className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[11px] bold-text ${
                   isdarkmode 
                     ? 'bg-[#2a2a2a] text-gray-200 hover:bg-[#353535]' 
@@ -619,14 +619,14 @@ export default function ListAdmin() {
                 Cancel
               </button>
               <button
-                onClick={() => handleDelete(adminToDelete)}
+                onClick={() => handleArchive(adminToArchive)}
                 className={`flex-1 px-6 py-3 rounded-lg transition-colors text-[11px] bold-text ${
                   isdarkmode 
                     ? 'bg-red-700 text-white hover:bg-red-600' 
                     : 'bg-red-500 text-white hover:bg-red-600'
                 }`}
               >
-                Delete
+                Disable
               </button>
             </div>
           </div>
