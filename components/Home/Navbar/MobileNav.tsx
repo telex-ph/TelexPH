@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
@@ -9,15 +9,9 @@ import { RiCloseFill } from "react-icons/ri";
 import { HiChevronDown } from "react-icons/hi";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
 
-const FONT_WEIGHTS = {
-  regular: 400,
-  bold: 700,
-  black: 900,
-} as const;
-
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["700", "900"],
+  weight: ["400", "500", "600", "700", "900"],
   variable: "--font-poppins",
   display: "swap",
 });
@@ -31,17 +25,10 @@ const openSans = Open_Sans({
 
 const rubik = Rubik({
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["400", "500"],
   variable: "--font-rubik",
   display: "swap",
 });
-
-type NavLinkType = {
-  id: number;
-  label: string;
-  url: string;
-  dropdown?: NavLinkType[];
-};
 
 type Props = {
   showNav: boolean;
@@ -49,200 +36,179 @@ type Props = {
 };
 
 const MobileNav = ({ showNav, closeNav }: Props) => {
-  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const [openMainId, setOpenMainId] = useState<number | null>(null);
+  const [openSubId, setOpenSubId] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleToggleDropdown = (id: number) => {
-    setOpenDropdownId(openDropdownId === id ? null : id);
+  const servicesMegaData = [
+    { id: "offer", label: "What We Offer", items: ["Customer Support"] },
+  ];
+
+  const aboutMegaData = [
+    { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
+  ];
+
+  const resourcesMegaData = [
+    { id: "learning", label: "Resource Center", items: ["Case Studies"] },
+    { 
+      id: "news", 
+      label: "Industry Use Cases", 
+      items: [
+        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
+        { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
+        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
+        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
+        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
+        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
+        { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
+      ]
+    },
+    { 
+      id: "blogs", 
+      label: "Blogs", 
+      items: [{ label: "Blogs Overview", url: "/resources/Blogs" }] 
+    },
+  ];
+
+  const careersMegaData = [
+    { 
+      id: "careers-center", 
+      label: "Careers Center", 
+      items: [{ label: "Careers Home", url: "/careers" }] 
+    },
+    { 
+      id: "job-details", 
+      label: "Job Details", 
+      items: [{ label: "Full Job Details", url: "/careers/job-details" }] 
+    },
+  ];
+
+  const getMegaData = (label: string) => {
+    if (label === "Services") return { data: servicesMegaData, path: "/services" };
+    if (label === "About") return { data: aboutMegaData, path: "/about" };
+    if (label === "Resources") return { data: resourcesMegaData, path: "/resources" };
+    if (label === "Careers") return { data: careersMegaData, path: "/careers" };
+    return null;
   };
 
-  const scrollToSection = (hash: string) => {
-    const element = document.querySelector(hash);
-    if (element) {
-      const navbarHeight = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - navbarHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
+  const handleToggleMain = (id: number) => {
+    setOpenMainId(openMainId === id ? null : id);
+    setOpenSubId(null);
   };
 
-  const handleScrollClick = (
-    e: React.MouseEvent<HTMLAnchorElement> | { preventDefault: () => void },
-    url: string
-  ) => {
+  const handleToggleSub = (e: React.MouseEvent, subId: string) => {
+    e.stopPropagation();
+    setOpenSubId(openSubId === subId ? null : subId);
+  };
+
+  const handleScrollClick = (e: React.MouseEvent | null, url: string) => {
+    if (e) e.preventDefault();
     closeNav();
-    setOpenDropdownId(null);
-
     if (url.startsWith("#")) {
-      e.preventDefault();
-
-      const isHomepage = pathname === "/";
-
-      if (isHomepage) {
-        scrollToSection(url);
+      if (pathname === "/") {
+        const element = document.querySelector(url);
+        if (element) {
+          const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
       } else {
         router.push("/" + url);
-
-        setTimeout(() => {
-          scrollToSection(url);
-        }, 150);
       }
+    } else {
+      router.push(url);
     }
   };
 
-  const currentYear = new Date().getFullYear();
-
   return (
-    <div
-      className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
-    >
-      {showNav && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm w-full h-screen z-[1000] transition-opacity duration-500"
-          onClick={closeNav}
-        ></div>
-      )}
-      <div
-        className={`fixed top-0 left-0 flex flex-col h-full w-[85%] sm:w-[75%] max-w-sm z-[1050] transform transition-all duration-500 ease-out 
-          ${showNav ? "translate-x-0" : "-translate-x-full"} 
-          bg-white shadow-2xl overflow-hidden`}
-      >
-        <div className="relative z-10 flex flex-col h-full">
-          <div className="flex-shrink-0 px-6 py-5 flex justify-between items-center bg-gray-800">
-            <div className="relative w-[180px] h-[35px]">
-              <Image
-                src="/images/Weblogo.webp"
-                alt="TELEXPH Delivery & Transport Logo"
-                fill
-                sizes="(max-width: 640px) 180px"
-                className="object-contain object-left drop-shadow-md"
-                priority
-              />
-            </div>
+    <div className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable} font-poppins`}>
+      <div 
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] transition-opacity duration-300 ${showNav ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`} 
+        onClick={closeNav}
+      ></div>
+      
+      <div className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-white z-[2050] transform transition-transform duration-500 ease-in-out ${showNav ? "translate-x-0" : "-translate-x-full"} flex flex-col shadow-2xl`}>
+        <div className="flex items-center justify-between px-6 py-5 bg-gray-800">
+          <Image src="/images/Weblogo.webp" alt="Logo" width={150} height={30} className="object-contain" priority />
+          <button onClick={closeNav} className="text-white hover:text-[#a10000]">
+            <RiCloseFill className="w-8 h-8" />
+          </button>
+        </div>
 
-            <button
-              onClick={closeNav}
-              className="w-8 h-8 flex items-center justify-center rounded-full text-white hover:text-[#a10000] hover:bg-white transition-all duration-300"
-              aria-label="Close mobile navigation"
-            >
-              <RiCloseFill className="w-6 h-6 transition-colors" />
-            </button>
-          </div>
+        <nav className="flex-1 overflow-y-auto py-2">
+          {navLinks.map((link) => {
+            const mega = getMegaData(link.label);
+            const isMainOpen = openMainId === link.id;
 
-          <nav className="flex-1 overflow-y-auto custom-scrollbar-light divide-y divide-gray-100">
-            {navLinks.map((link: NavLinkType) => (
-              <div key={link.id} className="w-full">
-                <div className="flex items-stretch">
-                  <Link
-                    href={link.url}
-                    onClick={(e) => {
-                      handleScrollClick(e, link.url);
-                    }}
-                    className={`flex-1 flex items-center py-4 px-6 text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:bg-gray-50 hover:text-[#a10000]`}
-                  >
+            return (
+              <div key={link.id} className="border-b border-gray-100">
+                <div 
+                  className="flex items-center justify-between px-6 py-4 cursor-pointer"
+                  onClick={() => mega ? handleToggleMain(link.id) : handleScrollClick(null, link.url)}
+                >
+                  <span className={`text-sm font-bold uppercase tracking-wider ${isMainOpen ? "text-[#a10000]" : "text-gray-700"}`}>
                     {link.label}
-                  </Link>
-
-                  {link.dropdown && link.dropdown.length > 0 && (
-                    <button
-                      onClick={() => handleToggleDropdown(link.id)}
-                      className={`flex-shrink-0 w-14 flex items-center justify-center border-l border-gray-100 transition-colors duration-300 ${
-                        openDropdownId === link.id
-                          ? "bg-gray-100 text-[#a10000]"
-                          : "text-gray-700 hover:bg-gray-50 hover:text-[#a10000]"
-                      }`}
-                      aria-expanded={openDropdownId === link.id}
-                      aria-controls={`dropdown-${link.id}`}
-                    >
-                      <HiChevronDown
-                        className={`w-5 h-5 transition-transform duration-300 ${
-                          openDropdownId === link.id ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
+                  </span>
+                  {mega && (
+                    <HiChevronDown className={`w-5 h-5 transition-transform duration-300 ${isMainOpen ? "rotate-180 text-[#a10000]" : "text-gray-400"}`} />
                   )}
                 </div>
 
-                {link.dropdown && link.dropdown.length > 0 && (
-                  <div
-                    id={`dropdown-${link.id}`}
-                    className={`overflow-hidden transition-all duration-300 ease-in-out bg-gray-50/50 ${
-                      openDropdownId === link.id ? "max-h-[500px]" : "max-h-0"
-                    }`}
-                  >
-                    <div className="py-2 pl-6 pr-4 border-l-4 border-[#a10000] space-y-1">
-                      {link.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.id}
-                          href={dropdownItem.url}
-                          onClick={(e) =>
-                            handleScrollClick(e, dropdownItem.url)
-                          }
-                          className="group flex items-center py-2 px-4 text-sm text-gray-700 font-rubik-regular transition-colors duration-200 hover:bg-white hover:text-[#a10000] rounded-md"
-                        >
-                          <span className="w-1 h-1 rounded-full bg-red-400 group-hover:bg-[#a10000] mr-3 transition-colors"></span>
-                          {dropdownItem.label}
-                        </Link>
-                      ))}
-                    </div>
+                {mega && isMainOpen && (
+                  <div className="bg-gray-50 flex flex-col">
+                    {mega.data.map((sub) => {
+                      const isSubOpen = openSubId === sub.id;
+                      return (
+                        <div key={sub.id} className="flex flex-col border-l-4 border-[#a10000]/20">
+                          <div 
+                            className="flex items-center justify-between px-10 py-3 border-b border-white"
+                            onClick={(e) => handleToggleSub(e, sub.id)}
+                          >
+                            <span className={`text-[13px] font-normal uppercase ${isSubOpen ? "text-[#a10000]" : "text-gray-600"}`}>
+                              {sub.label}
+                            </span>
+                            <HiChevronDown className={`w-4 h-4 transition-transform ${isSubOpen ? "rotate-180 text-[#a10000]" : "text-gray-400"}`} />
+                          </div>
+
+                          {isSubOpen && (
+                            <div className="bg-white py-2 pl-14 pr-6 flex flex-col space-y-3 shadow-inner">
+                              {sub.items.map((item, idx) => {
+                                const label = typeof item === 'string' ? item : item.label;
+                                const url = typeof item === 'string' ? mega.path : item.url;
+                                return (
+                                  <Link 
+                                    key={idx} 
+                                    href={url} 
+                                    onClick={(e) => handleScrollClick(e, url)}
+                                    className="text-[13px] text-gray-500 hover:text-[#a10000] py-1 border-b border-gray-50 last:border-0 font-normal"
+                                  >
+                                    {label}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
-            ))}
-          </nav>
+            );
+          })}
+        </nav>
 
-          <div className="flex-shrink-0 px-6 pb-6 pt-4 border-t border-gray-200 bg-white">
-            <div className="mb-4">
-              <Link
-                href="/contact"
-                onClick={closeNav}
-                className="block w-full bg-[#a10000] hover:bg-red-700 text-white px-6 py-3 text-sm font-open-sans-bold transition-colors rounded cursor-pointer uppercase shadow-lg text-center"
-              >
-                CONTACT US
-              </Link>
-            </div>
-
-            <p className="text-xs text-gray-500 font-rubik-regular text-center">
-              &copy; {currentYear} TELEX. All rights reserved.
-            </p>
-          </div>
+        <div className="p-6 bg-white border-t border-gray-100">
+          <button 
+            onClick={() => handleScrollClick(null, "/contact")}
+            className="w-full bg-[#a10000] text-white py-3 text-center text-sm font-bold uppercase rounded"
+          >
+            Contact Us
+          </button>
         </div>
       </div>
-
-      <style jsx global>{`
-        .font-open-sans-bold {
-          font-family: var(--font-open-sans), sans-serif;
-          font-weight: ${FONT_WEIGHTS.bold};
-        }
-
-        .font-rubik-regular {
-          font-family: var(--font-rubik), sans-serif;
-          font-weight: ${FONT_WEIGHTS.regular};
-        }
-      `}</style>
-      <style jsx>{`
-        .custom-scrollbar-light::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar-light::-webkit-scrollbar-track {
-          background: #f1f1f1;
-        }
-        .custom-scrollbar-light::-webkit-scrollbar-thumb {
-          background-color: #ccc;
-          border-radius: 3px;
-        }
-        .custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
-          background-color: #a10000;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default MobileNav
+export default MobileNav;

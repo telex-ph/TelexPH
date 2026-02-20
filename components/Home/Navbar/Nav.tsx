@@ -11,7 +11,7 @@ import { HiBars3BottomRight, HiChevronRight } from "react-icons/hi2";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["700", "900"],
+  weight: ["400", "500", "600", "700", "900"],
   variable: "--font-poppins",
   display: "swap",
 });
@@ -36,7 +36,7 @@ type Props = {
 
 const Nav = ({ openNav }: Props) => {
   const [navBg, setNavBg] = useState(false);
-  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);  
   
   const [activeServicesTab, setActiveServicesTab] = useState("offer");
   const [activeAboutTab, setActiveAboutTab] = useState("company");
@@ -76,61 +76,39 @@ const Nav = ({ openNav }: Props) => {
   }, []);
 
   const servicesMegaData = [
-    { id: "offer", label: "What We Offer", items: ["Customer Support", "Technical Helpdesk", "Sales & Lead Generation", "Virtual Assistance", "Back Office Operations", "Social Media Management"] },
-    { id: "freight", label: "Freight Services", items: ["Air Freight", "Drop Trailer", "Flatbed", "Intermodal", "LTL", "Ocean Shipping", "Port Services", "Truckload"] },
-    { id: "logistics", label: "Logistics Services", items: ["Warehousing", "Distribution", "Fulfillment"] },
-    { id: "supply", label: "Supply Chain", items: ["Consulting", "Optimization", "Sourcing"] },
-    { id: "ai", label: "Lean AI Platform", items: ["AI Analytics", "Route Opti"] },
-    { id: "industries", label: "Industries", items: ["Retail", "Manufacturing", "Automotive"] },
+    { id: "offer", label: "What We Offer", items: ["Customer Support", "Technical Helpdesk", "Sales & Lead Generation"] },
   ];
 
   const aboutMegaData = [
     { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
-    { id: "team", label: "Our Team", items: ["Leadership", "Careers", "Culture"] },
-    { id: "legal", label: "Legal", items: ["Privacy Policy", "Terms of Service", "Compliance"] },
   ];
 
-const resourcesMegaData = [
-  { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
-  { 
-    id: "news", 
-    label: "Industry Use Cases", 
-    items: [
-      { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
-      { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
-      { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
-      { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
-      { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
-      { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
-      { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
-    ]
-  },
-  { 
-    id: "blogs", 
-    label: "Blogs", 
-    items: [
-      { label: "Blogs Overview", url: "/resources/Blogs" },
-    ] 
-  },
-];
+  const resourcesMegaData = [
+    { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
+    { 
+      id: "news", 
+      label: "Industry Use Cases", 
+      items: [
+        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
+        { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
+        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
+        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
+        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
+        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
+        { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
+      ]
+    },
+    { 
+      id: "blogs", 
+      label: "Blogs", 
+      items: [{ label: "Blogs Overview", url: "/resources/Blogs" }] 
+    },
+  ];
 
-
-const careersMegaData = [
-  { 
-    id: "careers-center", 
-    label: "Careers Center", 
-    items: [
-      { label: "Careers Home", url: "/careers" }, 
-    ] 
-  },
-  { 
-    id: "job-details", 
-    label: "Job Details", 
-    items: [
-      { label: "Full Job Details", url: "/careers/job-details" },
-    ] 
-  },
-];
+  const careersMegaData = [
+    { id: "careers-center", label: "Careers Center", items: [{ label: "Careers Home", url: "/careers" }] },
+    { id: "job-details", label: "Job Details", items: [{ label: "Full Job Details", url: "/careers/job-details" }] },
+  ];
 
   const getMegaConfig = (label: string) => {
     if (label === "Services") return { data: servicesMegaData, active: activeServicesTab, setter: setActiveServicesTab, path: "/services" };
@@ -163,33 +141,32 @@ const careersMegaData = [
                       </span>
                     </Link>
                     {megaConfig && openDropdownId === link.id && (
-                      <div className="absolute top-full left-0 mt-[-2px] bg-white border-t-2 border-[#a10000] shadow-xl min-w-[800px] z-20 rounded-b-lg flex overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
-                        <div className="w-[35%] bg-[#f8fafc] px-8 pt-8 pb-8 border-r border-gray-200 flex flex-col">
-                          <h3 className="text-[#a10000] font-open-sans-bold text-sm uppercase border-b border-[#a10000] pb-3 mb-6">
+                      <div className="absolute top-full left-0 mt-[-2px] bg-white border-t-2 border-[#a10000] shadow-xl min-w-[550px] z-20 rounded-b-lg flex overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="w-[40%] bg-[#f8fafc] px-6 py-6 border-r border-gray-200 flex flex-col font-poppins">
+                          <h3 className="text-[#a10000] font-bold text-[11px] uppercase tracking-widest border-b border-[#a10000]/20 pb-2 mb-4">
                             Explore {link.label}
                           </h3>
-                          <div className="flex flex-col space-y-4">
+                          <div className="flex flex-col space-y-2">
                             {megaConfig.data.map((cat) => (
-                              <div key={cat.id} onMouseEnter={() => megaConfig.setter(cat.id)} className={`cursor-pointer transition-all duration-200 font-rubik text-[15px] flex items-center justify-between ${megaConfig.active === cat.id ? "text-[#a10000] font-medium" : "text-[rgba(40,40,40,0.7)] hover:text-[#a10000]"}`}>
+                              <div key={cat.id} onMouseEnter={() => megaConfig.setter(cat.id)} className={`cursor-pointer transition-all duration-200 text-[13px] flex items-center justify-between py-1.5 px-2 rounded ${megaConfig.active === cat.id ? "text-[#a10000] bg-white shadow-sm font-medium" : "text-gray-500 hover:text-[#a10000]"}`}>
                                 <span>{cat.label}</span>
-                                <HiChevronRight className={`w-4 h-4 transition-transform ${megaConfig.active === cat.id ? "translate-x-1" : "opacity-0"}`} />
+                                <HiChevronRight className={`w-3.5 h-3.5 transition-transform ${megaConfig.active === cat.id ? "translate-x-1" : "opacity-0"}`} />
                               </div>
                             ))}
                           </div>
                         </div>
-                        <div className="w-[65%] px-8 pt-8 pb-8 bg-white flex flex-col">
-                          <h3 className="text-[#a10000] font-open-sans-bold text-sm uppercase border-b border-[#a10000] pb-3">
+                        <div className="w-[60%] px-8 py-6 bg-white flex flex-col font-poppins">
+                          <h3 className="text-[#a10000] font-bold text-[11px] uppercase tracking-widest border-b border-[#a10000]/20 pb-2">
                             {megaConfig.data.find(c => c.id === megaConfig.active)?.label}
                           </h3>
-                          <div className="grid gap-x-12 gap-y-3 mt-6 auto-cols-max grid-flow-col" style={{ gridTemplateRows: `repeat(${megaConfig.data.length + 5}, minmax(0, 1fr))` }}>
+                          <div className="flex flex-col space-y-3 mt-4">
                             {megaConfig.data.find(c => c.id === megaConfig.active)?.items.map((item, i) => {
                               const label = typeof item === 'string' ? item : item.label;
                               const url = typeof item === 'string' ? megaConfig.path : item.url;
                               
                               return (
-                                <Link key={i} href={url} className="relative text-sm font-rubik transition-colors py-1 group/line w-fit text-[rgba(40,40,40,0.7)] whitespace-nowrap">
-                                  <span className="group-hover/line:text-[#a10000] transition-colors">{label}</span>
-                                  <span className="absolute left-0 bottom-0 w-0 h-[1.5px] bg-[#a10000] transition-all duration-300 group-hover/line:w-full"></span>
+                                <Link key={i} href={url} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
+                                  {label}
                                 </Link>
                               );
                             })}

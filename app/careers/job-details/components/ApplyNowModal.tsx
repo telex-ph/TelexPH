@@ -1,15 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Calendar, Upload, FileText, Check } from "lucide-react";
+import { X, ArrowRight, User, Mail, Phone, Briefcase, MessageSquare, Layers, AlertCircle, MapPin, Upload, FileText, Check, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Open_Sans, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 
-const openSans = Open_Sans({ subsets: ["latin"] });
-const poppinsFont = Poppins({ 
-  subsets: ["latin"], 
-  weight: ["300", "400", "500", "600", "700"] 
-});
+const poppins = Poppins({ subsets: ["latin"], weight: ["400"] });
 
 interface ApplyNowModalProps {
   isOpen: boolean;
@@ -17,7 +13,7 @@ interface ApplyNowModalProps {
 }
 
 export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
-  const [step, setStep] = useState(0); 
+  const [step, setStep] = useState(0);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -28,357 +24,255 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
     onClose();
   };
 
-  const handleFinalSubmit = () => {
-    setShowConfirm(false);
-    setIsSuccess(true);
-  };
-
   const steps = [
-    "personal info",
-    "curriculum vitae",
-    "cover letter",
-    "portfolio",
-    "screening"
+    "Personal Info", 
+    "Curriculum Vitae", 
+    "Cover Letter", 
+    "Portfolio", 
+    "Screening"
   ];
 
-  const renderStepContent = () => {
-    if (step === 1) {
-      return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <div className="mb-2 shrink-0">
-            <p className={`text-[#800000] text-[13px] tracking-widest uppercase ${poppinsFont.className}`}>
-              <b>step 1 of 5 :</b>
-            </p>
-          </div>
-          <div className="bg-[#f3f3f3] p-2.5 mb-2 rounded-t-sm border-l-4 border-[#800000] shrink-0">
-            <h4 className={`text-[#1a1a1a] tracking-widest uppercase text-sm ${poppinsFont.className}`}>
-              <b>personal information applicant <span className="text-red-600">*</span></b>
-            </h4>
-          </div>
-          <div className="px-3 mb-4 shrink-0">
-            <p className={`text-gray-500 text-[11px] italic tracking-wider leading-relaxed ${poppinsFont.className}`}>
-              reminder: ensure all details are accurate, complete, and match your official documents.
-            </p>
-          </div>
-
-          <div className="flex-1 overflow-y-auto thin-scrollbar pr-2">
-            <div className="space-y-8 pt-4 pb-8">
-              <section>
-                <div className="relative inline-block mb-6">
-                  <h4 className="text-lg text-[#1a1a1a] tracking-tight uppercase leading-none"><b>personal details</b></h4>
-                  <div className="absolute -bottom-1.5 left-0 w-full h-[1px] bg-[#800000]"></div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-[#333]"><b>first name *</b></label>
-                    <input type="text" placeholder="Enter your First Name" className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm italic outline-none focus:border-[#800000]" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-[#333]"><b>middle name *</b></label>
-                    <input type="text" placeholder="Enter your Middle Name" className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm italic outline-none focus:border-[#800000]" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-[#333]"><b>last name *</b></label>
-                    <input type="text" placeholder="Enter your Last Name" className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm italic outline-none focus:border-[#800000]" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-[#333]"><b>date of birth *</b></label>
-                    <div className="relative">
-                      <input type="text" placeholder="DD/MM/YY" className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm italic outline-none focus:border-[#800000]" />
-                      <Calendar className="absolute right-3 top-2.5 text-gray-400" size={16} />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-[#333]"><b>place of birth *</b></label>
-                    <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm italic text-gray-400 bg-white outline-none focus:border-[#800000]">
-                      <option>Enter your Birth Place</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-[#333]"><b>gender *</b></label>
-                    <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-sm italic text-gray-400 bg-white outline-none focus:border-[#800000]">
-                      <option>Male / Female</option>
-                    </select>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 py-4 shrink-0 mt-auto border-t border-gray-100">
-            <button onClick={() => setStep(0)} className="px-8 py-2.5 bg-[#b5b5b5] text-black rounded uppercase text-[10px] tracking-widest shadow-sm hover:bg-gray-300 transition-colors"><b>back</b></button>
-            <button onClick={() => setStep(2)} className="px-10 py-2.5 bg-[#800000] text-white rounded uppercase text-[10px] tracking-widest shadow-md hover:bg-[#600000] transition-colors"><b>next</b></button>
-          </div>
-        </div>
-      );
-    }
-
-    if (step === 2 || step === 3 || step === 4) {
-      const stepConfigs = {
-        2: { title: "resume / curriculum vitae", uploadLabel: "upload curriculum vitae", reminder: "reminder: attach a link to your most recent cv, making sure it includes updated work experience, skills, and contact details.", fileName: "my-cv.pdf" },
-        3: { title: "cover letter", uploadLabel: "upload cover letter", reminder: "reminder: provide a clear and updated link to your cover letter that highlights your interest and suitability for the position.", fileName: "my-coverletter.pdf" },
-        4: { title: "portfolio", uploadLabel: "upload portfolio", reminder: "reminder: please provide a link to your portfolio or work samples that demonstrate your skills and experience relevant to this position.", fileName: "my-portfolio.pdf" }
-      };
-      const config = stepConfigs[step as 2 | 3 | 4];
-
-      return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <div className="mb-2 shrink-0">
-            <p className={`text-[#800000] text-[13px] tracking-widest uppercase ${poppinsFont.className}`}>
-              <b>step {step} of 5 :</b>
-            </p>
-          </div>
-          <div className="bg-[#f3f3f3] p-2.5 mb-2 rounded-t-sm border-l-4 border-[#800000] shrink-0">
-            <h4 className={`text-[#1a1a1a] tracking-widest uppercase text-sm ${poppinsFont.className}`}>
-              <b>{config.title} <span className="text-red-600">*</span></b>
-            </h4>
-          </div>
-          <div className="px-3 mb-4 shrink-0">
-            <p className={`text-gray-500 text-[11px] italic tracking-wider leading-relaxed ${poppinsFont.className}`}>
-              {config.reminder}
-            </p>
-          </div>
-
-          <div className="flex-1 overflow-y-auto thin-scrollbar pt-4 px-1">
-            <div className="relative inline-block mb-8">
-              <h5 className="text-lg text-[#1a1a1a] tracking-tight uppercase leading-none"><b>{config.uploadLabel} *</b></h5>
-              <div className="absolute -bottom-1.5 left-0 w-full h-[1px] bg-[#800000]"></div>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-              <div className="border-2 border-dashed border-gray-200 rounded-[32px] p-12 flex flex-col items-center justify-center text-center space-y-5 bg-gray-50/30">
-                <div className="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center">
-                  <Upload className="text-[#800000]" size={28} />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[#1a1a1a] font-bold text-xs uppercase tracking-widest">choose a file or drag & drop it here</p>
-                  <p className="text-gray-400 text-[10px] uppercase tracking-wider">jpeg, png, pdf, and mp4 formats, up to 50mb</p>
-                </div>
-                <button className="mt-2 px-10 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white transition-all shadow-sm">
-                  browse file
-                </button>
+  const StepIndicator = ({ currentStep }: { currentStep: number }) => (
+    <div className="relative max-w-2xl mx-auto mb-10 w-full shrink-0">
+      <div className="absolute top-[11px] left-[20px] right-[20px] h-px bg-slate-200 z-0"></div>
+      <div className="relative flex justify-between z-10">
+        {steps.map((s, i) => {
+          const isActive = i + 1 <= currentStep || (currentStep === 0 && i === 0);
+          return (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div className={`w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs border transition-all duration-300 ${
+                isActive ? "bg-[#800000] border-[#800000] text-white shadow-lg shadow-red-900/20" : "bg-white border-slate-300 text-slate-400"
+              }`}>
+                {i + 1}
               </div>
-
-              <div className="space-y-4">
-                {[1, 2].map((i) => (
-                  <div key={i} className="flex items-center gap-5 bg-[#fffafa] p-5 rounded-[24px] border border-[#f5eeee] relative group shadow-sm">
-                    <div className="w-14 h-14 bg-white rounded-xl border border-gray-100 flex items-center justify-center shrink-0">
-                      <FileText className="text-[#800000]" size={28} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[#1a1a1a] font-bold text-sm truncate uppercase tracking-tight">{config.fileName}</p>
-                      <p className="text-gray-400 text-[10px] uppercase font-medium">1.4mb</p>
-                    </div>
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-300 hover:text-red-500">
-                      <X size={18} />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <span className={`hidden md:block text-[10px] lg:text-[11px] tracking-wide uppercase ${isActive ? "text-[#800000]" : "text-slate-400"}`}>
+                {s}
+              </span>
             </div>
-          </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
-          <div className="flex justify-end gap-3 py-4 shrink-0 mt-auto border-t border-gray-100">
-            <button onClick={() => setStep(step - 1)} className="px-8 py-2.5 bg-[#b5b5b5] text-black rounded uppercase text-[10px] tracking-widest shadow-sm hover:bg-gray-300 transition-colors"><b>back</b></button>
-            <button onClick={() => setStep(step + 1)} className="px-10 py-2.5 bg-[#800000] text-white rounded uppercase text-[10px] tracking-widest shadow-md hover:bg-[#600000] transition-colors"><b>next</b></button>
-          </div>
-        </div>
-      );
-    }
-
-    if (step === 5) {
-      return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <div className="mb-2 shrink-0">
-            <p className={`text-[#800000] text-[13px] tracking-widest uppercase ${poppinsFont.className}`}>
-              <b>step 5 of 5 :</b>
-            </p>
-          </div>
-          <div className="bg-[#f3f3f3] p-2.5 mb-2 rounded-t-sm border-l-4 border-[#800000] shrink-0">
-            <h4 className={`text-[#1a1a1a] tracking-widest uppercase text-sm ${poppinsFont.className}`}>
-              <b>screening question <span className="text-red-600">*</span></b>
-            </h4>
-          </div>
-          <div className="px-3 mb-4 shrink-0">
-            <p className={`text-gray-500 text-[11px] italic tracking-wider leading-relaxed ${poppinsFont.className}`}>
-              reminder: answer all questions honestly and thoughtfully, as they are used to assess your qualifications and fit for the position.
-            </p>
-          </div>
-
-          <div className="flex-1 overflow-y-auto thin-scrollbar pt-4 px-1">
-            <div className="relative inline-block mb-8">
-              <h5 className="text-lg text-[#1a1a1a] tracking-tight uppercase leading-none"><b>screening questions *</b></h5>
-              <div className="absolute -bottom-1.5 left-0 w-full h-[1px] bg-[#800000]"></div>
-            </div>
-            
-            <div className="space-y-8 max-w-4xl pb-8">
-              <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-bold text-[#1a1a1a] uppercase tracking-widest">do you have prior experience related to this position?</label>
-                <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#800000]" />
-              </div>
-              
-              <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-bold text-[#1a1a1a] uppercase tracking-widest">what is your highest level of education completed?</label>
-                <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#800000]" />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-[11px] font-bold text-[#1a1a1a] uppercase tracking-widest">are you willing to undergo background checks or assessments?</label>
-                <input type="text" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#800000]" />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 py-4 shrink-0 mt-auto border-t border-gray-100">
-            <button onClick={() => setStep(4)} className="px-8 py-2.5 bg-[#b5b5b5] text-black rounded uppercase text-[10px] tracking-widest shadow-sm hover:bg-gray-300 transition-colors"><b>back</b></button>
-            <button onClick={() => setShowConfirm(true)} className="px-10 py-2.5 bg-[#800000] text-white rounded uppercase text-[10px] tracking-widest shadow-md hover:bg-[#600000] transition-colors"><b>submit</b></button>
-          </div>
-        </div>
-      );
-    }
-  };
+  const inputClass = "w-full border-b border-slate-200 bg-transparent px-0 py-2 text-[14px] lg:text-[16px] text-slate-800 outline-none focus:border-[#800000] transition-all placeholder:text-slate-300 tracking-normal font-normal";
+  const labelClass = "text-[11px] lg:text-[12px] text-slate-500 flex items-center gap-2 tracking-widest uppercase font-normal";
+  const sectionHeader = "text-[13px] lg:text-[15px] text-slate-900 border-l-4 border-[#800000] pl-3 mb-6 mt-2 tracking-normal font-normal";
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 ${openSans.className}`}>
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-0 md:p-6 lg:p-12 ${poppins.className}`}>
           <style jsx global>{`
-            .thin-scrollbar::-webkit-scrollbar { width: 3px; }
-            .thin-scrollbar::-webkit-scrollbar-track { background: transparent; margin-block: 20px; }
-            .thin-scrollbar::-webkit-scrollbar-thumb { background: #80000020; border-radius: 20px; }
-            .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: #800000; }
+            .custom-thin-scroll::-webkit-scrollbar { width: 4px; }
+            .custom-thin-scroll::-webkit-scrollbar-track { background: transparent; }
+            .custom-thin-scroll::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 20px; }
+            .custom-thin-scroll { scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent; }
           `}</style>
-
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          />
-
+          
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 80 }}
-            animate={{ opacity: 1, scale: 1, y: 60 }}
-            exit={{ opacity: 0, scale: 0.9, y: 80 }}
-            className="relative w-full max-w-6xl h-[90vh] sm:h-[80vh] bg-white rounded-lg shadow-2xl overflow-hidden z-[110] flex flex-col"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full h-full md:h-[90vh] max-w-[100vw] md:max-w-[95vw] lg:max-w-[85vw] xl:max-w-[1200px] bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden md:rounded-2xl"
           >
-            <div className="w-full h-1.5 bg-[#800000] shrink-0"></div>
-            
-            <div className="p-6 md:p-10 flex-1 flex flex-col overflow-hidden relative">
-              <div className="absolute top-5 right-8 flex flex-col items-end gap-3 z-20">
-                <button onClick={handleClose} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
-                  <X size={28} />
-                </button>
-                {step === 0 && (
-                  <img src="/images/logo.png" alt="telex logo" className="hidden sm:block h-14 w-auto object-contain" />
+            {/* sidebar section */}
+            <div className="w-full md:w-[300px] lg:w-[350px] bg-slate-50 p-6 md:p-10 lg:p-12 border-b md:border-b-0 md:border-r border-slate-100 flex flex-row md:flex-col justify-between shrink-0 z-10">
+              <div className="flex flex-col gap-4 md:gap-8">
+                <div className="bg-white p-3 rounded-xl shadow-sm self-start">
+                  <img src="/images/logo.png" alt="logo" className="h-8 md:h-10 w-auto object-contain" />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl text-slate-800 leading-tight tracking-tight font-normal">
+                    Front-End <br className="hidden md:block" />
+                    <span className="text-[#800000]">Developer</span>
+                  </h2>
+                  <p className="hidden md:block text-slate-400 text-sm mt-4 leading-relaxed font-normal">
+                    Professional application gateway. Please ensure all data provided is current and verifiable.
+                  </p>
+                </div>
+              </div>
+
+              <div className="hidden md:block space-y-6">
+                <div className="flex items-center gap-4 text-slate-600">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-slate-100">
+                    <MapPin size={18} className="text-[#800000]" />
+                  </div>
+                  <div className="text-[12px] lg:text-[13px] leading-snug">
+                    <p className="text-slate-400 uppercase text-[10px] tracking-widest">Office</p>
+                    <p>Cawayan Bugtong, Guimba, Nueva Ecija</p>
+                  </div>
+                </div>
+                <div className="pt-6 border-t border-slate-200">
+                  <p className="text-sm text-slate-400 italic font-normal">
+                    "Excellence is a habit."
+                  </p>
+                </div>
+              </div>
+
+              <button onClick={handleClose} className="md:hidden text-slate-400 p-2">
+                <X size={28} />
+              </button>
+            </div>
+
+            {/* main section */}
+            <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
+              <button onClick={handleClose} className="hidden md:flex absolute top-8 right-8 text-slate-300 hover:text-[#800000] transition-colors z-[140] w-10 h-10 items-center justify-center rounded-full hover:bg-slate-50">
+                <X size={28} />
+              </button>
+
+              <div className="flex-1 p-6 md:p-12 lg:p-16 overflow-hidden flex flex-col">
+                {step === 0 ? (
+                  <div className="flex flex-col h-full items-center justify-center text-center max-w-3xl mx-auto">
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 mb-12">
+                      <span className="inline-block px-4 py-1.5 bg-red-50 text-[#800000] text-[11px] lg:text-[12px] tracking-[0.2em] uppercase rounded-full font-normal">
+                        Career Opportunity
+                      </span>
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl text-slate-900 tracking-tight font-normal">
+                        Application Form
+                      </h1>
+                      <p className="text-slate-500 text-base md:text-lg leading-relaxed font-normal">
+                        We are looking for talented individuals to join our growing team. Start your journey by completing the multi-step form.
+                      </p>
+                    </motion.div>
+                    
+                    <StepIndicator currentStep={0} />
+
+                    <button onClick={() => setStep(1)} className="group w-full md:w-auto px-12 py-4 bg-[#800000] text-white text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all hover:bg-[#600000] hover:shadow-2xl hover:shadow-red-900/30 rounded-xl font-normal">
+                      Begin Application <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col h-full">
+                    <StepIndicator currentStep={step} />
+                    
+                    <div className="mb-10 shrink-0">
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl text-slate-900 tracking-tight font-normal">
+                        {steps[step - 1]}
+                      </h1>
+                      <p className="text-slate-400 text-sm mt-2 font-normal">Please fill in the required fields marked with an asterisk.</p>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-thin-scroll pr-4 lg:pr-10">
+                      {step === 1 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
+                          <div className="space-y-2"><label className={labelClass}>First Name *</label><input type="text" placeholder="e.g. Juan" className={inputClass} /></div>
+                          <div className="space-y-2"><label className={labelClass}>Middle Name *</label><input type="text" placeholder="e.g. Santos" className={inputClass} /></div>
+                          <div className="space-y-2"><label className={labelClass}>Last Name *</label><input type="text" placeholder="e.g. Dela Cruz" className={inputClass} /></div>
+                          <div className="space-y-2"><label className={labelClass}>Date of Birth *</label><input type="date" className={inputClass} /></div>
+                          <div className="space-y-2"><label className={labelClass}>Place of Birth *</label><input type="text" placeholder="City / Province" className={inputClass} /></div>
+                          <div className="space-y-2">
+                            <label className={labelClass}>Gender *</label>
+                            <select className={inputClass}>
+                              <option value="">Select Option</option>
+                              <option value="male">Male</option>
+                              <option value="female">Female</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {(step >= 2 && step <= 4) && (
+                        <div className="max-w-5xl space-y-10">
+                           <h3 className={sectionHeader}>Document Upload</h3>
+                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                              <div className="relative p-12 lg:p-20 border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-red-50/30 hover:border-[#800000]/30 transition-all cursor-pointer group">
+                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-6 group-hover:scale-110 transition-transform">
+                                  <Upload className="text-[#800000]" size={32} />
+                                </div>
+                                <p className="text-sm uppercase tracking-widest text-slate-500 font-normal">Drag files here or click to browse</p>
+                                <p className="text-xs text-slate-400 mt-2">Support: PDF, DOCX (Max 10MB)</p>
+                              </div>
+                              <div className="space-y-4">
+                                <p className={labelClass}>Uploaded Files</p>
+                                <div className="p-5 bg-white border border-slate-100 shadow-sm rounded-xl flex items-center justify-between border-l-4 border-l-[#800000]">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center"><FileText size={20} className="text-[#800000]" /></div>
+                                    <div>
+                                      <p className="text-sm text-slate-700 font-normal">application-file.pdf</p>
+                                      <p className="text-[10px] text-slate-400 uppercase">2.4 MB • Ready</p>
+                                    </div>
+                                  </div>
+                                  <button className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-300 hover:text-red-500"><X size={18} /></button>
+                                </div>
+                              </div>
+                           </div>
+                        </div>
+                      )}
+
+                      {step === 5 && (
+                        <div className="max-w-4xl space-y-12">
+                          <h3 className={sectionHeader}>Screening Questionnaire</h3>
+                          <div className="space-y-10">
+                            <div className="space-y-4">
+                              <label className="text-sm lg:text-base text-slate-700 font-normal block">1. Can you describe your relevant experience for this role? *</label>
+                              <textarea rows={4} className={`${inputClass} border border-slate-100 rounded-xl p-4 focus:bg-slate-50`} placeholder="Describe your background..." />
+                            </div>
+                            <div className="space-y-4">
+                              <label className="text-sm lg:text-base text-slate-700 font-normal block">2. What is your primary motivation for joining us? *</label>
+                              <textarea rows={4} className={`${inputClass} border border-slate-100 rounded-xl p-4 focus:bg-slate-50`} placeholder="Tell us why..." />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* actions */}
+                    <div className="pt-8 mt-auto border-t border-slate-100 flex items-center justify-between bg-white shrink-0">
+                      <button onClick={() => setStep(step - 1)} className="px-6 py-3 text-sm text-slate-400 uppercase tracking-widest font-normal hover:text-slate-800 transition-colors">
+                        Back
+                      </button>
+                      <button 
+                        onClick={() => step === 5 ? setShowConfirm(true) : setStep(step + 1)} 
+                        className="bg-[#800000] text-white px-10 py-4 text-sm uppercase tracking-[0.2em] flex items-center gap-4 rounded-xl font-normal hover:bg-[#600000] hover:shadow-xl transition-all active:scale-95"
+                      >
+                        {step === 5 ? "Submit Application" : "Continue"} <ArrowRight size={18} />
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {step === 0 ? (
-                <div className="flex-1 flex flex-col h-full overflow-hidden">
-                  <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-                    <div className="space-y-4 mb-8">
-                      <div className="inline-block bg-[#800000] text-white text-[10px] px-4 py-1 rounded-full uppercase tracking-widest">
-                        <b>technology</b>
-                      </div>
-                      <h2 className="text-3xl md:text-4xl text-[#1a1a1a] tracking-tighter">
-                        <b>FRONT-END <span className="text-[#800000]">DEVELOPER</span></b>
-                      </h2>
-                      <div className="flex items-center gap-2 text-[#282828] text-sm italic">
-                        <span className="text-[#800000]">📍</span>
-                        cawayan bugtong, guimba, nueva ecija
-                      </div>
-                    </div>
-
-                    <div className="pt-6">
-                      <div className="text-center mb-10">
-                        <h3 className="text-3xl md:text-4xl text-[#1a1a1a] tracking-tighter uppercase leading-none"><b>application</b></h3>
-                        <h3 className="text-3xl md:text-4xl text-[#800000] tracking-tighter uppercase"><b>form</b></h3>
-                        <p className="max-w-2xl mx-auto text-[#282828] text-xs italic mt-6 leading-relaxed">
-                          please complete the application form below by providing accurate and up-to-date personal and contact information. all submitted details will be used solely for reviewing your application and contacting you regarding the next steps.
-                        </p>
-                      </div>
-
-                      <div className="relative max-w-5xl mx-auto mb-12 px-4">
-                        <div className="absolute top-[12px] left-10 right-10 h-[1px] bg-[#800000] opacity-10 z-0"></div>
-                        <div className="relative flex justify-between gap-2 z-10">
-                          {steps.map((s, i) => (
-                            <div key={i} className="flex flex-col items-center gap-4 flex-1">
-                              <div className="w-7 h-7 rounded-full bg-[#800000] shadow-[0_0_0_4px_white] flex items-center justify-center text-white text-[12px]">
-                                <b>{i + 1}</b>
-                              </div>
-                              <span className="text-[11px] text-[#1a1a1a] uppercase text-center leading-tight tracking-tight"><b>{s}</b></span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row justify-center gap-4 py-4 shrink-0 mt-auto">
-                    <button onClick={handleClose} className="px-10 py-2.5 bg-[#b5b5b5] text-black rounded-lg uppercase text-xs tracking-widest transition-all hover:bg-gray-300"><b>cancel</b></button>
-                    <button onClick={() => setStep(1)} className="px-12 py-2.5 bg-[#800000] text-white rounded-lg uppercase text-xs tracking-widest shadow-lg transition-all hover:bg-[#600000]"><b>start</b></button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col h-full overflow-hidden">
-                  <div className="relative max-w-5xl mx-auto mb-10 w-full px-4 shrink-0">
-                    <div className="absolute top-[16px] left-14 right-14 h-[1px] bg-[#800000] opacity-10 z-0"></div>
-                    <div className="relative flex justify-between gap-2 z-10">
-                      {steps.map((s, i) => (
-                        <div key={i} className="flex flex-col items-center gap-3 flex-1">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] border-[3px] border-white shadow-sm transition-colors ${i < step ? "bg-[#800000] text-white" : i === (step - 1) ? "bg-[#800000] text-white ring-4 ring-[#800000]/10" : "bg-[#b5b5b5] text-white"}`}>
-                            <b>{i + 1}</b>
+              {/* Overlays */}
+              <AnimatePresence>
+                {(showConfirm || isSuccess) && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[150] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-md">
+                    <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-[450px] bg-white rounded-3xl shadow-2xl p-10 text-center">
+                      {isSuccess ? (
+                        <div className="space-y-6">
+                          <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-green-100">
+                            <Check size={40} />
                           </div>
-                          <span className={`text-[11px] uppercase text-center leading-tight tracking-tight ${i === (step - 1) ? "text-[#1a1a1a]" : "text-gray-400"}`}><b>{s}</b></span>
+                          <h3 className="text-3xl text-slate-900 font-normal tracking-tight">Success!</h3>
+                          <p className="text-slate-500 leading-relaxed font-normal">
+                            Your application has been received. Our HR team will review your profile and contact you within 3-5 business days.
+                          </p>
+                          <button onClick={handleClose} className="w-full py-4 bg-[#800000] text-white text-sm uppercase tracking-widest rounded-xl font-normal hover:bg-[#600000] transition-all">
+                            Finish
+                          </button>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                  {renderStepContent()}
-                </div>
-              )}
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="w-16 h-16 bg-red-50 text-[#800000] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <AlertCircle size={32} />
+                          </div>
+                          <h3 className="text-2xl text-slate-900 font-normal tracking-tight">Confirm Submission?</h3>
+                          <p className="text-slate-500 font-normal">Please double-check all information. You won't be able to edit your application once submitted.</p>
+                          <div className="flex flex-col gap-3">
+                            <button onClick={() => { setShowConfirm(false); setIsSuccess(true); }} className="w-full py-4 bg-[#800000] text-white text-sm uppercase tracking-widest rounded-xl font-normal hover:bg-[#600000] transition-all shadow-lg shadow-red-900/20">
+                              Yes, Submit Now
+                            </button>
+                            <button onClick={() => setShowConfirm(false)} className="w-full py-4 bg-white border border-slate-200 text-slate-400 text-sm uppercase tracking-widest rounded-xl font-normal hover:bg-slate-50 transition-all">
+                              Review Again
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-
-            {/* overlays confirmation & success */}
-            <AnimatePresence>
-              {showConfirm && (
-                <div className="absolute inset-0 z-[120] flex items-center justify-center p-6">
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowConfirm(false)} className="absolute inset-0 bg-black/40 backdrop-blur-[4px]" />
-                  <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-[420px] bg-white rounded-[32px] shadow-2xl p-10 flex flex-col items-center text-center">
-                    <div className="mb-2"><img src="/images/logo.png" alt="telex logo" className="h-[70px] w-auto object-contain" /></div>
-                    <div className="w-[85%] h-[1px] bg-[#80000010] mb-8"></div>
-                    <h3 className="text-[32px] text-[#1a1a1a] mb-2 leading-tight tracking-tight"><b>confirm submission</b></h3>
-                    <p className="text-gray-400 text-[16px] mb-12 px-4 italic">once submitted, your application will be sent for review.</p>
-                    <div className="flex w-full gap-4 px-2">
-                      <button onClick={() => setShowConfirm(false)} className="flex-1 py-4 bg-[#d4d4d4] text-black uppercase text-[13px] tracking-widest rounded-[18px] hover:bg-gray-300 transition-all active:scale-95"><b>cancel</b></button>
-                      <button onClick={handleFinalSubmit} className="flex-1 py-4 bg-[#800000] text-white uppercase text-[13px] tracking-widest rounded-[18px] shadow-lg hover:bg-[#600000] transition-all active:scale-95"><b>submit</b></button>
-                    </div>
-                  </motion.div>
-                </div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {isSuccess && (
-                <div className="absolute inset-0 z-[130] flex items-center justify-center p-6">
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/40 backdrop-blur-[4px]" />
-                  <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-[420px] bg-white rounded-[32px] shadow-2xl p-10 flex flex-col items-center text-center">
-                    <div className="w-20 h-20 bg-[#800000] rounded-full flex items-center justify-center shadow-lg shadow-[#800000]/30 mb-6">
-                      <Check className="text-white" size={48} strokeWidth={4} />
-                    </div>
-                    <div className="w-[85%] h-[1px] bg-[#80000010] mb-8"></div>
-                    <h3 className="text-[32px] text-[#1a1a1a] mb-2 leading-tight tracking-tight"><b>we&apos;ve received your application!</b></h3>
-                    <p className="text-gray-400 text-[16px] mb-12 px-4 italic">we will process it and reach out to you in a days.</p>
-                    <div className="flex w-full px-2">
-                      <button onClick={handleClose} className="flex-1 py-4 bg-[#800000] text-white uppercase text-[13px] tracking-widest rounded-[18px] shadow-lg hover:bg-[#600000] transition-all active:scale-95"><b>done</b></button>
-                    </div>
-                  </motion.div>
-                </div>
-              )}
-            </AnimatePresence>
           </motion.div>
         </div>
       )}
