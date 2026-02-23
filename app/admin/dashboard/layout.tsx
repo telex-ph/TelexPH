@@ -447,7 +447,7 @@ export default function DashboardLayout({
 
         {/* Profile card */}
         <Link
-          href="/admin/dashboard/profile"
+          href="/admin/dashboard/settings"
           className={`flex items-center p-3 rounded-2xl border-none mt-2 shadow-sm transition-all hover:shadow-md cursor-pointer no-underline active:scale-95 ${iscollapsed ? 'justify-center' : 'justify-between'} ${isdarkmode ? 'bg-[#202020]' : 'bg-white'}`}
         >
           <div className="flex items-center gap-3">

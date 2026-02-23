@@ -185,7 +185,19 @@ export const useCaseStudies = () => {
 
   // Update form field
   const updateFormField = (field: keyof CaseStudyFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      // If start date changes and the existing end date is before the new start date, clear end date
+      if (field === 'startdate' && updated.enddate && value > updated.enddate) {
+        updated.enddate = '';
+      }
+      // If isunfinished is checked, force status to Draft and clear end date
+      if (field === 'isunfinished' && value === true) {
+        updated.status = 'Draft';
+        updated.enddate = '';
+      }
+      return updated;
+    });
   };
 
   // Update modal state
@@ -372,33 +384,32 @@ export const useCaseStudies = () => {
     if (fileref.current) fileref.current.value = '';
   };
 
-  // Handle submit
-  const handlesubmit = async () => {
-    try {
-      updateLoadingState('isloading', true);
-      updateMessageState('error', null);
-      updateMessageState('success', null);
+  // Validate form — runs all checks BEFORE opening confirm modal
+  const validateform = () => {
+    updateMessageState('error', null);
+    updateMessageState('success', null);
 
-      // Validation
-      if (!formData.title.trim() || !formData.author.trim()) {
-        updateMessageState('error', 'Title and Author are required');
-        updateLoadingState('isloading', false);
-        return;
-      }
+    if (!formData.title.trim() || !formData.author.trim()) {
+      updateMessageState('error', 'Title and Author are required');
+      setTimeout(() => updateMessageState('error', null), 5000);
+      return;
+    }
 
+    // Challenge and solution required for non-Draft only
+    if (formData.status !== 'Draft') {
       if (!formData.challenge.trim()) {
         updateMessageState('error', 'Challenge is required');
-        updateLoadingState('isloading', false);
+        setTimeout(() => updateMessageState('error', null), 5000);
         return;
       }
 
       if (!formData.solution.trim()) {
         updateMessageState('error', 'Solution is required');
-        updateLoadingState('isloading', false);
+        setTimeout(() => updateMessageState('error', null), 5000);
         return;
       }
 
-      // Check if at least one section has content
+      // At least one full content section required for non-Draft
       const hasContent = [1, 2, 3, 4, 5].some(num => {
         const topicKey = `topic${num}` as keyof CaseStudyFormData;
         const contentKey = `content${num}` as keyof CaseStudyFormData;
@@ -407,28 +418,47 @@ export const useCaseStudies = () => {
 
       if (!hasContent) {
         updateMessageState('error', 'At least one content section is required');
-        updateLoadingState('isloading', false);
+        setTimeout(() => updateMessageState('error', null), 5000);
         return;
       }
 
-      if (formData.status === 'Scheduled') {
-        if (!formData.scheduledate || !formData.scheduletime) {
-          updateMessageState('error', 'Schedule date and time are required for scheduled studies');
-          updateLoadingState('isloading', false);
-          return;
-        }
-        if (!validateScheduleTime(formData.scheduledate, formData.scheduletime)) {
-          updateLoadingState('isloading', false);
-          return;
-        }
-      }
-
-      // Check if cover image is provided for new case studies
-      if (!editState.isEditMode && !formData.selectedfile) {
-        updateMessageState('error', 'Cover image is required');
-        updateLoadingState('isloading', false);
+      // End date required for Active, Completed, Scheduled — unless marked Unfinished
+      const statusesRequiringEndDate = ['Active', 'Completed', 'Scheduled'];
+      if (statusesRequiringEndDate.includes(formData.status) && !formData.isunfinished && !formData.enddate.trim()) {
+        updateMessageState('error', 'An end date is required to set the status to Active, Completed, or Scheduled. Please provide an end date or mark the study as Unfinished.');
+        setTimeout(() => updateMessageState('error', null), 6000);
         return;
       }
+    }
+
+    if (formData.status === 'Scheduled') {
+      if (!formData.scheduledate || !formData.scheduletime) {
+        updateMessageState('error', 'Schedule date and time are required for scheduled studies');
+        setTimeout(() => updateMessageState('error', null), 5000);
+        return;
+      }
+      if (!validateScheduleTime(formData.scheduledate, formData.scheduletime)) {
+        return;
+      }
+    }
+
+    // Cover image required for new case studies only
+    if (!editState.isEditMode && !formData.selectedfile) {
+      updateMessageState('error', 'Cover image is required');
+      setTimeout(() => updateMessageState('error', null), 5000);
+      return;
+    }
+
+    // All validations passed — open confirm modal
+    updateModalState('showconfirmmodal', true);
+  };
+
+  // Handle submit — only called after user clicks Confirm in the modal
+  const handlesubmit = async () => {
+    try {
+      updateLoadingState('isloading', true);
+      updateMessageState('error', null);
+      updateMessageState('success', null);
 
       const formDataToSend = transformFrontendToBackend(formData);
 
@@ -602,6 +632,7 @@ export const useCaseStudies = () => {
     togglecategory,
     toggleCategoryFilter,
     resetform,
+    validateform,
     handlesubmit,
     handleedit,
     handledeleteclick,

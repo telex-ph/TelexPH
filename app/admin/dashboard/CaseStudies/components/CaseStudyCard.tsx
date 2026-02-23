@@ -74,7 +74,7 @@ export const CaseStudyCard: React.FC<CaseStudyCardProps> = ({
 
       {/* Date Range */}
       <p className={`text-xs mb-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-        {study.start} â€" {study.isUnfinished ? 'Unfinished' : study.end}
+        {study.start} – {study.isUnfinished ? 'Unfinished' : study.end}
       </p>
 
       {/* Spacer */}

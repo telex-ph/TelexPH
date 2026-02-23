@@ -65,7 +65,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({ isOpen, data, onClos
             By {data.author}
           </p>
           <p className={`text-sm ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-            {data.start} â€" {data.isUnfinished ? 'Unfinished' : data.end}
+            {data.start} – {data.isUnfinished ? 'Unfinished' : data.end}
           </p>
           {data.status === 'Scheduled' && data.scheduleDate && (
             <p className={`text-sm font-bold mt-2 ${isdarkmode ? 'text-orange-400' : 'text-orange-600'}`}>

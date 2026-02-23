@@ -41,6 +41,7 @@ export default function CaseStudies() {
     togglecategory,
     toggleCategoryFilter,
     resetform,
+    validateform,
     handlesubmit,
     handleedit,
     handledeleteclick,
@@ -175,7 +176,7 @@ export default function CaseStudies() {
               onFormChange={updateFormField}
               onCategoryToggle={togglecategory}
               onFileChange={handlefilechange}
-              onSubmit={() => updateModalState('showconfirmmodal', true)}
+              onSubmit={validateform}
               onReset={resetform}
               onCategoryDropdownToggle={setShowCategoryDropdown}
               onScheduleDateChange={handleScheduleDateChange}
