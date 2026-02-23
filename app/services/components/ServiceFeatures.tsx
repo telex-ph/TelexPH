@@ -71,7 +71,9 @@ interface ServiceType {
   bgColor: string;
   textColor: string;
   isDark: boolean;
+  isActive: boolean;
   coverPhoto?: string | null;
+  inactivePhoto?: string | null;
 }
 
 const ServiceCard: React.FC<{
@@ -265,16 +267,27 @@ export default function ServiceFeatures() {
   const [error, setError] = useState<string | null>(null);
 
   // Helper function to process image source
-  const getImageSource = (coverPhoto: string | null | undefined, serviceId: string): string => {
+  const getImageSource = (
+    coverPhoto: string | null | undefined,
+    inactivePhoto: string | null | undefined,
+    isActive: boolean,
+    serviceId: string
+  ): string => {
+    // Pick which photo to use based on active status
+    const photo = isActive ? coverPhoto : (inactivePhoto ?? coverPhoto);
+
     console.log(`🔍 Processing image for ${serviceId}:`, {
+      isActive,
       hasCoverPhoto: !!coverPhoto,
-      coverPhotoLength: coverPhoto?.length,
-      coverPhotoPreview: coverPhoto?.substring(0, 50)
+      hasInactivePhoto: !!inactivePhoto,
+      usingPhoto: isActive ? 'coverPhoto' : 'inactivePhoto (fallback: coverPhoto)',
+      photoLength: photo?.length,
+      photoPreview: photo?.substring(0, 50)
     });
 
-    // If coverPhoto exists and is a valid string
-    if (coverPhoto && typeof coverPhoto === 'string' && coverPhoto.trim()) {
-      const trimmedPhoto = coverPhoto.trim();
+    // If photo exists and is a valid string
+    if (photo && typeof photo === 'string' && photo.trim()) {
+      const trimmedPhoto = photo.trim();
       
       // Check if it's already a data URL
       if (trimmedPhoto.startsWith('data:image')) {
@@ -326,7 +339,7 @@ export default function ServiceFeatures() {
       setLoading(true);
       setError(null);
       
-      const apiUrl = `${API_BASE_URL}/api/services?isActive=true`;
+      const apiUrl = `${API_BASE_URL}/api/services`;
       console.log('🔍 Fetching services from:', apiUrl);
       
       const response = await fetch(apiUrl, {
@@ -356,7 +369,7 @@ export default function ServiceFeatures() {
         console.log(`\n📦 Mapping service: ${item.serviceId}`);
         console.log('Raw item:', JSON.stringify(item, null, 2));
         
-        const imageSource = getImageSource(item.coverPhoto, item.serviceId);
+        const imageSource = getImageSource(item.coverPhoto, item.inactivePhoto, item.isActive, item.serviceId);
         const styling = getServiceStyling(index);
         
         return {
@@ -366,7 +379,9 @@ export default function ServiceFeatures() {
           description: item.description,
           icon: ICON_MAP[item.serviceId] || Layout,
           image: imageSource,
+          isActive: item.isActive,
           coverPhoto: item.coverPhoto,
+          inactivePhoto: item.inactivePhoto,
           ...styling,
         };
       });

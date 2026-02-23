@@ -12,6 +12,7 @@ interface Service {
   badge: string
   isActive: boolean
   coverPhoto?: string | null
+  inactivePhoto?: string | null
   updatedAt?: string
   createdAt?: string
 }
@@ -223,6 +224,7 @@ interface ServiceFormData {
   description: string
   badge: string
   coverPhoto: string | null
+  inactivePhoto: string | null
 }
 
 // ── ADD SERVICE MODAL ─────────────────────────────────────────────────────────
@@ -243,6 +245,7 @@ function AddServiceModal({
     description: '',
     badge: '',
     coverPhoto: null,
+    inactivePhoto: null,
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -250,7 +253,7 @@ function AddServiceModal({
   // FIX: reset uses null (not '') for coverPhoto
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ name: '', description: '', badge: '', coverPhoto: null })
+      setFormData({ name: '', description: '', badge: '', coverPhoto: null, inactivePhoto: null })
       setError('')
     }
   }, [isOpen])
@@ -260,7 +263,7 @@ function AddServiceModal({
     setError('')
     setSubmitting(true)
     try {
-      const response = await fetch('http://localhost:3000/api/services', {
+      const response = await fetch('/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -270,6 +273,7 @@ function AddServiceModal({
           description: formData.description,
           badge: formData.badge,
           coverPhoto: formData.coverPhoto || null,
+          inactivePhoto: formData.inactivePhoto || null,
         }),
       })
 
@@ -327,6 +331,16 @@ function AddServiceModal({
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
               onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
+            />
+          </div>
+
+          {/* Inactive photo */}
+          <div>
+            <label className={getLabelCls(isdarkmode)}>Inactive Photo (optional)</label>
+            <CoverPhotoUploader
+              isdarkmode={isdarkmode}
+              value={formData.inactivePhoto}
+              onChange={(val) => setFormData((p) => ({ ...p, inactivePhoto: val }))}
             />
           </div>
 
@@ -414,6 +428,7 @@ function EditServiceModal({
     description: '',
     badge: '',
     coverPhoto: null,
+    inactivePhoto: null,
   })
   const [submitting, setSubmitting] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -428,6 +443,7 @@ function EditServiceModal({
         badge: service.badge ?? '',
         // FIX: coerce undefined → null
         coverPhoto: service.coverPhoto ?? null,
+        inactivePhoto: service.inactivePhoto ?? null,
       })
       setConfirmDelete(false)
       setError('')
@@ -440,7 +456,7 @@ function EditServiceModal({
     setError('')
     setSubmitting(true)
     try {
-      const response = await fetch(`http://localhost:3000/api/services/${service._id}`, {
+      const response = await fetch(`/api/services/${service._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -449,6 +465,7 @@ function EditServiceModal({
           description: formData.description,
           badge: formData.badge,
           coverPhoto: formData.coverPhoto || null,
+          inactivePhoto: formData.inactivePhoto || null,
         }),
       })
 
@@ -476,7 +493,7 @@ function EditServiceModal({
     setDeleting(true)
     setError('')
     try {
-      const response = await fetch(`http://localhost:3000/api/services/${service._id}`, {
+      const response = await fetch(`/api/services/${service._id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
@@ -534,6 +551,16 @@ function EditServiceModal({
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
               onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
+            />
+          </div>
+
+          {/* Inactive photo */}
+          <div>
+            <label className={getLabelCls(isdarkmode)}>Inactive Photo (optional)</label>
+            <CoverPhotoUploader
+              isdarkmode={isdarkmode}
+              value={formData.inactivePhoto}
+              onChange={(val) => setFormData((p) => ({ ...p, inactivePhoto: val }))}
             />
           </div>
 
@@ -687,7 +714,7 @@ export default function ListServices() {
   const fetchServices = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:3000/api/services', { credentials: 'include' })
+      const response = await fetch('/api/services', { credentials: 'include' })
       if (!response.ok) throw new Error('Failed to fetch')
       setServices(await response.json())
     } catch (err) {
@@ -702,7 +729,7 @@ export default function ListServices() {
     const service = services.find((s) => s.serviceId === serviceId)
     if (!service) return
     try {
-      const response = await fetch(`http://localhost:3000/api/services/${service._id}/toggle`, {
+      const response = await fetch(`/api/services/${service._id}/toggle`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
