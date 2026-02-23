@@ -94,114 +94,86 @@ export default function ListArchivedServices() {
   const [successmessage, setsuccessmessage] = useState<string | null>(null)
   const [currentUserRole, setcurrentUserRole] = useState<number | null>(null)
 
-  // Confirm restore modal state — now also supports 'admin'
   const [confirmrestore, setconfirmrestore] = useState<{
     id: string
     title: string
     type: 'blog' | 'casestudy' | 'admin'
   } | null>(null)
 
-  // View mode toggle
   const [viewmode, setviewmode] = useState<'grid' | 'list'>('grid')
 
   const isMainAdmin = currentUserRole === 1
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
-  // Fetch current user role
-  const fetchCurrentUser = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/me`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!response.ok) throw new Error('Failed to fetch current user')
-      const data = await response.json()
-      setcurrentUserRole(data.role)
-    } catch (err) {
-      console.error('Error fetching current user:', err)
-    }
-  }, [API_BASE_URL])
+  // ── Fetch helpers ───────────────────────────────────────────────────────────
 
-  // Fetch all archived blogs
   const fetchArchivedBlogs = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blogs?includeArchived=true`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!response.ok) throw new Error(`Failed to fetch blogs: ${response.status}`)
-      const data = await response.json()
-      const archived = data.filter((b: ArchivedBlog) => b.isArchive === true)
-      setarchivedblogs(archived)
-    } catch (err: any) {
-      console.error('Error fetching archived blogs:', err)
-      throw err
-    }
+    const response = await fetch(`${API_BASE_URL}/blogs?includeArchived=true`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    if (!response.ok) throw new Error(`Failed to fetch blogs: ${response.status}`)
+    const data = await response.json()
+    setarchivedblogs(data.filter((b: ArchivedBlog) => b.isArchive === true))
   }, [API_BASE_URL])
 
-  // Fetch all archived case studies
   const fetchArchivedCaseStudies = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/casestudies?includeArchived=true`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!response.ok) throw new Error(`Failed to fetch case studies: ${response.status}`)
-      const data = await response.json()
-      const archived = data.filter((cs: ArchivedCaseStudy) => cs.isArchived === true)
-      setarchivedcasestudies(archived)
-    } catch (err: any) {
-      console.error('Error fetching archived case studies:', err)
-      throw err
-    }
+    const response = await fetch(`${API_BASE_URL}/casestudies?includeArchived=true`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    if (!response.ok) throw new Error(`Failed to fetch case studies: ${response.status}`)
+    const data = await response.json()
+    setarchivedcasestudies(data.filter((cs: ArchivedCaseStudy) => cs.isArchived === true))
   }, [API_BASE_URL])
 
-  // Fetch all archived admins
   const fetchArchivedAdmins = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/archived`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!response.ok) throw new Error(`Failed to fetch archived admins: ${response.status}`)
-      const data = await response.json()
-      setarchivedadmins(data)
-    } catch (err: any) {
-      console.error('Error fetching archived admins:', err)
-      throw err
-    }
+    const response = await fetch(`${API_BASE_URL}/users/archived`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    if (!response.ok) throw new Error(`Failed to fetch archived admins: ${response.status}`)
+    const data = await response.json()
+    setarchivedadmins(data)
   }, [API_BASE_URL])
 
+  // FIX: Single source of truth — fetch /users/me once, use the returned value
+  // directly to decide whether to fetch admins. No more double-fetch or stale
+  // state race condition.
   const loadAllArchived = useCallback(async () => {
     try {
       setisloading(true)
       seterror(null)
-      // Fetch current user first so isMainAdmin is available
-      await fetchCurrentUser()
-      await Promise.all([fetchArchivedBlogs(), fetchArchivedCaseStudies()])
-      // Only fetch archived admins if main admin — backend also enforces this
+
+      // 1. Fetch current user first and capture role from the response directly
       const userRes = await fetch(`${API_BASE_URL}/users/me`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })
-      if (userRes.ok) {
-        const userData = await userRes.json()
-        if (userData.role === 1) {
-          await fetchArchivedAdmins()
-        }
+      if (!userRes.ok) throw new Error('Failed to fetch current user')
+      const userData = await userRes.json()
+      const role: number = userData.role
+      setcurrentUserRole(role)
+
+      // 2. Always fetch blogs + case studies in parallel
+      await Promise.all([fetchArchivedBlogs(), fetchArchivedCaseStudies()])
+
+      // 3. Only fetch archived admins if the freshly-fetched role is Main Admin (1)
+      //    This avoids the 400 that was caused by non-main-admins hitting the endpoint
+      if (role === 1) {
+        await fetchArchivedAdmins()
       }
     } catch (err: any) {
       seterror(err.message || 'Failed to load archived items')
     } finally {
       setisloading(false)
     }
-  }, [fetchCurrentUser, fetchArchivedBlogs, fetchArchivedCaseStudies, fetchArchivedAdmins, API_BASE_URL])
+  }, [API_BASE_URL, fetchArchivedBlogs, fetchArchivedCaseStudies, fetchArchivedAdmins])
 
   useEffect(() => {
     loadAllArchived()
@@ -215,7 +187,8 @@ export default function ListArchivedServices() {
     }
   }, [successmessage])
 
-  // Restore blog
+  // ── Restore handlers ────────────────────────────────────────────────────────
+
   const handleRestoreBlog = async (id: string) => {
     try {
       setrestoringid(id)
@@ -238,7 +211,6 @@ export default function ListArchivedServices() {
     }
   }
 
-  // Restore case study
   const handleRestoreCaseStudy = async (id: string) => {
     try {
       setrestoringid(id)
@@ -261,7 +233,6 @@ export default function ListArchivedServices() {
     }
   }
 
-  // Restore admin
   const handleRestoreAdmin = async (id: string) => {
     try {
       setrestoringid(id)
@@ -286,23 +257,19 @@ export default function ListArchivedServices() {
 
   const handleConfirmRestore = () => {
     if (!confirmrestore) return
-    if (confirmrestore.type === 'blog') {
-      handleRestoreBlog(confirmrestore.id)
-    } else if (confirmrestore.type === 'casestudy') {
-      handleRestoreCaseStudy(confirmrestore.id)
-    } else {
-      handleRestoreAdmin(confirmrestore.id)
-    }
+    if (confirmrestore.type === 'blog') handleRestoreBlog(confirmrestore.id)
+    else if (confirmrestore.type === 'casestudy') handleRestoreCaseStudy(confirmrestore.id)
+    else handleRestoreAdmin(confirmrestore.id)
   }
 
-  const formatdate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  const formatdate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     })
-  }
 
   const getStatusStyle = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -320,25 +287,19 @@ export default function ListArchivedServices() {
     }
   }
 
-  // Merge and filter items based on active filter and search
+  // ── Filtering ────────────────────────────────────────────────────────────────
+
   const getFilteredItems = (): ArchivedItem[] => {
-    let blogItems: ArchivedItem[] = archivedblogs.map(b => ({ ...b, _type: 'blog' as const }))
-    let caseStudyItems: ArchivedItem[] = archivedcasestudies.map(cs => ({ ...cs, _type: 'casestudy' as const }))
-    let adminItems: ArchivedItem[] = archivedadmins.map(a => ({ ...a, _type: 'admin' as const }))
+    const blogItems: ArchivedItem[]      = archivedblogs.map(b => ({ ...b, _type: 'blog' as const }))
+    const caseStudyItems: ArchivedItem[] = archivedcasestudies.map(cs => ({ ...cs, _type: 'casestudy' as const }))
+    const adminItems: ArchivedItem[]     = archivedadmins.map(a => ({ ...a, _type: 'admin' as const }))
 
     let items: ArchivedItem[] = []
+    if (activefilter === 'All')           items = [...blogItems, ...caseStudyItems]
+    else if (activefilter === 'Blogs')    items = blogItems
+    else if (activefilter === 'CaseStudy') items = caseStudyItems
+    else                                  items = adminItems
 
-    if (activefilter === 'All') {
-      items = [...blogItems, ...caseStudyItems]
-    } else if (activefilter === 'Blogs') {
-      items = blogItems
-    } else if (activefilter === 'CaseStudy') {
-      items = caseStudyItems
-    } else {
-      items = adminItems
-    }
-
-    // Apply search filter
     if (searchquery.trim()) {
       const q = searchquery.toLowerCase()
       items = items.filter(item => {
@@ -350,9 +311,8 @@ export default function ListArchivedServices() {
             (departments[admin.department] || '').toLowerCase().includes(q)
           )
         }
-        const titled = item as (ArchivedBlog | ArchivedCaseStudy) & { _type: string }
-        const title = (titled as any).title?.toLowerCase() || ''
-        const author = (titled as any).author?.toLowerCase() || ''
+        const title  = (item as any).title?.toLowerCase()  || ''
+        const author = (item as any).author?.toLowerCase()  || ''
         return title.includes(q) || author.includes(q)
       })
     }
@@ -360,17 +320,19 @@ export default function ListArchivedServices() {
     return items
   }
 
-  const filteredItems = getFilteredItems()
-  const totalBlogs = archivedblogs.length
+  const filteredItems    = getFilteredItems()
+  const totalBlogs       = archivedblogs.length
   const totalCaseStudies = archivedcasestudies.length
-  const totalAdmins = archivedadmins.length
+  const totalAdmins      = archivedadmins.length
 
   const filters: { label: string; value: ContentType | 'All'; count: number }[] = [
-    { label: 'All', value: 'All', count: totalBlogs + totalCaseStudies },
-    { label: 'Blogs', value: 'Blogs', count: totalBlogs },
-    { label: 'Case Studies', value: 'CaseStudy', count: totalCaseStudies },
+    { label: 'All',          value: 'All',       count: totalBlogs + totalCaseStudies },
+    { label: 'Blogs',        value: 'Blogs',      count: totalBlogs },
+    { label: 'Case Studies', value: 'CaseStudy',  count: totalCaseStudies },
     ...(isMainAdmin ? [{ label: 'Admins', value: 'Admin' as ContentType, count: totalAdmins }] : []),
   ]
+
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <div className={`min-h-screen p-8 transition-colors duration-500 ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'}`}>
@@ -422,7 +384,9 @@ export default function ListArchivedServices() {
               : 'bg-gradient-to-br from-gray-50 to-white border-gray-50'
           }`}>
             <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Total Archived</p>
-            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>{totalBlogs + totalCaseStudies + (isMainAdmin ? totalAdmins : 0)}</p>
+            <p className={`text-3xl bold-text transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+              {totalBlogs + totalCaseStudies + (isMainAdmin ? totalAdmins : 0)}
+            </p>
           </div>
           <div className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${
             isdarkmode
@@ -455,7 +419,6 @@ export default function ListArchivedServices() {
         {/* Filters + Search */}
         <div className={`rounded-[1.5rem] p-6 border transition-all duration-500 ${isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'}`}>
           <div className="space-y-6">
-            {/* Type filter tabs — "Quick Links" */}
             <div>
               <p className={`text-[9px] uppercase tracking-widest mb-3 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                 Filter by Type
@@ -479,10 +442,12 @@ export default function ListArchivedServices() {
               </div>
             </div>
 
-            {/* Search + View toggle */}
             <div className="flex items-center gap-3">
               <div className="flex-1 relative">
-                <svg className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -554,12 +519,12 @@ export default function ListArchivedServices() {
           /* ── GRID VIEW ── */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredItems.map(item => {
-              const isAdmin = item._type === 'admin'
-              const isBlog = item._type === 'blog'
-              const blog = isBlog ? (item as ArchivedBlog & { _type: 'blog' }) : null
-              const cs = item._type === 'casestudy' ? (item as ArchivedCaseStudy & { _type: 'casestudy' }) : null
-              const admin = isAdmin ? (item as ArchivedAdmin & { _type: 'admin' }) : null
-              const coverImage = isBlog ? blog!.picture : cs?.cover
+              const isAdmin  = item._type === 'admin'
+              const isBlog   = item._type === 'blog'
+              const blog     = isBlog     ? (item as ArchivedBlog      & { _type: 'blog' })      : null
+              const cs       = !isBlog && !isAdmin ? (item as ArchivedCaseStudy & { _type: 'casestudy' }) : null
+              const admin    = isAdmin    ? (item as ArchivedAdmin     & { _type: 'admin' })     : null
+              const coverImage  = isBlog  ? blog!.picture : cs?.cover
               const isRestoring = restoringid === item._id
 
               // ── Admin card ──
@@ -571,11 +536,9 @@ export default function ListArchivedServices() {
                       isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-100 shadow-sm'
                     }`}
                   >
-                    {/* Top accent strip */}
                     <div className="h-1 w-full bg-gradient-to-r from-[#800000] via-[#a00000] to-[#600000]" />
 
                     <div className="p-5 flex flex-col flex-grow">
-                      {/* Avatar + type badge */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 rounded-2xl bg-[#800000] flex items-center justify-center text-white font-bold text-sm uppercase overflow-hidden shadow-md">
                           {admin.profilePicture ? (
@@ -589,7 +552,6 @@ export default function ListArchivedServices() {
                         </span>
                       </div>
 
-                      {/* Name & email */}
                       <h3 className={`bold-text text-sm mb-0.5 leading-snug transition-colors ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
                         {admin.firstName} {admin.lastName}
                       </h3>
@@ -597,19 +559,16 @@ export default function ListArchivedServices() {
                         {admin.email}
                       </p>
 
-                      {/* Role */}
                       <span className={`text-[9px] bold-text px-3 py-1 rounded-full w-fit mb-3 ${getRoleStyles(admin.role)}`}>
                         {roles[admin.role]}
                       </span>
 
-                      {/* Department */}
                       <p className={`text-[10px] mb-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
                         {getDepartmentIcon(admin.department)} {departments[admin.department]}
                       </p>
 
                       <div className="flex-grow" />
 
-                      {/* Archived date + restore */}
                       <div className={`flex items-center justify-between pt-4 border-t ${isdarkmode ? 'border-white/5' : 'border-gray-100'}`}>
                         <div>
                           <p className={`text-[8px] uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>Archived</p>
@@ -618,11 +577,7 @@ export default function ListArchivedServices() {
                           </p>
                         </div>
                         <button
-                          onClick={() => setconfirmrestore({
-                            id: admin._id,
-                            title: `${admin.firstName} ${admin.lastName}`,
-                            type: 'admin',
-                          })}
+                          onClick={() => setconfirmrestore({ id: admin._id, title: `${admin.firstName} ${admin.lastName}`, type: 'admin' })}
                           disabled={isRestoring}
                           className={`flex items-center gap-1.5 px-5 py-2.5 rounded-[1rem] text-[10px] bold-text transition-all ${
                             isRestoring
@@ -631,10 +586,7 @@ export default function ListArchivedServices() {
                           }`}
                         >
                           {isRestoring ? (
-                            <>
-                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              Restoring...
-                            </>
+                            <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> Restoring...</>
                           ) : (
                             <>
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -658,7 +610,6 @@ export default function ListArchivedServices() {
                     isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-100 shadow-sm'
                   }`}
                 >
-                  {/* Cover image */}
                   <div className="relative h-44 overflow-hidden flex-shrink-0">
                     <img
                       src={coverImage || '/placeholder.jpg'}
@@ -666,7 +617,6 @@ export default function ListArchivedServices() {
                       className="w-full h-full object-cover opacity-75"
                       onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                     />
-                    {/* Type badge */}
                     <div className="absolute top-3 left-3">
                       <span className={`text-[9px] font-bold px-3 py-1 rounded-full ${
                         isBlog ? 'bg-[#800000] text-white' : 'bg-blue-700 text-white'
@@ -676,7 +626,6 @@ export default function ListArchivedServices() {
                     </div>
                   </div>
 
-                  {/* Content */}
                   <div className="p-5 flex flex-col flex-grow">
                     <h3 className={`bold-text text-sm mb-1 line-clamp-2 leading-snug transition-colors ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
                       {(item as any).title}
@@ -738,10 +687,7 @@ export default function ListArchivedServices() {
                         }`}
                       >
                         {isRestoring ? (
-                          <>
-                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Restoring...
-                          </>
+                          <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> Restoring...</>
                         ) : (
                           <>
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -762,7 +708,6 @@ export default function ListArchivedServices() {
 
           /* ── LIST VIEW ── */
           <div className={`rounded-[2rem] border overflow-hidden shadow-xl transition-all duration-500 ${isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'}`}>
-            {/* List header */}
             <div className={`grid grid-cols-12 px-8 py-5 text-[9px] bold-text uppercase tracking-widest border-b ${
               isdarkmode ? 'bg-[#202020] border-white/5 text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-400'
             }`}>
@@ -775,15 +720,14 @@ export default function ListArchivedServices() {
               <div className="col-span-1 text-right">Action</div>
             </div>
 
-            {/* List rows */}
             <div className={`divide-y ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
               {filteredItems.map(item => {
-                const isAdmin = item._type === 'admin'
-                const isBlog = item._type === 'blog'
-                const blog = isBlog ? (item as ArchivedBlog & { _type: 'blog' }) : null
-                const cs = item._type === 'casestudy' ? (item as ArchivedCaseStudy & { _type: 'casestudy' }) : null
-                const admin = isAdmin ? (item as ArchivedAdmin & { _type: 'admin' }) : null
-                const coverImage = isBlog ? blog!.picture : cs?.cover
+                const isAdmin  = item._type === 'admin'
+                const isBlog   = item._type === 'blog'
+                const blog     = isBlog     ? (item as ArchivedBlog      & { _type: 'blog' })      : null
+                const cs       = !isBlog && !isAdmin ? (item as ArchivedCaseStudy & { _type: 'casestudy' }) : null
+                const admin    = isAdmin    ? (item as ArchivedAdmin     & { _type: 'admin' })     : null
+                const coverImage  = isBlog  ? blog!.picture : cs?.cover
                 const isRestoring = restoringid === item._id
 
                 return (
@@ -929,7 +873,6 @@ export default function ListArchivedServices() {
               })}
             </div>
           </div>
-
         )}
       </div>
 
@@ -938,10 +881,8 @@ export default function ListArchivedServices() {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-8">
           <div className={`relative rounded-[2.5rem] max-w-sm w-full shadow-2xl overflow-hidden transition-all duration-500 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
 
-            {/* Top accent bar */}
             <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
 
-            {/* Top section with icon + type label */}
             <div className={`px-10 pt-10 pb-6 ${isdarkmode ? 'border-b border-white/5' : 'border-b border-gray-100'}`}>
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-[1.25rem] flex items-center justify-center shrink-0 ${isdarkmode ? 'bg-emerald-500/10' : 'bg-emerald-50'}`}>
@@ -961,7 +902,6 @@ export default function ListArchivedServices() {
               </div>
             </div>
 
-            {/* Content section */}
             <div className="px-10 py-6">
               <div className={`rounded-[1.5rem] px-5 py-4 mb-4 ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`}>
                 <p className={`text-[9px] uppercase tracking-widest bold-text mb-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -976,7 +916,6 @@ export default function ListArchivedServices() {
               </p>
             </div>
 
-            {/* Actions */}
             <div className="px-10 pb-10 flex gap-3">
               <button
                 onClick={() => setconfirmrestore(null)}
@@ -995,10 +934,7 @@ export default function ListArchivedServices() {
                 className="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white rounded-[1.25rem] bold-text text-[11px] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25"
               >
                 {restoringid ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Restoring...
-                  </>
+                  <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Restoring...</>
                 ) : (
                   <>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

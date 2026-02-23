@@ -4,8 +4,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDarkMode } from '../../layout'
 
-type ServiceStatus = Record<string, boolean>
-
 interface Service {
   _id: string
   serviceId: string
@@ -18,115 +16,84 @@ interface Service {
   createdAt?: string
 }
 
-// Helper function to get cookie value
-const getCookie = (name: string): string | null => {
-  if (typeof document === 'undefined') return null
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null
-  return null
-}
-
-// Helper function to convert name to serviceId slug
-const toSlug = (text: string): string => {
-  return text
-    .toLowerCase()
-    .trim()
+const toSlug = (text: string): string =>
+  text.toLowerCase().trim()
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
-}
 
-// Color mapping based on badge/category
-const badgeColors: Record<string, string> = {
-  'AI & Tech': 'from-violet-500 to-purple-600',
-  'Operations': 'from-blue-500 to-cyan-600',
-  'Scheduling': 'from-emerald-500 to-teal-600',
-  'Education': 'from-orange-500 to-amber-600',
-  'Sales': 'from-rose-500 to-pink-600',
-  'Support': 'from-sky-500 to-blue-600',
-  'Marketing': 'from-indigo-500 to-violet-600',
-  'Branding': 'from-slate-500 to-gray-600',
-  'Data': 'from-teal-500 to-emerald-600',
-  'Development': 'from-green-500 to-emerald-600',
-}
-
-const getServiceColor = (badge: string): string => {
-  return badgeColors[badge] || 'from-gray-500 to-slate-600'
-}
-
-// Icon mapping for services
+// ── ICONS ─────────────────────────────────────────────────────────────────────
 const serviceIcons: Record<string, React.ReactNode> = {
   'ai-builder': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
     </svg>
   ),
   'automation': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
     </svg>
   ),
   'booking-appointment': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   ),
   'courses-products': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
     </svg>
   ),
   'crm': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
   ),
   'csr': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
     </svg>
   ),
   'email-marketing': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
     </svg>
   ),
   'funnel-builder': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
     </svg>
   ),
   'gray-label': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
     </svg>
   ),
   'social-media-management': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
     </svg>
   ),
   'survey-forms': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
     </svg>
   ),
   'tech-support': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
   ),
   'web-development': (
-    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
     </svg>
   ),
 }
 
 const defaultIcon = (
-  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
   </svg>
 )
@@ -145,6 +112,11 @@ function CoverPhotoUploader({
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/')) return
+    // FIX: 5MB file size guard
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be under 5MB.')
+      return
+    }
     const reader = new FileReader()
     reader.onload = () => {
       if (typeof reader.result === 'string') onChange(reader.result)
@@ -152,65 +124,69 @@ function CoverPhotoUploader({
     reader.readAsDataURL(file)
   }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    const file = e.dataTransfer.files?.[0]
-    if (file) handleFile(file)
-  }
-
   return (
-    <div>
-      <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-        Cover Photo{' '}
-        <span className={`text-[9px] font-normal normal-case tracking-normal ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
-          (optional)
-        </span>
-      </label>
-
+    <div className="w-full">
       {value ? (
-        <div className="relative rounded-xl overflow-hidden" style={{ height: 140 }}>
-          <img src={value ?? ''} alt="Cover preview" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
+        <div
+          className={`relative rounded-lg overflow-hidden border ${isdarkmode ? 'border-white/8' : 'border-gray-200'}`}
+          style={{ height: 130 }}
+        >
+          <img src={value} alt="Cover" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/55 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="px-3 py-1.5 rounded-lg bg-white text-gray-900 text-[10px] font-bold uppercase tracking-wide hover:bg-gray-100 transition-colors"
+              className="px-3 py-1.5 rounded text-[11px] font-medium bg-white text-gray-800 hover:bg-gray-100 transition-colors"
+              style={{ fontFamily: "'Poppins', sans-serif" }}
             >
               Change
             </button>
             <button
               type="button"
               onClick={() => onChange(null)}
-              className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-[10px] font-bold uppercase tracking-wide hover:bg-red-600 transition-colors"
+              className="px-3 py-1.5 rounded text-[11px] font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+              style={{ fontFamily: "'Poppins', sans-serif" }}
             >
               Remove
             </button>
-          </div>
-          <div className="absolute bottom-2 right-2 pointer-events-none">
-            <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide bg-black/50 text-white">
-              Hover to change
-            </span>
           </div>
         </div>
       ) : (
         <div
           onClick={() => inputRef.current?.click()}
-          onDrop={handleDrop}
+          onDrop={(e) => {
+            e.preventDefault()
+            const f = e.dataTransfer.files?.[0]
+            if (f) handleFile(f)
+          }}
           onDragOver={(e) => e.preventDefault()}
-          className={`w-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
+          className={`w-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
             isdarkmode
-              ? 'border-white/10 hover:border-white/20 bg-[#2a2a2a] hover:bg-[#333333]'
+              ? 'border-white/10 hover:border-[#800000]/50 bg-white/[0.02]'
               : 'border-gray-200 hover:border-[#800000]/40 bg-gray-50 hover:bg-white'
           }`}
-          style={{ height: 100 }}
+          style={{ height: 110 }}
         >
-          <svg className={`w-7 h-7 ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className={`w-6 h-6 ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <p className={`text-[10px] font-bold uppercase tracking-widest ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
+          <p
+            className={`text-[11px] font-normal ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
             Click or drag to upload
           </p>
-          <p className={`text-[9px] ${isdarkmode ? 'text-gray-700' : 'text-gray-300'}`}>PNG, JPG, WEBP up to 5MB</p>
+          <p
+            className={`text-[10px] ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            PNG, JPG, WEBP · Max 5MB
+          </p>
         </div>
       )}
 
@@ -220,8 +196,8 @@ function CoverPhotoUploader({
         accept="image/*"
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) handleFile(file)
+          const f = e.target.files?.[0]
+          if (f) handleFile(f)
           e.target.value = ''
         }}
       />
@@ -229,19 +205,40 @@ function CoverPhotoUploader({
   )
 }
 
+// ── SHARED FIELD CLASSES ──────────────────────────────────────────────────────
+const getInputCls = (isdarkmode: boolean) =>
+  `w-full px-3 py-2 rounded-lg text-[11px] font-normal border outline-none transition-all duration-200 ${
+    isdarkmode
+      ? 'bg-[#161616] text-[#f0f0f0] placeholder-[#6b7280] border-white/10 focus:border-[#800000]'
+      : 'bg-white text-[#1f2937] placeholder-[#9ca3af] border-[#e5e7eb] focus:border-[#800000]'
+  }`
+
+const getLabelCls = (isdarkmode: boolean) =>
+  `block text-[10px] font-medium mb-1 uppercase tracking-wider ${isdarkmode ? 'text-[#9ca3af]' : 'text-[#6b7280]'}`
+
+// ── FORM DATA TYPE ────────────────────────────────────────────────────────────
+// FIX: Unified type — coverPhoto is always string | null (never undefined)
+interface ServiceFormData {
+  name: string
+  description: string
+  badge: string
+  coverPhoto: string | null
+}
+
 // ── ADD SERVICE MODAL ─────────────────────────────────────────────────────────
-function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
+function AddServiceModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  isdarkmode,
+}: {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
   isdarkmode: boolean
 }) {
-  const [formData, setFormData] = useState<{
-    name: string
-    description: string
-    badge: string
-    coverPhoto: string | null
-  }>({
+  // FIX: coverPhoto typed as string | null consistently
+  const [formData, setFormData] = useState<ServiceFormData>({
     name: '',
     description: '',
     badge: '',
@@ -250,7 +247,7 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  // Reset form on close
+  // FIX: reset uses null (not '') for coverPhoto
   useEffect(() => {
     if (!isOpen) {
       setFormData({ name: '', description: '', badge: '', coverPhoto: null })
@@ -262,16 +259,13 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
     e.preventDefault()
     setError('')
     setSubmitting(true)
-
     try {
-      const serviceId = toSlug(formData.name)
-
       const response = await fetch('http://localhost:3000/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          serviceId,
+          serviceId: toSlug(formData.name),
           name: formData.name,
           description: formData.description,
           badge: formData.badge,
@@ -279,16 +273,18 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
         }),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        if (response.status === 401) throw new Error('Session expired or not logged in. Please login again.')
-        throw new Error(errorData.error || 'Failed to create service')
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || 'Failed to create service')
+        onSuccess()
+        onClose()
+      } else {
+        throw new Error(`Server error: received non-JSON response (${response.status})`)
       }
-
-      onSuccess()
-      onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Submit error:', err)
     } finally {
       setSubmitting(false)
     }
@@ -297,97 +293,99 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ fontFamily: "'Poppins', sans-serif" }}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className={`relative w-full max-w-2xl rounded-2xl shadow-2xl ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
-        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+        className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border ${
+          isdarkmode ? 'bg-[#111] border-white/5' : 'bg-white border-gray-100'
+        }`}
       >
-        <div className={`px-6 py-5 border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <h2 className={`text-lg bold-text uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
-              Add New Service
-            </h2>
-            <button onClick={onClose} className={`p-2 rounded-xl transition-all ${isdarkmode ? 'hover:bg-white/5 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'}`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+        {/* Header */}
+        <div className="relative px-8 pt-8 pb-4">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-[#800000]" />
+          <h2
+            className="text-[18px] font-semibold tracking-tight"
+            style={{ color: isdarkmode ? '#fff' : '#111', margin: 0 }}
+          >
+            New System Service
+          </h2>
+          <p className="text-[11px] text-gray-400 mt-1 font-normal">Registry update protocol</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-              <p className="text-xs text-red-500">{error}</p>
-            </div>
+            <p className="text-[10px] text-red-500 bg-red-500/10 p-2 rounded">{error}</p>
           )}
 
-          <div className="space-y-4">
+          {/* Cover photo — FIX: removed redundant double-border wrapper */}
+          <div>
+            <label className={getLabelCls(isdarkmode)}>Cover Photo (optional)</label>
             <CoverPhotoUploader
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
-              onChange={(val) => setFormData(prev => ({ ...prev, coverPhoto: val }))}
+              onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
             />
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Service Name <span className="text-red-500">*</span>
-              </label>
+              <label className={getLabelCls(isdarkmode)}>Service Name</label>
               <input
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="e.g., AI Builder"
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                className={getInputCls(isdarkmode)}
+                placeholder="e.g. CRM"
               />
-              {formData.name && (
-                <p className={`mt-1 text-[10px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-                  ID will be: <span className="font-mono">{toSlug(formData.name)}</span>
-                </p>
-              )}
             </div>
-
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Category Badge <span className="text-red-500">*</span>
-              </label>
+              <label className={getLabelCls(isdarkmode)}>Category Badge</label>
               <input
                 type="text"
                 required
                 value={formData.badge}
-                onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
-                placeholder="e.g., AI & Tech, Marketing, Sales"
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
-              />
-            </div>
-
-            <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Description <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                required
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe the service..."
-                rows={4}
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+                onChange={(e) => setFormData((p) => ({ ...p, badge: e.target.value }))}
+                className={getInputCls(isdarkmode)}
+                placeholder="e.g. Sales"
               />
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
-            <button type="button" onClick={onClose} disabled={submitting}
-              className={`flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} disabled:opacity-50 disabled:cursor-not-allowed`}
+          <div>
+            <label className={getLabelCls(isdarkmode)}>Service Description</label>
+            <textarea
+              required
+              value={formData.description}
+              onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+              rows={3}
+              className={`${getInputCls(isdarkmode)} resize-none`}
+              placeholder="Describe what this service does..."
+            />
+          </div>
+
+          <div className="flex items-center gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className={`flex-1 py-2.5 text-[11px] font-medium border rounded-lg transition-all ${
+                isdarkmode
+                  ? 'border-white/10 text-gray-400 hover:text-white'
+                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+              }`}
             >
               Cancel
             </button>
-            <button type="submit" disabled={submitting}
-              className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-[#800000] text-white hover:bg-[#600000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-[2] py-2.5 text-[11px] font-medium text-white rounded-lg transition-all shadow-lg disabled:opacity-60"
+              style={{ background: '#800000' }}
             >
-              {submitting ? 'Creating...' : 'Create Service'}
+              {submitting ? 'Registering...' : 'Register Service'}
             </button>
           </div>
         </form>
@@ -397,36 +395,50 @@ function AddServiceModal({ isOpen, onClose, onSuccess, isdarkmode }: {
 }
 
 // ── EDIT SERVICE MODAL ────────────────────────────────────────────────────────
-// KEY DESIGN: This component initialises its state directly from the `service`
-// prop passed in. The parent renders it with key={service._id}, which forces
-// React to fully unmount + remount every time a different service is edited.
-// This means useState runs fresh on every open, so coverPhoto (and all other
-// fields) are always correctly pre-populated without needing a useEffect.
-function EditServiceModal({ isOpen, onClose, onSuccess, isdarkmode, service }: {
+function EditServiceModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  isdarkmode,
+  service,
+}: {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
   isdarkmode: boolean
   service: Service | null
 }) {
-  // ✅ FIX: state is seeded directly from service prop at mount time.
-  // Because the parent passes key={service._id}, this component remounts
-  // fresh every time a different service is selected — no stale data.
-  const [formData, setFormData] = useState({
-    name: service?.name ?? '',
-    description: service?.description ?? '',
-    badge: service?.badge ?? '',
-    coverPhoto: service?.coverPhoto ?? null,
+  // FIX: coverPhoto typed as string | null consistently
+  const [formData, setFormData] = useState<ServiceFormData>({
+    name: '',
+    description: '',
+    badge: '',
+    coverPhoto: null,
   })
   const [submitting, setSubmitting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  useEffect(() => {
+    if (service) {
+      setFormData({
+        name: service.name ?? '',
+        description: service.description ?? '',
+        badge: service.badge ?? '',
+        // FIX: coerce undefined → null
+        coverPhoto: service.coverPhoto ?? null,
+      })
+      setConfirmDelete(false)
+      setError('')
+    }
+  }, [service])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!service) return
     setError('')
     setSubmitting(true)
-
     try {
       const response = await fetch(`http://localhost:3000/api/services/${service._id}`, {
         method: 'PATCH',
@@ -436,121 +448,214 @@ function EditServiceModal({ isOpen, onClose, onSuccess, isdarkmode, service }: {
           name: formData.name,
           description: formData.description,
           badge: formData.badge,
-          // ✅ FIX: always include coverPhoto so the controller can clear it when removed
           coverPhoto: formData.coverPhoto || null,
         }),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        if (response.status === 401) throw new Error('Session expired or not logged in. Please login again.')
-        throw new Error(errorData.error || 'Failed to update service')
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || 'Failed to update service')
+        onSuccess()
+        onClose()
+      } else {
+        throw new Error(
+          `Server error: received HTML instead of JSON (${response.status}). Check your backend route.`
+        )
       }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Update error:', err)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
+  const handleDelete = async () => {
+    if (!service) return
+    setDeleting(true)
+    setError('')
+    try {
+      const response = await fetch(`http://localhost:3000/api/services/${service._id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to delete service')
+      }
       onSuccess()
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Delete error:', err)
     } finally {
-      setSubmitting(false)
+      setDeleting(false)
+      setConfirmDelete(false)
     }
   }
 
   if (!isOpen || !service) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ fontFamily: "'Poppins', sans-serif" }}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className={`relative w-full max-w-2xl rounded-2xl shadow-2xl ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
-        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+        className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border ${
+          isdarkmode ? 'bg-[#111] border-white/5' : 'bg-white border-gray-100'
+        }`}
       >
-        <div className={`px-6 py-5 border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className={`text-lg bold-text uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
-                Edit Service
-              </h2>
-              <p className={`text-[10px] mt-0.5 font-mono ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>
-                {service.serviceId}
-              </p>
-            </div>
-            <button onClick={onClose} className={`p-2 rounded-xl transition-all ${isdarkmode ? 'hover:bg-white/5 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'}`}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+        {/* Header */}
+        <div className="relative px-8 pt-8 pb-4">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-[#800000]" />
+          <h2
+            className="text-[18px] font-semibold tracking-tight"
+            style={{ color: isdarkmode ? '#fff' : '#111', margin: 0 }}
+          >
+            Modify Configuration
+          </h2>
+          <p className="text-[9px] font-mono mt-1 text-[#800000] font-bold uppercase tracking-tighter">
+            ref: {service.serviceId}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-              <p className="text-xs text-red-500">{error}</p>
-            </div>
+            <p className="text-[10px] text-red-500 bg-red-500/10 p-2 rounded">{error}</p>
           )}
 
-          <div className="space-y-4">
-            {/* ✅ FIX: value is seeded from service.coverPhoto — shows existing photo immediately */}
+          {/* Cover photo — FIX: removed redundant double-border wrapper */}
+          <div>
+            <label className={getLabelCls(isdarkmode)}>Cover Photo (optional)</label>
             <CoverPhotoUploader
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
-              onChange={(val) => setFormData(prev => ({ ...prev, coverPhoto: val }))}
+              onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
             />
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Service Name <span className="text-red-500">*</span>
-              </label>
+              <label className={getLabelCls(isdarkmode)}>Display Name</label>
               <input
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="e.g., AI Builder"
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                className={getInputCls(isdarkmode)}
               />
             </div>
-
             <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Category Badge <span className="text-red-500">*</span>
-              </label>
+              <label className={getLabelCls(isdarkmode)}>Category Badge</label>
               <input
                 type="text"
                 required
                 value={formData.badge}
-                onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
-                placeholder="e.g., AI & Tech, Marketing, Sales"
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
-              />
-            </div>
-
-            <div>
-              <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Description <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                required
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe the service..."
-                rows={4}
-                className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5' : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'}`}
+                onChange={(e) => setFormData((p) => ({ ...p, badge: e.target.value }))}
+                className={getInputCls(isdarkmode)}
               />
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
-            <button type="button" onClick={onClose} disabled={submitting}
-              className={`flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} disabled:opacity-50 disabled:cursor-not-allowed`}
+          <div>
+            <label className={getLabelCls(isdarkmode)}>Service Description</label>
+            <textarea
+              required
+              value={formData.description}
+              onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+              rows={4}
+              className={`${getInputCls(isdarkmode)} resize-none`}
+            />
+          </div>
+
+          {/* Delete confirmation inline */}
+          {confirmDelete && (
+            <div
+              className={`rounded-lg p-3 border text-[11px] ${
+                isdarkmode
+                  ? 'bg-red-950/30 border-red-900/40 text-red-400'
+                  : 'bg-red-50 border-red-200 text-red-600'
+              }`}
             >
-              Cancel
+              <p className="font-medium mb-2">
+                Delete &quot;{service.name}&quot;? This action cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(false)}
+                  className={`flex-1 py-1.5 rounded text-[10px] font-medium border transition-all ${
+                    isdarkmode
+                      ? 'border-white/10 text-gray-400 hover:text-white'
+                      : 'border-gray-200 text-gray-500 hover:bg-gray-100'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex-[2] py-1.5 rounded text-[10px] font-medium text-white bg-red-600 hover:bg-red-700 transition-all disabled:opacity-60"
+                >
+                  {deleting ? 'Deleting...' : 'Yes, Delete Service'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 pt-4">
+            {/* Delete trigger (only when not already confirming) */}
+            {!confirmDelete && (
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(true)}
+                className={`py-2.5 px-3 text-[11px] font-medium border rounded-lg transition-all ${
+                  isdarkmode
+                    ? 'border-red-900/40 text-red-500 hover:bg-red-950/30'
+                    : 'border-red-200 text-red-500 hover:bg-red-50'
+                }`}
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  style={{ display: 'inline', marginRight: 4 }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+                Delete
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={onClose}
+              className={`flex-1 py-2.5 text-[11px] font-medium border rounded-lg transition-all ${
+                isdarkmode
+                  ? 'border-white/10 text-gray-400 hover:text-white'
+                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              Discard
             </button>
-            <button type="submit" disabled={submitting}
-              className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-[#800000] text-white hover:bg-[#600000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-[2] py-2.5 text-[11px] font-medium text-white rounded-lg transition-all shadow-lg disabled:opacity-60"
+              style={{ background: '#800000' }}
             >
-              {submitting ? 'Saving...' : 'Save Changes'}
+              {submitting ? 'Updating...' : 'Commit Changes'}
             </button>
           </div>
         </form>
@@ -559,38 +664,34 @@ function EditServiceModal({ isOpen, onClose, onSuccess, isdarkmode, service }: {
   )
 }
 
-// ── SORT TYPE ──────────────────────────────────────────────────────────────────
+// ── SORT TYPE ─────────────────────────────────────────────────────────────────
 type SortMode = 'alpha-asc' | 'alpha-desc' | 'date-newest' | 'date-oldest'
 
+// ── MAIN PAGE ─────────────────────────────────────────────────────────────────
 export default function ListServices() {
   const router = useRouter()
   const { isdarkmode } = useDarkMode()
 
-  const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchquery, setsearchquery] = useState('')
-  const [viewmode, setviewmode] = useState<'grid' | 'list'>('grid')
-  const [filtermode, setfiltermode] = useState<'all' | 'active' | 'inactive'>('all')
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [services, setServices]               = useState<Service[]>([])
+  const [loading, setLoading]                 = useState(true)
+  const [searchquery, setsearchquery]         = useState('')
+  const [viewmode, setviewmode]               = useState<'grid' | 'list'>('grid')
+  const [filtermode, setfiltermode]           = useState<'all' | 'active' | 'inactive'>('all')
+  const [sortmode, setsortmode]               = useState<SortMode>('alpha-asc')
+  const [isModalOpen, setIsModalOpen]         = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [editingService, setEditingService] = useState<Service | null>(null)
-  const [sortmode, setsortmode] = useState<SortMode>('alpha-asc')
+  const [editingService, setEditingService]   = useState<Service | null>(null)
 
-  useEffect(() => {
-    fetchServices()
-  }, [])
+  useEffect(() => { fetchServices() }, [])
 
   const fetchServices = async () => {
     try {
       setLoading(true)
-      const response = await fetch('http://localhost:3000/api/services', {
-        credentials: 'include',
-      })
-      if (!response.ok) throw new Error('Failed to fetch services')
-      const data = await response.json()
-      setServices(data)
-    } catch (error) {
-      console.error('Error fetching services:', error)
+      const response = await fetch('http://localhost:3000/api/services', { credentials: 'include' })
+      if (!response.ok) throw new Error('Failed to fetch')
+      setServices(await response.json())
+    } catch (err) {
+      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -598,29 +699,24 @@ export default function ListServices() {
 
   const togglestatus = async (e: React.MouseEvent, serviceId: string) => {
     e.stopPropagation()
-
-    const service = services.find(s => s.serviceId === serviceId)
+    const service = services.find((s) => s.serviceId === serviceId)
     if (!service) return
-
     try {
       const response = await fetch(`http://localhost:3000/api/services/${service._id}/toggle`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       })
-
       if (response.status === 401) {
-        alert('Session expired or not logged in. Please login again.')
+        alert('Session expired.')
         router.push('/login')
         return
       }
-
-      if (!response.ok) throw new Error('Failed to toggle service status')
-
-      const updatedService = await response.json()
-      setServices(services.map(s => s._id === updatedService._id ? updatedService : s))
-    } catch (error) {
-      console.error('Error toggling service status:', error)
+      if (!response.ok) throw new Error('Failed to toggle')
+      const updated = await response.json()
+      setServices((prev) => prev.map((s) => (s._id === updated._id ? updated : s)))
+    } catch (err) {
+      console.error(err)
       alert('Failed to update service status')
     }
   }
@@ -636,310 +732,841 @@ export default function ListServices() {
     setTimeout(() => setEditingService(null), 200)
   }
 
-  // sort helper applied after filter
   const applysort = (list: Service[]): Service[] => {
-    const sorted = [...list]
+    const s = [...list]
     switch (sortmode) {
       case 'alpha-asc':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name))
+        return s.sort((a, b) => a.name.localeCompare(b.name))
       case 'alpha-desc':
-        return sorted.sort((a, b) => b.name.localeCompare(a.name))
+        return s.sort((a, b) => b.name.localeCompare(a.name))
       case 'date-newest':
-        return sorted.sort((a, b) =>
-          new Date(b.updatedAt ?? b.createdAt ?? 0).getTime() -
-          new Date(a.updatedAt ?? a.createdAt ?? 0).getTime()
+        return s.sort(
+          (a, b) =>
+            new Date(b.updatedAt ?? b.createdAt ?? 0).getTime() -
+            new Date(a.updatedAt ?? a.createdAt ?? 0).getTime()
         )
       case 'date-oldest':
-        return sorted.sort((a, b) =>
-          new Date(a.updatedAt ?? a.createdAt ?? 0).getTime() -
-          new Date(b.updatedAt ?? b.createdAt ?? 0).getTime()
+        return s.sort(
+          (a, b) =>
+            new Date(a.updatedAt ?? a.createdAt ?? 0).getTime() -
+            new Date(b.updatedAt ?? b.createdAt ?? 0).getTime()
         )
       default:
-        return sorted
+        return s
     }
   }
 
   const filtered = applysort(
-    services.filter(service => {
-      const matchessearch =
-        service.name.toLowerCase().includes(searchquery.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchquery.toLowerCase()) ||
-        service.badge.toLowerCase().includes(searchquery.toLowerCase())
-
-      const matchesfilter =
+    services.filter((service) => {
+      const q = searchquery.toLowerCase()
+      const matchSearch =
+        service.name.toLowerCase().includes(q) ||
+        service.description.toLowerCase().includes(q) ||
+        service.badge.toLowerCase().includes(q)
+      const matchFilter =
         filtermode === 'all' ||
         (filtermode === 'active' && service.isActive) ||
         (filtermode === 'inactive' && !service.isActive)
-
-      return matchessearch && matchesfilter
+      return matchSearch && matchFilter
     })
   )
 
-  const cardshadow = {
-    boxShadow: isdarkmode
-      ? '0 2px 8px rgba(0,0,0,0.3)'
-      : '0 2px 8px rgba(0,0,0,0.08)',
-  }
+  const activeCount   = services.filter((s) => s.isActive).length
+  const inactiveCount = services.filter((s) => !s.isActive).length
 
+  // ── Theme tokens ──────────────────────────────────────────────────────────
+  const pageBg        = isdarkmode ? '#0d0d0d' : '#f5f5f5'
+  const cardBg        = isdarkmode ? '#1a1a1a' : '#ffffff'
+  const borderColor   = isdarkmode ? 'rgba(255,255,255,0.08)' : '#e5e7eb'
+  const textPrimary   = isdarkmode ? '#f0f0f0' : '#1f2937'
+  const textSecondary = isdarkmode ? '#9ca3af' : '#6b7280'
+  const textMuted     = isdarkmode ? '#6b7280' : '#9ca3af'
+  const hoverBg       = isdarkmode ? 'rgba(255,255,255,0.04)' : '#f9fafb'
+  const subtleBg      = isdarkmode ? 'rgba(255,255,255,0.03)' : '#f9fafb'
+  const inputBg       = isdarkmode ? '#161616' : '#ffffff'
+
+  // ── Loading state ─────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen" style={{ fontFamily: "'Poppins', sans-serif" }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#800000] mx-auto mb-4"></div>
-          <p className={isdarkmode ? 'text-gray-400' : 'text-gray-600'}>Loading services...</p>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          background: pageBg,
+          fontFamily: "'Poppins', sans-serif",
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              border: '2px solid',
+              borderColor: `${borderColor} ${borderColor} ${borderColor} #800000`,
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+              margin: '0 auto 12px',
+            }}
+          />
+          <p style={{ fontSize: 13, color: textMuted, fontWeight: 400 }}>Loading services...</p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
       </div>
     )
   }
 
+  // ── Reusable inline styles ────────────────────────────────────────────────
+  const cardStyle: React.CSSProperties = {
+    background: cardBg,
+    border: `1px solid ${borderColor}`,
+    borderRadius: 16,
+  }
+
+  const statusBadgeStyle = (isActive: boolean): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    fontSize: 11,
+    fontWeight: 500,
+    padding: '4px 12px',
+    borderRadius: 20,
+    border: `1px solid ${isActive ? 'rgba(0,188,125,0.2)' : 'rgba(241,161,13,0.2)'}`,
+    background: isActive ? 'rgba(0,188,125,0.08)' : 'rgba(241,161,13,0.08)',
+    color: isActive ? '#00bc7d' : '#f1a10d',
+    whiteSpace: 'nowrap' as const,
+  })
+
+  const toggleStyle = (isActive: boolean): React.CSSProperties => ({
+    position: 'relative',
+    width: 38,
+    height: 22,
+    borderRadius: 11,
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    transition: 'background 0.3s',
+    background: isActive ? '#800000' : isdarkmode ? 'rgba(255,255,255,0.12)' : '#d1d5db',
+    flexShrink: 0,
+  })
+
+  const thumbStyle = (isActive: boolean): React.CSSProperties => ({
+    position: 'absolute',
+    top: 2,
+    left: isActive ? 18 : 2,
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    background: '#ffffff',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+    transition: 'left 0.3s',
+  })
+
+  const iconBoxStyle = (isActive: boolean): React.CSSProperties => ({
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: isActive
+      ? 'linear-gradient(135deg, #800000, #a00000)'
+      : isdarkmode
+      ? 'rgba(255,255,255,0.06)'
+      : 'rgba(0,0,0,0.04)',
+    color: isActive ? '#ffffff' : isdarkmode ? '#9ca3af' : '#9ca3af',
+    flexShrink: 0,
+  })
+
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: pageBg, fontFamily: "'Poppins', sans-serif" }}>
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
-        .bold-text { font-weight: 700; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        * { font-family: 'Poppins', sans-serif !important; box-sizing: border-box; }
+        .svc-row:hover { background: ${hoverBg} !important; }
+        .edit-btn { opacity: 0; transition: opacity 0.15s; }
+        .svc-card:hover .edit-btn { opacity: 1; }
+        .svc-row:hover .edit-btn { opacity: 1; }
+        .svc-card { transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+        .svc-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 25px rgba(0,0,0,${isdarkmode ? '0.4' : '0.10'}) !important;
+          border-color: ${isdarkmode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.10)'};
+        }
+        .toggle-btn:active { transform: scale(0.92); }
       `}</style>
 
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 24px' }}>
+
+        {/* ── PAGE HEADER ─────────────────────────────────────────────────── */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: 16,
+            marginBottom: 28,
+            paddingBottom: 24,
+            borderBottom: `1px solid ${borderColor}`,
+          }}
+        >
           <div>
-            <h1 className={`text-2xl bold-text uppercase tracking-tight mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-900'}`}>
+            <h1
+              style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, lineHeight: 1.3 }}
+            >
               Services Management
             </h1>
-            <p className={`text-[11px] mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-              Manage and configure all available services
+            <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400 }}>
+              Configure and manage all available services
             </p>
           </div>
 
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-[#800000] text-white hover:bg-[#600000] transition-all shadow-lg hover:shadow-xl"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Service
-          </button>
-        </div>
-
-        {/* Controls */}
-        <div className={`rounded-2xl p-5 mb-6 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`} style={cardshadow}>
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto flex-grow">
-              {/* Search */}
-              <div className="relative flex-grow sm:max-w-md">
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  value={searchquery}
-                  onChange={e => setsearchquery(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs transition-all outline-none ${
-                    isdarkmode
-                      ? 'bg-[#2a2a2a] text-gray-100 placeholder-gray-500 focus:bg-[#333333] border border-white/5'
-                      : 'bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white border border-gray-200 focus:border-[#800000]'
-                  }`}
-                />
-                <svg className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-
-              {/* Filter buttons */}
-              <div className="flex gap-2">
-                <button onClick={() => setfiltermode('all')} className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${filtermode === 'all' ? 'bg-[#800000] text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>All</button>
-                <button onClick={() => setfiltermode('active')} className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${filtermode === 'active' ? 'bg-emerald-500 text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Active</button>
-                <button onClick={() => setfiltermode('inactive')} className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${filtermode === 'inactive' ? 'bg-gray-500 text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Inactive</button>
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Stats pill */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '8px 14px',
+                borderRadius: 8,
+                border: `1px solid ${borderColor}`,
+                background: cardBg,
+                fontSize: 11,
+              }}
+            >
+              <span style={{ color: textMuted, fontWeight: 400 }}>Total</span>
+              <strong style={{ color: textPrimary, fontWeight: 500 }}>{services.length}</strong>
+              <span style={{ width: 1, height: 12, background: borderColor }} />
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00bc7d' }} />
+              <span style={{ color: textSecondary, fontWeight: 500 }}>{activeCount}</span>
+              <span style={{ width: 1, height: 12, background: borderColor }} />
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#f1a10d' }} />
+              <span style={{ color: textSecondary, fontWeight: 500 }}>{inactiveCount}</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Sort dropdown */}
-              <div className="relative">
-                <select
-                  value={sortmode}
-                  onChange={e => setsortmode(e.target.value as SortMode)}
-                  className={`pl-8 pr-3 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest appearance-none outline-none transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-gray-300 border border-white/5 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'}`}
-                >
-                  <option value="date-newest">Date Modified ↓</option>
-                  <option value="date-oldest">Date Modified ↑</option>
-                  <option value="alpha-asc">Name A → Z</option>
-                  <option value="alpha-desc">Name Z → A</option>
-                </select>
-                <svg className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                </svg>
-              </div>
-
-              {/* View toggle */}
-              <button onClick={() => setviewmode('grid')} title="Grid View"
-                className={`p-2.5 rounded-xl transition-all ${viewmode === 'grid' ? 'bg-[#800000] text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </button>
-              <button onClick={() => setviewmode('list')} title="List View"
-                className={`p-2.5 rounded-xl transition-all ${viewmode === 'list' ? 'bg-[#800000] text-white shadow-md' : isdarkmode ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#353535]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
+            {/* Add service button */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+                padding: '9px 18px',
+                borderRadius: 8,
+                background: 'linear-gradient(135deg, #800000, #a00000)',
+                color: '#fff',
+                fontSize: 12,
+                fontWeight: 500,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'opacity 0.15s',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.opacity = '0.88')}
+              onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
+            >
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Service
+            </button>
           </div>
         </div>
 
-        <p className={`text-[10px] uppercase tracking-widest font-bold mb-4 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
-          Showing {filtered.length} of {services.length} services
-        </p>
+        {/* ── CONTROLS BAR ────────────────────────────────────────────────── */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 24,
+          }}
+        >
+          {/* Search */}
+          <div style={{ position: 'relative', width: 220 }}>
+            <input
+              type="text"
+              placeholder="Search services..."
+              value={searchquery}
+              onChange={(e) => setsearchquery(e.target.value)}
+              style={{
+                width: '100%',
+                paddingLeft: 32,
+                paddingRight: 12,
+                paddingTop: 8,
+                paddingBottom: 8,
+                borderRadius: 8,
+                border: `1px solid ${borderColor}`,
+                background: inputBg,
+                color: textPrimary,
+                fontSize: 12,
+                outline: 'none',
+                transition: 'border-color 0.15s',
+                fontWeight: 400,
+              }}
+              onFocus={(e) => (e.target.style.borderColor = '#800000')}
+              onBlur={(e) => (e.target.style.borderColor = borderColor)}
+            />
+            <svg
+              style={{
+                position: 'absolute',
+                left: 10,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: textMuted,
+                pointerEvents: 'none',
+              }}
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
 
+          {/* Filter tabs */}
+          <div
+            style={{
+              display: 'flex',
+              border: `1px solid ${borderColor}`,
+              borderRadius: 8,
+              overflow: 'hidden',
+              background: cardBg,
+            }}
+          >
+            {(
+              [
+                ['all', 'All', services.length],
+                ['active', 'Active', activeCount],
+                ['inactive', 'Inactive', inactiveCount],
+              ] as const
+            ).map(([val, label, count], i) => (
+              <button
+                key={val}
+                onClick={() => setfiltermode(val)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 14px',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  borderTop: 'none',
+                  borderBottom: 'none',
+                  borderRight: 'none',
+                  borderLeftWidth: i > 0 ? 1 : 0,
+                  borderLeftStyle: 'solid',
+                  borderLeftColor: borderColor,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  background: filtermode === val ? '#800000' : 'transparent',
+                  color: filtermode === val ? '#ffffff' : textMuted,
+                }}
+              >
+                {label}
+                <span
+                  style={{
+                    fontSize: 9,
+                    padding: '1px 6px',
+                    borderRadius: 10,
+                    fontWeight: 500,
+                    background:
+                      filtermode === val
+                        ? 'rgba(255,255,255,0.22)'
+                        : isdarkmode
+                        ? 'rgba(255,255,255,0.06)'
+                        : 'rgba(0,0,0,0.06)',
+                    color: filtermode === val ? '#fff' : textMuted,
+                  }}
+                >
+                  {count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <span style={{ width: 1, height: 24, background: borderColor }} />
+
+          {/* Sort */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, color: textMuted, fontWeight: 400 }}>Sort by</span>
+            <select
+              value={sortmode}
+              onChange={(e) => setsortmode(e.target.value as SortMode)}
+              style={{
+                fontSize: 11,
+                padding: '7px 10px',
+                borderRadius: 8,
+                border: `1px solid ${borderColor}`,
+                background: inputBg,
+                color: textPrimary,
+                outline: 'none',
+                cursor: 'pointer',
+                fontWeight: 400,
+              }}
+            >
+              <option value="alpha-asc">Name A → Z</option>
+              <option value="alpha-desc">Name Z → A</option>
+              <option value="date-newest">Newest First</option>
+              <option value="date-oldest">Oldest First</option>
+            </select>
+          </div>
+
+          {/* Push right */}
+          <div style={{ flex: 1 }} />
+
+          {/* Count */}
+          <span style={{ fontSize: 11, color: textMuted, fontWeight: 400 }}>
+            Showing{' '}
+            <strong style={{ color: textSecondary, fontWeight: 500 }}>{filtered.length}</strong> of{' '}
+            <strong style={{ color: textSecondary, fontWeight: 500 }}>{services.length}</strong>
+          </span>
+
+          {/* Divider */}
+          <span style={{ width: 1, height: 24, background: borderColor }} />
+
+          {/* View toggle */}
+          <div
+            style={{
+              display: 'flex',
+              border: `1px solid ${borderColor}`,
+              borderRadius: 8,
+              overflow: 'hidden',
+              background: cardBg,
+            }}
+          >
+            {(
+              [
+                [
+                  'grid',
+                  'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z',
+                ],
+                ['list', 'M4 6h16M4 12h16M4 18h16'],
+              ] as const
+            ).map(([mode, d], i) => (
+              <button
+                key={mode}
+                onClick={() => setviewmode(mode)}
+                title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} view`}
+                style={{
+                  padding: '7px 10px',
+                  borderTop: 'none',
+                  borderBottom: 'none',
+                  borderRight: 'none',
+                  borderLeftWidth: i > 0 ? 1 : 0,
+                  borderLeftStyle: 'solid',
+                  borderLeftColor: borderColor,
+                  background: viewmode === mode ? '#800000' : 'transparent',
+                  color: viewmode === mode ? '#fff' : textMuted,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={d} />
+                </svg>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── EMPTY STATE ─────────────────────────────────────────────────── */}
         {filtered.length === 0 && (
-          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-16 text-center`} style={cardshadow}>
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className={`text-sm bold-text mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>No services found</h3>
-            <p className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Try adjusting your search or filter</p>
+          <div style={{ ...cardStyle, padding: '64px 32px', textAlign: 'center' }}>
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: isdarkmode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px',
+                color: textMuted,
+              }}
+            >
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: '0 0 6px' }}>
+              No services found
+            </h3>
+            <p style={{ fontSize: 12, color: textMuted, margin: 0, fontWeight: 400 }}>
+              Try adjusting your search or filter criteria
+            </p>
           </div>
         )}
 
-        {/* Grid View */}
+        {/* ── GRID VIEW ───────────────────────────────────────────────────── */}
         {filtered.length > 0 && viewmode === 'grid' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {filtered.map(service => {
-              const serviceColor = getServiceColor(service.badge)
-              return (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: 20,
+            }}
+          >
+            {filtered.map((service) => (
+              <div
+                key={service._id}
+                className="svc-card"
+                style={{
+                  background: cardBg,
+                  border: `1px solid ${borderColor}`,
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: isdarkmode
+                    ? '0 1px 4px rgba(0,0,0,0.35)'
+                    : '0 1px 4px rgba(0,0,0,0.06)',
+                  position: 'relative',
+                }}
+              >
+                {/* Card Content */}
                 <div
-                  key={service._id}
-                  className={`group rounded-2xl overflow-hidden transition-all duration-300 flex flex-col ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
-                  style={cardshadow}
+                  style={{
+                    padding: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 16,
+                    flex: 1,
+                  }}
                 >
-                  <div className={`h-1.5 w-full bg-gradient-to-r ${serviceColor} shrink-0`} />
-
-                  <div className="p-6 flex flex-col flex-grow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${serviceColor} text-white shadow-lg`}>
-                        {serviceIcons[service.serviceId] || defaultIcon}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
-                          {service.badge}
-                        </span>
-                        {/* Edit button — fades in on card hover */}
-                        <button
-                          onClick={(e) => openEditModal(e, service)}
-                          title="Edit service"
-                          className={`p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100 ${isdarkmode ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700'}`}
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                      </div>
+                  {/* Top: Icon + Badge + Edit */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <div style={iconBoxStyle(service.isActive)}>
+                      {serviceIcons[service.serviceId] || defaultIcon}
                     </div>
 
-                    <h3 className={`text-[13px] bold-text uppercase tracking-tight mb-2 ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
-                      {service.name}
-                    </h3>
-
-                    <p className={`text-[10px] leading-relaxed flex-grow ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {service.description}
-                    </p>
-
-                    <div className={`mt-4 pt-4 border-t flex items-center justify-between ${isdarkmode ? 'border-white/5' : 'border-gray-100'}`}>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full shadow-sm transition-colors ${service.isActive ? 'bg-emerald-400 shadow-emerald-400/50' : 'bg-gray-400 shadow-gray-400/30'}`} />
-                        <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors ${service.isActive ? (isdarkmode ? 'text-emerald-400' : 'text-emerald-500') : (isdarkmode ? 'text-gray-600' : 'text-gray-400')}`}>
-                          {service.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
-                      <button
-                        onClick={(e) => togglestatus(e, service.serviceId)}
-                        className={`relative w-9 h-5 rounded-full transition-all duration-300 border-none outline-none cursor-pointer active:scale-90 z-10 ${service.isActive ? 'bg-emerald-400' : (isdarkmode ? 'bg-[#3a3a3a]' : 'bg-gray-200')}`}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 500,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          padding: '3px 8px',
+                          borderRadius: 6,
+                          background: isdarkmode
+                            ? 'rgba(255,255,255,0.06)'
+                            : 'rgba(0,0,0,0.05)',
+                          color: textMuted,
+                        }}
                       >
-                        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300 ${service.isActive ? 'left-4' : 'left-0.5'}`} />
+                        {service.badge}
+                      </span>
+
+                      <button
+                        className="edit-btn"
+                        onClick={(e) => openEditModal(e, service)}
+                        style={{
+                          padding: '6px',
+                          borderRadius: 8,
+                          border: 'none',
+                          background: isdarkmode
+                            ? 'rgba(255,255,255,0.06)'
+                            : 'rgba(0,0,0,0.05)',
+                          color: textMuted,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          transition: 'background 0.2s',
+                        }}
+                      >
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
                       </button>
                     </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
 
-        {/* List View */}
-        {filtered.length > 0 && viewmode === 'list' && (
-          <div className="space-y-3">
-            {filtered.map(service => {
-              const serviceColor = getServiceColor(service.badge)
-              return (
-                <div
-                  key={service._id}
-                  className={`group rounded-2xl overflow-hidden transition-all duration-300 flex items-center gap-5 ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}
-                  style={cardshadow}
-                >
-                  <div className={`w-1 self-stretch rounded-full bg-gradient-to-b ${serviceColor} shrink-0`} />
-
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${serviceColor} text-white shrink-0 shadow-md`}>
-                    {serviceIcons[service.serviceId] || defaultIcon}
-                  </div>
-
-                  <div className="flex-grow min-w-0 py-5">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className={`text-[12px] bold-text uppercase tracking-tight ${isdarkmode ? 'text-gray-100' : 'text-gray-800'}`}>
-                        {service.name}
-                      </h3>
-                      <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${isdarkmode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
-                        {service.badge}
-                      </span>
-                    </div>
-                    <p className={`text-[10px] leading-relaxed line-clamp-1 ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {/* Title + Description */}
+                  <div style={{ flex: 1 }}>
+                    <h3
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: textPrimary,
+                        margin: '0 0 8px',
+                        lineHeight: 1.35,
+                      }}
+                    >
+                      {service.name}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: textMuted,
+                        lineHeight: 1.6,
+                        margin: 0,
+                        fontWeight: 400,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {service.description}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0 pr-5">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full shadow-sm transition-colors ${service.isActive ? 'bg-emerald-400 shadow-emerald-400/50' : 'bg-gray-400 shadow-gray-400/30'}`} />
-                      <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors ${service.isActive ? (isdarkmode ? 'text-emerald-400' : 'text-emerald-500') : (isdarkmode ? 'text-gray-600' : 'text-gray-400')}`}>
-                        {service.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    {/* Edit button — fades in on row hover */}
-                    <button
-                      onClick={(e) => openEditModal(e, service)}
-                      title="Edit service"
-                      className={`p-2 rounded-lg transition-all opacity-0 group-hover:opacity-100 ${isdarkmode ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700'}`}
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={(e) => togglestatus(e, service.serviceId)}
-                      className={`relative w-9 h-5 rounded-full transition-all duration-300 border-none outline-none cursor-pointer active:scale-90 z-10 ${service.isActive ? 'bg-emerald-400' : (isdarkmode ? 'bg-[#3a3a3a]' : 'bg-gray-200')}`}
-                    >
-                      <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300 ${service.isActive ? 'left-4' : 'left-0.5'}`} />
-                    </button>
+                  {/* Status Badge */}
+                  <div style={{ marginTop: 4 }}>
+                    <span style={statusBadgeStyle(service.isActive)}>
+                      <span
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          background: service.isActive ? '#00bc7d' : '#f1a10d',
+                          flexShrink: 0,
+                        }}
+                      />
+                      {service.isActive ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
                 </div>
-              )
-            })}
+
+                {/* Card Footer */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 20px',
+                    borderTop: `1px solid ${borderColor}`,
+                    background: subtleBg,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 10,
+                      color: textMuted,
+                      fontFamily: 'monospace',
+                      fontWeight: 400,
+                    }}
+                  >
+                    {service.serviceId}
+                  </span>
+                  <button
+                    className="toggle-btn"
+                    onClick={(e) => togglestatus(e, service.serviceId)}
+                    style={toggleStyle(service.isActive)}
+                  >
+                    <span style={thumbStyle(service.isActive)} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── LIST VIEW ───────────────────────────────────────────────────── */}
+        {filtered.length > 0 && viewmode === 'list' && (
+          <div style={{ ...cardStyle, overflow: 'hidden' }}>
+            {/* Table Header */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr 3fr 130px 90px',
+                gap: 16,
+                padding: '10px 20px',
+                borderBottom: `1px solid ${borderColor}`,
+                background: subtleBg,
+                fontSize: 10,
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                color: textMuted,
+              }}
+            >
+              <span>Service</span>
+              <span>Category</span>
+              <span>Description</span>
+              <span>Status</span>
+              <span style={{ textAlign: 'right' }}>Actions</span>
+            </div>
+
+            {/* Rows */}
+            {filtered.map((service, idx) => (
+              <div
+                key={service._id}
+                className="svc-row"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '2fr 1fr 3fr 130px 90px',
+                  gap: 16,
+                  alignItems: 'center',
+                  padding: '14px 20px',
+                  borderBottom:
+                    idx !== filtered.length - 1 ? `1px solid ${borderColor}` : 'none',
+                  transition: 'background 0.15s',
+                  position: 'relative',
+                }}
+              >
+                {/* Service name + icon */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+                  <div style={{ ...iconBoxStyle(service.isActive), width: 36, height: 36, borderRadius: 10 }}>
+                    {serviceIcons[service.serviceId] || defaultIcon}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 500,
+                        color: textPrimary,
+                        margin: 0,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {service.name}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 10,
+                        color: textMuted,
+                        margin: '2px 0 0',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        fontWeight: 400,
+                      }}
+                    >
+                      {service.serviceId}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Badge */}
+                <span
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 500,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    padding: '3px 8px',
+                    borderRadius: 4,
+                    background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                    color: textMuted,
+                    alignSelf: 'center',
+                    width: 'fit-content',
+                  }}
+                >
+                  {service.badge}
+                </span>
+
+                {/* Description */}
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: textMuted,
+                    margin: 0,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    fontWeight: 400,
+                  }}
+                >
+                  {service.description}
+                </p>
+
+                {/* Status badge */}
+                <span style={statusBadgeStyle(service.isActive)}>
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: service.isActive ? '#00bc7d' : '#f1a10d',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {service.isActive ? 'Active' : 'Inactive'}
+                </span>
+
+                {/* Actions */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: 8,
+                  }}
+                >
+                  <button
+                    className="edit-btn"
+                    onClick={(e) => openEditModal(e, service)}
+                    style={{
+                      padding: '5px 7px',
+                      borderRadius: 6,
+                      border: 'none',
+                      background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                      color: textMuted,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    className="toggle-btn"
+                    onClick={(e) => togglestatus(e, service.serviceId)}
+                    style={toggleStyle(service.isActive)}
+                  >
+                    <span style={thumbStyle(service.isActive)} />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Table Footer */}
+            <div
+              style={{
+                padding: '10px 20px',
+                borderTop: `1px solid ${borderColor}`,
+                background: subtleBg,
+                fontSize: 10,
+                color: textMuted,
+                fontWeight: 400,
+              }}
+            >
+              {filtered.length} service{filtered.length !== 1 ? 's' : ''} displayed
+              {filtermode !== 'all' && ` · filtered by "${filtermode}"`}
+              {searchquery && ` · matching "${searchquery}"`}
+            </div>
           </div>
         )}
       </div>
 
+      {/* ── MODALS ── */}
       <AddServiceModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchServices}
         isdarkmode={isdarkmode}
       />
-
-      {/*
-        ✅ KEY FIX: key={editingService?._id} forces React to fully unmount and
-        remount EditServiceModal every time a different service is opened.
-        This guarantees useState runs fresh with the new service's data,
-        so coverPhoto and all other fields are always correctly pre-populated.
-      */}
       <EditServiceModal
         key={editingService?._id ?? 'edit-modal'}
         isOpen={isEditModalOpen}
