@@ -121,7 +121,9 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                 <div
                   key={i}
                   className={`relative rounded-2xl transition-all duration-200 flex items-center justify-center cursor-pointer min-h-[56px] ${
-                    d.currentmonth 
+                    d.istoday
+                      ? 'bg-red-900 hover:bg-red-800 border border-red-900'
+                      : d.currentmonth 
                       ? isdarkmode 
                         ? 'bg-[#242424] hover:bg-[#2a2a2a] border border-[#2e2e2e]' 
                         : 'bg-gray-50 hover:bg-gray-100 border border-gray-100'
@@ -130,20 +132,22 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                   onClick={() => handleDateClick(d)}
                 >
                   {/* Date markers */}
-                  <div className="absolute top-1.5 right-1.5 flex -space-x-1">
-                    {d.markedDates && d.markedDates.length > 0 && d.markedDates.map((mark, idx) => (
-                      <div
-                        key={idx}
-                        className={`w-1.5 h-1.5 rounded-full ${mark.color}`}
-                      />
-                    ))}
-                  </div>
+                  {d.markedDates && d.markedDates.length > 0 && (
+                    <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-0.5 flex-wrap px-1">
+                      {d.markedDates.slice(0, 5).map((mark, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${mark.color}`}
+                        />
+                      ))}
+                    </div>
+                  )}
                   
                   {/* Day number */}
                   <span
                     className={`text-sm font-medium transition-all ${
                       d.istoday
-                        ? 'text-white bg-red-900 w-8 h-8 rounded-lg flex items-center justify-center font-bold shadow-lg'
+                        ? 'text-white font-bold'
                         : d.currentmonth
                         ? isdarkmode ? 'text-gray-200' : 'text-gray-700'
                         : 'text-gray-400'

@@ -254,10 +254,25 @@ export const FormSection: React.FC<FormSectionProps> = ({
                 : 'bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900'
             }`}
           >
-            {STATUS_OPTIONS.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
+            {STATUS_OPTIONS.map(status => {
+              const isDisabled = formData.isunfinished && status !== 'Draft';
+              return (
+                <option
+                  key={status}
+                  value={status}
+                  disabled={isDisabled}
+                  style={isDisabled ? { color: '#9CA3AF' } : undefined}
+                >
+                  {status}{isDisabled ? ' (requires end date)' : ''}
+                </option>
+              );
+            })}
           </select>
+          {formData.isunfinished && (
+            <p className={`text-xs mt-1.5 ${isdarkmode ? 'text-amber-400' : 'text-amber-600'}`}>
+              Only <strong>Draft</strong> is available while the study is marked as Unfinished.
+            </p>
+          )}
         </div>
       </div>
 
@@ -396,6 +411,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
               value={formData.enddate}
               onChange={(e) => onFormChange('enddate', e.target.value)}
               disabled={formData.isunfinished}
+              min={formData.startdate || undefined}
               className={`flex-1 px-4 py-3 rounded-xl text-sm transition-all outline-none ${
                 formData.isunfinished 
                   ? isdarkmode ? 'bg-[#1a1a1a] text-gray-600 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed'

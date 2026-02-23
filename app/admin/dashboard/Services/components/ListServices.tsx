@@ -4,6 +4,10 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDarkMode } from '../../layout'
 
+// ── API BASE ──────────────────────────────────────────────────────────────────
+// Points directly to the Express backend to avoid Next.js intercepting /api/* routes.
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+
 interface Service {
   _id: string
   serviceId: string
@@ -22,6 +26,72 @@ const toSlug = (text: string): string =>
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+interface ToastItem {
+  id: number
+  message: string
+  type: 'error' | 'success'
+}
+
+function ToastContainer({ toasts, onRemove }: { toasts: ToastItem[]; onRemove: (id: number) => void }) {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 24,
+        right: 24,
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        fontFamily: "'Poppins', sans-serif",
+      }}
+    >
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '12px 16px',
+            borderRadius: 12,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.22)',
+            background: t.type === 'error' ? '#b91c1c' : '#166534',
+            color: '#fff',
+            fontSize: 12,
+            fontWeight: 500,
+            minWidth: 260,
+            maxWidth: 360,
+            animation: 'toast-in 0.25s ease',
+          }}
+        >
+          {t.type === 'error' ? (
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          ) : (
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+          <span style={{ flex: 1 }}>{t.message}</span>
+          <button
+            onClick={() => onRemove(t.id)}
+            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, opacity: 0.7, lineHeight: 1 }}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <style>{`@keyframes toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+    </div>
+  )
+}
+
+let _toastCounter = 0
+type ShowToastFn = (message: string, type?: 'error' | 'success') => void
 
 // ── ICONS ─────────────────────────────────────────────────────────────────────
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -104,18 +174,25 @@ function CoverPhotoUploader({
   isdarkmode,
   value,
   onChange,
+  onError,
 }: {
   isdarkmode: boolean
   value: string | null
   onChange: (base64: string | null) => void
+  onError?: (message: string) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
+
   const handleFile = (file: File) => {
-    if (!file.type.startsWith('image/')) return
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      onError?.('Invalid file format uploaded. Only PNG, JPEG, JPG, and WEBP are accepted.')
+      return
+    }
     // FIX: 5MB file size guard
     if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be under 5MB.')
+      onError?.('File size must be under 5MB.')
       return
     }
     const reader = new FileReader()
@@ -194,7 +271,7 @@ function CoverPhotoUploader({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/png,image/jpeg,image/jpg,image/webp"
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0]
@@ -249,12 +326,26 @@ function AddServiceModal({
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [toasts, setToasts] = useState<ToastItem[]>([])
+
+  const showToast = (message: string, type: 'error' | 'success' = 'error') => {
+    const id = ++_toastCounter
+    setToasts((prev) => [...prev, { id, message, type }])
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000)
+  }
+
+  const removeToast = (id: number) => setToasts((prev) => prev.filter((t) => t.id !== id))
+
+  const blockNumbers = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (/[0-9]/.test(e.key)) e.preventDefault()
+  }
 
   // FIX: reset uses null (not '') for coverPhoto
   useEffect(() => {
     if (!isOpen) {
       setFormData({ name: '', description: '', badge: '', coverPhoto: null, inactivePhoto: null })
       setError('')
+      setToasts([])
     }
   }, [isOpen])
 
@@ -263,7 +354,7 @@ function AddServiceModal({
     setError('')
     setSubmitting(true)
     try {
-      const response = await fetch('/api/services', {
+      const response = await fetch(`${API_BASE}/api/services`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -301,6 +392,7 @@ function AddServiceModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ fontFamily: "'Poppins', sans-serif" }}
     >
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
         className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border ${
@@ -331,6 +423,7 @@ function AddServiceModal({
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
               onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
+              onError={(msg) => showToast(msg, 'error')}
             />
           </div>
 
@@ -341,6 +434,7 @@ function AddServiceModal({
               isdarkmode={isdarkmode}
               value={formData.inactivePhoto}
               onChange={(val) => setFormData((p) => ({ ...p, inactivePhoto: val }))}
+              onError={(msg) => showToast(msg, 'error')}
             />
           </div>
 
@@ -351,7 +445,11 @@ function AddServiceModal({
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[0-9]/g, '')
+                  setFormData((p) => ({ ...p, name: val }))
+                }}
+                onKeyDown={blockNumbers}
                 className={getInputCls(isdarkmode)}
                 placeholder="e.g. CRM"
               />
@@ -362,7 +460,11 @@ function AddServiceModal({
                 type="text"
                 required
                 value={formData.badge}
-                onChange={(e) => setFormData((p) => ({ ...p, badge: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[0-9]/g, '')
+                  setFormData((p) => ({ ...p, badge: val }))
+                }}
+                onKeyDown={blockNumbers}
                 className={getInputCls(isdarkmode)}
                 placeholder="e.g. Sales"
               />
@@ -434,6 +536,19 @@ function EditServiceModal({
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [toasts, setToasts] = useState<ToastItem[]>([])
+
+  const showToast = (message: string, type: 'error' | 'success' = 'error') => {
+    const id = ++_toastCounter
+    setToasts((prev) => [...prev, { id, message, type }])
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000)
+  }
+
+  const removeToast = (id: number) => setToasts((prev) => prev.filter((t) => t.id !== id))
+
+  const blockNumbers = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (/[0-9]/.test(e.key)) e.preventDefault()
+  }
 
   useEffect(() => {
     if (service) {
@@ -456,7 +571,7 @@ function EditServiceModal({
     setError('')
     setSubmitting(true)
     try {
-      const response = await fetch(`/api/services/${service._id}`, {
+      const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -493,7 +608,7 @@ function EditServiceModal({
     setDeleting(true)
     setError('')
     try {
-      const response = await fetch(`/api/services/${service._id}`, {
+      const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
@@ -519,6 +634,7 @@ function EditServiceModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ fontFamily: "'Poppins', sans-serif" }}
     >
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
         className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border ${
@@ -551,6 +667,7 @@ function EditServiceModal({
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
               onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
+              onError={(msg) => showToast(msg, 'error')}
             />
           </div>
 
@@ -561,6 +678,7 @@ function EditServiceModal({
               isdarkmode={isdarkmode}
               value={formData.inactivePhoto}
               onChange={(val) => setFormData((p) => ({ ...p, inactivePhoto: val }))}
+              onError={(msg) => showToast(msg, 'error')}
             />
           </div>
 
@@ -571,7 +689,11 @@ function EditServiceModal({
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[0-9]/g, '')
+                  setFormData((p) => ({ ...p, name: val }))
+                }}
+                onKeyDown={blockNumbers}
                 className={getInputCls(isdarkmode)}
               />
             </div>
@@ -581,7 +703,11 @@ function EditServiceModal({
                 type="text"
                 required
                 value={formData.badge}
-                onChange={(e) => setFormData((p) => ({ ...p, badge: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[0-9]/g, '')
+                  setFormData((p) => ({ ...p, badge: val }))
+                }}
+                onKeyDown={blockNumbers}
                 className={getInputCls(isdarkmode)}
               />
             </div>
@@ -714,7 +840,7 @@ export default function ListServices() {
   const fetchServices = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/services', { credentials: 'include' })
+      const response = await fetch(`${API_BASE}/api/services`, { credentials: 'include' })
       if (!response.ok) throw new Error('Failed to fetch')
       setServices(await response.json())
     } catch (err) {
@@ -729,7 +855,7 @@ export default function ListServices() {
     const service = services.find((s) => s.serviceId === serviceId)
     if (!service) return
     try {
-      const response = await fetch(`/api/services/${service._id}/toggle`, {
+      const response = await fetch(`${API_BASE}/api/services/${service._id}/toggle`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
