@@ -386,8 +386,11 @@ export default function ServiceFeatures() {
         };
       });
 
-      console.log('\n📊 Final mapped services:', mappedData);
-      setServices(mappedData);
+      // Sort: active services first, then inactive
+      const sortedData = [...mappedData].sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
+
+      console.log('\n📊 Final mapped services:', sortedData);
+      setServices(sortedData);
     } catch (err: any) {
       console.error("❌ Error loading services:", err);
       setError(err.message || "Could not load services at this time");

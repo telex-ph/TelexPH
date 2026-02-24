@@ -3,12 +3,14 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Layout, Loader2, AlertCircle, MapPin } from "lucide-react";
+import { ArrowUpRight, Layout, Loader2, AlertCircle, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+// Points directly to the Express backend (same as ListServices.tsx) to avoid
+// Next.js API route proxies that may filter isActive=true by default.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 // ─── Icon Map ─────────────────────────────────────────────────────────────────
 
@@ -217,22 +219,27 @@ function ServicesGrid() {
   const autoRef = useRef<NodeJS.Timeout | null>(null);
   const isHovering = useRef(false);
 
-  const getImageSource = (coverPhoto: string | null | undefined, serviceId: string): string => {
-    if (coverPhoto && typeof coverPhoto === "string" && coverPhoto.trim()) {
-      const t = coverPhoto.trim();
+  const getImageSource = (item: any): string => {
+    // Use inactivePhoto when service is inactive, coverPhoto when active
+    const photo = item.isActive
+      ? (item.coverPhoto ?? item.inactivePhoto)
+      : (item.inactivePhoto ?? item.coverPhoto);
+
+    if (photo && typeof photo === "string" && photo.trim()) {
+      const t = photo.trim();
       if (t.startsWith("data:image")) return t;
       if (t.match(/^[A-Za-z0-9+/]+={0,2}$/) && t.length > 100) return `data:image/jpeg;base64,${t}`;
       if (t.startsWith("http://") || t.startsWith("https://")) return t;
       if (t.startsWith("/")) return t;
     }
-    return IMAGE_MAP[serviceId] || "/images/services1.webp";
+    return IMAGE_MAP[item.serviceId] || "/images/services1.webp";
   };
 
   const fetchServices = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/api/services?isActive=true`, {
+      const response = await fetch(`${API_BASE_URL}/api/services`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -244,11 +251,17 @@ function ServicesGrid() {
         serviceId: item.serviceId,
         title: item.name,
         description: item.description,
-        imageSrc: getImageSource(item.coverPhoto, item.serviceId),
+        imageSrc: getImageSource(item),
         coverPhoto: item.coverPhoto,
         isHighlight: item.serviceId === "tech-support",
         icon: ICON_MAP[item.serviceId] || <Layout className="w-full h-full" />,
-      })));
+      })).sort((a: any, b: any) => {
+        // Active services first, inactive last
+        const aActive = data.find((d: any) => d._id === a._id)?.isActive ?? false;
+        const bActive = data.find((d: any) => d._id === b._id)?.isActive ?? false;
+        if (aActive === bActive) return 0;
+        return aActive ? -1 : 1;
+      }));
     } catch (err: any) {
       setError(err.message || "Could not load services at this time");
     } finally {
@@ -258,7 +271,8 @@ function ServicesGrid() {
 
   useEffect(() => { fetchServices(); }, []);
 
-  const totalPages = Math.max(0, services.length - CARDS_PER_PAGE + 1);
+  // Total pages: each page shows CARDS_PER_PAGE new cards
+  const totalPages = Math.ceil(services.length / CARDS_PER_PAGE);
 
   const goTo = useCallback((page: number) => {
     setCurrentPage(Math.max(0, Math.min(page, totalPages - 1)));
@@ -275,8 +289,6 @@ function ServicesGrid() {
     if (services.length > CARDS_PER_PAGE) startAuto();
     return () => { if (autoRef.current) clearInterval(autoRef.current); };
   }, [services.length, startAuto]);
-
-  const visibleServices = services.slice(currentPage, currentPage + CARDS_PER_PAGE);
 
   return (
     <>
@@ -336,14 +348,63 @@ function ServicesGrid() {
         ) : (
           <div className={DEFAULT_MAX_WIDTH_CLASS}>
             <div
-              className="relative"
+              className="relative px-8"
               onMouseEnter={() => { isHovering.current = true; }}
               onMouseLeave={() => { isHovering.current = false; }}
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {visibleServices.map((service, idx) => (
-                  <ServiceCard key={service._id} service={service} index={currentPage + idx} />
-                ))}
+              {/* Left Arrow */}
+              {totalPages > 1 && (
+                <button
+                  onClick={() => { goTo(currentPage - 1); startAuto(); }}
+                  disabled={currentPage === 0}
+                  className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  style={{ backgroundColor: currentPage === 0 ? "#e5e7eb" : DARK_RED, color: currentPage === 0 ? "#9ca3af" : "#ffffff" }}
+                  aria-label="Previous services"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+
+              {/* Right Arrow */}
+              {totalPages > 1 && (
+                <button
+                  onClick={() => { goTo(currentPage + 1); startAuto(); }}
+                  disabled={currentPage >= totalPages - 1}
+                  className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  style={{ backgroundColor: currentPage >= totalPages - 1 ? "#e5e7eb" : DARK_RED, color: currentPage >= totalPages - 1 ? "#9ca3af" : "#ffffff" }}
+                  aria-label="Next services"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+
+              {/* Sliding track */}
+              <div className="overflow-hidden">
+                <div
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{
+                    width: `${totalPages * 100}%`,
+                    transform: `translateX(-${(currentPage / totalPages) * 100}%)`,
+                  }}
+                >
+                  {Array.from({ length: totalPages }).map((_, pageIdx) => (
+                    <div
+                      key={pageIdx}
+                      className="grid grid-cols-3 gap-5"
+                      style={{ width: `${100 / totalPages}%`, flexShrink: 0 }}
+                    >
+                      {services
+                        .slice(pageIdx * CARDS_PER_PAGE, pageIdx * CARDS_PER_PAGE + CARDS_PER_PAGE)
+                        .map((service, idx) => (
+                          <ServiceCard
+                            key={service._id}
+                            service={service}
+                            index={pageIdx * CARDS_PER_PAGE + idx}
+                          />
+                        ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 

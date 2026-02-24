@@ -174,11 +174,13 @@ function CoverPhotoUploader({
   isdarkmode,
   value,
   onChange,
+  onFileChange,
   onError,
 }: {
   isdarkmode: boolean
   value: string | null
   onChange: (base64: string | null) => void
+  onFileChange?: (file: File | null) => void
   onError?: (message: string) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -195,6 +197,9 @@ function CoverPhotoUploader({
       onError?.('File size must be under 5MB.')
       return
     }
+    // Store the actual File object for upload
+    onFileChange?.(file)
+    // Also read as base64 for preview
     const reader = new FileReader()
     reader.onload = () => {
       if (typeof reader.result === 'string') onChange(reader.result)
@@ -221,7 +226,7 @@ function CoverPhotoUploader({
             </button>
             <button
               type="button"
-              onClick={() => onChange(null)}
+              onClick={() => { onChange(null); onFileChange?.(null) }}
               className="px-3 py-1.5 rounded text-[11px] font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
               style={{ fontFamily: "'Poppins', sans-serif" }}
             >
@@ -300,8 +305,10 @@ interface ServiceFormData {
   name: string
   description: string
   badge: string
-  coverPhoto: string | null
-  inactivePhoto: string | null
+  coverPhoto: string | null       // base64 preview only
+  inactivePhoto: string | null    // base64 preview only
+  coverPhotoFile: File | null     // actual file for upload
+  inactivePhotoFile: File | null  // actual file for upload
 }
 
 // ── ADD SERVICE MODAL ─────────────────────────────────────────────────────────
@@ -323,6 +330,8 @@ function AddServiceModal({
     badge: '',
     coverPhoto: null,
     inactivePhoto: null,
+    coverPhotoFile: null,
+    inactivePhotoFile: null,
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -343,7 +352,7 @@ function AddServiceModal({
   // FIX: reset uses null (not '') for coverPhoto
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ name: '', description: '', badge: '', coverPhoto: null, inactivePhoto: null })
+      setFormData({ name: '', description: '', badge: '', coverPhoto: null, inactivePhoto: null, coverPhotoFile: null, inactivePhotoFile: null })
       setError('')
       setToasts([])
     }
@@ -354,18 +363,20 @@ function AddServiceModal({
     setError('')
     setSubmitting(true)
     try {
+      // ✅ Use FormData so multer can receive the image files on the backend
+      const fd = new FormData()
+      fd.append('serviceId', toSlug(formData.name))
+      fd.append('name', formData.name)
+      fd.append('description', formData.description)
+      fd.append('badge', formData.badge)
+      if (formData.coverPhotoFile) fd.append('coverPhoto', formData.coverPhotoFile)
+      if (formData.inactivePhotoFile) fd.append('inactivePhoto', formData.inactivePhotoFile)
+
       const response = await fetch(`${API_BASE}/api/services`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // ⚠️ Do NOT set Content-Type header — browser sets it automatically with boundary for FormData
         credentials: 'include',
-        body: JSON.stringify({
-          serviceId: toSlug(formData.name),
-          name: formData.name,
-          description: formData.description,
-          badge: formData.badge,
-          coverPhoto: formData.coverPhoto || null,
-          inactivePhoto: formData.inactivePhoto || null,
-        }),
+        body: fd,
       })
 
       const contentType = response.headers.get('content-type')
@@ -423,6 +434,7 @@ function AddServiceModal({
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
               onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
+              onFileChange={(file) => setFormData((p) => ({ ...p, coverPhotoFile: file }))}
               onError={(msg) => showToast(msg, 'error')}
             />
           </div>
@@ -434,6 +446,7 @@ function AddServiceModal({
               isdarkmode={isdarkmode}
               value={formData.inactivePhoto}
               onChange={(val) => setFormData((p) => ({ ...p, inactivePhoto: val }))}
+              onFileChange={(file) => setFormData((p) => ({ ...p, inactivePhotoFile: file }))}
               onError={(msg) => showToast(msg, 'error')}
             />
           </div>
@@ -531,6 +544,8 @@ function EditServiceModal({
     badge: '',
     coverPhoto: null,
     inactivePhoto: null,
+    coverPhotoFile: null,
+    inactivePhotoFile: null,
   })
   const [submitting, setSubmitting] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -559,6 +574,8 @@ function EditServiceModal({
         // FIX: coerce undefined → null
         coverPhoto: service.coverPhoto ?? null,
         inactivePhoto: service.inactivePhoto ?? null,
+        coverPhotoFile: null,
+        inactivePhotoFile: null,
       })
       setConfirmDelete(false)
       setError('')
@@ -571,17 +588,32 @@ function EditServiceModal({
     setError('')
     setSubmitting(true)
     try {
+      // ✅ Use FormData so multer can receive the image files on the backend
+      const fd = new FormData()
+      fd.append('name', formData.name)
+      fd.append('description', formData.description)
+      fd.append('badge', formData.badge)
+
+      if (formData.coverPhotoFile) {
+        // New file selected — upload it
+        fd.append('coverPhoto', formData.coverPhotoFile)
+      } else if (formData.coverPhoto === null) {
+        // User explicitly cleared the photo — send null string to clear it
+        fd.append('coverPhoto', '')
+      }
+      // If coverPhoto is a URL string (unchanged from server), don't send it — backend keeps existing
+
+      if (formData.inactivePhotoFile) {
+        fd.append('inactivePhoto', formData.inactivePhotoFile)
+      } else if (formData.inactivePhoto === null) {
+        fd.append('inactivePhoto', '')
+      }
+
       const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        // ⚠️ Do NOT set Content-Type header — browser sets it automatically with boundary for FormData
         credentials: 'include',
-        body: JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-          badge: formData.badge,
-          coverPhoto: formData.coverPhoto || null,
-          inactivePhoto: formData.inactivePhoto || null,
-        }),
+        body: fd,
       })
 
       const contentType = response.headers.get('content-type')
@@ -667,6 +699,7 @@ function EditServiceModal({
               isdarkmode={isdarkmode}
               value={formData.coverPhoto}
               onChange={(val) => setFormData((p) => ({ ...p, coverPhoto: val }))}
+              onFileChange={(file) => setFormData((p) => ({ ...p, coverPhotoFile: file }))}
               onError={(msg) => showToast(msg, 'error')}
             />
           </div>
@@ -678,6 +711,7 @@ function EditServiceModal({
               isdarkmode={isdarkmode}
               value={formData.inactivePhoto}
               onChange={(val) => setFormData((p) => ({ ...p, inactivePhoto: val }))}
+              onFileChange={(file) => setFormData((p) => ({ ...p, inactivePhotoFile: file }))}
               onError={(msg) => showToast(msg, 'error')}
             />
           </div>
@@ -874,9 +908,25 @@ export default function ListServices() {
     }
   }
 
-  const openEditModal = (e: React.MouseEvent, service: Service) => {
+  const openEditModal = async (e: React.MouseEvent, service: Service) => {
     e.stopPropagation()
-    setEditingService(service)
+    try {
+      // FIX: getAllServices no longer returns coverPhoto/inactivePhoto to reduce
+      // payload size. Fetch the full service document before opening the edit modal
+      // so the uploader can display the existing images correctly.
+      const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
+        credentials: 'include',
+      })
+      if (response.ok) {
+        const fullService = await response.json()
+        setEditingService(fullService)
+      } else {
+        // Fallback to the partial data from the list if the fetch fails
+        setEditingService(service)
+      }
+    } catch {
+      setEditingService(service)
+    }
     setIsEditModalOpen(true)
   }
 
@@ -1721,7 +1771,6 @@ export default function ListServices() {
         isdarkmode={isdarkmode}
       />
       <EditServiceModal
-        key={editingService?._id ?? 'edit-modal'}
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
         onSuccess={fetchServices}
