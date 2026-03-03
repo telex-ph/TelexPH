@@ -83,8 +83,11 @@ const ServiceCard: React.FC<{
   const [isHovered, setIsHovered] = useState(false);
   const IconComponent = service.icon;
 
-  // Determine if using base64 image
+  // Use native <img> for base64 data URLs and external http/https URLs (e.g. Cloudinary).
+  // next/image requires external hostnames to be whitelisted in next.config.ts —
+  // using <img> avoids that requirement entirely for dynamically-sourced images.
   const isBase64Image = service.image.startsWith('data:image');
+  const isExternalUrl = service.image.startsWith('http://') || service.image.startsWith('https://');
 
   return (
     <div
@@ -104,7 +107,7 @@ const ServiceCard: React.FC<{
 
       <div className="relative h-72 w-full overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 z-[1]" />
-        {isBase64Image ? (
+        {(isBase64Image || isExternalUrl) ? (
           <img
             src={service.image}
             alt={service.title}

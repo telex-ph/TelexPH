@@ -77,7 +77,13 @@ interface ServiceType {
 
 const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: number }) => {
   const shouldPrioritize = index < 4;
-  const isBase64Image = service.imageSrc.startsWith("data:image");
+  // Use native <img> for base64 data URLs and external http/https URLs (e.g. Cloudinary).
+  // next/image requires external hostnames to be whitelisted in next.config.ts —
+  // using <img> avoids that requirement entirely for dynamically-sourced images.
+  const useNativeImg =
+    service.imageSrc.startsWith("data:image") ||
+    service.imageSrc.startsWith("http://") ||
+    service.imageSrc.startsWith("https://");
   const meta = SERVICE_META[service.serviceId] || {
     detail1: "Feature 1", detail2: "Feature 2", detail3: "Feature 3",
     blurb: service.description || "Explore this service to learn how it can help your business grow.",
@@ -93,7 +99,7 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
     >
       {/* Image */}
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/10" }}>
-        {isBase64Image ? (
+        {useNativeImg ? (
           <img
             src={service.imageSrc}
             alt={service.title}
