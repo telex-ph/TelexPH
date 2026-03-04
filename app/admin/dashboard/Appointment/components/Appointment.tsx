@@ -3,15 +3,32 @@
 import { useState, useEffect } from 'react'
 import { useDarkMode } from '../../layout'
 
+// ✅ Updated to match backend IAppointment model
 interface Appointment {
   _id: string
-  title: string
+  ghlAppointmentId: string
+  calendarId: string
+  locationId: string
+  contactId?: string
+  name?: string
+  email?: string
+  phone?: string
+  title?: string
+  startTime: string
+  endTime?: string
+  appointmentStatus: string
+  assignedUserId?: string
+  address?: string
+  // ✅ New fields
+  assignedUserName?: string
+  calendarName?: string
+  location?: string
+  attendees?: string[]
+  bookedBy?: string
+  source?: string
   description?: string
-  date: string
-  time?: string
-  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed'
-  clientName?: string
-  clientEmail?: string
+  createdAt: string
+  updatedAt: string
 }
 
 const MONTHS = [
@@ -20,18 +37,21 @@ const MONTHS = [
 ]
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
+// ✅ Updated to match real appointmentStatus values from backend
 const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700',
   confirmed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-  completed: 'bg-blue-100 text-blue-700',
+  cancelled:  'bg-red-100 text-red-700',
+  showed:     'bg-blue-100 text-blue-700',
+  noshow:     'bg-yellow-100 text-yellow-700',
+  invalid:    'bg-gray-100 text-gray-500',
 }
 
 const statusColorsDark: Record<string, string> = {
-  pending: 'bg-yellow-900/30 text-yellow-400',
   confirmed: 'bg-green-900/30 text-green-400',
-  cancelled: 'bg-red-900/30 text-red-400',
-  completed: 'bg-blue-900/30 text-blue-400',
+  cancelled:  'bg-red-900/30 text-red-400',
+  showed:     'bg-blue-900/30 text-blue-400',
+  noshow:     'bg-yellow-900/30 text-yellow-400',
+  invalid:    'bg-gray-800 text-gray-500',
 }
 
 function buildCalendarDays(year: number, month: number) {
@@ -45,6 +65,15 @@ function buildCalendarDays(year: number, month: number) {
 
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+// ✅ Helper to format time from ISO string
+function formatTime(isoString: string) {
+  return new Date(isoString).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  })
 }
 
 interface MiniCalendarProps {
@@ -138,8 +167,9 @@ function BigCalendarModal({ isdarkmode, appointmentDates, appointments, today, o
     else setViewMonth(m => m + 1)
   }
 
+  // ✅ Filter by startTime instead of date
   const selectedAppointments = selectedDate
-    ? appointments.filter(a => a.date?.startsWith(selectedDate))
+    ? appointments.filter(a => a.startTime?.startsWith(selectedDate))
     : []
 
   return (
@@ -272,18 +302,109 @@ function BigCalendarModal({ isdarkmode, appointmentDates, appointments, today, o
                 key={appt._id}
                 className={`p-3.5 rounded-xl ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`}
               >
-                <p className={`bold-text text-[12px] mb-1 ${isdarkmode ? 'text-white' : 'text-gray-700'}`}>
-                  {appt.title}
+                {/* Title */}
+                <p className={`bold-text text-[12px] mb-2 ${isdarkmode ? 'text-white' : 'text-gray-700'}`}>
+                  {appt.title || appt.name || 'Appointment'}
                 </p>
-                {appt.time && (
-                  <p className="text-[10px] text-gray-400 mb-1">{appt.time}</p>
+
+                {/* Time */}
+                <div className="flex items-start gap-2 mb-1.5">
+                  <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <p className="text-[10px] text-gray-400">
+                    {formatTime(appt.startTime)}{appt.endTime ? ` – ${formatTime(appt.endTime)}` : ''}
+                  </p>
+                </div>
+
+                {/* Name */}
+                {appt.name && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <p className="text-[10px] text-gray-400">{appt.name}</p>
+                  </div>
                 )}
-                {appt.clientName && (
-                  <p className="text-[10px] text-gray-400">{appt.clientName}</p>
+
+                {/* Phone */}
+                {appt.phone && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.14 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.05 2.7h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 10.1a16 16 0 0 0 6.91 6.91l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <p className="text-[10px] text-gray-400">{appt.phone}</p>
+                  </div>
                 )}
-                {appt.status && (
-                  <span className={`inline-block mt-1.5 text-[9px] px-2 py-0.5 rounded-full ${isdarkmode ? statusColorsDark[appt.status] : statusColors[appt.status]}`}>
-                    {appt.status}
+
+                {/* Email */}
+                {appt.email && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <p className="text-[10px] text-gray-400 truncate">{appt.email}</p>
+                  </div>
+                )}
+
+                {/* Appointment Owner */}
+                {appt.assignedUserName && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <div>
+                      <p className={`text-[9px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Owner</p>
+                      <p className="text-[10px] text-gray-400">{appt.assignedUserName}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Location */}
+                {(appt.location || appt.address) && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <p className="text-[10px] text-gray-400">{appt.location || appt.address}</p>
+                  </div>
+                )}
+
+                {/* Calendar */}
+                {appt.calendarName && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                    <p className="text-[10px] text-gray-400">{appt.calendarName}</p>
+                  </div>
+                )}
+
+                {/* Attendees */}
+                {appt.attendees && appt.attendees.length > 0 && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <p className="text-[10px] text-gray-400">{appt.attendees.join(', ')}</p>
+                  </div>
+                )}
+
+                {/* Booked By */}
+                {appt.bookedBy && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <div>
+                      <p className={`text-[9px] ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>Booked By</p>
+                      <p className="text-[10px] text-gray-400">{appt.bookedBy}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Source */}
+                {appt.source && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                    <p className="text-[10px] text-gray-400">{appt.source}</p>
+                  </div>
+                )}
+
+                {/* Description */}
+                {appt.description && (
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <svg className="shrink-0 mt-0.5" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+                    <p className="text-[10px] text-gray-400 line-clamp-2">{appt.description}</p>
+                  </div>
+                )}
+
+                {/* Status */}
+                {appt.appointmentStatus && (
+                  <span className={`inline-block mt-1.5 text-[9px] px-2 py-0.5 rounded-full ${isdarkmode ? statusColorsDark[appt.appointmentStatus] : statusColors[appt.appointmentStatus]}`}>
+                    {appt.appointmentStatus}
                   </span>
                 )}
               </div>
@@ -324,24 +445,26 @@ export default function AppointmentsPage() {
     fetchAppointments()
   }, [])
 
+  // ✅ Use startTime instead of date
   const appointmentDates = new Set(
-    appointments.map(a => a.date?.split('T')[0]).filter(Boolean)
+    appointments.map(a => a.startTime?.split('T')[0]).filter(Boolean)
   )
 
   const sortedAppointments = [...appointments].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
   )
 
   const upcomingAppointments = sortedAppointments.filter(
-    a => new Date(a.date) >= new Date(today.toDateString())
+    a => new Date(a.startTime) >= new Date(today.toDateString())
   )
 
   const pastAppointments = sortedAppointments.filter(
-    a => new Date(a.date) < new Date(today.toDateString())
+    a => new Date(a.startTime) < new Date(today.toDateString())
   )
 
+  // ✅ Updated AppointmentCard to display real backend fields
   const AppointmentCard = ({ appt }: { appt: Appointment }) => {
-    const apptDate = new Date(appt.date)
+    const apptDate = new Date(appt.startTime)
     const isUpcoming = apptDate >= new Date(today.toDateString())
 
     return (
@@ -359,33 +482,89 @@ export default function AppointmentsPage() {
         {/* Info */}
         <div className="flex-1 min-w-0">
           <p className={`bold-text text-[13px] truncate ${isdarkmode ? 'text-white' : 'text-gray-700'}`}>
-            {appt.title}
+            {appt.title || appt.name || 'Appointment'}
           </p>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
-            {appt.time && (
-              <span className="flex items-center gap-1 text-[10px] text-gray-400">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-                {appt.time}
-              </span>
-            )}
-            {appt.clientName && (
+            {/* Time */}
+            <span className="flex items-center gap-1 text-[10px] text-gray-400">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              {formatTime(appt.startTime)}{appt.endTime ? ` – ${formatTime(appt.endTime)}` : ''}
+            </span>
+
+            {/* Client name */}
+            {appt.name && (
               <span className="flex items-center gap-1 text-[10px] text-gray-400">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
-                {appt.clientName}
+                {appt.name}
               </span>
             )}
-            {appt.status && (
-              <span className={`text-[9px] px-2 py-0.5 rounded-full ${isdarkmode ? statusColorsDark[appt.status] : statusColors[appt.status]}`}>
-                {appt.status}
+
+            {/* Phone */}
+            {appt.phone && (
+              <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.14 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.05 2.7h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 10.1a16 16 0 0 0 6.91 6.91l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                {appt.phone}
+              </span>
+            )}
+
+            {/* Status badge */}
+            {appt.appointmentStatus && (
+              <span className={`text-[9px] px-2 py-0.5 rounded-full ${isdarkmode ? statusColorsDark[appt.appointmentStatus] : statusColors[appt.appointmentStatus]}`}>
+                {appt.appointmentStatus}
               </span>
             )}
           </div>
+
+          {/* Second row: owner, location, calendar */}
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
+            {appt.assignedUserName && (
+              <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                {appt.assignedUserName}
+              </span>
+            )}
+            {(appt.location || appt.address) && (
+              <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                {appt.location || appt.address}
+              </span>
+            )}
+            {appt.calendarName && (
+              <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                </svg>
+                {appt.calendarName}
+              </span>
+            )}
+            {appt.source && (
+              <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/>
+                </svg>
+                {appt.source}
+              </span>
+            )}
+          </div>
+
+          {/* Description */}
           {appt.description && (
             <p className="text-[10px] text-gray-400 mt-1.5 line-clamp-2">{appt.description}</p>
+          )}
+
+          {/* Email */}
+          {appt.email && (
+            <p className="text-[10px] text-gray-400 mt-0.5 truncate">{appt.email}</p>
           )}
         </div>
 
@@ -410,15 +589,15 @@ export default function AppointmentsPage() {
         </div>
       </div>
 
-      {/* Overview - full width horizontal stat cards like dashboard */}
+      {/* ✅ Updated stat cards to use real appointmentStatus values */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
           { label: 'Confirmed', key: 'confirmed', bg: isdarkmode ? 'bg-gradient-to-br from-green-900/40 to-transparent' : 'bg-gradient-to-br from-green-50 to-white', textColor: isdarkmode ? 'text-green-300' : 'text-green-700' },
-          { label: 'Pending', key: 'pending', bg: isdarkmode ? 'bg-gradient-to-br from-yellow-900/40 to-transparent' : 'bg-gradient-to-br from-yellow-50 to-white', textColor: isdarkmode ? 'text-yellow-300' : 'text-yellow-700' },
-          { label: 'Cancelled', key: 'cancelled', bg: isdarkmode ? 'bg-gradient-to-br from-red-900/40 to-transparent' : 'bg-gradient-to-br from-red-50 to-white', textColor: isdarkmode ? 'text-red-300' : 'text-red-700' },
-          { label: 'Completed', key: 'completed', bg: isdarkmode ? 'bg-gradient-to-br from-blue-900/40 to-transparent' : 'bg-gradient-to-br from-blue-50 to-white', textColor: isdarkmode ? 'text-blue-300' : 'text-blue-700' },
+          { label: 'Showed',    key: 'showed',    bg: isdarkmode ? 'bg-gradient-to-br from-blue-900/40 to-transparent' : 'bg-gradient-to-br from-blue-50 to-white',   textColor: isdarkmode ? 'text-blue-300' : 'text-blue-700' },
+          { label: 'No Show',   key: 'noshow',    bg: isdarkmode ? 'bg-gradient-to-br from-yellow-900/40 to-transparent' : 'bg-gradient-to-br from-yellow-50 to-white', textColor: isdarkmode ? 'text-yellow-300' : 'text-yellow-700' },
+          { label: 'Cancelled', key: 'cancelled', bg: isdarkmode ? 'bg-gradient-to-br from-red-900/40 to-transparent' : 'bg-gradient-to-br from-red-50 to-white',     textColor: isdarkmode ? 'text-red-300' : 'text-red-700' },
         ].map(({ label, key, bg, textColor }) => {
-          const count = appointments.filter(a => a.status === key).length
+          const count = appointments.filter(a => a.appointmentStatus === key).length
           return (
             <div key={key} className={`p-6 rounded-[2rem] shadow-sm border transition-all hover:shadow-md ${bg} ${isdarkmode ? 'border-white/5' : 'border-gray-50'}`}>
               <p className={`text-[9px] uppercase tracking-widest mb-3 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>{label}</p>
