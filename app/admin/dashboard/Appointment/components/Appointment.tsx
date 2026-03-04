@@ -421,27 +421,101 @@ export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  // ✅ Resync state
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [syncMessage, setSyncMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  // ✅ Confirm state
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const [confirmFeedback, setConfirmFeedback] = useState<Record<string, { type: 'success' | 'error'; text: string }>>({})
+  const [credentialsModal, setCredentialsModal] = useState<{ email: string; password: string; name: string } | null>(null)
+  // ✅ Sort state — newest to oldest by default
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const today = new Date()
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        setIsLoading(true)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setAppointments(Array.isArray(data) ? data : data.appointments || [])
-        }
-      } catch (error) {
-        console.error('Error fetching appointments:', error)
-      } finally {
-        setIsLoading(false)
+  // ✅ Extracted so it can be called both on mount and after resync
+  const fetchAppointments = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setAppointments(Array.isArray(data) ? data : data.appointments || [])
       }
+    } catch (error) {
+      console.error('Error fetching appointments:', error)
+    } finally {
+      setIsLoading(false)
     }
+  }
+
+  // ✅ Resync handler — calls POST /appointments/sync then re-fetches
+  const handleResync = async () => {
+    try {
+      setIsSyncing(true)
+      setSyncMessage(null)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments/sync`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setSyncMessage({ type: 'success', text: data.message || `✅ Synced ${data.count} appointments` })
+        await fetchAppointments()
+      } else {
+        setSyncMessage({ type: 'error', text: data.error || 'Sync failed. Please try again.' })
+      }
+    } catch (error) {
+      setSyncMessage({ type: 'error', text: 'Network error during sync.' })
+    } finally {
+      setIsSyncing(false)
+      setTimeout(() => setSyncMessage(null), 4000)
+    }
+  }
+
+  // ✅ Confirm handler — POST /appointments/:ghlAppointmentId/confirm
+  const handleConfirm = async (appt: Appointment) => {
+    if (!appt.email) {
+      setConfirmFeedback(prev => ({
+        ...prev,
+        [appt.ghlAppointmentId]: { type: 'error', text: 'No email address on this appointment.' },
+      }))
+      setTimeout(() => setConfirmFeedback(prev => { const n = { ...prev }; delete n[appt.ghlAppointmentId]; return n }), 4000)
+      return
+    }
+    try {
+      setConfirmingId(appt.ghlAppointmentId)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/appointments/${appt.ghlAppointmentId}/confirm`,
+        { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' } }
+      )
+      const data = await response.json()
+      if (response.ok && data.credentials) {
+        // ✅ Show credentials in modal
+        setCredentialsModal(data.credentials)
+      } else {
+        setConfirmFeedback(prev => ({
+          ...prev,
+          [appt.ghlAppointmentId]: { type: 'error', text: data.message || data.error || 'Confirmation failed.' },
+        }))
+        setTimeout(() => setConfirmFeedback(prev => { const n = { ...prev }; delete n[appt.ghlAppointmentId]; return n }), 5000)
+      }
+    } catch {
+      setConfirmFeedback(prev => ({
+        ...prev,
+        [appt.ghlAppointmentId]: { type: 'error', text: 'Network error. Please try again.' },
+      }))
+      setTimeout(() => setConfirmFeedback(prev => { const n = { ...prev }; delete n[appt.ghlAppointmentId]; return n }), 5000)
+    } finally {
+      setConfirmingId(null)
+    }
+  }
+
+  useEffect(() => {
     fetchAppointments()
   }, [])
 
@@ -450,9 +524,11 @@ export default function AppointmentsPage() {
     appointments.map(a => a.startTime?.split('T')[0]).filter(Boolean)
   )
 
-  const sortedAppointments = [...appointments].sort(
-    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-  )
+  // ✅ Sort based on sortOrder — newest or oldest first
+  const sortedAppointments = [...appointments].sort((a, b) => {
+    const diff = new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+    return sortOrder === 'newest' ? -diff : diff
+  })
 
   const upcomingAppointments = sortedAppointments.filter(
     a => new Date(a.startTime) >= new Date(today.toDateString())
@@ -462,10 +538,12 @@ export default function AppointmentsPage() {
     a => new Date(a.startTime) < new Date(today.toDateString())
   )
 
-  // ✅ Updated AppointmentCard to display real backend fields
+  // ✅ Updated AppointmentCard — includes Confirm & Send Credentials button
   const AppointmentCard = ({ appt }: { appt: Appointment }) => {
     const apptDate = new Date(appt.startTime)
     const isUpcoming = apptDate >= new Date(today.toDateString())
+    const isConfirming = confirmingId === appt.ghlAppointmentId
+    const feedback = confirmFeedback[appt.ghlAppointmentId]
 
     return (
       <div className={`flex items-start gap-4 p-5 rounded-2xl transition-all duration-200 hover:shadow-md ${isdarkmode ? 'bg-[#1a1a1a] hover:bg-[#2a2a2a]' : 'bg-white hover:bg-gray-50 shadow-sm'}`}>
@@ -566,6 +644,52 @@ export default function AppointmentsPage() {
           {appt.email && (
             <p className="text-[10px] text-gray-400 mt-0.5 truncate">{appt.email}</p>
           )}
+
+          {/* ✅ Confirm button + inline feedback */}
+          <div className="mt-3 flex items-center gap-2 flex-wrap">
+            {appt.email && (
+              <button
+                onClick={() => handleConfirm(appt)}
+                disabled={isConfirming}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] bold-text border-none cursor-pointer transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed
+                  ${isdarkmode
+                    ? 'bg-[#800000]/80 text-white hover:bg-[#800000]'
+                    : 'bg-[#800000] text-white hover:bg-[#6a0000]'
+                  }`}
+              >
+                {isConfirming ? (
+                  <>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="animate-spin">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                    </svg>
+                    Confirming…
+                  </>
+                ) : (
+                  <>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Confirm & Send Credentials
+                  </>
+                )}
+              </button>
+            )}
+
+            {feedback && (
+              <span className={`flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-lg
+                ${feedback.type === 'success'
+                  ? isdarkmode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700'
+                  : isdarkmode ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-700'
+                }`}
+              >
+                {feedback.type === 'success'
+                  ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                }
+                {feedback.text}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="text-[10px] text-gray-400 shrink-0 pt-0.5">
@@ -587,7 +711,57 @@ export default function AppointmentsPage() {
             {appointments.length} total · {upcomingAppointments.length} upcoming
           </p>
         </div>
+
+        <div className="flex items-center gap-2">
+          {/* ✅ Sort toggle button */}
+          <button
+            onClick={() => setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] bold-text transition-all active:scale-95 border-none cursor-pointer
+              ${isdarkmode ? 'bg-white/10 text-gray-300 hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              {sortOrder === 'newest'
+                ? <><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></>
+                : <><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></>
+              }
+            </svg>
+            {sortOrder === 'newest' ? 'Newest First' : 'Oldest First'}
+          </button>
+
+          {/* ✅ Resync button */}
+          <button
+            onClick={handleResync}
+            disabled={isSyncing}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] bold-text transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer
+              ${isdarkmode ? 'bg-white/10 text-gray-300 hover:bg-white/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+          >
+          <svg
+            width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+            className={isSyncing ? 'animate-spin' : ''}
+          >
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          {isSyncing ? 'Syncing...' : 'Resync'}
+          </button>
+        </div>
       </div>
+
+      {/* ✅ Sync status message banner */}
+      {syncMessage && (
+        <div className={`mb-5 px-4 py-3 rounded-xl text-[11px] flex items-center gap-2 transition-all
+          ${syncMessage.type === 'success'
+            ? isdarkmode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700'
+            : isdarkmode ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-700'
+          }`}
+        >
+          {syncMessage.type === 'success'
+            ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+          }
+          {syncMessage.text}
+        </div>
+      )}
 
       {/* ✅ Updated stat cards to use real appointmentStatus values */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -673,6 +847,86 @@ export default function AppointmentsPage() {
           today={today}
           onClose={() => setIsModalOpen(false)}
         />
+      )}
+
+      {/* ✅ Credentials Modal */}
+      {credentialsModal && (
+        <div
+          className="fixed inset-0 z-[300] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setCredentialsModal(null) }}
+        >
+          <div className={`w-full max-w-md rounded-2xl shadow-2xl overflow-hidden ${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+            {/* Header */}
+            <div className="bg-[#800000] px-8 py-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <h2 className="text-white bold-text text-lg">Client Account Created</h2>
+              <p className="text-white/70 text-[11px] mt-1">Generated login credentials for this appointment</p>
+            </div>
+
+            {/* Credentials */}
+            <div className="p-8">
+              <p className={`text-[12px] mb-5 ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>
+                Hi <span className="bold-text">{credentialsModal.name}</span>, here are the login credentials:
+              </p>
+
+              <div className={`rounded-xl p-5 mb-4 space-y-4 ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`}>
+                {/* Email */}
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest text-gray-400 mb-1 font-semibold">Email</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className={`text-[13px] bold-text truncate ${isdarkmode ? 'text-white' : 'text-gray-800'}`}>
+                      {credentialsModal.email}
+                    </p>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(credentialsModal.email)}
+                      className={`shrink-0 p-1.5 rounded-lg border-none cursor-pointer transition-all active:scale-90 ${isdarkmode ? 'bg-white/10 text-gray-400 hover:bg-white/20' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'}`}
+                      title="Copy email"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest text-gray-400 mb-1 font-semibold">Temporary Password</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[18px] bold-text text-[#800000] font-mono tracking-widest">
+                      {credentialsModal.password}
+                    </p>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(credentialsModal.password)}
+                      className={`shrink-0 p-1.5 rounded-lg border-none cursor-pointer transition-all active:scale-90 ${isdarkmode ? 'bg-white/10 text-gray-400 hover:bg-white/20' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'}`}
+                      title="Copy password"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <p className={`text-[10px] text-center mb-5 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}>
+                Make sure to save these credentials. The password cannot be retrieved after closing this window.
+              </p>
+
+              <button
+                onClick={() => setCredentialsModal(null)}
+                className="w-full py-3 rounded-xl bg-[#800000] text-white text-[12px] bold-text border-none cursor-pointer hover:bg-[#6a0000] transition-all active:scale-95"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
