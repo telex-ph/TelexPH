@@ -47,17 +47,22 @@ const Badge = ({ dot, dotColor, label }: { dot?: boolean; dotColor?: string; lab
   return null
 }
 
+// ─── CLIENT INFO TYPE ─────────────────────────────────────────────────────────
+type ClientInfo = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  contactNumber: string
+  profilePicture?: string | null
+}
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+
 const NAV_GENERAL = [
-  { label: 'Dashboard',     href: '/client/dashboard',                        icon: <CalIcon /> },
-  {
-    label: 'Appointments',  icon: <BookingIcon />,
-    children: [
-      { label: 'Upcoming',  href: '/client/dashboard/appointments/upcoming' },
-      { label: 'Completed', href: '/client/dashboard/appointments/completed' },
-      { label: 'Cancelled', href: '/client/dashboard/appointments/cancelled' },
-    ]
-  },
-  { label: 'Subscriptions', href: '/client/dashboard/Subscription',           icon: <SubIcon /> },
+  { label: 'Dashboard',     href: '/client/dashboard',                  icon: <CalIcon /> },
+  { label: 'Appointments',  href: '/client/dashboard/Appointments',     icon: <BookingIcon /> },
+  { label: 'Subscriptions', href: '/client/dashboard/Subscription',    icon: <SubIcon /> },
 ]
 const NAV_MANAGEMENT = [
   { label: 'Clients',   href: '/client/dashboard/clients',   icon: <ClientIcon /> },
@@ -76,7 +81,7 @@ const NAV_SUPPORT = [
   { label: 'Settings',       href: '/client/dashboard/AccountSettings',  icon: <SettingsIco /> }, // ← updated href
 ]
 
-function Header({ onMenuClick }: { onMenuClick: () => void }) {
+function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void; clientInfo: ClientInfo | null; onLogout: () => void }) {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -95,6 +100,10 @@ function Header({ onMenuClick }: { onMenuClick: () => void }) {
     router.push('/client/dashboard/AccountSettings')
   }
 
+  const avatarLetter = clientInfo ? clientInfo.firstName.charAt(0).toUpperCase() : '?'
+  const displayName  = clientInfo ? `${clientInfo.firstName} ${clientInfo.lastName}` : 'Loading...'
+  const displayEmail = clientInfo?.email ?? ''
+
   return (
     <header style={{ height: 56, background: '#fff', borderBottom: '1px solid #f0eeee', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 14, position: 'sticky', top: 0, zIndex: 100 }}>
       <button className="mobile-only" onClick={onMenuClick} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#333' }}><MenuIco /></button>
@@ -105,14 +114,18 @@ function Header({ onMenuClick }: { onMenuClick: () => void }) {
         {/* Avatar — click opens dropdown */}
         <div
           onClick={() => setShowUserMenu(!showUserMenu)}
-          style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, cursor: 'pointer' }}
-        >N</div>
+          style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, cursor: 'pointer', overflow: 'hidden' }}
+        >
+          {clientInfo?.profilePicture
+            ? <img src={clientInfo.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : avatarLetter}
+        </div>
 
         {showUserMenu && (
           <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, width: 190, background: '#fff', borderRadius: 10, boxShadow: '0 8px 20px rgba(0,0,0,0.08)', border: '1px solid #f0eeee', overflow: 'hidden', zIndex: 110 }}>
             <div style={{ padding: '10px 14px', borderBottom: '1px solid #f5f2f2' }}>
-              <div style={{ fontSize: 12, color: '#1a1a2e' }}>Achmad Hakim</div>
-              <div style={{ fontSize: 10, color: '#aaa' }}>achmadhakim@gmail.com</div>
+              <div style={{ fontSize: 12, color: '#1a1a2e' }}>{displayName}</div>
+              <div style={{ fontSize: 10, color: '#aaa' }}>{displayEmail}</div>
             </div>
             <div style={{ padding: '5px' }}>
               {/* ← "Profile Settings" now navigates to AccountSettings */}
@@ -122,7 +135,10 @@ function Header({ onMenuClick }: { onMenuClick: () => void }) {
               >
                 <ProfileIco /> Profile Settings
               </div>
-              <div style={{ padding: '6px 10px', fontSize: 12, borderRadius: 6, cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', gap: 10 }}><LogoutIco /> Logout</div>
+              <div
+                onClick={onLogout}
+                style={{ padding: '6px 10px', fontSize: 12, borderRadius: 6, cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', gap: 10 }}
+              ><LogoutIco /> Logout</div>
             </div>
           </div>
         )}
@@ -173,10 +189,60 @@ function NavSection({ label, items, collapsed, pathname, openMenus, onToggle }: 
 
 export default function ClientDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const router   = useRouter()
+  const [collapsed,  setCollapsed]  = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
+  const [openMenus,  setOpenMenus]  = useState<Record<string, boolean>>({})
+  const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
+  const [loggingOut, setLoggingOut] = useState(false)
+
   const toggle = (l: string) => setOpenMenus(p => ({ ...p, [l]: !p[l] }))
+
+  // ─── Fetch logged-in client profile from backend on mount ────────────────
+  // Uses the httpOnly JWT cookie automatically — no localStorage needed.
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/auth/client/me`, {
+          method: 'GET',
+          credentials: 'include', // sends the httpOnly accessToken cookie
+        })
+        if (res.ok) {
+          const data: ClientInfo = await res.json()
+          setClientInfo(data)
+        } else if (res.status === 401 || res.status === 403) {
+          // Token expired or invalid — redirect to login
+          router.push('/client/login')
+        }
+      } catch (err) {
+        console.error('Failed to fetch client profile:', err)
+      }
+    }
+    fetchProfile()
+  }, [])
+
+  // ─── Logout handler ───────────────────────────────────────────────────────
+  const handleLogout = async () => {
+    if (loggingOut) return
+    setLoggingOut(true)
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch {
+      // proceed with local cleanup even if request fails
+    } finally {
+      setClientInfo(null)
+      setLoggingOut(false)
+      router.push('/client/login')
+    }
+  }
+
+  // Derive sidebar display values
+  const avatarLetter = clientInfo ? clientInfo.firstName.charAt(0).toUpperCase() : '?'
+  const sidebarName  = clientInfo ? `${clientInfo.firstName} ${clientInfo.lastName}` : 'Loading...'
+  const sidebarEmail = clientInfo?.email ?? ''
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#ffffff', overflow: 'hidden' }}>
@@ -227,20 +293,37 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
         <div style={{ padding: '10px', borderTop: '1px solid #f5f2f2' }}>
           <NavSection label="" items={NAV_SUPPORT} collapsed={collapsed} pathname={pathname} openMenus={openMenus} onToggle={toggle} />
+
+          {/* ─── Profile card + Logout ──────────────────────────────────── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '8px 0' : '10px 12px', borderRadius: 10, background: '#fff', border: collapsed ? 'none' : '1px solid #ece8e8', justifyContent: collapsed ? 'center' : 'flex-start', marginTop: 6 }}>
-            <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, flexShrink: 0 }}>N</div>
+            <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, flexShrink: 0, overflow: 'hidden' }}>
+              {clientInfo?.profilePicture
+                ? <img src={clientInfo.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : avatarLetter}
+            </div>
             {!collapsed && (
-              <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontSize: 11.5, color: '#1a1a2e', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 500 }}>Achmad Hakim</div>
-                <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>achmadhakim@gmail.com</div>
-              </div>
+              <>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <div style={{ fontSize: 11.5, color: '#1a1a2e', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 500 }}>{sidebarName}</div>
+                  <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>{sidebarEmail}</div>
+                </div>
+                {/* Logout button */}
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  title="Logout"
+                  style={{ background: 'none', border: 'none', cursor: loggingOut ? 'not-allowed' : 'pointer', color: loggingOut ? '#ccc' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6, flexShrink: 0, transition: 'color 0.15s' }}
+                >
+                  <LogoutIco />
+                </button>
+              </>
             )}
           </div>
         </div>
       </aside>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        <Header onMenuClick={() => setMobileOpen(true)} />
+        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
         <main style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>{children}</main>
       </div>
     </div>
