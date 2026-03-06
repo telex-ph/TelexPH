@@ -5,6 +5,7 @@ import { useDarkMode } from '../../layout'
 
 type ContentType = 'Blogs' | 'CaseStudy' | 'Admin'
 type SortMode = 'date-newest' | 'date-oldest' | 'alpha-asc' | 'alpha-desc'
+type ViewMode = 'grid' | 'list'
 
 interface ArchivedBlog {
   _id: string
@@ -54,7 +55,6 @@ type ArchivedItem =
   | (ArchivedCaseStudy & { _type: 'casestudy' })
   | (ArchivedAdmin     & { _type: 'admin' })
 
-// ── Admin helpers ─────────────────────────────────────────────
 const departments: { [key: number]: string } = {
   1: 'Compliance', 2: 'Innovation', 3: 'Marketing', 4: 'Recruitment', 5: 'Human Resources',
 }
@@ -64,13 +64,16 @@ const getDeptIcon = (d: number) =>
 const getInitials = (a: ArchivedAdmin) =>
   `${a.firstName?.charAt(0) || ''}${a.lastName?.charAt(0) || ''}`.toUpperCase()
 
+// Use the same font family string as ActivityLogs everywhere
+const FONT = "'Poppins', sans-serif"
+
 export default function ListArchivedServices() {
   const { isdarkmode } = useDarkMode()
 
   const [activefilter,   setactivefilter]   = useState<ContentType | 'All'>('All')
   const [searchquery,    setsearchquery]     = useState('')
   const [sortmode,       setsortmode]        = useState<SortMode>('date-newest')
-  const [viewmode,       setviewmode]        = useState<'grid' | 'list'>('grid')
+  const [viewmode,       setviewmode]        = useState<ViewMode>('grid')
   const [archivedblogs,       setarchivedblogs]       = useState<ArchivedBlog[]>([])
   const [archivedcasestudies, setarchivedcasestudies] = useState<ArchivedCaseStudy[]>([])
   const [archivedadmins,      setarchivedadmins]      = useState<ArchivedAdmin[]>([])
@@ -86,15 +89,14 @@ export default function ListArchivedServices() {
   const isMainAdmin = currentRole === 1
   const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
-  // ── Theme tokens ──────────────────────────────────────────────────────────
-  const cardBg   = isdarkmode ? '#1a1a1a' : '#ffffff'
-  const border   = isdarkmode ? 'rgba(255,255,255,0.08)' : '#e5e7eb'
-  const txtPri   = isdarkmode ? '#f0f0f0' : '#1f2937'
-  const txtSec   = isdarkmode ? '#9ca3af' : '#6b7280'
-  const txtMut   = isdarkmode ? '#6b7280' : '#9ca3af'
-  const hoverBg  = isdarkmode ? 'rgba(255,255,255,0.04)' : '#f9fafb'
-  const subtleBg = isdarkmode ? 'rgba(255,255,255,0.03)' : '#f9fafb'
-  const inputBg  = isdarkmode ? '#161616' : '#ffffff'
+  // ── Theme tokens — identical to ActivityLogs ──────────────────────────────
+  const pageBg      = isdarkmode ? '#0f0f0f'                : '#f8f9fa'
+  const cardBg      = isdarkmode ? '#1a1a1a'                : '#ffffff'
+  const subtleBg    = isdarkmode ? '#202020'                : '#f9fafb'
+  const borderColor = isdarkmode ? 'rgba(255,255,255,0.08)' : '#e5e7eb'
+  const textPrimary = isdarkmode ? '#f0f0f0'                : '#1f2937'
+  const textMuted   = isdarkmode ? '#6b7280'                : '#6b7280'
+  const inputBg     = isdarkmode ? '#202020'                : '#f9fafb'
 
   // ── Fetchers ──────────────────────────────────────────────────────────────
   const fetchBlogs = useCallback(async () => {
@@ -196,25 +198,42 @@ export default function ListArchivedServices() {
   const fmtDate = (d: string) =>
     new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
-  const getStatusStyle = (s: string): React.CSSProperties => {
-    switch (s?.toLowerCase()) {
-      case 'published': case 'active':
-        return { background: 'rgba(0,188,125,0.08)', color: '#00bc7d', border: '1px solid rgba(0,188,125,0.2)' }
-      case 'draft':
-        return { background: isdarkmode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)', color: txtMut, border: `1px solid ${border}` }
-      case 'scheduled':
-        return { background: 'rgba(139,92,246,0.08)', color: '#8b5cf6', border: '1px solid rgba(139,92,246,0.2)' }
-      case 'completed':
-        return { background: 'rgba(59,130,246,0.08)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }
-      default:
-        return { background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: txtMut, border: `1px solid ${border}` }
+  const getStatusBadge = (s: string): React.CSSProperties => {
+    const map: Record<string, { bg: string; color: string }> = {
+      published: { bg: '#00A651', color: '#fff' },
+      active:    { bg: '#00A651', color: '#fff' },
+      draft:     { bg: isdarkmode ? '#3a3a3a' : '#e5e7eb', color: isdarkmode ? '#9ca3af' : '#6b7280' },
+      scheduled: { bg: '#8b5cf6', color: '#fff' },
+      completed: { bg: '#0066CC', color: '#fff' },
+    }
+    const key = s?.toLowerCase() || ''
+    const style = map[key] || { bg: isdarkmode ? '#3a3a3a' : '#e5e7eb', color: isdarkmode ? '#9ca3af' : '#6b7280' }
+    return {
+      background: style.bg, color: style.color,
+      padding: '3px 12px', borderRadius: 20, fontSize: 10, fontWeight: 500,
+      display: 'inline-block', whiteSpace: 'nowrap' as const, fontFamily: FONT,
     }
   }
 
-  const getRoleStyle = (role: number): React.CSSProperties =>
-    role === 1
-      ? { background: 'rgba(128,0,0,0.1)', color: '#800000', border: '1px solid rgba(128,0,0,0.2)' }
-      : { background: 'rgba(241,161,13,0.08)', color: '#f1a10d', border: '1px solid rgba(241,161,13,0.2)' }
+  const getTypeBadge = (t: 'blog' | 'casestudy' | 'admin'): React.CSSProperties => {
+    const map = {
+      blog:      { bg: '#8B0000', color: '#fff' },
+      casestudy: { bg: '#0066CC', color: '#fff' },
+      admin:     { bg: '#4B0082', color: '#fff' },
+    }
+    const s = map[t]
+    return {
+      background: s.bg, color: s.color,
+      padding: '3px 12px', borderRadius: 20, fontSize: 10, fontWeight: 500,
+      display: 'inline-block', whiteSpace: 'nowrap' as const, fontFamily: FONT,
+    }
+  }
+
+  const getRoleBadge = (role: number): React.CSSProperties => ({
+    background: role === 1 ? '#8B0000' : '#B45309', color: '#fff',
+    padding: '3px 12px', borderRadius: 20, fontSize: 10, fontWeight: 500,
+    display: 'inline-block', whiteSpace: 'nowrap' as const, fontFamily: FONT,
+  })
 
   // ── Sort & Filter ─────────────────────────────────────────────────────────
   const applySort = (list: ArchivedItem[]): ArchivedItem[] => {
@@ -231,9 +250,9 @@ export default function ListArchivedServices() {
   }
 
   const getItems = (): ArchivedItem[] => {
-    const blogs  = archivedblogs.map(b  => ({ ...b,  _type: 'blog'      as const }))
-    const cases  = archivedcasestudies.map(c => ({ ...c,  _type: 'casestudy' as const }))
-    const admins = archivedadmins.map(a  => ({ ...a,  _type: 'admin'     as const }))
+    const blogs  = archivedblogs.map(b  => ({ ...b, _type: 'blog'      as const }))
+    const cases  = archivedcasestudies.map(c => ({ ...c, _type: 'casestudy' as const }))
+    const admins = archivedadmins.map(a  => ({ ...a, _type: 'admin'     as const }))
 
     let items: ArchivedItem[] =
       activefilter === 'All'        ? [...blogs, ...cases] :
@@ -255,119 +274,123 @@ export default function ListArchivedServices() {
   }
 
   const items = getItems()
-  const totB  = archivedblogs.length
-  const totC  = archivedcasestudies.length
-  const totA  = archivedadmins.length
+  const totB = archivedblogs.length
+  const totC = archivedcasestudies.length
+  const totA = archivedadmins.length
 
-  const filters: { label: string; value: ContentType | 'All'; count: number }[] = [
+  const filterOptions: { label: string; value: ContentType | 'All'; count: number }[] = [
     { label: 'All',          value: 'All',       count: totB + totC },
-    { label: 'Blogs',        value: 'Blogs',      count: totB },
-    { label: 'Case Studies', value: 'CaseStudy',  count: totC },
+    { label: 'Blogs',        value: 'Blogs',     count: totB },
+    { label: 'Case Studies', value: 'CaseStudy', count: totC },
     ...(isMainAdmin ? [{ label: 'Admins', value: 'Admin' as ContentType, count: totA }] : []),
   ]
 
-  // ── Shared style helpers ──────────────────────────────────────────────────
-  const card: React.CSSProperties = { background: cardBg, border: `1px solid ${border}`, borderRadius: 16 }
+  const statCards = [
+    {
+      label: 'Total Archived',
+      value: totB + totC + (isMainAdmin ? totA : 0),
+      subtitle: `${filterOptions.length - 1} content type${filterOptions.length - 1 !== 1 ? 's' : ''}`,
+      iconColor: '#059669', dark: false,
+      icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>,
+    },
+    {
+      label: 'Blogs',
+      value: totB,
+      subtitle: 'Archived blog posts',
+      iconColor: '#8B0000', dark: false,
+      icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>,
+    },
+    {
+      label: 'Case Studies',
+      value: totC,
+      subtitle: 'Archived case studies',
+      iconColor: '#0066CC', dark: false,
+      icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+    },
+    ...(isMainAdmin ? [{
+      label: 'Admins', value: totA, subtitle: 'Archived admin accounts',
+      iconColor: '#fff', dark: true,
+      icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+    }] : []),
+  ]
 
-  const typePill = (t: 'blog' | 'casestudy' | 'admin'): React.CSSProperties => {
-    const cfg = {
-      blog:      { bg: 'rgba(128,0,0,0.85)',      c: '#fff', b: 'transparent' },
-      casestudy: { bg: 'rgba(37,99,235,0.85)',    c: '#fff', b: 'transparent' },
-      admin:     { bg: 'rgba(37,99,235,0.85)',    c: '#fff', b: 'transparent' },
-    }
-    const x = cfg[t]
-    return {
-      fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em',
-      padding: '3px 9px', borderRadius: 5, background: x.bg, color: x.c,
-      border: `1px solid ${x.b}`, whiteSpace: 'nowrap' as const,
-      backdropFilter: 'blur(4px)',
-    }
-  }
-
-  const sBadge = (s: string): React.CSSProperties => ({
-    display: 'inline-flex', alignItems: 'center', fontSize: 10, fontWeight: 500,
-    padding: '3px 10px', borderRadius: 20, whiteSpace: 'nowrap' as const,
-    ...getStatusStyle(s),
-  })
-  const rBadge = (r: number): React.CSSProperties => ({
-    display: 'inline-flex', alignItems: 'center', fontSize: 10, fontWeight: 500,
-    padding: '3px 10px', borderRadius: 20, whiteSpace: 'nowrap' as const,
-    ...getRoleStyle(r),
-  })
-  const rBtn = (loading: boolean): React.CSSProperties => ({
-    display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px',
-    borderRadius: 8, border: 'none', background: '#059669', color: '#fff',
-    fontSize: 11, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
-    opacity: loading ? 0.65 : 1, transition: 'opacity 0.15s',
-    whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif",
-  })
-  const fBtn = (active: boolean): React.CSSProperties => ({
-    display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
-    fontSize: 11, fontWeight: 500, border: 'none', cursor: 'pointer',
-    transition: 'all 0.15s', background: active ? '#800000' : 'transparent',
-    color: active ? '#fff' : txtMut, fontFamily: "'Poppins', sans-serif",
+  // ── Shared styles ─────────────────────────────────────────────────────────
+  const inp = (extra: React.CSSProperties = {}): React.CSSProperties => ({
+    padding: '10px 14px', borderRadius: 12, border: `1.5px solid ${borderColor}`,
+    background: inputBg, color: textPrimary, fontSize: 12, fontWeight: 400,
+    outline: 'none', fontFamily: FONT, transition: 'border-color .15s', ...extra,
   })
 
   const Spinner = () => (
-    <div style={{ width: 11, height: 11, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+    <div style={{ width: 11, height: 11, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'arc-spin 0.8s linear infinite' }} />
   )
   const RestoreIcon = () => (
     <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
     </svg>
   )
+  const rBtn = (loading: boolean): React.CSSProperties => ({
+    display: 'flex', alignItems: 'center', gap: 5, padding: '6px 14px',
+    borderRadius: 10, border: 'none', background: '#059669', color: '#fff',
+    fontSize: 11, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
+    opacity: loading ? 0.65 : 1, transition: 'opacity 0.15s',
+    whiteSpace: 'nowrap' as const, fontFamily: FONT,
+  })
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (isloading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: pageBg, fontFamily: FONT }}>
+      <style>{`@keyframes arc-spin { to { transform: rotate(360deg) } }`}</style>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ width: 36, height: 36, border: '2px solid', borderColor: `${border} ${border} ${border} #800000`, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-        <p style={{ fontSize: 13, color: txtMut, fontWeight: 400 }}>Loading archived content...</p>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        <div style={{ width: 44, height: 44, border: '4px solid #800000', borderTopColor: 'transparent', borderRadius: '50%', animation: 'arc-spin 0.8s linear infinite', margin: '0 auto 16px', display: 'inline-block' }} />
+        <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: FONT }}>Loading archived content...</p>
       </div>
     </div>
   )
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Poppins', sans-serif" }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-        *{font-family:'Poppins',sans-serif!important;box-sizing:border-box}
-        .arc-row:hover{background:${hoverBg}!important}
-        .arc-card{transition:transform .18s,box-shadow .18s,border-color .18s}
-        .arc-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,${isdarkmode ? '.35' : '.09'})!important;border-color:${isdarkmode ? 'rgba(255,255,255,.14)' : 'rgba(0,0,0,.12)'}!important}
-        .r-btn:hover{opacity:.82!important}
-        @keyframes spin{to{transform:rotate(360deg)}}
+    <div style={{ minHeight: '100vh', background: pageBg, padding: '32px', fontFamily: FONT }}>
+      <style>{`
+        @keyframes arc-spin { to { transform: rotate(360deg) } }
+        .arc-row:hover { background: ${isdarkmode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'} !important; }
+        .arc-card { transition: transform .18s, box-shadow .18s, border-color .18s; }
+        .arc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,${isdarkmode ? '.35' : '.09'}) !important; border-color: ${isdarkmode ? 'rgba(255,255,255,.14)' : 'rgba(0,0,0,.12)'} !important; }
+        .arc-pill:hover { opacity: .78; }
+        .arc-rbtn:hover { opacity: .82 !important; }
       `}</style>
 
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-        {/* ── TOASTS ─────────────────────────────────────────────────────── */}
+        {/* ── Toasts ──────────────────────────────────────────────────────── */}
         {successmsg && (
-          <div style={{ position: 'fixed', top: 32, right: 32, zIndex: 50, background: '#059669', color: '#fff', padding: '13px 22px', borderRadius: 10, fontSize: 12, fontWeight: 500, boxShadow: '0 8px 24px rgba(0,0,0,0.18)', fontFamily: "'Poppins', sans-serif" }}>
+          <div style={{ position: 'fixed', top: 28, right: 28, background: '#059669', color: '#fff', padding: '14px 24px', borderRadius: 20, fontSize: 12, fontWeight: 500, boxShadow: '0 8px 32px rgba(0,0,0,0.22)', zIndex: 50, fontFamily: FONT }}>
             ✓ {successmsg}
           </div>
         )}
         {error && (
-          <div style={{ position: 'fixed', top: 32, right: 32, zIndex: 50, background: '#dc2626', color: '#fff', padding: '13px 22px', borderRadius: 10, fontSize: 12, fontWeight: 500, boxShadow: '0 8px 24px rgba(0,0,0,0.18)', display: 'flex', alignItems: 'center', gap: 10, fontFamily: "'Poppins', sans-serif" }}>
+          <div style={{ position: 'fixed', top: 28, right: 28, background: '#dc2626', color: '#fff', padding: '14px 24px', borderRadius: 20, fontSize: 12, fontWeight: 500, boxShadow: '0 8px 32px rgba(0,0,0,0.22)', zIndex: 50, display: 'flex', alignItems: 'center', gap: 12, fontFamily: FONT }}>
             {error}
-            <button onClick={() => seterror(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 11, textDecoration: 'underline' }}>Dismiss</button>
+            <button onClick={() => seterror(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 11, textDecoration: 'underline', fontFamily: FONT }}>Dismiss</button>
           </div>
         )}
 
-        {/* ── PAGE HEADER ────────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${border}` }}>
+        {/* ── Page Header ─────────────────────────────────────────────────── */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
           <div>
-            <h1 style={{ fontSize: 18, fontWeight: 500, color: txtPri, margin: 0, lineHeight: 1.3 }}>Archived Content</h1>
-            <p style={{ fontSize: 12, color: txtMut, margin: '4px 0 0', fontWeight: 400 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: FONT }}>
+              Archived Content
+            </h2>
+            <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: FONT }}>
               Manage archived blogs, case studies{isMainAdmin ? ', and admin accounts' : ''}. Restore items to make them visible again.
             </p>
           </div>
-          <button onClick={loadAll}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 18px', borderRadius: 8, background: cardBg, color: txtSec, fontSize: 12, fontWeight: 500, border: `1px solid ${border}`, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}
+          <button
+            onClick={loadAll}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 20px', borderRadius: 12, background: cardBg, color: textMuted, fontSize: 12, fontWeight: 500, border: `1.5px solid ${borderColor}`, cursor: 'pointer', fontFamily: FONT, transition: 'opacity .15s' }}
             onMouseOver={e => (e.currentTarget.style.opacity = '0.7')}
-            onMouseOut={e  => (e.currentTarget.style.opacity = '1')}>
+            onMouseOut={e  => (e.currentTarget.style.opacity = '1')}
+          >
             <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -375,414 +398,399 @@ export default function ListArchivedServices() {
           </button>
         </div>
 
-        {/* ── STATS ──────────────────────────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMainAdmin ? 4 : 3}, 1fr)`, gap: 16, marginBottom: 24 }}>
-          {[
-            { label: 'Total Archived', value: totB + totC + (isMainAdmin ? totA : 0), color: txtPri },
-            { label: 'Blogs',          value: totB, color: '#800000' },
-            { label: 'Case Studies',   value: totC, color: '#f1a10d' },
-            ...(isMainAdmin ? [{ label: 'Admins', value: totA, color: '#3b82f6' }] : []),
-          ].map(st => (
-            <div key={st.label} style={{ ...card, padding: '20px 24px', boxShadow: isdarkmode ? '0 1px 4px rgba(0,0,0,.3)' : '0 1px 4px rgba(0,0,0,.06)' }}>
-              <p style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: txtMut, margin: '0 0 10px' }}>{st.label}</p>
-              <p style={{ fontSize: 28, fontWeight: 600, color: st.color, margin: 0 }}>{st.value}</p>
+        {/* ── Stat Cards ──────────────────────────────────────────────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMainAdmin ? 4 : 3}, 1fr)`, gap: 14 }}>
+          {statCards.map((card, i) => (
+            <div key={i} style={{
+              padding: '20px 22px', borderRadius: 20,
+              border: card.dark ? 'none' : `1px solid ${borderColor}`,
+              background: card.dark ? (isdarkmode ? '#2a3a2a' : '#2d4a35') : cardBg,
+              boxShadow: card.dark ? 'none' : (isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)'),
+              display: 'flex', flexDirection: 'column' as const, gap: 0,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+                <p style={{ fontSize: 11, fontWeight: 500, color: card.dark ? 'rgba(255,255,255,0.7)' : textMuted, margin: 0, fontFamily: FONT }}>
+                  {card.label}
+                </p>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: card.dark ? 'rgba(255,255,255,0.15)' : `${card.iconColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.dark ? '#fff' : card.iconColor, flexShrink: 0 }}>
+                  {card.icon}
+                </div>
+              </div>
+              <p style={{ fontSize: 36, fontWeight: 700, color: card.dark ? '#fff' : textPrimary, margin: '0 0 6px', lineHeight: 1, fontFamily: FONT }}>
+                {card.value}
+              </p>
+              <p style={{ fontSize: 11, fontWeight: 400, color: card.dark ? 'rgba(255,255,255,0.6)' : textMuted, margin: 0, fontFamily: FONT }}>
+                {card.subtitle}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* ── CONTROLS ───────────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        {/* ── Filters Card ────────────────────────────────────────────────── */}
+        <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: '24px', boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
 
-          {/* Search */}
-          <div style={{ position: 'relative', width: 240 }}>
-            <input type="text"
-              placeholder={activefilter === 'Admin' ? 'Search by name or email...' : 'Search by title or author...'}
-              value={searchquery}
-              onChange={e => setsearchquery(e.target.value)}
-              style={{ width: '100%', paddingLeft: 34, paddingRight: 12, paddingTop: 8, paddingBottom: 8, borderRadius: 8, border: `1px solid ${border}`, background: inputBg, color: txtPri, fontSize: 12, outline: 'none', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}
-              onFocus={e => (e.target.style.borderColor = '#800000')}
-              onBlur={e  => (e.target.style.borderColor = border)} />
-            <svg style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: txtMut, pointerEvents: 'none' }} width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-
-          {/* Filter tabs */}
-          <div style={{ display: 'flex', border: `1px solid ${border}`, borderRadius: 8, overflow: 'hidden', background: cardBg }}>
-            {filters.map((f, i) => (
-              <button key={f.value} onClick={() => setactivefilter(f.value)}
-                style={{ ...fBtn(activefilter === f.value), borderLeftWidth: i > 0 ? 1 : 0, borderLeftStyle: 'solid', borderLeftColor: border }}>
-                {f.label}
-                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 10, fontWeight: 500, background: activefilter === f.value ? 'rgba(255,255,255,0.22)' : isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: activefilter === f.value ? '#fff' : txtMut }}>
-                  {f.count}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <span style={{ width: 1, height: 24, background: border }} />
-
-          {/* Sort by */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, color: txtMut, fontWeight: 400 }}>Sort by</span>
-            <select value={sortmode} onChange={e => setsortmode(e.target.value as SortMode)}
-              style={{ fontSize: 11, padding: '7px 10px', borderRadius: 8, border: `1px solid ${border}`, background: inputBg, color: txtPri, outline: 'none', cursor: 'pointer', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
-              <option value="date-newest">Newest First</option>
-              <option value="date-oldest">Oldest First</option>
-              <option value="alpha-asc">Name A → Z</option>
-              <option value="alpha-desc">Name Z → A</option>
-            </select>
-          </div>
-
-          <div style={{ flex: 1 }} />
-
-          <span style={{ fontSize: 11, color: txtMut, fontWeight: 400 }}>
-            Showing <strong style={{ color: txtSec, fontWeight: 500 }}>{items.length}</strong> item{items.length !== 1 ? 's' : ''}
-          </span>
-
-          <span style={{ width: 1, height: 24, background: border }} />
-
-          {/* View toggle */}
-          <div style={{ display: 'flex', border: `1px solid ${border}`, borderRadius: 8, overflow: 'hidden', background: cardBg }}>
-            {([
-              ['grid', 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'],
-              ['list', 'M4 6h16M4 12h16M4 18h16'],
-            ] as const).map(([m, d], i) => (
-              <button key={m} onClick={() => setviewmode(m)}
-                style={{ padding: '7px 10px', borderTop: 'none', borderBottom: 'none', borderRight: 'none', borderLeftWidth: i > 0 ? 1 : 0, borderLeftStyle: 'solid', borderLeftColor: border, background: viewmode === m ? '#800000' : 'transparent', color: viewmode === m ? '#fff' : txtMut, cursor: 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center' }}>
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={d} />
+            {/* Search + Sort + View toggle */}
+            <div style={{ display: 'flex', flexWrap: 'wrap' as const, alignItems: 'center', gap: 12 }}>
+              <div style={{ flex: 1, minWidth: 260, position: 'relative' }}>
+                <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </button>
-            ))}
+                <input
+                  type="text"
+                  placeholder={activefilter === 'Admin' ? 'Search by name or email...' : 'Search by title or author...'}
+                  value={searchquery}
+                  onChange={e => setsearchquery(e.target.value)}
+                  style={{ ...inp({ paddingLeft: 36, width: '100%' }) }}
+                  onFocus={e  => (e.target.style.borderColor = '#800000')}
+                  onBlur={e   => (e.target.style.borderColor = borderColor)}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: textMuted, fontWeight: 400, whiteSpace: 'nowrap' as const, fontFamily: FONT }}>Sort by</span>
+                <select
+                  value={sortmode}
+                  onChange={e => setsortmode(e.target.value as SortMode)}
+                  style={inp({ padding: '10px 12px', fontSize: 11, cursor: 'pointer' })}
+                  onFocus={e  => (e.target.style.borderColor = '#800000')}
+                  onBlur={e   => (e.target.style.borderColor = borderColor)}
+                >
+                  <option value="date-newest">Newest First</option>
+                  <option value="date-oldest">Oldest First</option>
+                  <option value="alpha-asc">Name A → Z</option>
+                  <option value="alpha-desc">Name Z → A</option>
+                </select>
+              </div>
+              {/* View toggle */}
+              <div style={{ display: 'flex', border: `1.5px solid ${borderColor}`, borderRadius: 12, overflow: 'hidden', background: inputBg }}>
+                {([
+                  ['grid', 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'],
+                  ['list', 'M4 6h16M4 12h16M4 18h16'],
+                ] as const).map(([m, d], i) => (
+                  <button key={m} onClick={() => setviewmode(m as ViewMode)}
+                    style={{ padding: '9px 12px', borderTop: 'none', borderBottom: 'none', borderRight: 'none', borderLeftWidth: i > 0 ? 1 : 0, borderLeftStyle: 'solid' as const, borderLeftColor: borderColor, background: viewmode === m ? '#800000' : 'transparent', color: viewmode === m ? '#fff' : textMuted, cursor: 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center' }}>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={d} />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter by Type */}
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 500, color: textMuted, margin: '0 0 10px', fontFamily: FONT }}>
+                Filter by Type
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
+                {filterOptions.map(f => (
+                  <button
+                    key={f.value}
+                    className="arc-pill"
+                    onClick={() => setactivefilter(f.value)}
+                    style={{
+                      padding: '5px 14px', borderRadius: 8,
+                      border: activefilter === f.value ? 'none' : `1px solid ${borderColor}`,
+                      background: activefilter === f.value ? '#800000' : subtleBg,
+                      color: activefilter === f.value ? '#fff' : textMuted,
+                      fontSize: 11, fontWeight: activefilter === f.value ? 500 : 400,
+                      cursor: 'pointer', transition: 'all .15s',
+                      boxShadow: activefilter === f.value ? '0 2px 8px rgba(128,0,0,0.3)' : 'none',
+                      fontFamily: FONT,
+                      display: 'flex', alignItems: 'center', gap: 6,
+                    }}
+                  >
+                    {f.label}
+                    <span style={{
+                      fontSize: 9, padding: '1px 6px', borderRadius: 8, fontWeight: 500,
+                      background: activefilter === f.value ? 'rgba(255,255,255,0.22)' : isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
+                      color: activefilter === f.value ? '#fff' : textMuted, fontFamily: FONT,
+                    }}>
+                      {f.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ── EMPTY STATE ────────────────────────────────────────────────── */}
-        {items.length === 0 && (
-          <div style={{ ...card, padding: '64px 32px', textAlign: 'center' }}>
-            <div style={{ fontSize: 36, marginBottom: 14 }}>📦</div>
-            <h3 style={{ fontSize: 14, fontWeight: 500, color: txtPri, margin: '0 0 6px' }}>No archived items found</h3>
-            <p style={{ fontSize: 12, color: txtMut, margin: 0, fontWeight: 400 }}>
-              {searchquery ? 'Try adjusting your search query.' : 'Archived content will appear here.'}
-            </p>
-          </div>
-        )}
+        {/* ── Content Card ─────────────────────────────────────────────────── */}
+        <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: 'hidden', boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)' }}>
 
-        {/* ── GRID VIEW ──────────────────────────────────────────────────── */}
-        {items.length > 0 && viewmode === 'grid' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-            {items.map(item => {
-              const isAdmin = item._type === 'admin'
-              const isBlog  = item._type === 'blog'
-              const blog    = isBlog       ? item as ArchivedBlog      & { _type: 'blog' }      : null
-              const cs      = !isBlog && !isAdmin ? item as ArchivedCaseStudy & { _type: 'casestudy' } : null
-              const admin   = isAdmin      ? item as ArchivedAdmin     & { _type: 'admin' }     : null
-              const loading = restoringid === item._id
-
-              // ── Admin card ────────────────────────────────────────────────
-              if (isAdmin && admin) return (
-                <div key={item._id} className="arc-card" style={{ ...card, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: isdarkmode ? '0 1px 4px rgba(0,0,0,.3)' : '0 1px 4px rgba(0,0,0,.06)' }}>
-                  <div style={{ height: 3, background: 'linear-gradient(90deg,#800000,#a00000)' }} />
-                  <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                      <div style={{ width: 46, height: 46, borderRadius: 12, background: 'linear-gradient(135deg,#800000,#a00000)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 600, overflow: 'hidden', flexShrink: 0 }}>
-                        {admin.profilePicture
-                          ? <img src={admin.profilePicture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          : getInitials(admin)}
-                      </div>
-                      <span style={{ ...typePill('admin'), background: 'rgba(59,130,246,0.12)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }}>Admin</span>
-                    </div>
-
-                    <div>
-                      <p style={{ fontSize: 14, fontWeight: 500, color: txtPri, margin: '0 0 2px' }}>{admin.firstName} {admin.lastName}</p>
-                      <p style={{ fontSize: 11, color: txtMut, margin: 0, fontWeight: 400 }}>{admin.email}</p>
-                    </div>
-
-                    <span style={rBadge(admin.role)}>{roles[admin.role]}</span>
-                    <p style={{ fontSize: 11, color: txtMut, margin: 0, fontWeight: 400 }}>
-                      {getDeptIcon(admin.department)} {departments[admin.department]}
-                    </p>
-
-                    <div style={{ flex: 1 }} />
-
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 14, borderTop: `1px solid ${border}` }}>
-                      <div>
-                        <p style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', color: txtMut, margin: '0 0 2px', fontWeight: 500 }}>Archived</p>
-                        <p style={{ fontSize: 11, color: txtSec, margin: 0, fontWeight: 400 }}>{fmtDate(admin.updatedAt)}</p>
-                      </div>
-                      <button className="r-btn"
-                        onClick={() => setconfirmrestore({ id: admin._id, title: `${admin.firstName} ${admin.lastName}`, type: 'admin' })}
-                        disabled={loading} style={rBtn(loading)}>
-                        {loading ? <><Spinner />Restoring...</> : <><RestoreIcon />Restore</>}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-
-              // ── Blog / Case Study card ────────────────────────────────────
-              const coverImage = isBlog ? blog!.picture : cs?.cover
-              const status     = (item as any).status || ''
-              const title      = (item as any).title  || ''
-              const author     = (item as any).author || ''
-              const date       = fmtDate((item as any).updatedAt || (item as any).createdAt)
-              const desc       = isBlog ? blog?.shortDescription : cs?.subtitle
-
-              return (
-                <div key={item._id} className="arc-card" style={{ ...card, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: isdarkmode ? '0 1px 4px rgba(0,0,0,.3)' : '0 1px 4px rgba(0,0,0,.06)' }}>
-
-                  {/* Cover image with type badge overlay */}
-                  <div style={{ position: 'relative', height: 160, overflow: 'hidden', flexShrink: 0, background: isdarkmode ? '#111' : '#f3f4f6' }}>
-                    {coverImage && (
-                      <img src={coverImage} alt={title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-                        onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                    )}
-                    {/* Gradient overlay for readability */}
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%)' }} />
-                    {/* Type badge — top left */}
-                    <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                      <span style={typePill(isBlog ? 'blog' : 'casestudy')}>
-                        {isBlog ? 'Blog' : 'Case Study'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Card body */}
-                  <div style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
-
-                    {/* Title */}
-                    <h3 style={{ fontSize: 14, fontWeight: 600, color: txtPri, margin: 0, lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {title}
-                    </h3>
-
-                    {/* Description */}
-                    {desc && (
-                      <p style={{ fontSize: 11, color: txtMut, margin: 0, fontWeight: 400, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {desc}
-                      </p>
-                    )}
-
-                    {/* Author · Date */}
-                    <p style={{ fontSize: 11, color: txtMut, margin: 0, fontWeight: 400 }}>
-                      By <span style={{ color: txtSec, fontWeight: 500 }}>{author}</span> · {date}
-                    </p>
-
-                    {/* Category / Tags */}
-                    {isBlog && blog?.mainCategory && (
-                      <span style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', padding: '3px 8px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', color: txtMut, width: 'fit-content' }}>
-                        {blog.mainCategory}
-                      </span>
-                    )}
-                    {!isBlog && cs?.tags?.length ? (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {cs.tags.slice(0, 3).map(t => (
-                          <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: '2px 7px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', color: txtMut }}>
-                            {t}
-                          </span>
-                        ))}
-                        {cs.tags.length > 3 && <span style={{ fontSize: 9, color: txtMut }}>+{cs.tags.length - 3}</span>}
-                      </div>
-                    ) : null}
-
-                    <div style={{ flex: 1 }} />
-
-                    {/* Footer: status left, restore right */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 12, borderTop: `1px solid ${border}` }}>
-                      <span style={sBadge(status)}>
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
-                      </span>
-                      <button className="r-btn"
-                        onClick={() => setconfirmrestore({ id: item._id, title, type: isBlog ? 'blog' : 'casestudy' })}
-                        disabled={loading} style={rBtn(loading)}>
-                        {loading ? <><Spinner />Restoring...</> : <><RestoreIcon />Restore</>}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* ── LIST VIEW ──────────────────────────────────────────────────── */}
-        {items.length > 0 && viewmode === 'list' && (
-          <div style={{ ...card, overflow: 'hidden' }}>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 3fr 130px 100px', gap: 16, padding: '10px 20px', borderBottom: `1px solid ${border}`, background: subtleBg, fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: txtMut }}>
-              <span>Title / Name</span>
-              <span>Author / Email</span>
-              <span>Category / Dept</span>
-              <span>Status / Role</span>
-              <span style={{ textAlign: 'right' }}>Action</span>
-            </div>
-
-            {/* Rows */}
+          {/* Card header */}
+          <div style={{ padding: '18px 24px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              {items.map((item, idx) => {
+              <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: FONT }}>Archived records</p>
+              <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: FONT }}>
+                {activefilter === 'All' ? 'All content types' : `Filtered by ${activefilter}`}{searchquery ? ` · matching "${searchquery}"` : ''}
+              </p>
+            </div>
+            <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT }}>
+              Showing <strong style={{ color: textPrimary, fontFamily: FONT }}>{items.length}</strong> item{items.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* Empty */}
+          {items.length === 0 && (
+            <div style={{ padding: '72px 20px', textAlign: 'center' }}>
+              <svg style={{ margin: '0 auto 16px', display: 'block', color: isdarkmode ? '#374151' : '#d1d5db' }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+              </svg>
+              <p style={{ fontSize: 14, fontWeight: 500, color: textMuted, margin: '0 0 4px', fontFamily: FONT }}>No archived items found</p>
+              <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: FONT }}>
+                {searchquery ? 'Try adjusting your search query.' : 'Archived content will appear here.'}
+              </p>
+            </div>
+          )}
+
+          {/* ── GRID VIEW ─────────────────────────────────────────────────── */}
+          {items.length > 0 && viewmode === 'grid' && (
+            <div style={{ padding: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+              {items.map(item => {
                 const isAdmin = item._type === 'admin'
                 const isBlog  = item._type === 'blog'
-                const blog    = isBlog       ? item as ArchivedBlog      & { _type: 'blog' }      : null
+                const blog    = isBlog             ? item as ArchivedBlog      & { _type: 'blog' }      : null
                 const cs      = !isBlog && !isAdmin ? item as ArchivedCaseStudy & { _type: 'casestudy' } : null
-                const admin   = isAdmin      ? item as ArchivedAdmin     & { _type: 'admin' }     : null
+                const admin   = isAdmin            ? item as ArchivedAdmin     & { _type: 'admin' }     : null
                 const loading = restoringid === item._id
-                const coverImage = isBlog ? blog?.picture : cs?.cover
+
+                if (isAdmin && admin) return (
+                  <div key={item._id} className="arc-card" style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column' as const, boxShadow: isdarkmode ? '0 1px 4px rgba(0,0,0,.3)' : '0 2px 10px rgba(0,0,0,.06)' }}>
+                    <div style={{ height: 3, background: 'linear-gradient(90deg,#4B0082,#6B21A8)' }} />
+                    <div style={{ padding: 20, display: 'flex', flexDirection: 'column' as const, gap: 12, flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                        <div style={{ width: 46, height: 46, borderRadius: 12, background: 'linear-gradient(135deg,#4B0082,#6B21A8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 600, overflow: 'hidden', flexShrink: 0, fontFamily: FONT }}>
+                          {admin.profilePicture ? <img src={admin.profilePicture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(admin)}
+                        </div>
+                        <span style={getTypeBadge('admin')}>Admin</span>
+                      </div>
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: '0 0 2px', fontFamily: FONT }}>{admin.firstName} {admin.lastName}</p>
+                        <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, fontFamily: FONT }}>{admin.email}</p>
+                      </div>
+                      <span style={getRoleBadge(admin.role)}>{roles[admin.role]}</span>
+                      <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, fontFamily: FONT }}>{getDeptIcon(admin.department)} {departments[admin.department]}</p>
+                      <div style={{ flex: 1 }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 14, borderTop: `1px solid ${borderColor}` }}>
+                        <div>
+                          <p style={{ fontSize: 9, textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: textMuted, margin: '0 0 2px', fontWeight: 500, fontFamily: FONT }}>Archived</p>
+                          <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, fontFamily: FONT }}>{fmtDate(admin.updatedAt)}</p>
+                        </div>
+                        <button className="arc-rbtn" onClick={() => setconfirmrestore({ id: admin._id, title: `${admin.firstName} ${admin.lastName}`, type: 'admin' })} disabled={loading} style={rBtn(loading)}>
+                          {loading ? <><Spinner />Restoring...</> : <><RestoreIcon />Restore</>}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+
+                const coverImage = isBlog ? blog!.picture : cs?.cover
+                const status     = (item as any).status || ''
+                const title      = (item as any).title  || ''
+                const author     = (item as any).author || ''
+                const date       = fmtDate((item as any).updatedAt || (item as any).createdAt)
+                const desc       = isBlog ? blog?.shortDescription : cs?.subtitle
 
                 return (
-                  <div key={item._id} className="arc-row" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 3fr 130px 100px', gap: 16, alignItems: 'center', padding: '13px 20px', borderBottom: idx < items.length - 1 ? `1px solid ${border}` : 'none', transition: 'background .15s' }}>
+                  <div key={item._id} className="arc-card" style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column' as const, boxShadow: isdarkmode ? '0 1px 4px rgba(0,0,0,.3)' : '0 2px 10px rgba(0,0,0,.06)' }}>
+                    <div style={{ position: 'relative', height: 160, overflow: 'hidden', flexShrink: 0, background: isdarkmode ? '#111' : '#f3f4f6' }}>
+                      {coverImage && <img src={coverImage} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />}
+                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%)' }} />
+                      <div style={{ position: 'absolute', top: 10, left: 10 }}>
+                        <span style={getTypeBadge(isBlog ? 'blog' : 'casestudy')}>{isBlog ? 'Blog' : 'Case Study'}</span>
+                      </div>
+                    </div>
+                    <div style={{ padding: 18, display: 'flex', flexDirection: 'column' as const, gap: 8, flex: 1 }}>
+                      <h3 style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: 0, lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontFamily: FONT }}>
+                        {title}
+                      </h3>
+                      {desc && <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontFamily: FONT }}>{desc}</p>}
+                      <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, fontFamily: FONT }}>
+                        By <span style={{ color: textPrimary, fontWeight: 500, fontFamily: FONT }}>{author}</span> · {date}
+                      </p>
+                      {isBlog && blog?.mainCategory && (
+                        <span style={{ fontSize: 9, fontWeight: 500, textTransform: 'uppercase' as const, letterSpacing: '0.05em', padding: '3px 8px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', color: textMuted, width: 'fit-content', fontFamily: FONT }}>
+                          {blog.mainCategory}
+                        </span>
+                      )}
+                      {!isBlog && cs?.tags?.length ? (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                          {cs.tags.slice(0, 3).map(t => (
+                            <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: '2px 7px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', color: textMuted, fontFamily: FONT }}>{t}</span>
+                          ))}
+                          {cs.tags.length > 3 && <span style={{ fontSize: 9, color: textMuted, fontFamily: FONT }}>+{cs.tags.length - 3}</span>}
+                        </div>
+                      ) : null}
+                      <div style={{ flex: 1 }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
+                        <span style={getStatusBadge(status)}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                        <button className="arc-rbtn" onClick={() => setconfirmrestore({ id: item._id, title, type: isBlog ? 'blog' : 'casestudy' })} disabled={loading} style={rBtn(loading)}>
+                          {loading ? <><Spinner />Restoring...</> : <><RestoreIcon />Restore</>}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
-                    {/* Thumbnail + title */}
+          {/* ── LIST VIEW ─────────────────────────────────────────────────── */}
+          {items.length > 0 && viewmode === 'list' && (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 130px 120px', gap: 16, padding: '11px 24px', background: subtleBg, borderBottom: `1px solid ${borderColor}` }}>
+                {['Title / Name', 'Author / Email', 'Category / Dept', 'Status / Role', 'Action'].map((col, i) => (
+                  <span key={col} style={{ fontSize: 10, fontWeight: 500, color: textMuted, textAlign: i === 4 ? 'right' as const : 'left' as const, fontFamily: FONT }}>{col}</span>
+                ))}
+              </div>
+              {items.map((item, idx) => {
+                const isAdmin    = item._type === 'admin'
+                const isBlog     = item._type === 'blog'
+                const blog       = isBlog             ? item as ArchivedBlog      & { _type: 'blog' }      : null
+                const cs         = !isBlog && !isAdmin ? item as ArchivedCaseStudy & { _type: 'casestudy' } : null
+                const admin      = isAdmin            ? item as ArchivedAdmin     & { _type: 'admin' }     : null
+                const loading    = restoringid === item._id
+                const coverImage = isBlog ? blog?.picture : cs?.cover
+                return (
+                  <div key={item._id} className="arc-row" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 130px 120px', gap: 16, alignItems: 'center', padding: '14px 24px', borderBottom: idx < items.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}>
+
+                    {/* Title / Name */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                      {/* Thumbnail */}
                       {isAdmin && admin ? (
-                        <div style={{ width: 36, height: 36, borderRadius: 9, background: 'linear-gradient(135deg,#800000,#a00000)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 600, flexShrink: 0, overflow: 'hidden' }}>
-                          {admin.profilePicture
-                            ? <img src={admin.profilePicture} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            : getInitials(admin)}
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#4B0082,#6B21A8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 600, flexShrink: 0, overflow: 'hidden', fontFamily: FONT }}>
+                          {admin.profilePicture ? <img src={admin.profilePicture} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(admin)}
                         </div>
                       ) : (
-                        <div style={{ width: 36, height: 36, borderRadius: 9, flexShrink: 0, overflow: 'hidden', background: isdarkmode ? '#222' : '#f3f4f6', position: 'relative' }}>
-                          {coverImage && (
-                            <img src={coverImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                          )}
+                        <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, overflow: 'hidden', background: isdarkmode ? '#222' : '#f3f4f6' }}>
+                          {coverImage && <img src={coverImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />}
                         </div>
                       )}
-                      {/* Text */}
                       <div style={{ minWidth: 0 }}>
                         <div style={{ marginBottom: 3 }}>
-                          <span style={typePill(isAdmin ? 'admin' : isBlog ? 'blog' : 'casestudy')}>
+                          <span style={getTypeBadge(isAdmin ? 'admin' : isBlog ? 'blog' : 'casestudy')}>
                             {isAdmin ? 'Admin' : isBlog ? 'Blog' : 'Case Study'}
                           </span>
                         </div>
-                        <p style={{ fontSize: 12, fontWeight: 500, color: txtPri, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: FONT }}>
                           {isAdmin && admin ? `${admin.firstName} ${admin.lastName}` : (item as any).title}
                         </p>
                         {!isAdmin && isBlog && blog?.shortDescription && (
-                          <p style={{ fontSize: 10, color: txtMut, margin: '1px 0 0', fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {blog.shortDescription}
-                          </p>
+                          <p style={{ fontSize: 10, color: textMuted, margin: '1px 0 0', fontWeight: 400, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: FONT }}>{blog.shortDescription}</p>
                         )}
                         {!isAdmin && !isBlog && cs?.subtitle && (
-                          <p style={{ fontSize: 10, color: txtMut, margin: '1px 0 0', fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {cs.subtitle}
-                          </p>
+                          <p style={{ fontSize: 10, color: textMuted, margin: '1px 0 0', fontWeight: 400, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: FONT }}>{cs.subtitle}</p>
                         )}
                       </div>
                     </div>
 
                     {/* Author / Email */}
-                    <p style={{ fontSize: 11, color: txtMut, margin: 0, fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {isAdmin && admin ? admin.email : (item as any).author}
-                    </p>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: FONT }}>
+                        {isAdmin && admin ? `${admin.firstName} ${admin.lastName}` : (item as any).author}
+                      </p>
+                      {isAdmin && admin && (
+                        <p style={{ fontSize: 11, color: textMuted, margin: '2px 0 0', fontWeight: 400, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: FONT }}>{admin.email}</p>
+                      )}
+                    </div>
 
-                    {/* Category / Department */}
+                    {/* Category / Dept */}
                     <div>
                       {isAdmin && admin ? (
-                        <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 8px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: txtMut }}>
+                        <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 8px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: textMuted, fontFamily: FONT }}>
                           {getDeptIcon(admin.department)} {departments[admin.department]}
                         </span>
                       ) : isBlog && blog?.mainCategory ? (
-                        <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 8px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: txtMut }}>
-                          {blog.mainCategory}
-                        </span>
+                        <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 8px', borderRadius: 5, background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: textMuted, fontFamily: FONT }}>{blog.mainCategory}</span>
                       ) : cs?.tags?.length ? (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                           {cs.tags.slice(0, 2).map(t => (
-                            <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: '2px 6px', borderRadius: 4, background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: txtMut }}>
-                              {t}
-                            </span>
+                            <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: '2px 6px', borderRadius: 4, background: isdarkmode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: textMuted, fontFamily: FONT }}>{t}</span>
                           ))}
-                          {cs.tags.length > 2 && <span style={{ fontSize: 9, color: txtMut }}>+{cs.tags.length - 2}</span>}
+                          {cs.tags.length > 2 && <span style={{ fontSize: 9, color: textMuted, fontFamily: FONT }}>+{cs.tags.length - 2}</span>}
                         </div>
-                      ) : <span style={{ fontSize: 11, color: txtMut }}>—</span>}
+                      ) : <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT }}>—</span>}
                     </div>
 
                     {/* Status / Role */}
                     <div>
                       {isAdmin && admin
-                        ? <span style={rBadge(admin.role)}>{admin.role === 1 ? 'Main Admin' : 'Admin'}</span>
-                        : <span style={sBadge((item as any).status)}>
+                        ? <span style={getRoleBadge(admin.role)}>{admin.role === 1 ? 'Main Admin' : 'Admin'}</span>
+                        : <span style={getStatusBadge((item as any).status)}>
                             {((item as any).status || '').charAt(0).toUpperCase() + ((item as any).status || '').slice(1)}
                           </span>
                       }
                     </div>
 
                     {/* Action */}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <button className="r-btn"
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' as const }}>
+                      <button className="arc-rbtn"
                         onClick={() => setconfirmrestore({
                           id: item._id,
                           title: isAdmin && admin ? `${admin.firstName} ${admin.lastName}` : (item as any).title,
                           type: isAdmin ? 'admin' : isBlog ? 'blog' : 'casestudy',
                         })}
-                        disabled={loading} style={{ ...rBtn(loading), padding: '6px 13px' }}>
+                        disabled={loading} style={rBtn(loading)}>
                         {loading ? <><Spinner />Restoring...</> : <><RestoreIcon />Restore</>}
                       </button>
                     </div>
                   </div>
                 )
               })}
-            </div>
+              <div style={{ padding: '12px 24px', background: subtleBg, borderTop: `1px solid ${borderColor}` }}>
+                <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: FONT }}>
+                  {items.length} item{items.length !== 1 ? 's' : ''} displayed
+                  {activefilter !== 'All' && ` · filtered by "${activefilter}"`}
+                  {searchquery && ` · matching "${searchquery}"`}
+                </p>
+              </div>
+            </>
+          )}
+        </div>
 
-            {/* Footer */}
-            <div style={{ padding: '10px 20px', borderTop: `1px solid ${border}`, background: subtleBg, fontSize: 10, color: txtMut, fontWeight: 400 }}>
-              {items.length} item{items.length !== 1 ? 's' : ''} displayed
-              {activefilter !== 'All' && ` · filtered by "${activefilter}"`}
-              {searchquery && ` · matching "${searchquery}"`}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* ── CONFIRM RESTORE MODAL ──────────────────────────────────────────── */}
+      {/* ── Confirm Restore Modal ─────────────────────────────────────────────── */}
       {confirmrestore && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 24, fontFamily: "'Poppins', sans-serif" }}>
-          <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 20, maxWidth: 400, width: '100%', boxShadow: '0 24px 60px rgba(0,0,0,0.28)', overflow: 'hidden' }}>
-            <div style={{ height: 3, background: 'linear-gradient(90deg,#059669,#10b981)' }} />
-
-            <div style={{ padding: '26px 26px 18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-                <div style={{ width: 42, height: 42, borderRadius: 11, background: isdarkmode ? 'rgba(5,150,105,0.12)' : 'rgba(5,150,105,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v5h5" />
-                  </svg>
-                </div>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 24 }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 32, width: '100%', maxWidth: 440, boxShadow: '0 32px 80px rgba(0,0,0,0.32)', fontFamily: FONT }}>
+            <div style={{ padding: '32px 36px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
                 <div>
-                  <p style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#059669', margin: '0 0 2px' }}>
-                    Restore {confirmrestore.type === 'blog' ? 'Blog' : confirmrestore.type === 'casestudy' ? 'Case Study' : 'Admin'}
-                  </p>
-                  <h3 style={{ fontSize: 15, fontWeight: 600, color: txtPri, margin: 0 }}>Are you sure?</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: FONT }}>Restore Item</h3>
+                  <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: FONT }}>This item will be restored and made active again</p>
                 </div>
+                <button onClick={() => setconfirmrestore(null)} style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: subtleBg, color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
               </div>
-
-              <div style={{ padding: '11px 14px', borderRadius: 10, background: isdarkmode ? 'rgba(255,255,255,0.04)' : '#f9fafb', border: `1px solid ${border}`, marginBottom: 14 }}>
-                <p style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', color: txtMut, margin: '0 0 3px', fontWeight: 500 }}>
+              <div style={{ marginBottom: 20 }}>
+                <span style={getTypeBadge(confirmrestore.type)}>
+                  {confirmrestore.type === 'blog' ? 'Blog' : confirmrestore.type === 'casestudy' ? 'Case Study' : 'Admin'}
+                </span>
+              </div>
+              <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, padding: '20px 22px', marginBottom: 20 }}>
+                <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: '0 0 6px', textTransform: 'uppercase' as const, fontFamily: FONT }}>
                   {confirmrestore.type === 'blog' ? 'Blog Post' : confirmrestore.type === 'casestudy' ? 'Case Study' : 'Admin Account'}
                 </p>
-                <p style={{ fontSize: 13, fontWeight: 500, color: txtPri, margin: 0 }}>{confirmrestore.title}</p>
+                <p style={{ fontSize: 15, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: FONT }}>{confirmrestore.title}</p>
               </div>
-
-              <p style={{ fontSize: 12, color: txtMut, lineHeight: 1.6, margin: 0, fontWeight: 400 }}>
-                This item will be <strong style={{ color: txtSec, fontWeight: 500 }}>restored and made active</strong> again. This action can be undone by archiving it again.
+              <p style={{ fontSize: 12, color: textMuted, lineHeight: 1.6, margin: '0 0 24px', fontWeight: 400, fontFamily: FONT }}>
+                This action can be undone by archiving it again at any time.
               </p>
-            </div>
-
-            <div style={{ padding: '0 26px 26px', display: 'flex', gap: 10 }}>
-              <button onClick={() => setconfirmrestore(null)} disabled={!!restoringid}
-                style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: `1px solid ${border}`, background: 'transparent', color: txtMut, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
-                Cancel
-              </button>
-              <button onClick={doRestore} disabled={!!restoringid}
-                style={{ flex: 2, padding: '10px 0', borderRadius: 10, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 500, cursor: restoringid ? 'not-allowed' : 'pointer', opacity: restoringid ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: "'Poppins', sans-serif" }}>
-                {restoringid
-                  ? <><Spinner />Restoring...</>
-                  : <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v5h5" /></svg>Restore</>
-                }
-              </button>
+              <div style={{ display: 'flex', gap: 10, paddingTop: 20, borderTop: `1px solid ${borderColor}` }}>
+                <button onClick={() => setconfirmrestore(null)} disabled={!!restoringid}
+                  style={{ flex: 1, padding: '11px 0', borderRadius: 14, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: FONT }}>
+                  Cancel
+                </button>
+                <button onClick={doRestore} disabled={!!restoringid}
+                  style={{ flex: 2, padding: '11px 0', borderRadius: 14, border: 'none', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 500, cursor: restoringid ? 'not-allowed' : 'pointer', opacity: restoringid ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: FONT }}>
+                  {restoringid
+                    ? <><Spinner />Restoring...</>
+                    : <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v5h5" /></svg>Restore</>
+                  }
+                </button>
+              </div>
             </div>
           </div>
         </div>

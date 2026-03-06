@@ -978,7 +978,8 @@ export default function ListServices() {
   const inactiveCount = services.filter((s) => !s.isActive).length
 
   // ── Theme tokens ──────────────────────────────────────────────────────────
-  const pageBg        = isdarkmode ? '#0d0d0d' : '#f5f5f5'
+  // ✅ FIX: Removed pageBg — no longer sets its own background so it inherits
+  //         the layout's bg (#0f0f0f in dark mode), matching Archived Content exactly.
   const cardBg        = isdarkmode ? '#1a1a1a' : '#ffffff'
   const borderColor   = isdarkmode ? 'rgba(255,255,255,0.08)' : '#e5e7eb'
   const textPrimary   = isdarkmode ? '#f0f0f0' : '#1f2937'
@@ -997,7 +998,7 @@ export default function ListServices() {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
-          background: pageBg,
+          // ✅ No background — inherits layout bg
           fontFamily: "'Poppins', sans-serif",
         }}
       >
@@ -1083,7 +1084,8 @@ export default function ListServices() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: pageBg, fontFamily: "'Poppins', sans-serif" }}>
+    // ✅ FIX: Removed background: pageBg — now inherits layout bg, matching Archived Content
+    <div style={{ minHeight: '100vh', fontFamily: "'Poppins', sans-serif" }}>
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
         * { font-family: 'Poppins', sans-serif !important; box-sizing: border-box; }

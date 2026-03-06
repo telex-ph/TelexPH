@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
+import { useDarkMode } from '../../layout'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type CaseStudyRecord = {
@@ -34,10 +35,10 @@ type FormData = {
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
 const MOCK_RECORDS: CaseStudyRecord[] = [
-  { _id: '1', title: 'AI in Healthcare',       subtitle: 'How AI transforms patient care',               author: 'Dr. Smith', status: 'Active',    tags: ['AI', 'Healthcare', 'Technology'], start: '2026-02-10', cover: '' },
-  { _id: '2', title: 'Blockchain Supply Chain', subtitle: 'Decentralized logistics',                     author: 'Jane Doe',  status: 'Completed', tags: ['Blockchain', 'Logistics'],        start: '2026-02-15', cover: '' },
-  { _id: '3', title: 'Remote Work Analytics',   subtitle: 'Measuring productivity in distributed teams', author: 'Bob Lee',   status: 'Draft',     tags: ['Analytics', 'Remote'],            start: '',           cover: '' },
-  { _id: '4', title: 'Green Energy Systems',    subtitle: 'Renewable integration case',                  author: 'Alice K.',  status: 'Scheduled', tags: ['Energy', 'Sustainability'],       start: '2026-03-01', cover: '' },
+  { _id: '1', title: 'AI in Healthcare',        subtitle: 'How AI transforms patient care',               author: 'Dr. Smith', status: 'Active',    tags: ['AI', 'Healthcare', 'Technology'], start: '2026-02-10', cover: '' },
+  { _id: '2', title: 'Blockchain Supply Chain',  subtitle: 'Decentralized logistics',                     author: 'Jane Doe',  status: 'Completed', tags: ['Blockchain', 'Logistics'],        start: '2026-02-15', cover: '' },
+  { _id: '3', title: 'Remote Work Analytics',    subtitle: 'Measuring productivity in distributed teams', author: 'Bob Lee',   status: 'Draft',     tags: ['Analytics', 'Remote'],            start: '',           cover: '' },
+  { _id: '4', title: 'Green Energy Systems',     subtitle: 'Renewable integration case',                  author: 'Alice K.',  status: 'Scheduled', tags: ['Energy', 'Sustainability'],       start: '2026-03-01', cover: '' },
 ]
 
 const STATUS_OPTIONS   = ['Active', 'Draft', 'Completed', 'Scheduled']
@@ -143,7 +144,7 @@ const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, textMuted
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <div style={{ width: 10, height: 10, borderRadius: 3, background: 'rgba(59,130,246,0.25)' }} />
-          <span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Has Events</span>
+          <span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Has events</span>
         </div>
       </div>
     </div>
@@ -158,21 +159,22 @@ const Backdrop = ({ children }: { children: React.ReactNode }) => (
   </div>
 )
 
-const ConfirmModal = ({ isOpen, isEdit, isLoading, onClose, onConfirm }: {
+const ConfirmModal = ({ isOpen, isEdit, isLoading, onClose, onConfirm, cardBg, borderColor, textPrimary, textMuted }: {
   isOpen: boolean; isEdit: boolean; isLoading: boolean; onClose: () => void; onConfirm: () => void
+  cardBg: string; borderColor: string; textPrimary: string; textMuted: string
 }) => {
   if (!isOpen) return null
   return (
     <Backdrop>
-      <div style={{ background: '#fff', borderRadius: 24, padding: '32px 28px', maxWidth: 420, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', fontFamily: "'Poppins', sans-serif" }}>
-        <h3 style={{ fontSize: 17, fontWeight: 700, color: '#1f2937', margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>
-          {isEdit ? 'Update Case Study?' : 'Create Case Study?'}
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: '32px 28px', maxWidth: 420, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', fontFamily: "'Poppins', sans-serif" }}>
+        <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>
+          {isEdit ? 'Update case study?' : 'Create case study?'}
         </h3>
-        <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 28px', fontFamily: "'Poppins', sans-serif" }}>
+        <p style={{ fontSize: 12, color: textMuted, margin: '0 0 28px', fontFamily: "'Poppins', sans-serif" }}>
           {isEdit ? 'Save the changes to this case study?' : 'Are you sure you want to create this case study?'}
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: '1px solid #e5e7eb', background: 'transparent', color: '#6b7280', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
+          <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
           <button onClick={onConfirm} disabled={isLoading} style={{ flex: 2, padding: '11px 0', borderRadius: 12, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: isLoading ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
             {isLoading ? 'Saving…' : isEdit ? 'Update' : 'Create'}
           </button>
@@ -182,19 +184,20 @@ const ConfirmModal = ({ isOpen, isEdit, isLoading, onClose, onConfirm }: {
   )
 }
 
-const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm }: {
+const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm, cardBg, borderColor, textPrimary, textMuted }: {
   isOpen: boolean; isDeleting: boolean; targetTitle?: string; onClose: () => void; onConfirm: () => void
+  cardBg: string; borderColor: string; textPrimary: string; textMuted: string
 }) => {
   if (!isOpen) return null
   return (
     <Backdrop>
-      <div style={{ background: '#fff', borderRadius: 24, padding: '32px 28px', maxWidth: 420, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', fontFamily: "'Poppins', sans-serif" }}>
-        <h3 style={{ fontSize: 17, fontWeight: 700, color: '#1f2937', margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>Delete Case Study?</h3>
-        <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>You are about to delete:</p>
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: '32px 28px', maxWidth: 420, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', fontFamily: "'Poppins', sans-serif" }}>
+        <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>Delete case study?</h3>
+        <p style={{ fontSize: 12, color: textMuted, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>You are about to delete:</p>
         <p style={{ fontSize: 13, fontWeight: 600, color: '#800000', margin: '0 0 6px', fontFamily: "'Poppins', sans-serif" }}>"{targetTitle}"</p>
-        <p style={{ fontSize: 11, color: '#9ca3af', margin: '0 0 28px', fontFamily: "'Poppins', sans-serif" }}>This action cannot be undone.</p>
+        <p style={{ fontSize: 11, color: textMuted, margin: '0 0 28px', fontFamily: "'Poppins', sans-serif" }}>This action cannot be undone.</p>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: '1px solid #e5e7eb', background: 'transparent', color: '#6b7280', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
+          <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
           <button onClick={onConfirm} disabled={isDeleting} style={{ flex: 2, padding: '11px 0', borderRadius: 12, border: 'none', background: '#dc2626', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: isDeleting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
             {isDeleting ? 'Deleting…' : 'Delete'}
           </button>
@@ -204,39 +207,40 @@ const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm }: {
   )
 }
 
-const PreviewModal = ({ isOpen, data, onClose, onEdit }: {
+const PreviewModal = ({ isOpen, data, onClose, onEdit, cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }: {
   isOpen: boolean; data: CaseStudyRecord | null; onClose: () => void; onEdit: (r: CaseStudyRecord) => void
+  cardBg: string; borderColor: string; textPrimary: string; textMuted: string; textSecondary: string; subtleBg: string
 }) => {
   if (!isOpen || !data) return null
   const st = getStatusStyle(data.status)
   return (
     <Backdrop>
-      <div style={{ background: '#fff', borderRadius: 24, maxWidth: 560, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', overflow: 'hidden', maxHeight: '90vh', overflowY: 'auto', fontFamily: "'Poppins', sans-serif" }}>
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 560, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', overflow: 'hidden', maxHeight: '90vh', overflowY: 'auto', fontFamily: "'Poppins', sans-serif" }}>
         <div style={{ height: 160, background: data.cover ? `url(${data.cover}) center/cover` : 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))', position: 'relative' }}>
           <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, width: 34, height: 34, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
           <div style={{ position: 'absolute', bottom: 12, left: 16 }}>
-            <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px', borderRadius: 6, background: 'rgba(128,0,0,0.85)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
+            <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', padding: '4px 10px', borderRadius: 6, background: 'rgba(128,0,0,0.85)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
           </div>
         </div>
         <div style={{ padding: '22px 26px 30px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
             <div>
-              <h2 style={{ fontSize: 19, fontWeight: 700, color: '#1f2937', margin: '0 0 5px', fontFamily: "'Poppins', sans-serif" }}>{data.title}</h2>
-              {data.subtitle && <p style={{ fontSize: 12, color: '#6b7280', margin: 0, fontFamily: "'Poppins', sans-serif" }}>{data.subtitle}</p>}
+              <h2 style={{ fontSize: 19, fontWeight: 700, color: textPrimary, margin: '0 0 5px', fontFamily: "'Poppins', sans-serif" }}>{data.title}</h2>
+              {data.subtitle && <p style={{ fontSize: 12, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{data.subtitle}</p>}
             </div>
-            <span style={{ fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap', flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{data.status}</span>
+            <span style={{ fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{data.status}</span>
           </div>
-          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 16px', fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: '#6b7280', fontFamily: "'Poppins', sans-serif" }}>{data.author}</strong></p>
+          <p style={{ fontSize: 12, color: textMuted, margin: '0 0 16px', fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.author}</strong></p>
           {data.tags.length > 0 && (
-            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 16 }}>
-              {data.tags.map(t => <span key={t} style={{ fontSize: 10, padding: '3px 11px', borderRadius: 20, background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' as const, marginBottom: 16 }}>
+              {data.tags.map(t => <span key={t} style={{ fontSize: 10, padding: '3px 11px', borderRadius: 20, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
             </div>
           )}
-          {data.start && <p style={{ fontSize: 11, color: '#6b7280', margin: '0 0 22px', fontFamily: "'Poppins', sans-serif" }}>📅 Started: <strong style={{ color: '#6b7280', fontFamily: "'Poppins', sans-serif" }}>{data.start}</strong></p>}
+          {data.start && <p style={{ fontSize: 11, color: textMuted, margin: '0 0 22px', fontFamily: "'Poppins', sans-serif" }}>📅 Started: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.start}</strong></p>}
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: '1px solid #e5e7eb', background: 'transparent', color: '#6b7280', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Close</button>
+            <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Close</button>
             <button onClick={() => { onEdit(data); onClose() }} style={{ flex: 2, padding: '11px 0', borderRadius: 12, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Edit this study</button>
           </div>
         </div>
@@ -245,9 +249,10 @@ const PreviewModal = ({ isOpen, data, onClose, onEdit }: {
   )
 }
 
-const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthChange, onDateClick }: {
+const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthChange, onDateClick, cardBg, borderColor, textPrimary, textMuted, subtleBg }: {
   isOpen: boolean; records: CaseStudyRecord[]; selectedMonthIndex: number
   onClose: () => void; onMonthChange: (i: number) => void; onDateClick: (dateStr: string) => void
+  cardBg: string; borderColor: string; textPrimary: string; textMuted: string; subtleBg: string
 }) => {
   if (!isOpen) return null
   const now = new Date()
@@ -262,25 +267,25 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
 
   return (
     <Backdrop>
-      <div style={{ background: '#fff', borderRadius: 24, maxWidth: 560, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', overflow: 'hidden', fontFamily: "'Poppins', sans-serif" }}>
-        <div style={{ padding: '18px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 560, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', overflow: 'hidden', fontFamily: "'Poppins', sans-serif" }}>
+        <div style={{ padding: '18px 24px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button onClick={() => onMonthChange(m === 0 ? 11 : m - 1)} style={{ width: 32, height: 32, borderRadius: 10, border: '1px solid #e5e7eb', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="13" height="13" fill="none" stroke="#6b7280" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
+            <button onClick={() => onMonthChange(m === 0 ? 11 : m - 1)} style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: textMuted }}>
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
             </button>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1f2937', margin: 0, minWidth: 160, textAlign: 'center', fontFamily: "'Poppins', sans-serif" }}>{MONTHS[m]} {y}</h3>
-            <button onClick={() => onMonthChange(m === 11 ? 0 : m + 1)} style={{ width: 32, height: 32, borderRadius: 10, border: '1px solid #e5e7eb', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="13" height="13" fill="none" stroke="#6b7280" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: textPrimary, margin: 0, minWidth: 160, textAlign: 'center', fontFamily: "'Poppins', sans-serif" }}>{MONTHS[m]} {y}</h3>
+            <button onClick={() => onMonthChange(m === 11 ? 0 : m + 1)} style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: textMuted }}>
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
             </button>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: '#f3f4f6', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: subtleBg, color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
         <div style={{ padding: '18px 24px 26px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 8 }}>
             {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d, i) => (
-              <div key={i} style={{ textAlign: 'center', fontSize: 10, fontWeight: 600, color: '#9ca3af', fontFamily: "'Poppins', sans-serif" }}>{d}</div>
+              <div key={i} style={{ textAlign: 'center', fontSize: 10, fontWeight: 600, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{d}</div>
             ))}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4 }}>
@@ -292,27 +297,27 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
               return (
                 <div key={i} onClick={() => evs.length ? onDateClick(ds) : undefined}
                   style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: evs.length ? 'pointer' : 'default',
-                    background: isToday ? '#800000' : evs.length ? 'rgba(59,130,246,0.10)' : '#f9fafb',
-                    border: isToday ? 'none' : evs.length ? '1px solid rgba(59,130,246,0.2)' : '1px solid transparent' }}>
-                  <span style={{ fontSize: 12, fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : evs.length ? '#3b82f6' : '#6b7280', fontFamily: "'Poppins', sans-serif" }}>{d}</span>
+                    background: isToday ? '#800000' : evs.length ? 'rgba(59,130,246,0.10)' : subtleBg,
+                    border: isToday ? 'none' : evs.length ? '1px solid rgba(59,130,246,0.2)' : `1px solid transparent` }}>
+                  <span style={{ fontSize: 12, fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : evs.length ? '#3b82f6' : textMuted, fontFamily: "'Poppins', sans-serif" }}>{d}</span>
                   {evs.length > 0 && <div style={{ width: 5, height: 5, borderRadius: '50%', background: isToday ? '#fff' : '#3b82f6', marginTop: 2 }} />}
                 </div>
               )
             })}
           </div>
           {monthEvents.length > 0 && (
-            <div style={{ marginTop: 20, paddingTop: 18, borderTop: '1px solid #e5e7eb' }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#6b7280', margin: '0 0 10px', fontFamily: "'Poppins', sans-serif" }}>Events this month</p>
+            <div style={{ marginTop: 20, paddingTop: 18, borderTop: `1px solid ${borderColor}` }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: textMuted, margin: '0 0 10px', fontFamily: "'Poppins', sans-serif" }}>Events this month</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {monthEvents.map(r => {
                   const st = getStatusStyle(r.status)
                   return (
-                    <div key={r._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 13px', borderRadius: 12, background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+                    <div key={r._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 13px', borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
                       <div>
-                        <p style={{ fontSize: 12, fontWeight: 500, color: '#1f2937', margin: '0 0 2px', fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                        <p style={{ fontSize: 10, color: '#6b7280', margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {r.author}</p>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: '0 0 2px', fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {r.author}</p>
                       </div>
-                      <span style={{ fontSize: 9, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
+                      <span style={{ fontSize: 9, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                     </div>
                   )
                 })}
@@ -325,20 +330,21 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
   )
 }
 
-const DateModal = ({ isOpen, dateStr, studies, onClose, onSelectStudy }: {
+const DateModal = ({ isOpen, dateStr, studies, onClose, onSelectStudy, cardBg, borderColor, textPrimary, textMuted, subtleBg }: {
   isOpen: boolean; dateStr: string; studies: CaseStudyRecord[]
   onClose: () => void; onSelectStudy: (r: CaseStudyRecord) => void
+  cardBg: string; borderColor: string; textPrimary: string; textMuted: string; subtleBg: string
 }) => {
   if (!isOpen) return null
   return (
     <Backdrop>
-      <div style={{ background: '#fff', borderRadius: 24, maxWidth: 460, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', overflow: 'hidden', fontFamily: "'Poppins', sans-serif" }}>
-        <div style={{ padding: '18px 22px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 460, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', overflow: 'hidden', fontFamily: "'Poppins', sans-serif" }}>
+        <div style={{ padding: '18px 22px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1f2937', margin: 0, fontFamily: "'Poppins', sans-serif" }}>Events on {dateStr}</h3>
-            <p style={{ fontSize: 11, color: '#6b7280', margin: '3px 0 0', fontFamily: "'Poppins', sans-serif" }}>{studies.length} case {studies.length === 1 ? 'study' : 'studies'} scheduled</p>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Events on {dateStr}</h3>
+            <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontFamily: "'Poppins', sans-serif" }}>{studies.length} case {studies.length === 1 ? 'study' : 'studies'} scheduled</p>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: '#f3f4f6', color: '#6b7280', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: subtleBg, color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -346,15 +352,15 @@ const DateModal = ({ isOpen, dateStr, studies, onClose, onSelectStudy }: {
           {studies.map(r => {
             const st = getStatusStyle(r.status)
             return (
-              <div key={r._id} style={{ padding: '12px 14px', borderRadius: 14, border: '1px solid #e5e7eb', background: '#f9fafb', cursor: 'pointer' }}
+              <div key={r._id} style={{ padding: '12px 14px', borderRadius: 14, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer' }}
                 onClick={() => { onSelectStudy(r); onClose() }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#1f2937', margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                    {r.subtitle && <p style={{ fontSize: 11, color: '#6b7280', margin: '0 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
-                    <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: '#6b7280', fontFamily: "'Poppins', sans-serif" }}>{r.author}</strong></p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
+                    {r.subtitle && <p style={{ fontSize: 11, color: textMuted, margin: '0 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
+                    <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{r.author}</strong></p>
                   </div>
-                  <span style={{ fontSize: 9, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap', flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
+                  <span style={{ fontSize: 9, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                 </div>
               </div>
             )
@@ -376,17 +382,19 @@ export default function CaseStudies() {
   const formRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  // ── Theme (light mode default) ─────────────────────────────────────────────
-  const dark = false
-  const bg          = dark ? '#0f172a' : '#f8fafc'
-  const cardBg      = dark ? '#1e293b' : '#ffffff'
-  const subtleBg    = dark ? '#1e293b' : '#f9fafb'
-  const borderColor = dark ? '#334155' : '#e5e7eb'
-  const textPrimary  = dark ? '#f1f5f9' : '#1f2937'
-  const textSecondary = dark ? '#94a3b8' : '#374151'
-  const textMuted   = dark ? '#64748b' : '#6b7280'
-  const inputBg     = dark ? '#0f172a' : '#ffffff'
-  const hoverBg     = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'
+  // ── Dark mode from context (same as ListArchivedServices) ──────────────────
+  const { isdarkmode: dark } = useDarkMode()
+
+  // ── Theme tokens (mirrors ListArchivedServices exactly) ────────────────────
+  const bg            = dark ? '#0f0f0f'                      : '#f8fafc'
+  const cardBg        = dark ? '#1a1a1a'                      : '#ffffff'
+  const subtleBg      = dark ? 'rgba(255,255,255,0.03)'       : '#f9fafb'
+  const borderColor   = dark ? 'rgba(255,255,255,0.08)'       : '#e5e7eb'
+  const textPrimary   = dark ? '#f0f0f0'                      : '#1f2937'
+  const textSecondary = dark ? '#9ca3af'                      : '#374151'
+  const textMuted     = dark ? '#6b7280'                      : '#6b7280'
+  const inputBg       = dark ? '#161616'                      : '#ffffff'
+  const hoverBg       = dark ? 'rgba(255,255,255,0.04)'       : 'rgba(0,0,0,0.02)'
 
   // ── Records ────────────────────────────────────────────────────────────────
   const [records, setRecords] = useState<CaseStudyRecord[]>(MOCK_RECORDS)
@@ -399,10 +407,10 @@ export default function CaseStudies() {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   // ── Modal states ───────────────────────────────────────────────────────────
-  const [showConfirm, setShowConfirm]   = useState(false)
-  const [showDelete, setShowDelete]     = useState(false)
-  const [showPreview, setShowPreview]   = useState(false)
-  const [showCalendar, setShowCalendar] = useState(false)
+  const [showConfirm, setShowConfirm]     = useState(false)
+  const [showDelete, setShowDelete]       = useState(false)
+  const [showPreview, setShowPreview]     = useState(false)
+  const [showCalendar, setShowCalendar]   = useState(false)
   const [showDateModal, setShowDateModal] = useState(false)
 
   // ── Loading ────────────────────────────────────────────────────────────────
@@ -410,17 +418,17 @@ export default function CaseStudies() {
   const [isDeleting, setIsDeleting] = useState(false)
 
   // ── Preview / Delete / Date ────────────────────────────────────────────────
-  const [previewData, setPreviewData]               = useState<CaseStudyRecord | null>(null)
-  const [deleteTarget, setDeleteTarget]             = useState<CaseStudyRecord | null>(null)
-  const [selectedDate, setSelectedDate]             = useState('')
+  const [previewData, setPreviewData]                 = useState<CaseStudyRecord | null>(null)
+  const [deleteTarget, setDeleteTarget]               = useState<CaseStudyRecord | null>(null)
+  const [selectedDate, setSelectedDate]               = useState('')
   const [selectedDateStudies, setSelectedDateStudies] = useState<CaseStudyRecord[]>([])
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState(new Date().getMonth())
+  const [selectedMonthIndex, setSelectedMonthIndex]   = useState(new Date().getMonth())
 
   // ── Library ────────────────────────────────────────────────────────────────
-  const [search, setSearch]               = useState('')
-  const [sortBy, setSortBy]               = useState('date-newest')
-  const [viewMode, setViewMode]           = useState<'grid' | 'list'>('grid')
-  const [activeTab, setActiveTab]         = useState<'All' | 'Active' | 'Draft' | 'Completed' | 'Scheduled'>('All')
+  const [search, setSearch]                 = useState('')
+  const [sortBy, setSortBy]                 = useState('date-newest')
+  const [viewMode, setViewMode]             = useState<'grid' | 'list'>('grid')
+  const [activeTab, setActiveTab]           = useState<'All' | 'Active' | 'Draft' | 'Completed' | 'Scheduled'>('All')
   const [activeTagFilter, setActiveTagFilter] = useState('All')
 
   // ── Toast ──────────────────────────────────────────────────────────────────
@@ -467,11 +475,10 @@ export default function CaseStudies() {
     reader.readAsDataURL(file)
   }
 
-  // ── inp helper ─────────────────────────────────────────────────────────────
   const inp = (overrides: React.CSSProperties = {}): React.CSSProperties => ({
     width: '100%', padding: '8px 11px', borderRadius: 8,
     border: `1px solid ${borderColor}`, background: inputBg, color: textPrimary,
-    fontSize: 12, outline: 'none', fontWeight: 400, boxSizing: 'border-box',
+    fontSize: 12, outline: 'none', fontWeight: 400, boxSizing: 'border-box' as const,
     transition: 'border-color .15s', fontFamily: "'Poppins', sans-serif", ...overrides,
   })
 
@@ -486,13 +493,8 @@ export default function CaseStudies() {
     setTimeout(() => {
       const record: CaseStudyRecord = {
         _id: editingId || String(Date.now()),
-        title: form.title,
-        subtitle: form.subtitle,
-        author: form.author,
-        status: form.status,
-        tags: form.tags,
-        start: form.startDate,
-        cover: coverPreview,
+        title: form.title, subtitle: form.subtitle, author: form.author,
+        status: form.status, tags: form.tags, start: form.startDate, cover: coverPreview,
       }
       if (isEditMode && editingId) {
         setRecords(prev => prev.map(r => r._id === editingId ? record : r))
@@ -562,8 +564,8 @@ export default function CaseStudies() {
       return true
     })
     .sort((a, b) => {
-      if (sortBy === 'alpha-asc')  return a.title.localeCompare(b.title)
-      if (sortBy === 'alpha-desc') return b.title.localeCompare(a.title)
+      if (sortBy === 'alpha-asc')   return a.title.localeCompare(b.title)
+      if (sortBy === 'alpha-desc')  return b.title.localeCompare(a.title)
       if (sortBy === 'date-oldest') return (a.start || '').localeCompare(b.start || '')
       return (b.start || '').localeCompare(a.start || '')
     })
@@ -578,8 +580,11 @@ export default function CaseStudies() {
   }
   const tileProps = { subtleBg, borderColor, textMuted }
 
+  // shared modal theme props
+  const modalTheme = { cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }
+
   return (
-    <div style={{ minHeight: '100vh', padding: '28px 24px', fontFamily: "'Poppins', sans-serif", background: bg }}>
+    <div style={{ minHeight: '100vh', padding: '28px 24px', fontFamily: "'Poppins', sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         @keyframes slideIn { from { opacity:0; transform:translateY(-10px) } to { opacity:1; transform:translateY(0) } }
@@ -596,11 +601,11 @@ export default function CaseStudies() {
 
       {toast && <Toast message={toast.msg} type={toast.type} />}
 
-      <ConfirmModal isOpen={showConfirm} isEdit={isEditMode} isLoading={isLoading} onClose={() => setShowConfirm(false)} onConfirm={handleSubmit} />
-      <DeleteModal isOpen={showDelete} isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} />
-      <PreviewModal isOpen={showPreview} data={previewData} onClose={() => setShowPreview(false)} onEdit={handleEdit} />
-      <CalendarModal isOpen={showCalendar} records={records} selectedMonthIndex={selectedMonthIndex} onClose={() => setShowCalendar(false)} onMonthChange={setSelectedMonthIndex} onDateClick={handleDayClick} />
-      <DateModal isOpen={showDateModal} dateStr={selectedDate} studies={selectedDateStudies} onClose={() => setShowDateModal(false)} onSelectStudy={(r) => { setPreviewData(r); setShowPreview(true) }} />
+      <ConfirmModal   isOpen={showConfirm}   isEdit={isEditMode} isLoading={isLoading}  onClose={() => setShowConfirm(false)}   onConfirm={handleSubmit}       {...modalTheme} />
+      <DeleteModal    isOpen={showDelete}    isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
+      <PreviewModal   isOpen={showPreview}   data={previewData}  onClose={() => setShowPreview(false)}  onEdit={handleEdit}                {...modalTheme} />
+      <CalendarModal  isOpen={showCalendar}  records={records}   selectedMonthIndex={selectedMonthIndex} onClose={() => setShowCalendar(false)} onMonthChange={setSelectedMonthIndex} onDateClick={handleDayClick} {...modalTheme} />
+      <DateModal      isOpen={showDateModal} dateStr={selectedDate} studies={selectedDateStudies} onClose={() => setShowDateModal(false)} onSelectStudy={(r) => { setPreviewData(r); setShowPreview(true) }} {...modalTheme} />
 
       <div style={{ maxWidth: 1200, margin: '0 auto' }} ref={formRef}>
 
@@ -608,10 +613,10 @@ export default function CaseStudies() {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${borderColor}` }}>
           <div>
             <h1 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, lineHeight: 1.3, fontFamily: "'Poppins', sans-serif" }}>
-              Case Study
+              Case study
             </h1>
             <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
-              Manage Your Case Studies / Create, Edit, and Organize Your Research Projects with Ease
+              Manage your case studies / Create, edit, and organize your research projects with ease
             </p>
           </div>
         </div>
@@ -622,7 +627,7 @@ export default function CaseStudies() {
           {/* Quick Stats */}
           <div style={{ ...card, padding: '22px 22px' }}>
             <div style={{ marginBottom: 18 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Quick Stats</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Quick stats</p>
               <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Current system overview and counts</p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -641,7 +646,7 @@ export default function CaseStudies() {
           <div style={{ ...card, padding: '22px 22px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Timeline & Events</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Timeline & events</p>
                 <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Scheduled activities and research milestones</p>
               </div>
               <button onClick={() => setShowCalendar(true)} className="icon-btn" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: textMuted, flexShrink: 0 }}>
@@ -665,7 +670,7 @@ export default function CaseStudies() {
         <div style={{ ...card, padding: '22px 22px', marginBottom: 16 }}>
           <div style={{ marginBottom: 18 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-              {isEditMode ? 'Edit Case Study' : 'Create New Case Study'}
+              {isEditMode ? 'Edit case study' : 'Create new case study'}
             </p>
             <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
               {isEditMode ? 'Update the fields below and save your changes' : 'Fill in the details below to add a new case study'}
@@ -717,7 +722,7 @@ export default function CaseStudies() {
               </div>
               <div>
                 <span style={lbl}>Status <span style={{ color: '#800000' }}>*</span></span>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
                   {STATUS_OPTIONS.map(s => {
                     const st = getStatusStyle(s); const sel = form.status === s
                     return (
@@ -738,7 +743,7 @@ export default function CaseStudies() {
               <span style={lbl}>Categories <span style={{ color: '#800000' }}>*</span></span>
               {form.tags.length > 0 && <button onClick={() => updateForm('tags', [])} style={{ fontSize: 10, color: '#800000', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Clear</button>}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
               {CATEGORY_OPTIONS.map(t => {
                 const sel = form.tags.includes(t)
                 return (
@@ -767,11 +772,11 @@ export default function CaseStudies() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 13 }}>
             <div>
               <span style={lbl}>Challenge <span style={{ color: '#800000' }}>*</span></span>
-              <textarea style={inp({ minHeight: 72, resize: 'vertical' })} placeholder="Describe the challenge..." value={form.challenge} onChange={e => updateForm('challenge', e.target.value)} />
+              <textarea style={inp({ minHeight: 72, resize: 'vertical' as const })} placeholder="Describe the challenge..." value={form.challenge} onChange={e => updateForm('challenge', e.target.value)} />
             </div>
             <div>
               <span style={lbl}>Solution <span style={{ color: '#800000' }}>*</span></span>
-              <textarea style={inp({ minHeight: 72, resize: 'vertical' })} placeholder="Describe the solution..." value={form.solution} onChange={e => updateForm('solution', e.target.value)} />
+              <textarea style={inp({ minHeight: 72, resize: 'vertical' as const })} placeholder="Describe the solution..." value={form.solution} onChange={e => updateForm('solution', e.target.value)} />
             </div>
           </div>
 
@@ -794,7 +799,7 @@ export default function CaseStudies() {
                   </div>
                   <div>
                     <span style={{ ...lbl, marginBottom: 4 }}>Content {i + 1}</span>
-                    <textarea style={inp({ fontSize: 11, minHeight: 50, resize: 'none' })} placeholder={`Content ${i + 1}`} value={s.content} onChange={e => updateSection(i, 'content', e.target.value)} />
+                    <textarea style={inp({ fontSize: 11, minHeight: 50, resize: 'none' as const })} placeholder={`Content ${i + 1}`} value={s.content} onChange={e => updateSection(i, 'content', e.target.value)} />
                   </div>
                   {form.sections.length > 1 && (
                     <button onClick={() => removeSection(i)} className="icon-btn"
@@ -824,20 +829,20 @@ export default function CaseStudies() {
         <div style={{ ...card, overflow: 'hidden' }}>
 
           {/* Toolbar */}
-          <div style={{ padding: '13px 18px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ padding: '13px 18px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' as const }}>
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Case study library</p>
               <p style={{ fontSize: 10, color: textMuted, margin: '2px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>All registered analysis and records</p>
             </div>
             <div style={{ flex: 1 }} />
             <div style={{ position: 'relative' }}>
-              <svg style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' }} width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input type="text" placeholder="Search by title or author..." value={search} onChange={e => setSearch(e.target.value)} style={inp({ width: 210, paddingLeft: 30, fontSize: 11 })} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 10, color: textMuted, fontWeight: 400, whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>Sort by</span>
+              <span style={{ fontSize: 10, color: textMuted, fontWeight: 400, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>Sort by</span>
               <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={inp({ width: 'auto', padding: '7px 10px', fontSize: 11 })}>
                 <option value="date-newest">Newest first</option>
                 <option value="date-oldest">Oldest first</option>
@@ -860,9 +865,9 @@ export default function CaseStudies() {
           <div style={{ display: 'flex', padding: '0 18px', borderBottom: `1px solid ${borderColor}`, background: subtleBg }}>
             {(['All', 'Active', 'Draft', 'Completed', 'Scheduled'] as const).map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                style={{ padding: '9px 12px', border: 'none', borderBottom: activeTab === tab ? '2px solid #800000' : '2px solid transparent', background: 'transparent', color: activeTab === tab ? '#800000' : textMuted, fontSize: 11, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>
+                style={{ padding: '9px 12px', border: 'none', borderBottom: activeTab === tab ? '2px solid #800000' : '2px solid transparent', background: 'transparent', color: activeTab === tab ? '#800000' : textMuted, fontSize: 11, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>
                 {tab}
-                <span style={{ marginLeft: 5, fontSize: 9, padding: '1px 5px', borderRadius: 10, background: activeTab === tab ? 'rgba(128,0,0,0.10)' : 'rgba(0,0,0,0.05)', color: activeTab === tab ? '#800000' : textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>
+                <span style={{ marginLeft: 5, fontSize: 9, padding: '1px 5px', borderRadius: 10, background: activeTab === tab ? 'rgba(128,0,0,0.10)' : dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: activeTab === tab ? '#800000' : textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>
                   {counts[tab as keyof typeof counts]}
                 </span>
               </button>
@@ -874,8 +879,8 @@ export default function CaseStudies() {
           </div>
 
           {/* Category filter */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderBottom: `1px solid ${borderColor}`, flexWrap: 'wrap', background: cardBg }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: textMuted, marginRight: 2, whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>Category:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderBottom: `1px solid ${borderColor}`, flexWrap: 'wrap' as const, background: cardBg }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: textMuted, marginRight: 2, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>Category:</span>
             {LIB_CATEGORIES.map(tag => {
               const sel = activeTagFilter === tag
               return (
@@ -907,16 +912,16 @@ export default function CaseStudies() {
                   <div key={r._id} className="cs-card" style={{ border: `1px solid ${isBeingEdited ? '#800000' : borderColor}`, borderRadius: 14, overflow: 'hidden', background: cardBg, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: 110, background: r.cover ? `url(${r.cover}) center/cover` : 'linear-gradient(135deg,rgba(128,0,0,0.12),rgba(128,0,0,0.03))', position: 'relative', flexShrink: 0 }}>
                       <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
-                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 5, background: 'rgba(128,0,0,0.88)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
+                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 5, background: 'rgba(128,0,0,0.88)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
                       </div>
                       {isBeingEdited && <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: '#800000', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Editing</div>}
                     </div>
                     <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                      {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
+                      <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
+                      {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
                       <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>By <span style={{ color: textSecondary, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{r.author}</span></p>
                       {r.tags.length > 0 && (
-                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' as const }}>
                           {r.tags.slice(0, 3).map(t => <span key={t} style={{ fontSize: 8, fontWeight: 500, padding: '2px 7px', borderRadius: 4, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
                           {r.tags.length > 3 && <span style={{ fontSize: 9, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>+{r.tags.length - 3}</span>}
                         </div>
@@ -942,24 +947,24 @@ export default function CaseStudies() {
           {/* List view */}
           {filtered.length > 0 && viewMode === 'list' && (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 110px 130px', gap: 14, padding: '9px 18px', background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
-                <span>Title</span><span>Author</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' }}>Actions</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 110px 130px', gap: 14, padding: '9px 18px', background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: 'uppercase' as const, letterSpacing: '0.07em', borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
+                <span>Title</span><span>Author</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' as const }}>Actions</span>
               </div>
               {filtered.map((r, i) => {
                 const st = getStatusStyle(r.status)
                 return (
                   <div key={r._id} className="arc-row" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 110px 130px', gap: 14, alignItems: 'center', padding: '11px 18px', borderBottom: i < filtered.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                      {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
+                      <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
+                      {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
                     </div>
-                    <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.author}</p>
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', minWidth: 0 }}>
+                    <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.author}</p>
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' as const, minWidth: 0 }}>
                       {r.tags.slice(0, 2).map(t => <span key={t} style={{ fontSize: 8, padding: '2px 6px', borderRadius: 4, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
                       {r.tags.length > 2 && <span style={{ fontSize: 9, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>+{r.tags.length - 2}</span>}
                     </div>
-                    <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 9px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, display: 'inline-block', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
-                    <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
+                    <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 9px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, display: 'inline-block', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
+                    <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' as const }}>
                       <button onClick={() => { setPreviewData(r); setShowPreview(true) }} style={{ padding: '4px 9px', borderRadius: 7, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>View</button>
                       <button onClick={() => handleEdit(r)} style={{ padding: '4px 9px', borderRadius: 7, border: 'none', background: '#800000', color: '#fff', fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                       <button onClick={() => { setDeleteTarget(r); setShowDelete(true) }} style={{ padding: '4px 8px', borderRadius: 7, border: '1px solid rgba(220,38,38,0.3)', background: 'rgba(220,38,38,0.07)', color: '#dc2626', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>

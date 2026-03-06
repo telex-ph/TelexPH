@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 
+// ── Types ────────────────────────────────────────────────────────────────────
 interface ActivityLog {
   _id: string
   action: 'CREATED' | 'UPDATED' | 'DELETED' | 'ARCHIVED' | 'RESTORED' | 'LOGIN' | 'LOGOUT'
@@ -24,32 +25,78 @@ interface MiniActivityLogsProps {
   onClose?: () => void
 }
 
-export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onClose }: MiniActivityLogsProps) {
-  const [logs, setlogs] = useState<ActivityLog[]>([])
+const ACTION_COLORS: Record<string, string> = {
+  CREATED:  '#00A651',
+  UPDATED:  '#0066CC',
+  DELETED:  '#8B0000',
+  ARCHIVED: '#B45309',
+  RESTORED: '#0891B2',
+  LOGIN:    '#4B0082',
+  LOGOUT:   '#996633',
+}
+
+const ACTION_ICONS: Record<string, React.ReactElement> = {
+  LOGIN: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+    </svg>
+  ),
+  LOGOUT: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+  ),
+  CREATED: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+  ),
+  UPDATED: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+  ),
+  DELETED: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+    </svg>
+  ),
+  ARCHIVED: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+    </svg>
+  ),
+  RESTORED: (
+    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    </svg>
+  ),
+}
+
+export default function MiniActivityLogs({
+  isdarkmode,
+  onUnreadCountChange,
+  onClose,
+}: MiniActivityLogsProps) {
+  const [logs, setlogs]           = useState<ActivityLog[]>([])
   const [isloading, setisloading] = useState(false)
 
-  useEffect(() => {
-    fetchRecentLogs()
-    markAllAsRead()
-  }, [])
+  const cardBg      = isdarkmode ? '#1a1a1a'                : '#ffffff'
+  const subtleBg    = isdarkmode ? '#202020'                : '#f9fafb'
+  const borderColor = isdarkmode ? 'rgba(255,255,255,0.08)' : '#e5e7eb'
+  const textPrimary = isdarkmode ? '#f0f0f0'                : '#1f2937'
+  const textMuted   = isdarkmode ? '#6b7280'                : '#6b7280'
 
-  const fetchRecentLogs = async () => {
+  const fetchRecentLogs = useCallback(async () => {
     try {
       setisloading(true)
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      
       const response = await fetch(`${apiUrl}/activity-logs?limit=10&order=desc`, {
         method: 'GET',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch activity logs')
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch activity logs')
       const data = await response.json()
       setlogs(data.logs || [])
     } catch (err) {
@@ -57,278 +104,389 @@ export default function MiniActivityLogs({ isdarkmode, onUnreadCountChange, onCl
     } finally {
       setisloading(false)
     }
-  }
+  }, [])
 
-  const markAllAsRead = async () => {
+  const markAllAsRead = useCallback(async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      
       await fetch(`${apiUrl}/activity-logs/mark-as-read`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}), // Empty body marks all as read
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
       })
-
-      // Notify parent component to update unread count
-      if (onUnreadCountChange) {
-        onUnreadCountChange(0)
-      }
+      if (onUnreadCountChange) onUnreadCountChange(0)
     } catch (err) {
       console.error('Error marking logs as read:', err)
     }
+  }, [onUnreadCountChange])
+
+  useEffect(() => {
+    fetchRecentLogs()
+    markAllAsRead()
+  }, [fetchRecentLogs, markAllAsRead])
+
+  const formatAction = (action: string): string =>
+    action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
+
+  const formatModuleName = (module: string): string => {
+    const map: Record<string, string> = {
+      CASESTUDY:        'Case Studies',
+      BLOGS:            'Blogs',
+      ACCOUNT_SETTINGS: 'Account Settings',
+      AUTH:             'Authentication',
+      SERVICES:         'Services',
+    }
+    return map[module] || module
   }
 
   const getTimestamp = (log: ActivityLog): string => {
     switch (log.action) {
-      case 'CREATED':
-        return log.createdAt || ''
-      case 'UPDATED':
-        return log.updatedAt || ''
-      case 'DELETED':
-        return log.deletedAt || ''
-      case 'ARCHIVED':
-        return log.deletedAt || log.updatedAt || log.createdAt || ''
-      case 'RESTORED':
-        return log.restoredAt || log.updatedAt || log.createdAt || ''
-      case 'LOGIN':
-        return log.loggedInAt || ''
-      case 'LOGOUT':
-        return log.loggedOutAt || ''
-      default:
-        return log.createdAt || log.updatedAt || ''
+      case 'LOGIN':    return log.loggedInAt  || log.createdAt || ''
+      case 'LOGOUT':   return log.loggedOutAt || log.createdAt || ''
+      case 'CREATED':  return log.createdAt   || ''
+      case 'UPDATED':  return log.updatedAt   || ''
+      case 'DELETED':  return log.deletedAt   || ''
+      case 'ARCHIVED': return log.deletedAt   || log.updatedAt || log.createdAt || ''
+      case 'RESTORED': return log.restoredAt  || log.updatedAt || log.createdAt || ''
+      default:         return log.createdAt   || log.updatedAt || ''
     }
   }
 
-  const formatTimestamp = (timestamp: string) => {
+  const getTimeAgo = (timestamp: string): string => {
     if (!timestamp) return 'N/A'
-    
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
-  const formatAction = (action: string) => {
-    return action.charAt(0) + action.slice(1).toLowerCase()
-  }
-
-  const formatModuleName = (module: string) => {
-    const moduleMap: { [key: string]: string } = {
-      'CASESTUDY': 'Casestudy',
-      'BLOGS': 'Blogs',
-      'ACCOUNT_SETTINGS': 'Settings',
-      'AUTH': 'Auth',
-      'SERVICES': 'Services'
-    }
-    return moduleMap[module] || module
-  }
-
-  const getactionbadgecolor = (action: string) => {
-    const colors: { [key: string]: string } = {
-      'CREATED': 'bg-[#00A651]',
-      'UPDATED': 'bg-[#0066CC]',
-      'DELETED': 'bg-[#8B0000]',
-      'ARCHIVED': 'bg-[#B45309]',
-      'RESTORED': 'bg-[#0E7490]',
-      'LOGIN': 'bg-[#4B0082]',
-      'LOGOUT': 'bg-[#996633]'
-    }
-    return colors[action] || 'bg-gray-500'
+    const diff  = Date.now() - new Date(timestamp).getTime()
+    const mins  = Math.floor(diff / 60000)
+    const hours = Math.floor(diff / 3600000)
+    const days  = Math.floor(diff / 86400000)
+    if (mins  < 1)  return 'Just now'
+    if (mins  < 60) return `${mins}m ago`
+    if (hours < 24) return `${hours}h ago`
+    if (days  < 7)  return `${days}d ago`
+    return new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
   const getContentTitle = (log: ActivityLog): string => {
     if (!log.details) return ''
-    
     if (log.module === 'BLOGS' || log.module === 'CASESTUDY') {
       if (log.action === 'UPDATED') {
-        const title = log.details.newData?.title || log.details.oldData?.title || log.details.title
-        return title || ''
+        return log.details.newData?.title || log.details.oldData?.title || log.details.title || ''
       }
-      
-      if (log.action === 'CREATED' || log.action === 'DELETED' || log.action === 'ARCHIVED' || log.action === 'RESTORED') {
-        return log.details.title || log.details.slug || log.details.caseStudyId || ''
-      }
-      
-      return log.details.title || log.details.slug || ''
+      return log.details.title || log.details.slug || log.details.caseStudyId || ''
     }
-    
     return ''
   }
 
-  const getActionDescription = (log: ActivityLog) => {
-    const action = formatAction(log.action)
-    const module = formatModuleName(log.module).toLowerCase()
-    const title = getContentTitle(log)
-    
-    if (log.action === 'LOGIN') {
-      return 'Logged in'
-    }
-    if (log.action === 'LOGOUT') {
-      return 'Logged out'
-    }
-    
-    if (title && (log.module === 'BLOGS' || log.module === 'CASESTUDY')) {
-      return `${action} ${module}`
-    }
-    
-    return `${action} ${module}`
+  const getActionDescription = (log: ActivityLog): string => {
+    if (log.action === 'LOGIN')  return 'Logged in'
+    if (log.action === 'LOGOUT') return 'Logged out'
+    return `${formatAction(log.action)} ${formatModuleName(log.module).toLowerCase()}`
   }
 
   const getAdminName = (email: string): string => {
-    const emailName = email.split('@')[0]
-    return emailName.split('.').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ')
+    const localPart = email.split('@')[0]
+    return localPart
+      .split('.')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')
   }
 
-  return (
-    <div className="w-full max-w-md">
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100">
-        <h3 className={`text-sm bold-text uppercase tracking-wider ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
-          Activity Logs
-        </h3>
-        <p className="text-[10px] text-gray-400 mt-0.5">Recent admin activities</p>
-      </div>
+  const getActionBadgeStyle = (action: string): React.CSSProperties => ({
+    background:    ACTION_COLORS[action] || '#6b7280',
+    color:         '#fff',
+    padding:       '3px 10px',
+    borderRadius:  20,
+    fontSize:      10,
+    fontWeight:    500,
+    display:       'inline-block',
+    whiteSpace:    'nowrap',
+    fontFamily:    "'Poppins', sans-serif",
+    letterSpacing: 0,
+    flexShrink:    0,
+  })
 
-      {/* Logs List */}
+  // ── The component returns ONLY the inner content — no outer card wrapper.
+  // ── Wrap this in a positioned container in the parent (e.g. a dropdown).
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+        *, *::before, *::after {
+          font-family: 'Poppins', sans-serif !important;
+          letter-spacing: 0 !important;
+          box-sizing: border-box;
+          -webkit-font-smoothing: antialiased;
+        }
+        button, a { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+        .mal-row:hover  { background: ${isdarkmode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'} !important; }
+        .mal-foot:hover { background: ${isdarkmode ? 'rgba(255,255,255,0.05)' : '#f3f4f6'} !important; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; }
+      `}</style>
+
+      {/* ── Single card — this is the ONLY container ── */}
       <div
-        className="max-h-[400px] overflow-y-auto"
         style={{
-          scrollbarWidth: 'none',       /* Firefox */
-          msOverflowStyle: 'none',      /* IE/Edge */
+          width:        360,
+          background:   cardBg,
+          border:       `1px solid ${borderColor}`,
+          borderRadius: 24,
+          overflow:     'hidden',
+          boxShadow:    isdarkmode
+            ? '0 20px 60px rgba(0,0,0,0.5)'
+            : '0 20px 60px rgba(0,0,0,0.12)',
+          fontFamily: "'Poppins', sans-serif",
         }}
       >
-        <style>{`
-          .mini-activity-scroll::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-        {isloading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-[#800000]"></div>
+
+        {/* ══ Header ══ */}
+        <div
+          style={{
+            padding:        '18px 24px',
+            borderBottom:   `1px solid ${borderColor}`,
+            display:        'flex',
+            alignItems:     'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0 }}>
+              Activity Logs
+            </p>
+            <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400 }}>
+              Recent admin activities
+            </p>
           </div>
-        ) : logs.length === 0 ? (
-          <div className="px-6 py-12 text-center">
-            <p className="text-xs text-gray-400 bold-text">No recent activities</p>
+
+          <button
+            onClick={fetchRecentLogs}
+            disabled={isloading}
+            aria-label="Refresh activity logs"
+            style={{
+              width:          30,
+              height:         30,
+              borderRadius:   8,
+              border:         `1px solid ${borderColor}`,
+              background:     subtleBg,
+              color:          textMuted,
+              cursor:         isloading ? 'not-allowed' : 'pointer',
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              transition:     'all .15s',
+              flexShrink:     0,
+              opacity:        isloading ? 0.6 : 1,
+            }}
+          >
+            <svg
+              width="12" height="12"
+              fill="none" stroke="currentColor" strokeWidth="2.5"
+              viewBox="0 0 24 24"
+              style={{ animation: isloading ? 'spin .8s linear infinite' : 'none' }}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
+
+        {/* ══ Column headers ══ */}
+        <div
+          style={{
+            display:             'grid',
+            gridTemplateColumns: '26px 1fr 72px',
+            gap:                 10,
+            padding:             '9px 24px',
+            background:          subtleBg,
+            borderBottom:        `1px solid ${borderColor}`,
+          }}
+        >
+          <span style={{ fontSize: 10, fontWeight: 500, color: textMuted }} />
+          <span style={{ fontSize: 10, fontWeight: 500, color: textMuted }}>Admin</span>
+          <span style={{ fontSize: 10, fontWeight: 500, color: textMuted, textAlign: 'right' }}>Time</span>
+        </div>
+
+        {/* ══ Loading ══ */}
+        {isloading && (
+          <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+            <div
+              style={{
+                width:          36,
+                height:         36,
+                borderRadius:   '50%',
+                border:         '3px solid #800000',
+                borderTopColor: 'transparent',
+                animation:      'spin 0.8s linear infinite',
+                margin:         '0 auto 12px',
+                display:        'inline-block',
+              }}
+            />
+            <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0 }}>
+              Loading activities...
+            </p>
           </div>
-        ) : (
-          <div className="divide-y divide-gray-100">
-            {logs.map((log) => (
-              <div
-                key={log._id}
-                className={`px-6 py-4 transition-colors ${isdarkmode ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}
-              >
-                <div className="flex items-start gap-3">
+        )}
+
+        {/* ══ Empty state ══ */}
+        {!isloading && logs.length === 0 && (
+          <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+            <svg
+              style={{ margin: '0 auto 12px', display: 'block', color: isdarkmode ? '#374151' : '#d1d5db' }}
+              width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p style={{ fontSize: 12, fontWeight: 500, color: textMuted, margin: 0 }}>
+              No recent activities
+            </p>
+          </div>
+        )}
+
+        {/* ══ Log rows ══ */}
+        {!isloading && logs.length > 0 && (
+          <div style={{ maxHeight: 380, overflowY: 'auto' }}>
+            {logs.map((log, i) => {
+              const actionColor = ACTION_COLORS[log.action] || '#6b7280'
+              const ts          = getTimestamp(log)
+              const title       = getContentTitle(log)
+
+              return (
+                <div
+                  key={log._id}
+                  className="mal-row"
+                  style={{
+                    display:             'grid',
+                    gridTemplateColumns: '26px 1fr 72px',
+                    gap:                 10,
+                    alignItems:          'center',
+                    padding:             '12px 24px',
+                    borderBottom:        i < logs.length - 1 ? `1px solid ${borderColor}` : 'none',
+                    transition:          'background .15s',
+                    cursor:              'default',
+                  }}
+                >
                   {/* Icon */}
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${getactionbadgecolor(log.action)}`}>
-                    {log.action === 'CREATED' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                      </svg>
-                    )}
-                    {log.action === 'UPDATED' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    )}
-                    {log.action === 'DELETED' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                      </svg>
-                    )}
-                    {log.action === 'ARCHIVED' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <polyline points="21 8 21 21 3 21 3 8"/>
-                        <rect x="1" y="3" width="22" height="5"/>
-                        <line x1="10" y1="12" x2="14" y2="12"/>
-                      </svg>
-                    )}
-                    {log.action === 'RESTORED' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                      </svg>
-                    )}
-                    {log.action === 'LOGIN' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                        <polyline points="10 17 15 12 10 7"/>
-                        <line x1="15" y1="12" x2="3" y2="12"/>
-                      </svg>
-                    )}
-                    {log.action === 'LOGOUT' && (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        <polyline points="16 17 21 12 16 7"/>
-                        <line x1="21" y1="12" x2="9" y2="12"/>
-                      </svg>
-                    )}
+                  <div
+                    style={{
+                      width:          26,
+                      height:         26,
+                      borderRadius:   7,
+                      flexShrink:     0,
+                      background:     `${actionColor}18`,
+                      border:         `1px solid ${actionColor}28`,
+                      display:        'flex',
+                      alignItems:     'center',
+                      justifyContent: 'center',
+                      color:          actionColor,
+                    }}
+                  >
+                    {ACTION_ICONS[log.action] ?? ACTION_ICONS['CREATED']}
                   </div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-xs bold-text ${isdarkmode ? 'text-white' : 'text-gray-900'}`}>
+                  {/* Info */}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3, overflow: 'hidden' }}>
+                      <p
+                        style={{
+                          fontSize:     12,
+                          fontWeight:   500,
+                          color:        textPrimary,
+                          margin:       0,
+                          overflow:     'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace:   'nowrap',
+                          flexShrink:   1,
+                          minWidth:     0,
+                        }}
+                      >
                         {getActionDescription(log)}
-                      </span>
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full bold-text text-white ${getactionbadgecolor(log.action)}`}>
+                      </p>
+                      <span style={getActionBadgeStyle(log.action)}>
                         {formatAction(log.action)}
                       </span>
                     </div>
-                    
-                    {getContentTitle(log) && (
-                      <p className="text-[11px] text-gray-500 bold-text mb-1 truncate">
-                        {getContentTitle(log)}
+
+                    {title !== '' && (
+                      <p
+                        style={{
+                          fontSize:     10,
+                          color:        textMuted,
+                          margin:       '0 0 2px',
+                          overflow:     'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace:   'nowrap',
+                          fontWeight:   400,
+                        }}
+                      >
+                        {title}
                       </p>
                     )}
-                    
-                    <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                      <span>{getAdminName(log.admin)}</span>
-                      <span>•</span>
-                      <span>{formatTimestamp(getTimestamp(log))}</span>
-                    </div>
+
+                    <p
+                      style={{
+                        fontSize:     11,
+                        color:        textMuted,
+                        margin:       0,
+                        fontWeight:   400,
+                        overflow:     'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace:   'nowrap',
+                      }}
+                    >
+                      {getAdminName(log.admin)}
+                    </p>
+                  </div>
+
+                  {/* Time */}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400, whiteSpace: 'nowrap' }}>
+                      {getTimeAgo(ts)}
+                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
-      </div>
 
-      {/* Footer */}
-      <div className={`px-6 py-4 border-t ${isdarkmode ? 'border-white/5' : 'border-gray-100'}`}>
-        <Link 
-          href="/admin/dashboard/ActivityLogs"
-          onClick={onClose}
-          className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs bold-text transition-all no-underline ${
-            isdarkmode 
-              ? 'bg-white/5 text-gray-300 hover:bg-white/10' 
-              : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-          }`}
+        {/* ══ Footer ══ */}
+        <div
+          style={{
+            padding:    '14px 20px',
+            background: subtleBg,
+            borderTop:  `1px solid ${borderColor}`,
+          }}
         >
-          View All Activity Logs
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </Link>
+          <Link
+            href="/admin/dashboard/ActivityLogs"
+            onClick={onClose}
+            className="mal-foot"
+            style={{
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              gap:            7,
+              width:          '100%',
+              padding:        '9px 0',
+              borderRadius:   12,
+              border:         `1px solid ${borderColor}`,
+              background:     'transparent',
+              color:          textMuted,
+              fontSize:       11,
+              fontWeight:     500,
+              cursor:         'pointer',
+              transition:     'all .15s',
+              textDecoration: 'none',
+            }}
+          >
+            View All Activity Logs
+            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
       </div>
-    </div>
+    </>
   )
 }
