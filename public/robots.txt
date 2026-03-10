@@ -32,4 +32,4 @@ Allow: /
 User-agent: meta-externalagent
 Allow: /
 
-Sitemap: https://telexph.com/sitemap.xml
+Sitemap: https://www.telexph.com/sitemap.xml
