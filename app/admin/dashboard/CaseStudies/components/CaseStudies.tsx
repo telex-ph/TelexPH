@@ -33,12 +33,20 @@ type FormData = {
   sections: FormSection[]
 }
 
+// ── Placeholder image map by index ─────────────────────────────────────────────
+const PLACEHOLDER_COVERS = [
+  'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80',
+  'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&q=80',
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80',
+  'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80',
+]
+
 // ── Mock data ──────────────────────────────────────────────────────────────────
 const MOCK_RECORDS: CaseStudyRecord[] = [
-  { _id: '1', title: 'AI in Healthcare',        subtitle: 'How AI transforms patient care',               author: 'Dr. Smith', status: 'Active',    tags: ['AI', 'Healthcare', 'Technology'], start: '2026-02-10', cover: '' },
-  { _id: '2', title: 'Blockchain Supply Chain',  subtitle: 'Decentralized logistics',                     author: 'Jane Doe',  status: 'Completed', tags: ['Blockchain', 'Logistics'],        start: '2026-02-15', cover: '' },
-  { _id: '3', title: 'Remote Work Analytics',    subtitle: 'Measuring productivity in distributed teams', author: 'Bob Lee',   status: 'Draft',     tags: ['Analytics', 'Remote'],            start: '',           cover: '' },
-  { _id: '4', title: 'Green Energy Systems',     subtitle: 'Renewable integration case',                  author: 'Alice K.',  status: 'Scheduled', tags: ['Energy', 'Sustainability'],       start: '2026-03-01', cover: '' },
+  { _id: '1', title: 'AI in Healthcare',        subtitle: 'How AI transforms patient care',               author: 'Dr. Smith', status: 'Active',    tags: ['AI', 'Healthcare', 'Technology'], start: '2026-02-10', cover: PLACEHOLDER_COVERS[0] },
+  { _id: '2', title: 'Blockchain Supply Chain',  subtitle: 'Decentralized logistics',                     author: 'Jane Doe',  status: 'Completed', tags: ['Blockchain', 'Logistics'],        start: '2026-02-15', cover: PLACEHOLDER_COVERS[1] },
+  { _id: '3', title: 'Remote Work Analytics',    subtitle: 'Measuring productivity in distributed teams', author: 'Bob Lee',   status: 'Draft',     tags: ['Analytics', 'Remote'],            start: '',           cover: PLACEHOLDER_COVERS[2] },
+  { _id: '4', title: 'Green Energy Systems',     subtitle: 'Renewable integration case',                  author: 'Alice K.',  status: 'Scheduled', tags: ['Energy', 'Sustainability'],       start: '2026-03-01', cover: PLACEHOLDER_COVERS[3] },
 ]
 
 const STATUS_OPTIONS   = ['Active', 'Draft', 'Completed', 'Scheduled']
@@ -50,6 +58,12 @@ const DEFAULT_FORM: FormData = {
   title: '', subtitle: '', author: '', status: 'Draft',
   tags: [], startDate: '', endDate: '', challenge: '', solution: '',
   sections: [{ topic: '', content: '' }],
+}
+
+const getCardCover = (record: CaseStudyRecord, allRecords: CaseStudyRecord[]): string => {
+  if (record.cover) return record.cover
+  const idx = allRecords.findIndex(r => r._id === record._id)
+  return PLACEHOLDER_COVERS[idx % PLACEHOLDER_COVERS.length]
 }
 
 const getStatusStyle = (s: string) => {
@@ -73,28 +87,121 @@ const getCalendarDays = (month: number): (number | null)[] => {
   return cells
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
-
+// ── StatTile — matches admin dashboard performance card design ─────────────────
 type StatTileProps = {
-  label: string; count: number; color: string; iconPath?: string
-  subtleBg: string; borderColor: string; textMuted: string
+  label: string
+  count: number
+  gradient: string
+  gradientLight: string
+  accentColor: string
+  accentColorLight: string
+  iconPath: string
+  change: string
+  changeUp: boolean
+  dark: boolean
 }
-const StatTile = ({ label, count, color, iconPath, subtleBg, borderColor, textMuted }: StatTileProps) => (
-  <div style={{ padding: '16px 12px', borderRadius: 16, background: subtleBg, border: `1px solid ${borderColor}`, textAlign: 'center', flex: 1, minWidth: 0, fontFamily: "'Poppins', sans-serif" }}>
-    <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>{label}</p>
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-      <span style={{ fontSize: 28, fontWeight: 700, color, fontFamily: "'Poppins', sans-serif" }}>{count}</span>
-      {iconPath && (
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <svg width="13" height="13" fill="none" stroke="#fff" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={iconPath} />
-          </svg>
-        </div>
-      )}
+
+const StatTile = ({ label, count, gradient, gradientLight, accentColor, accentColorLight, iconPath, change, changeUp, dark }: StatTileProps) => (
+  <div
+    className="relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-xl"
+    style={{
+      background: dark ? gradient : gradientLight,
+      padding: '20px',
+      border: dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
+      position: 'relative',
+      fontFamily: "'Poppins', sans-serif",
+    }}
+  >
+    {/* Glassy blob background accent */}
+    <div style={{
+      position: 'absolute',
+      top: -20, right: -20,
+      width: 80, height: 80,
+      borderRadius: '50%',
+      background: dark
+        ? `radial-gradient(circle, ${accentColor}22 0%, transparent 70%)`
+        : `radial-gradient(circle, ${accentColorLight}18 0%, transparent 70%)`,
+      pointerEvents: 'none',
+    }} />
+
+    {/* Top row: label + icon */}
+    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+      <p style={{
+        fontSize: 9,
+        fontWeight: 600,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+        margin: 0,
+        color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)',
+        fontFamily: "'Poppins', sans-serif",
+      }}>
+        {label}
+      </p>
+      <div style={{
+        width: 30,
+        height: 30,
+        borderRadius: 8,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: dark ? `${accentColor}20` : `${accentColorLight}18`,
+        color: dark ? accentColor : accentColorLight,
+        flexShrink: 0,
+      }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d={iconPath} />
+        </svg>
+      </div>
+    </div>
+
+    {/* Value */}
+    <p style={{
+      fontSize: 26,
+      fontWeight: 700,
+      margin: '0 0 8px',
+      lineHeight: 1,
+      color: dark ? '#ffffff' : '#111827',
+      fontFamily: "'Poppins', sans-serif",
+    }}>
+      {count}
+    </p>
+
+    {/* Divider */}
+    <div style={{
+      height: 1,
+      background: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+      marginBottom: 10,
+    }} />
+
+    {/* Change badge row */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 3,
+        fontSize: 10,
+        fontWeight: 600,
+        padding: '2px 7px',
+        borderRadius: 5,
+        background: changeUp ? 'rgba(5,150,105,0.15)' : 'rgba(220,38,38,0.15)',
+        color: changeUp ? (dark ? '#34d399' : '#059669') : (dark ? '#f87171' : '#dc2626'),
+        fontFamily: "'Poppins', sans-serif",
+      }}>
+        {changeUp ? '↑' : '↓'} {change.split(' ')[0]}
+      </span>
+      <span style={{
+        fontSize: 10,
+        fontWeight: 400,
+        color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)',
+        fontFamily: "'Poppins', sans-serif",
+      }}>
+        vs last month
+      </span>
     </div>
   </div>
 )
 
+// ── MiniCalendar ───────────────────────────────────────────────────────────────
 type MiniCalendarProps = {
   records: CaseStudyRecord[]
   subtleBg: string; borderColor: string; textSecondary: string; textMuted: string
@@ -152,7 +259,6 @@ const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, textMuted
 }
 
 // ── Modals ─────────────────────────────────────────────────────────────────────
-
 const Backdrop = ({ children }: { children: React.ReactNode }) => (
   <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.48)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20, fontFamily: "'Poppins', sans-serif" }}>
     {children}
@@ -207,20 +313,22 @@ const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm, card
   )
 }
 
-const PreviewModal = ({ isOpen, data, onClose, onEdit, cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }: {
-  isOpen: boolean; data: CaseStudyRecord | null; onClose: () => void; onEdit: (r: CaseStudyRecord) => void
+const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }: {
+  isOpen: boolean; data: CaseStudyRecord | null; allRecords: CaseStudyRecord[]; onClose: () => void; onEdit: (r: CaseStudyRecord) => void
   cardBg: string; borderColor: string; textPrimary: string; textMuted: string; textSecondary: string; subtleBg: string
 }) => {
   if (!isOpen || !data) return null
   const st = getStatusStyle(data.status)
+  const coverSrc = getCardCover(data, allRecords)
   return (
     <Backdrop>
       <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 560, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', overflow: 'hidden', maxHeight: '90vh', overflowY: 'auto', fontFamily: "'Poppins', sans-serif" }}>
-        <div style={{ height: 160, background: data.cover ? `url(${data.cover}) center/cover` : 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))', position: 'relative' }}>
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, width: 34, height: 34, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ height: 200, background: `url(${coverSrc}) center/cover`, position: 'relative' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.55))' }} />
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, width: 34, height: 34, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
-          <div style={{ position: 'absolute', bottom: 12, left: 16 }}>
+          <div style={{ position: 'absolute', bottom: 12, left: 16, zIndex: 1 }}>
             <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', padding: '4px 10px', borderRadius: 6, background: 'rgba(128,0,0,0.85)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
           </div>
         </div>
@@ -382,10 +490,8 @@ export default function CaseStudies() {
   const formRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  // ── Dark mode from context (same as ListArchivedServices) ──────────────────
   const { isdarkmode: dark } = useDarkMode()
 
-  // ── Theme tokens (mirrors ListArchivedServices exactly) ────────────────────
   const bg            = dark ? '#0f0f0f'                      : '#f8fafc'
   const cardBg        = dark ? '#1a1a1a'                      : '#ffffff'
   const subtleBg      = dark ? 'rgba(255,255,255,0.03)'       : '#f9fafb'
@@ -396,49 +502,40 @@ export default function CaseStudies() {
   const inputBg       = dark ? '#161616'                      : '#ffffff'
   const hoverBg       = dark ? 'rgba(255,255,255,0.04)'       : 'rgba(0,0,0,0.02)'
 
-  // ── Records ────────────────────────────────────────────────────────────────
   const [records, setRecords] = useState<CaseStudyRecord[]>(MOCK_RECORDS)
-
-  // ── Form ───────────────────────────────────────────────────────────────────
   const [form, setForm] = useState<FormData>({ ...DEFAULT_FORM })
   const [coverPreview, setCoverPreview] = useState<string>('')
   const [dragOver, setDragOver] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
 
-  // ── Modal states ───────────────────────────────────────────────────────────
   const [showConfirm, setShowConfirm]     = useState(false)
   const [showDelete, setShowDelete]       = useState(false)
   const [showPreview, setShowPreview]     = useState(false)
   const [showCalendar, setShowCalendar]   = useState(false)
   const [showDateModal, setShowDateModal] = useState(false)
 
-  // ── Loading ────────────────────────────────────────────────────────────────
   const [isLoading, setIsLoading]   = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // ── Preview / Delete / Date ────────────────────────────────────────────────
   const [previewData, setPreviewData]                 = useState<CaseStudyRecord | null>(null)
   const [deleteTarget, setDeleteTarget]               = useState<CaseStudyRecord | null>(null)
   const [selectedDate, setSelectedDate]               = useState('')
   const [selectedDateStudies, setSelectedDateStudies] = useState<CaseStudyRecord[]>([])
   const [selectedMonthIndex, setSelectedMonthIndex]   = useState(new Date().getMonth())
 
-  // ── Library ────────────────────────────────────────────────────────────────
   const [search, setSearch]                 = useState('')
   const [sortBy, setSortBy]                 = useState('date-newest')
   const [viewMode, setViewMode]             = useState<'grid' | 'list'>('grid')
   const [activeTab, setActiveTab]           = useState<'All' | 'Active' | 'Draft' | 'Completed' | 'Scheduled'>('All')
   const [activeTagFilter, setActiveTagFilter] = useState('All')
 
-  // ── Toast ──────────────────────────────────────────────────────────────────
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3000)
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
   const updateForm = (key: keyof FormData, value: unknown) =>
     setForm(prev => ({ ...prev, [key]: value }))
 
@@ -482,7 +579,6 @@ export default function CaseStudies() {
     transition: 'border-color .15s', fontFamily: "'Poppins', sans-serif", ...overrides,
   })
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
     if (!form.title.trim() || !form.author.trim()) {
       showToast('Title and Author are required.', 'error')
@@ -491,10 +587,12 @@ export default function CaseStudies() {
     }
     setIsLoading(true)
     setTimeout(() => {
+      const newIdx = records.length % PLACEHOLDER_COVERS.length
       const record: CaseStudyRecord = {
         _id: editingId || String(Date.now()),
         title: form.title, subtitle: form.subtitle, author: form.author,
-        status: form.status, tags: form.tags, start: form.startDate, cover: coverPreview,
+        status: form.status, tags: form.tags, start: form.startDate,
+        cover: coverPreview || PLACEHOLDER_COVERS[newIdx],
       }
       if (isEditMode && editingId) {
         setRecords(prev => prev.map(r => r._id === editingId ? record : r))
@@ -509,7 +607,6 @@ export default function CaseStudies() {
     }, 800)
   }
 
-  // ── Edit ───────────────────────────────────────────────────────────────────
   const handleEdit = (r: CaseStudyRecord) => {
     setForm({
       title: r.title, subtitle: r.subtitle, author: r.author,
@@ -522,7 +619,6 @@ export default function CaseStudies() {
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
   }
 
-  // ── Delete ─────────────────────────────────────────────────────────────────
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return
     setIsDeleting(true)
@@ -535,7 +631,6 @@ export default function CaseStudies() {
     }, 600)
   }
 
-  // ── Day click ──────────────────────────────────────────────────────────────
   const handleDayClick = (ds: string) => {
     const studies = records.filter(r => r.start === ds)
     if (studies.length) {
@@ -546,7 +641,6 @@ export default function CaseStudies() {
     }
   }
 
-  // ── Counts & filtered ──────────────────────────────────────────────────────
   const counts = {
     All:       records.length,
     Active:    records.filter(r => r.status === 'Active').length,
@@ -578,10 +672,55 @@ export default function CaseStudies() {
     fontSize: 11, fontWeight: 600, color: textMuted, display: 'block', marginBottom: 5,
     fontFamily: "'Poppins', sans-serif",
   }
-  const tileProps = { subtleBg, borderColor, textMuted }
-
-  // shared modal theme props
   const modalTheme = { cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }
+
+  // ── Stat tile configs — mirrors admin dashboard performance card meta ────────
+  const statTileConfigs = [
+    {
+      label: 'Active',
+      count: counts.Active,
+      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)',
+      gradientLight: 'linear-gradient(150deg, #c8dcff 0%, #dbeafe 50%, #bdd3ff 100%)',
+      accentColor: '#60a5fa',
+      accentColorLight: '#1d4ed8',
+      iconPath: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+      change: '+12.5% from Last Month',
+      changeUp: true,
+    },
+    {
+      label: 'Done',
+      count: counts.Completed,
+      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #1e1b4b 60%, #312e81 100%)',
+      gradientLight: 'linear-gradient(150deg, #d8ccff 0%, #e9d5ff 50%, #d4bfff 100%)',
+      accentColor: '#a78bfa',
+      accentColorLight: '#6d28d9',
+      iconPath: 'M5 13l4 4L19 7',
+      change: '+8.2% from Last Month',
+      changeUp: true,
+    },
+    {
+      label: 'Draft',
+      count: counts.Draft,
+      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #1c1917 60%, #292524 100%)',
+      gradientLight: 'linear-gradient(150deg, #ffd8a8 0%, #ffedd5 50%, #fecb8a 100%)',
+      accentColor: '#fb923c',
+      accentColorLight: '#c2410c',
+      iconPath: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+      change: '-3.1% from Last Month',
+      changeUp: false,
+    },
+    {
+      label: 'Schedule',
+      count: counts.Scheduled,
+      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #14532d 60%, #166534 100%)',
+      gradientLight: 'linear-gradient(150deg, #a8f0cc 0%, #dcfce7 50%, #90eabc 100%)',
+      accentColor: '#4ade80',
+      accentColorLight: '#15803d',
+      iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+      change: '+15.3% from Last Month',
+      changeUp: true,
+    },
+  ]
 
   return (
     <div style={{ minHeight: '100vh', padding: '28px 24px', fontFamily: "'Poppins', sans-serif" }}>
@@ -595,6 +734,9 @@ export default function CaseStudies() {
         .arc-row:hover { background: ${hoverBg} !important; }
         .pill-btn:hover { opacity: .78; }
         .icon-btn:hover { opacity: .7; }
+        .cs-card-img { transition: transform .35s ease; }
+        .cs-card:hover .cs-card-img { transform: scale(1.04); }
+        .stat-tile:hover { transform: translateY(-2px); }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
       `}</style>
@@ -603,7 +745,7 @@ export default function CaseStudies() {
 
       <ConfirmModal   isOpen={showConfirm}   isEdit={isEditMode} isLoading={isLoading}  onClose={() => setShowConfirm(false)}   onConfirm={handleSubmit}       {...modalTheme} />
       <DeleteModal    isOpen={showDelete}    isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
-      <PreviewModal   isOpen={showPreview}   data={previewData}  onClose={() => setShowPreview(false)}  onEdit={handleEdit}                {...modalTheme} />
+      <PreviewModal   isOpen={showPreview}   data={previewData}  allRecords={records} onClose={() => setShowPreview(false)}  onEdit={handleEdit}                {...modalTheme} />
       <CalendarModal  isOpen={showCalendar}  records={records}   selectedMonthIndex={selectedMonthIndex} onClose={() => setShowCalendar(false)} onMonthChange={setSelectedMonthIndex} onDateClick={handleDayClick} {...modalTheme} />
       <DateModal      isOpen={showDateModal} dateStr={selectedDate} studies={selectedDateStudies} onClose={() => setShowDateModal(false)} onSelectStudy={(r) => { setPreviewData(r); setShowPreview(true) }} {...modalTheme} />
 
@@ -624,21 +766,42 @@ export default function CaseStudies() {
         {/* TOP ROW */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16, marginBottom: 16, alignItems: 'stretch' }}>
 
-          {/* Quick Stats */}
+          {/* Quick Stats — performance card style */}
           <div style={{ ...card, padding: '22px 22px' }}>
-            <div style={{ marginBottom: 18 }}>
+            <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Quick stats</p>
               <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Current system overview and counts</p>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-              <StatTile {...tileProps} label="Active"   count={counts.Active}    color="#800000" iconPath="M12 2a10 10 0 110 20A10 10 0 0112 2zm0 5v5l4 2" />
-              <StatTile {...tileProps} label="Done"     count={counts.Completed} color="#059669" iconPath="M20 6L9 17l-5-5" />
-              <StatTile {...tileProps} label="Draft"    count={counts.Draft}     color="#6b7280" iconPath="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-              <StatTile {...tileProps} label="Schedule" count={counts.Scheduled} color="#7c3aed" iconPath="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />
+
+            {/* 2×2 stat tiles — same design as admin dashboard performance cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 0 }}>
+              {statTileConfigs.map((cfg, idx) => (
+                <div key={idx} className="stat-tile" style={{ transition: 'transform .18s' }}>
+                  <StatTile
+                    label={cfg.label}
+                    count={cfg.count}
+                    gradient={cfg.gradient}
+                    gradientLight={cfg.gradientLight}
+                    accentColor={cfg.accentColor}
+                    accentColorLight={cfg.accentColorLight}
+                    iconPath={cfg.iconPath}
+                    change={cfg.change}
+                    changeUp={cfg.changeUp}
+                    dark={dark}
+                  />
+                </div>
+              ))}
             </div>
-            <div style={{ textAlign: 'center', paddingTop: 14, borderTop: `1px solid ${borderColor}` }}>
-              <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>Total</p>
-              <span style={{ fontSize: 40, fontWeight: 700, color: textPrimary, lineHeight: 1, fontFamily: "'Poppins', sans-serif" }}>{records.length}</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, marginTop: 14, borderTop: `1px solid ${borderColor}` }}>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: '0 0 2px', fontFamily: "'Poppins', sans-serif" }}>Total case studies</p>
+                <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>All statuses combined</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                <span style={{ fontSize: 26, fontWeight: 700, color: textPrimary, lineHeight: 1, fontFamily: "'Poppins', sans-serif" }}>{records.length}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)', fontFamily: "'Poppins', sans-serif" }}>entries</span>
+              </div>
             </div>
           </div>
 
@@ -902,19 +1065,35 @@ export default function CaseStudies() {
             </div>
           )}
 
-          {/* Grid view */}
+          {/* ── GRID VIEW ─────────────────────────────────────────────────── */}
           {filtered.length > 0 && viewMode === 'grid' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14, padding: 16 }}>
               {filtered.map(r => {
                 const st = getStatusStyle(r.status)
                 const isBeingEdited = editingId === r._id
+                const coverSrc = getCardCover(r, records)
                 return (
                   <div key={r._id} className="cs-card" style={{ border: `1px solid ${isBeingEdited ? '#800000' : borderColor}`, borderRadius: 14, overflow: 'hidden', background: cardBg, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ height: 110, background: r.cover ? `url(${r.cover}) center/cover` : 'linear-gradient(135deg,rgba(128,0,0,0.12),rgba(128,0,0,0.03))', position: 'relative', flexShrink: 0 }}>
+                    <div style={{ height: 140, position: 'relative', overflow: 'hidden', flexShrink: 0, background: '#e5e7eb' }}>
+                      <img
+                        src={coverSrc}
+                        alt={r.title}
+                        className="cs-card-img"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        onError={e => {
+                          const el = e.currentTarget as HTMLImageElement
+                          el.style.display = 'none'
+                          const parent = el.parentElement
+                          if (parent) parent.style.background = 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))'
+                        }}
+                      />
+                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.38) 100%)' }} />
                       <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
                         <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 5, background: 'rgba(128,0,0,0.88)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
                       </div>
-                      {isBeingEdited && <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: '#800000', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Editing</div>}
+                      {isBeingEdited && (
+                        <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: '#800000', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Editing</div>
+                      )}
                     </div>
                     <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
@@ -944,16 +1123,30 @@ export default function CaseStudies() {
             </div>
           )}
 
-          {/* List view */}
+          {/* ── LIST VIEW ─────────────────────────────────────────────────── */}
           {filtered.length > 0 && viewMode === 'list' && (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 110px 130px', gap: 14, padding: '9px 18px', background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: 'uppercase' as const, letterSpacing: '0.07em', borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
-                <span>Title</span><span>Author</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' as const }}>Actions</span>
+              <div style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 2fr 110px 130px', gap: 14, padding: '9px 18px', background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: 'uppercase' as const, letterSpacing: '0.07em', borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
+                <span>Cover</span><span>Title</span><span>Author</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' as const }}>Actions</span>
               </div>
               {filtered.map((r, i) => {
                 const st = getStatusStyle(r.status)
+                const coverSrc = getCardCover(r, records)
                 return (
-                  <div key={r._id} className="arc-row" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr 110px 130px', gap: 14, alignItems: 'center', padding: '11px 18px', borderBottom: i < filtered.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}>
+                  <div key={r._id} className="arc-row" style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 2fr 110px 130px', gap: 14, alignItems: 'center', padding: '10px 18px', borderBottom: i < filtered.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#e5e7eb' }}>
+                      <img
+                        src={coverSrc}
+                        alt={r.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        onError={e => {
+                          const el = e.currentTarget as HTMLImageElement
+                          el.style.display = 'none'
+                          const parent = el.parentElement
+                          if (parent) parent.style.background = 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))'
+                        }}
+                      />
+                    </div>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                       {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
