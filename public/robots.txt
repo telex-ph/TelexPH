@@ -14,4 +14,22 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: Gemini-Web
+Allow: /
+
+User-agent: Grok
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
 Sitemap: https://telexph.com/sitemap.xml

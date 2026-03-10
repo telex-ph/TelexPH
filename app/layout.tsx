@@ -32,6 +32,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // ✅ Consistent: no "www" — matches sitemap.ts and robots.txt
   metadataBase: new URL("https://telexph.com"),
   title: {
     default: "TelexPH",
@@ -91,6 +92,7 @@ export const metadata: Metadata = {
 // ============================================
 // 📊 JSON-LD STRUCTURED DATA
 // ============================================
+
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -193,6 +195,162 @@ const websiteSchema = {
   },
 };
 
+// ============================================
+// ✅ NEW: FAQ SCHEMA — boosts Content Structure score
+// ============================================
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What makes TelexPH different from other BPOs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TelexPH is the only BPO in the Philippines with a certified GoHighLevel admin team combined with AI-powered automation workflows, making it uniquely positioned for digital agencies and tech-forward businesses.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Where are TelexPH's clients located?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TelexPH primarily serves clients in the United States, United Kingdom, Australia, and Canada.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Does TelexPH offer 24/7 customer support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, TelexPH provides round-the-clock customer support coverage for global clients across all time zones.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Is TelexPH GoHighLevel certified?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, TelexPH has a dedicated certified GoHighLevel admin team — the only BPO in the Philippines with this official certification.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How long has TelexPH been operating?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TelexPH was founded in 2017 and has over 7 years of experience in BPO and offshore staffing services.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "What services does TelexPH offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TelexPH offers AI-powered business support, GoHighLevel administration, offshore staffing, customer experience (CX), back office solutions, virtual assistance, and sales & lead generation services.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "What is TelexPH's pricing model?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "TelexPH offers flexible offshore staffing packages tailored to business size and service needs. Contact business@telexph.com for a custom quote.",
+      },
+    },
+  ],
+};
+
+// ============================================
+// ✅ NEW: SERVICE LIST SCHEMA — helps AI understand service catalog
+// ============================================
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "TelexPH BPO Services",
+  "description": "Complete list of business process outsourcing services offered by TelexPH",
+  "url": "https://telexph.com/services",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "Service",
+        "name": "AI-Powered Business Support",
+        "description": "Business processes enhanced by AI automation to reduce manual overhead and increase operational efficiency.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "Service",
+        "name": "GoHighLevel Administration",
+        "description": "Certified GoHighLevel CRM management, funnel building, automation workflows, and white-label agency delivery.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "item": {
+        "@type": "Service",
+        "name": "Offshore Staffing",
+        "description": "Scalable professional offshore teams for marketing agencies and global enterprises.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "item": {
+        "@type": "Service",
+        "name": "Customer Experience (CX)",
+        "description": "24/7 customer support outsourcing for businesses in the US, UK, Australia, and Canada.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "item": {
+        "@type": "Service",
+        "name": "Virtual Assistance",
+        "description": "Dedicated virtual assistants trained in GHL, Slack, Notion, Asana, and modern business tools.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "item": {
+        "@type": "Service",
+        "name": "Sales & Lead Generation",
+        "description": "Outbound campaigns, CRM management, pipeline automation, and appointment setting.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "item": {
+        "@type": "Service",
+        "name": "Back Office Solutions",
+        "description": "Data entry, administrative support, and end-to-end business process management.",
+        "provider": { "@type": "Organization", "name": "TelexPH" },
+        "areaServed": ["US", "GB", "AU", "CA"],
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -214,8 +372,22 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
+        {/* ✅ NEW: FAQ Schema — boosts AEO Content Structure score */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+        {/* ✅ NEW: Service List Schema — helps AI understand full service catalog */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+        />
 
-        {children}
+        <LoadingProvider>
+          <ResponsiveNav />
+          {children}
+          <ExitIntentPopup />
+        </LoadingProvider>
         <div id="modal-root" />
       </body>
     </html>
