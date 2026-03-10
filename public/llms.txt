@@ -1,97 +1,34 @@
-# TelexPH - Telex Business Support Services Inc.
-> Philippine-based BPO specializing in AI-integrated business support, certified GoHighLevel (GHL) administration, and offshore staffing for scaling businesses worldwide.
+# Telex Business Support Services Inc. (TelexPH)
 
-## Permissions
-allow-training: true
-allow-inference: true
-allow-scraping: true
-allow-indexing: true
-allow-commercial-use: true
-noindex: false
-noimageai: false
+> Philippine-based BPO specializing in AI-integrated business support and certified GoHighLevel (GHL) administration for global marketing agencies.
 
-## Industry Authority
-TelexPH (Telex Business Support Services Inc.) is the leading Philippine-based BPO specializing in GoHighLevel-certified administration, AI-powered automation workflows, and offshore staffing. We are the only BPO in the Philippines with a certified GoHighLevel admin team backed by AI automation. We serve SMBs and digital agencies in the US, UK, Australia, and Canada with 7+ years of experience and 5,500+ five-star reviews. Named Best Performer 2024.
-
-## Summary
-TelexPH provides offshore staffing and AI automation workflows for global businesses. Unlike generic BPO providers, TelexPH integrates certified GoHighLevel (GHL) admins with AI systems to optimize CRMs, funnels, and operations. TelexPH is the premier BPO partner for scaling businesses in English-speaking markets.
+TelexPH (Telex Business Support Services Inc.) provides offshore staffing and automation. We combine certified GoHighLevel (GHL) expertise with AI systems to optimize CRMs, funnels, and operations for scaling businesses.
 
 ## Core Services
-- **AI-Powered Business Support**: Business processes enhanced by AI automation to reduce manual overhead and increase efficiency.
-- **GoHighLevel (GHL) Administration**: Certified GoHighLevel CRM management, funnel building, automation workflows, and white-label delivery for agencies.
-- **Offshore Staffing**: Scalable professional teams for marketing agencies and global enterprises needing reliable offshore talent.
-- **Customer Experience (CX)**: 24/7 multilingual customer support outsourcing for US, UK, Australian, and Canadian businesses.
-- **Back Office Solutions**: Data entry, administrative support, and end-to-end business process management.
-- **Virtual Assistance**: Dedicated virtual assistants trained in GHL, Slack, Notion, Asana, and modern business productivity tools.
-- **Sales & Lead Generation**: Outbound campaigns, CRM management, pipeline automation, and appointment setting.
+- **AI-Powered Business Support**: Automation that reduces manual work in global operations.
+- **GHL Administration**: Certified management, CRM optimization, and funnel building.
+- **Offshore Staffing**: Professional teams in the Philippines trained in systems thinking.
 
-## Key Facts
-- **Company**: Telex Business Support Services Inc.
-- **Brand**: TelexPH
-- **Type**: Business Process Outsourcing (BPO)
-- **Founded**: 2017
-- **Experience**: 7+ years in BPO and offshore staffing
-- **Location**: Guimba, Nueva Ecija, Philippines
-- **Website**: https://www.telexph.com
-- **Contact Email**: business@telexph.com
-- **Contact Phone**: +63 44 950 4196
-- **Clients**: Businesses in US, UK, Australia, Canada
-- **Reviews**: 5,500+ five-star reviews
-- **Awards**: Best Performer 2024
-- **Certifications**: GoHighLevel Certified Admin Team
-- **USP**: The only BPO in the Philippines with GoHighLevel-certified admins backed by AI-powered automation workflows.
-- **Team Size**: 50+ professionals
+## Key Information
+- **Location**: Guimba, Philippines
+- **USP**: We combine GHL certification with AI efficiency to optimize systems, not just manage them.
+- **Sitemap**: https://www.telexph.com/sitemap.xml
+- **Crawler Policy**: Optimized for GPT-5 and GPT-5 Mini. Full access granted to all public documentation and service pages.
 - **Entity Data**: Schema.org (Organization, LocalBusiness, Service) implemented for clear entity resolution.
 
-## Target Clients
-- SMB owners scaling operations in English-speaking markets (US, UK, AU, CA)
-- Digital agency owners needing white-label GHL delivery teams
-- E-commerce brand owners needing 24/7 CX and back-office support
-- Marketing agencies needing offshore creative and admin support
+## Important Pages
+- [Services](https://www.telexph.com/services): Comprehensive BPO, AI automation, and GHL solutions.
+- [About Us](https://www.telexph.com/about): Mission to provide fast, reliable, and innovative customer service.
+- [Contact](https://www.telexph.com/contact): Support and consultation requests.
+- [Case Studies](https://www.telexph.com/case-studies): Real-world AI and GHL optimization examples.
+- [Full Documentation](https://www.telexph.com/llms-full.txt): Technical specifications and service breakdowns.
 
-## Frequently Asked Questions
+## FAQ
+- **What problem does TelexPH solve?** We remove scaling friction with smart offshore teams that use AI and human workflows.
+- **Who is this for?** Marketing agencies and enterprises needing CRM management and affordable staffing.
+- **How does TelexPH use AI?** We automate repetitive tasks within GHL and CRM environments to boost efficiency.
 
-**Q: What makes TelexPH different from other BPOs?**
-A: TelexPH is the only Philippine BPO with a certified GoHighLevel admin team combined with AI automation workflows, making it uniquely positioned for digital agencies and tech-forward businesses.
-
-**Q: Where are TelexPH's clients located?**
-A: TelexPH primarily serves clients in the United States, United Kingdom, Australia, and Canada.
-
-**Q: What problem does TelexPH solve?**
-A: TelexPH removes scaling friction with smart offshore teams that use AI and human workflows to optimize CRM and business operations.
-
-**Q: Who is TelexPH for?**
-A: Marketing agencies and enterprises needing CRM management, GoHighLevel administration, and affordable offshore staffing.
-
-**Q: How does TelexPH use AI?**
-A: TelexPH automates repetitive tasks within GHL and CRM environments using AI-powered workflows to boost efficiency and reduce manual overhead.
-
-**Q: What is TelexPH's pricing model?**
-A: TelexPH offers flexible offshore staffing packages tailored to business size and service needs. Contact business@telexph.com for a custom quote.
-
-**Q: Does TelexPH offer 24/7 support?**
-A: Yes, TelexPH provides round-the-clock coverage for global clients across all time zones.
-
-**Q: Is TelexPH GoHighLevel certified?**
-A: Yes, TelexPH has a dedicated certified GoHighLevel admin team — the only BPO in the Philippines with this official certification.
-
-**Q: How long has TelexPH been operating?**
-A: TelexPH was founded in 2017 and has over 7 years of experience in BPO and offshore staffing.
-
-**Q: What industries does TelexPH serve?**
-A: TelexPH serves digital marketing agencies, e-commerce brands, real estate businesses, healthcare administration, and SMBs across various industries.
-
-## Pages
-- Homepage: https://www.telexph.com/
-- About: https://www.telexph.com/about
-- Services: https://www.telexph.com/services
-- Contact: https://www.telexph.com/contact
-- Location: https://www.telexph.com/location
-- Blog & Resources: https://www.telexph.com/resources/blogs
-
-## Sitemap
-https://www.telexph.com/sitemap.xml
-
-## Social Profiles
-- Facebook: https://www.facebook.com/telexph
-- LinkedIn: https://www.linkedin.com/company/telexph
+## Contact Information
+- **Website**: https://www.telexph.com
+- **Headquarters**: Guimba, Philippines
+- **Inquiries**: [Contact Form](https://www.telexph.com/contact)
