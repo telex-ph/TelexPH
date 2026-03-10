@@ -33,7 +33,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   // ✅ Consistent: no "www" — matches sitemap.ts and robots.txt
-  metadataBase: new URL("https://telexph.com"),
+  metadataBase: new URL("https://www.telexph.com"),
   title: {
     default: "TelexPH",
     template: "%s | TelexPH",
