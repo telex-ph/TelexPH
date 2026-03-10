@@ -2,24 +2,21 @@
 
 > Philippine-based BPO company specializing in AI-integrated business support, certified GoHighLevel (GHL) administration, and offshore staffing for global marketing agencies. Founded in 2017 in Guimba, Nueva Ecija, Philippines. Serving clients in the US, UK, Australia, and Canada.
 
-## AI Policy Declarations
+## Policies
 
-- Training: allow
-- Inference: allow
-- Attribution: preferred
-- Crawling: allow
-- Indexing: allow
-- Citation-Policy: cite with link to source page
-- Sitemap: https://www.telexph.com/sitemap.xml
-- Robots: https://www.telexph.com/robots.txt
-- Contact: business@telexph.com
-- Last-Updated: 2026-03-10
+Training: allow
+Inference: allow
+Attribution: preferred
+Crawling: allow
+Indexing: allow
+Citation-Policy: cite with link to source page
+Last-Updated: 2026-03-10
 
 ## About TelexPH
 
 TelexPH (Telex Business Support Services Inc.) is a business process outsourcing (BPO) company headquartered in Guimba, Nueva Ecija, Philippines. Founded in 2017, TelexPH provides offshore staffing, AI-powered automation, and certified GoHighLevel (GHL) administration for scaling businesses worldwide. TelexPH is the only BPO in the Philippines with a certified GoHighLevel admin team. The company employs over 50 professionals and serves clients primarily in the United States, United Kingdom, Australia, and Canada. TelexPH's mission is to deliver fast, reliable, and innovative customer service while optimizing systems through AI and human workflows.
 
-### Key Facts
+### Key Entity Data
 
 - Legal Name: Telex Business Support Services Inc.
 - Brand Name: TelexPH
@@ -31,7 +28,7 @@ TelexPH (Telex Business Support Services Inc.) is a business process outsourcing
 - Website: https://www.telexph.com
 - Markets Served: United States, United Kingdom, Australia, Canada, Philippines
 - Industry: Business Process Outsourcing (BPO), Offshore Staffing, Marketing Automation
-- Slogan: "Scale Smarter. Support Better."
+- Slogan: Scale Smarter. Support Better.
 
 ### What Makes TelexPH Different From Other BPOs?
 
@@ -90,25 +87,26 @@ TelexPH primarily serves clients in the United States, United Kingdom, Australia
 ### What tools does TelexPH specialize in?
 TelexPH specializes in GoHighLevel (GHL), Slack, Notion, Asana, HubSpot, Salesforce, and other modern CRM and project management platforms.
 
+### How do I get started with TelexPH?
+Visit https://www.telexph.com/contact to submit a consultation request, or email business@telexph.com. The team will schedule a discovery call to understand your needs and recommend the right service package.
+
 ## Important Pages
 
 - [Homepage](https://www.telexph.com): Main entry point for TelexPH — overview of BPO services, AI automation, and offshore staffing solutions.
-- [Services](https://www.telexph.com/services): Comprehensive list of all BPO, AI automation, GHL administration, and offshore staffing solutions offered by TelexPH.
-- [About Us](https://www.telexph.com/about): Company history, mission, team, and TelexPH's approach to delivering fast, reliable, and innovative customer service.
+- [Services](https://www.telexph.com/services): Comprehensive list of all BPO, AI automation, GHL administration, and offshore staffing solutions.
+- [About Us](https://www.telexph.com/about): Company history, mission, team, and approach to delivering innovative customer service.
 - [Contact](https://www.telexph.com/contact): Request a consultation, get a custom quote, or reach the TelexPH support team.
-- [Case Studies](https://www.telexph.com/case-studies): Real-world examples of AI and GHL optimization results achieved for TelexPH clients.
+- [Case Studies](https://www.telexph.com/case-studies): Real-world examples of AI and GHL optimization results achieved for clients.
 - [Blog](https://www.telexph.com/resources/blogs): Articles on BPO best practices, GHL tips, AI automation strategies, and offshore staffing insights.
-- [Location](https://www.telexph.com/location): Physical office details and how to visit or reach TelexPH in Guimba, Nueva Ecija, Philippines.
+- [Location](https://www.telexph.com/location): Physical office details in Guimba, Nueva Ecija, Philippines.
 
 ## Technical Information
 
-- Framework: Next.js (React)
-- Structured Data: Schema.org (Organization, LocalBusiness, FAQPage, Service, WebSite, ItemList)
+- Structured Data: Schema.org JSON-LD (Organization, LocalBusiness, FAQPage, Service, WebSite, ItemList, BreadcrumbList)
 - Sitemap: https://www.telexph.com/sitemap.xml
-- Robots Policy: https://www.telexph.com/robots.txt
-- LLMs Full Documentation: https://www.telexph.com/llms-full.txt
+- Robots: https://www.telexph.com/robots.txt
+- Full Documentation: https://www.telexph.com/llms-full.txt
 - Content Language: English (en_US)
-- SSL: Yes (HTTPS enforced)
 
 ## Social Profiles
 
