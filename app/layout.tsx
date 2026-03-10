@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   description:
     "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
-  authors: [{ name: "TelexPH Team", url: "https://telexph.com" }],
+  authors: [{ name: "TelexPH Team", url: "https://www.telexph.com" }],
   keywords: [
     "TelexPH",
     "Multi-Service BPO Philippines",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "TelexPH: Your trusted partner in Business Process Outsourcing",
     description:
       "We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success.",
-    url: "https://telexph.com",
+    url: "https://www.telexph.com",
     siteName: "TelexPH",
     images: [
       {
@@ -98,8 +98,8 @@ const organizationSchema = {
   "@type": "Organization",
   "name": "Telex Business Support Services Inc.",
   "alternateName": "TelexPH",
-  "url": "https://telexph.com",
-  "logo": "https://telexph.com/images/Tlxlogo.webp",
+  "url": "https://www.telexph.com",
+  "logo": "https://www.telexph.com/images/Tlxlogo.webp",
   "foundingDate": "2017",
   "description": "Philippine-based BPO with GHL-certified admins and AI-powered automation workflows for scaling businesses in the US, UK, Australia, and Canada.",
   "slogan": "Scale Smarter. Support Better.",
@@ -184,12 +184,12 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "TelexPH",
-  "url": "https://telexph.com",
+  "url": "https://www.telexph.com",
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://telexph.com/resources/blogs?search={search_term_string}",
+      "urlTemplate": "https://www.telexph.com/resources/blogs?search={search_term_string}",
     },
     "query-input": "required name=search_term_string",
   },
@@ -269,7 +269,7 @@ const serviceSchema = {
   "@type": "ItemList",
   "name": "TelexPH BPO Services",
   "description": "Complete list of business process outsourcing services offered by TelexPH",
-  "url": "https://telexph.com/services",
+  "url": "https://www.telexph.com/services",
   "itemListElement": [
     {
       "@type": "ListItem",
