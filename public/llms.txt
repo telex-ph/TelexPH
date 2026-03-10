@@ -37,7 +37,7 @@ TelexPH provides offshore staffing and AI automation workflows for global busine
 - **Founded**: 2017
 - **Experience**: 7+ years in BPO and offshore staffing
 - **Location**: Guimba, Nueva Ecija, Philippines
-- **Website**: https://telexph.com
+- **Website**: https://www.telexph.com
 - **Contact Email**: business@telexph.com
 - **Contact Phone**: +63 44 950 4196
 - **Clients**: Businesses in US, UK, Australia, Canada
@@ -77,15 +77,15 @@ A: TelexPH was founded in 2017 and has over 7 years of experience in BPO and off
 A: TelexPH serves digital marketing agencies, e-commerce brands, real estate businesses, healthcare administration, and SMBs across various industries.
 
 ## Pages
-- Homepage: https://telexph.com/
-- About: https://telexph.com/about
-- Services: https://telexph.com/services
-- Contact: https://telexph.com/contact
-- Location: https://telexph.com/location
-- Blog & Resources: https://telexph.com/resources/blogs
+- Homepage: https://www.telexph.com/
+- About: https://www.telexph.com/about
+- Services: https://www.telexph.com/services
+- Contact: https://www.telexph.com/contact
+- Location: https://www.telexph.com/location
+- Blog & Resources: https://www.telexph.com/resources/blogs
 
 ## Sitemap
-https://telexph.com/sitemap.xml
+https://www.telexph.com/sitemap.xml
 
 ## Social Profiles
 - Facebook: https://www.facebook.com/telexph

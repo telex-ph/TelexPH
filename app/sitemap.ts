@@ -11,7 +11,7 @@ const routes = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // ✅ Consistent: no "www" — matches metadataBase in layout.tsx and robots.txt
-  const baseUrl = 'https://telexph.com'
+  const baseUrl = 'https://www.telexph.com'
 
   return routes.map(route => ({
     url: `${baseUrl}${route.path}`,
