@@ -1,714 +1,743 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import { useDarkMode } from '../../layout'
 
-// Category definitions matching backend
+// ─── Constants ────────────────────────────────────────────────────────────────
 const MAIN_CATEGORIES = {
   MAIN_SERVICE: "Main Service Categories",
   INDUSTRY_INSIGHTS: "Industry-Specific Insights",
   BUSINESS_GROWTH: "Business Growth & Strategy",
   COMPANY_CULTURE: "Company Culture & Updates"
-} as const;
+} as const
 
-const SUBCATEGORIES = {
-  "Main Service Categories": [
-    "Customer Experience (CX)",
-    "Back Office Solutions",
-    "Virtual Assistance",
-    "Sales & Lead Generation"
-  ],
-  "Industry-Specific Insights": [
-    "E-commerce Support",
-    "Real Estate Outsourcing",
-    "Healthcare BPO",
-    "Tech & SaaS Scaling"
-  ],
-  "Business Growth & Strategy": [
-    "Scale Smarter",
-    "Outsourcing 101",
-    "Cost Optimization"
-  ],
-  "Company Culture & Updates": [
-    "TelexPH Life",
-    "News & Press Releases"
-  ]
-};
-
-// Validation constants
-const HEADLINE_MIN = 5;
-const HEADLINE_MAX = 40;
-const SHORT_DESC_MIN = 5;
-const SHORT_DESC_MAX = 55;
-const MAIN_CONTENT_MIN = 25;
-const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
-
-interface ContentSection {
-  title: string;
-  content: string;
+const SUBCATEGORIES: Record<string, string[]> = {
+  "Main Service Categories": ["Customer Experience (CX)", "Back Office Solutions", "Virtual Assistance", "Sales & Lead Generation"],
+  "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling"],
+  "Business Growth & Strategy": ["Scale Smarter", "Outsourcing 101", "Cost Optimization"],
+  "Company Culture & Updates": ["TelexPH Life", "News & Press Releases"]
 }
 
+const HEADLINE_MIN = 5
+const HEADLINE_MAX = 40
+const SHORT_DESC_MIN = 5
+const SHORT_DESC_MAX = 55
+const MAIN_CONTENT_MIN = 25
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
+
+interface ContentSection { title: string; content: string }
+
 interface EditBlogsProps {
-  blog: any;
-  onClose: () => void;
-  onSave: () => void;
+  blog: any
+  onClose: () => void
+  onSave: () => void
 }
 
 export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isCompressing, setIsCompressing] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageError, setImageError] = useState('');
-  const fileRef = useRef<HTMLInputElement>(null);
-  const actualFileRef = useRef<File | null>(null);
+  const { isdarkmode } = useDarkMode()
 
-  const { isdarkmode } = useDarkMode();
+  const fileRef = useRef<HTMLInputElement>(null)
+  const actualFileRef = useRef<File | null>(null)
 
-  // Auto-resize textarea helper
-  const autoResize = (el: HTMLTextAreaElement) => {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  };
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isCompressing, setIsCompressing] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [imageError, setImageError] = useState('')
 
-  // Parse existing blog data
+  // ─── Parse existing blog content ─────────────────────────────────────────
   const parseExistingContent = () => {
     if (!blog.mainContent || !Array.isArray(blog.mainContent) || blog.mainContent.length === 0) {
-      return { mainTitle: '', mainText: '', additionalSections: [{ title: '', content: '' }] };
+      return { mainTitle: '', mainText: '', additionalSections: [{ title: '', content: '' }] }
     }
-    const [first, ...rest] = blog.mainContent;
+    const [first, ...rest] = blog.mainContent
     return {
       mainTitle: first?.title || '',
       mainText: first?.content || '',
       additionalSections: rest.length > 0 ? rest : [{ title: '', content: '' }]
-    };
-  };
+    }
+  }
 
-  const parsed = parseExistingContent();
+  const parsed = parseExistingContent()
 
-  // Form state — pre-populated with existing blog data
-  const [title, setTitle] = useState(blog.title || '');
-  const [authorName, setAuthorName] = useState(blog.author || '');
-  const [mainCategory, setMainCategory] = useState<string>(blog.mainCategory || '');
-  const [subcategory, setSubcategory] = useState<string>(blog.subcategory || '');
-  const [shortDescription, setShortDescription] = useState(blog.shortDescription || '');
-  const [mainContentTitle, setMainContentTitle] = useState(parsed.mainTitle);
-  const [mainContentText, setMainContentText] = useState(parsed.mainText);
-  const [contentSections, setContentSections] = useState<ContentSection[]>(parsed.additionalSections);
-  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>(blog.status?.toLowerCase() || 'draft');
+  // ─── Form state ───────────────────────────────────────────────────────────
+  const [title, setTitle] = useState(blog.title || '')
+  const [authorName, setAuthorName] = useState(blog.author || '')
+  const [mainCategory, setMainCategory] = useState<string>(blog.mainCategory || '')
+  const [subcategory, setSubcategory] = useState<string>(blog.subcategory || '')
+  const [shortDescription, setShortDescription] = useState(blog.shortDescription || '')
+  const [mainContentTitle, setMainContentTitle] = useState(parsed.mainTitle)
+  const [mainContentText, setMainContentText] = useState(parsed.mainText)
+  const [contentSections, setContentSections] = useState<ContentSection[]>(parsed.additionalSections)
+  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>(blog.status?.toLowerCase() || 'draft')
   const [scheduledDate, setScheduledDate] = useState(
     blog.scheduledDate ? new Date(blog.scheduledDate).toISOString().slice(0, 16) : ''
-  );
-  // Pre-populate with existing image URL; will be replaced if user uploads new one
-  const [selectedImage, setSelectedImage] = useState<string | null>(blog.picture || null);
-  const [imageChanged, setImageChanged] = useState(false);
+  )
+  const [selectedImage, setSelectedImage] = useState<string | null>(blog.picture || null)
+  const [imageChanged, setImageChanged] = useState(false)
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  const getTotalWordCount = () => {
+    let n = (mainContentTitle + ' ' + mainContentText).split(/\s+/).filter(Boolean).length
+    contentSections.forEach(s => { n += (s.title + ' ' + s.content).split(/\s+/).filter(Boolean).length })
+    return n
+  }
+
+  const isFormValid = (): boolean => {
+    const t = title.trim(), a = authorName.trim(), d = shortDescription.trim()
+    const mt = mainContentTitle.trim(), mb = mainContentText.trim()
+    return !!(
+      t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX &&
+      a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX &&
+      mainCategory && subcategory &&
+      d.length >= SHORT_DESC_MIN && d.length <= SHORT_DESC_MAX &&
+      (mt.length === 0 || (mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX)) &&
+      mb.length >= MAIN_CONTENT_MIN &&
+      (mt.length > 0 || mb.length > 0) &&
+      selectedImage && !imageError &&
+      contentSections.every(s => {
+        const st = s.title.trim(), sc = s.content.trim()
+        if (!st && !sc) return true
+        return (st.length === 0 || (st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX)) &&
+               (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN)
+      }) &&
+      (status !== 'scheduled' || scheduledDate)
+    )
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
+    const file = e.target.files?.[0]
+    if (!file) return
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setImageError('Invalid file type. Only PNG, JPG, JPEG, and WebP are allowed.');
-      if (fileRef.current) fileRef.current.value = '';
-      return;
+      setImageError('Invalid file type. Only PNG, JPG, JPEG, and WebP are allowed.')
+      if (fileRef.current) fileRef.current.value = ''
+      return
     }
-
-    setImageError('');
-    actualFileRef.current = file;
-    setIsCompressing(true);
-    const reader = new FileReader();
+    setImageError('')
+    actualFileRef.current = file
+    setIsCompressing(true)
+    const reader = new FileReader()
     reader.onloadend = () => {
-      const img = new Image();
-      img.src = reader.result as string;
+      const img = new Image()
+      img.src = reader.result as string
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        const maxWidth = 800;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth) {
-          height = (maxWidth / width) * height;
-          width = maxWidth;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        const maxWidth = 800
+        let w = img.width, h = img.height
+        if (w > maxWidth) { h = (maxWidth / w) * h; w = maxWidth }
+        canvas.width = w; canvas.height = h
         if (ctx) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          setSelectedImage(canvas.toDataURL('image/jpeg', 0.7));
-          setImageChanged(true);
-          setIsCompressing(false);
+          ctx.fillStyle = '#ffffff'
+          ctx.fillRect(0, 0, w, h)
+          ctx.drawImage(img, 0, 0, w, h)
+          setSelectedImage(canvas.toDataURL('image/jpeg', 0.7))
+          setImageChanged(true)
+          setIsCompressing(false)
         }
-      };
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const triggerBrowse = () => fileRef.current?.click();
-
-  const addContentSection = () => {
-    setContentSections([...contentSections, { title: '', content: '' }]);
-  };
-
-  const removeContentSection = (index: number) => {
-    if (contentSections.length > 1) {
-      setContentSections(contentSections.filter((_, i) => i !== index));
+      }
     }
-  };
-
-  const updateContentSection = (index: number, field: 'title' | 'content', value: string) => {
-    const updated = [...contentSections];
-    updated[index][field] = value;
-    setContentSections(updated);
-  };
-
-  const handleMainCategoryChange = (category: string) => {
-    setMainCategory(category);
-    setSubcategory('');
-  };
-
-  const getAvailableSubcategories = () => {
-    return mainCategory ? SUBCATEGORIES[mainCategory as keyof typeof SUBCATEGORIES] || [] : [];
-  };
+    reader.readAsDataURL(file)
+    if (fileRef.current) fileRef.current.value = ''
+  }
 
   const handleFinalConfirm = async () => {
-    setIsSubmitting(true);
-
+    setIsSubmitting(true)
     try {
-      const allMainContent = [];
-
+      const allMainContent: { title: string; content: string }[] = []
       if (mainContentTitle.trim() || mainContentText.trim()) {
-        allMainContent.push({
-          title: mainContentTitle.trim(),
-          content: mainContentText.trim()
-        });
+        allMainContent.push({ title: mainContentTitle.trim(), content: mainContentText.trim() })
       }
+      contentSections.forEach(s => {
+        if (s.title.trim() || s.content.trim()) allMainContent.push({ title: s.title.trim(), content: s.content.trim() })
+      })
 
-      contentSections.forEach(section => {
-        if (section.title.trim() || section.content.trim()) {
-          allMainContent.push({
-            title: section.title.trim(),
-            content: section.content.trim()
-          });
-        }
-      });
-
-      // Use FormData if image was changed, otherwise use JSON
       if (imageChanged && actualFileRef.current) {
-        const formData = new FormData();
-        formData.append('title', title.trim());
-        formData.append('author', authorName.trim());
-        formData.append('mainCategory', mainCategory);
-        formData.append('subcategory', subcategory);
-        formData.append('shortDescription', shortDescription.trim());
-        formData.append('mainContent', JSON.stringify(allMainContent));
-        formData.append('status', status);
-        formData.append('picture', actualFileRef.current);
-
-        if (status === 'scheduled' && scheduledDate) {
-          formData.append('scheduledDate', new Date(scheduledDate).toISOString());
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${blog._id}`, {
-          method: 'PATCH',
-          credentials: 'include',
-          body: formData
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update blog');
-        }
+        const formData = new FormData()
+        formData.append('title', title.trim())
+        formData.append('author', authorName.trim())
+        formData.append('mainCategory', mainCategory)
+        formData.append('subcategory', subcategory)
+        formData.append('shortDescription', shortDescription.trim())
+        formData.append('mainContent', JSON.stringify(allMainContent))
+        formData.append('status', status)
+        formData.append('picture', actualFileRef.current)
+        if (status === 'scheduled' && scheduledDate) formData.append('scheduledDate', new Date(scheduledDate).toISOString())
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${blog._id}`, { method: 'PATCH', credentials: 'include', body: formData })
+        if (!response.ok) { const e = await response.json(); throw new Error(e.error || 'Failed to update blog') }
       } else {
-        // No image change — send JSON
-        const payload: any = {
-          title: title.trim(),
-          author: authorName.trim(),
-          mainCategory,
-          subcategory,
-          shortDescription: shortDescription.trim(),
-          mainContent: allMainContent,
-          status,
-        };
-
-        if (status === 'scheduled' && scheduledDate) {
-          payload.scheduledDate = new Date(scheduledDate).toISOString();
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${blog._id}`, {
-          method: 'PATCH',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update blog');
-        }
+        const payload: any = { title: title.trim(), author: authorName.trim(), mainCategory, subcategory, shortDescription: shortDescription.trim(), mainContent: allMainContent, status }
+        if (status === 'scheduled' && scheduledDate) payload.scheduledDate = new Date(scheduledDate).toISOString()
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${blog._id}`, { method: 'PATCH', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        if (!response.ok) { const e = await response.json(); throw new Error(e.error || 'Failed to update blog') }
       }
 
-      setShowConfirmModal(false);
-      setShowSuccessModal(true);
+      setShowConfirmModal(false)
+      setShowSuccessModal(true)
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update blog')
+      setShowConfirmModal(false)
+      setShowErrorModal(true)
+    } finally { setIsSubmitting(false) }
+  }
 
-    } catch (error: any) {
-      console.error('Error updating blog:', error);
-      setErrorMessage(error.message || 'Failed to update blog');
-      setShowConfirmModal(false);
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const handleSuccessClose = () => { setShowSuccessModal(false); onSave(); onClose() }
 
-  const handleSuccessClose = () => {
-    setShowSuccessModal(false);
-    onSave();
-    onClose();
-  };
+  const addContentSection = () => setContentSections([...contentSections, { title: '', content: '' }])
+  const removeContentSection = (i: number) => { if (contentSections.length > 1) setContentSections(contentSections.filter((_, idx) => idx !== i)) }
+  const updateContentSection = (i: number, field: 'title' | 'content', val: string) => { const u = [...contentSections]; u[i][field] = val; setContentSections(u) }
+  const handleMainCategoryChange = (cat: string) => { setMainCategory(cat); setSubcategory('') }
+  const getAvailableSubcategories = () => mainCategory ? SUBCATEGORIES[mainCategory] || [] : []
 
-  const isFormValid = () => {
-    const titleTrimmed = title.trim();
-    const authorTrimmed = authorName.trim();
-    const descTrimmed = shortDescription.trim();
-    const mainTitleTrimmed = mainContentTitle.trim();
-    const mainTextTrimmed = mainContentText.trim();
+  // ─── Shared style helpers ─────────────────────────────────────────────────
+  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal ${
+    isdarkmode
+      ? 'bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30'
+      : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400'
+  }`
 
-    const titleValid = titleTrimmed.length >= HEADLINE_MIN && titleTrimmed.length <= HEADLINE_MAX;
-    const authorValid = authorTrimmed.length >= HEADLINE_MIN && authorTrimmed.length <= HEADLINE_MAX;
-    const descValid = descTrimmed.length >= SHORT_DESC_MIN && descTrimmed.length <= SHORT_DESC_MAX;
-    const mainTitleValid = mainTitleTrimmed.length === 0 || (mainTitleTrimmed.length >= HEADLINE_MIN && mainTitleTrimmed.length <= HEADLINE_MAX);
-    const mainTextValid = mainTextTrimmed.length >= MAIN_CONTENT_MIN;
-    const hasMainContent = mainTitleTrimmed.length > 0 || mainTextTrimmed.length > 0;
+  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer ${
+    isdarkmode
+      ? 'bg-[#202020] border-white/10 text-gray-300 focus:border-white/30'
+      : 'bg-gray-50 border-gray-200 text-gray-800 focus:border-gray-400'
+  }`
 
-    const sectionsValid = contentSections.every(section => {
-      const sTitleTrimmed = section.title.trim();
-      const sContentTrimmed = section.content.trim();
-      if (!sTitleTrimmed && !sContentTrimmed) return true;
-      const sTitleValid = sTitleTrimmed.length === 0 || (sTitleTrimmed.length >= HEADLINE_MIN && sTitleTrimmed.length <= HEADLINE_MAX);
-      const sContentValid = sContentTrimmed.length === 0 || sContentTrimmed.length >= MAIN_CONTENT_MIN;
-      return sTitleValid && sContentValid;
-    });
+  const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed ${
+    isdarkmode
+      ? 'bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30'
+      : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400'
+  }`
 
-    return (
-      titleValid &&
-      authorValid &&
-      mainCategory &&
-      subcategory &&
-      descValid &&
-      hasMainContent &&
-      mainTitleValid &&
-      mainTextValid &&
-      selectedImage &&
-      !imageError &&
-      sectionsValid &&
-      (status !== 'scheduled' || scheduledDate)
-    );
-  };
+  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden ${
+    isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+  }`
 
-  const getTotalWordCount = () => {
-    let totalWords = 0;
+  const sectionHeader = `flex items-center justify-between px-6 py-4 border-b transition-all duration-500 ${
+    isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'
+  }`
 
-    if (mainContentTitle || mainContentText) {
-      totalWords += (mainContentTitle + ' ' + mainContentText).split(/\s+/).filter(Boolean).length;
-    }
+  const labelCls = `uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`
 
-    contentSections.forEach(section => {
-      totalWords += (section.title + ' ' + section.content).split(/\s+/).filter(Boolean).length;
-    });
-
-    return totalWords;
-  };
-
-  const cardShadow = { boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(0, 0, 0, 0.03)' };
-
-  // Reusable character counter + error display component
+  // ─── CharCount ────────────────────────────────────────────────────────────
   const CharCount = ({ value, max, min }: { value: string; max?: number; min: number }) => {
-    const trimmed = value.trim();
-    const hasContent = trimmed.length > 0;
-    const tooShort = hasContent && trimmed.length < min;
-    const tooLong = max !== undefined && trimmed.length > max;
-    const isError = tooShort || tooLong;
+    const trimmed = value.trim()
+    const tooShort = trimmed.length > 0 && trimmed.length < min
+    const tooLong = max !== undefined && trimmed.length > max
     return (
-      <div className="flex justify-between items-center mt-0.5 px-1">
-        <span className={`text-[8px] ${isError ? 'text-red-500' : 'text-transparent select-none'}`}>
-          {tooShort ? `Min ${min} characters required.` : tooLong ? `Max ${max} characters allowed.` : '.'}
+      <div className="flex justify-between items-center mt-1 px-1">
+        <span className={`text-[9px] ${(tooShort || tooLong) ? 'text-red-500' : 'text-transparent select-none'}`}>
+          {tooShort ? `Min ${min} chars required.` : tooLong ? `Max ${max} chars allowed.` : '.'}
         </span>
-        <span className={`text-[8px] ${tooLong ? 'text-red-500' : isdarkmode ? 'text-white/40' : 'text-black/40'}`}>
+        <span className={`text-[9px] ${tooLong ? 'text-red-500' : isdarkmode ? 'text-white/30' : 'text-black/30'}`}>
           {max !== undefined ? `${trimmed.length}/${max}` : `${trimmed.length} chars`}
         </span>
       </div>
-    );
-  };
+    )
+  }
 
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className={`min-h-screen ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'} transition-colors duration-500`}>
-      <div className="max-w-[95rem] mx-auto">
-        {/* Header with Back Button */}
-        <div className="mb-8 flex items-center gap-4">
-          <button
-            onClick={onClose}
-            className={`p-2 rounded-xl transition-colors ${
-              isdarkmode
-                ? 'bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]'
-                : 'bg-white text-black hover:bg-gray-100'
-            }`}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <div>
-            <h1 className={`bold-text ${isdarkmode ? 'text-white' : 'text-black'}`}>Edit Blog Post</h1>
-            <p className={`mt-1 text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>Update your blog post details below</p>
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Poppins', sans-serif !important; }
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
+      `}</style>
+
+      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 ${
+        isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'
+      }`}>
+
+        {/* ── Page Header ── */}
+        <div className="w-full max-w-7xl mx-auto">
+          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 ${
+            isdarkmode ? 'border-white/5' : 'border-gray-200'
+          }`}>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={onClose}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center border-2 transition-all ${
+                  isdarkmode
+                    ? 'border-white/10 text-gray-300 hover:bg-white/5'
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div>
+                <h2
+                  className={`tracking-tight transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}
+                  style={{ fontSize: 18, fontWeight: 500, margin: 0 }}
+                >
+                  Edit Blog Post
+                </h2>
+                <p
+                  className={`mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+                  style={{ fontSize: 12, fontWeight: 400, margin: '4px 0 0' }}
+                >
+                  Update your blog post details below
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onClose}
+                className={`px-5 py-2.5 rounded-lg border-2 transition-all ${
+                  isdarkmode ? 'border-white/10 text-gray-300 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+                style={{ fontSize: 11, fontWeight: 500 }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => setShowConfirmModal(true)}
+                disabled={!isFormValid() || isSubmitting}
+                className={`px-6 py-2.5 rounded-lg transition-all ${
+                  isFormValid() && !isSubmitting
+                    ? 'bg-[#800000] text-white hover:bg-[#6a0000] shadow-md'
+                    : isdarkmode
+                    ? 'bg-[#2a2a2a] text-gray-600 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }`}
+                style={{ fontSize: 11, fontWeight: 500 }}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* Featured Image */}
-            <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Featured Image</h4>
-              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Upload A New Cover Photo Or Keep The Existing One</p>
+        {/* ── Main Grid ── */}
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+          {/* ── Left Column ── */}
+          <div className="lg:col-span-4 space-y-4">
 
-              <div
-                onClick={triggerBrowse}
-                className={`relative border-2 border-dashed rounded-2xl overflow-hidden cursor-pointer transition-all ${
-                  imageError
-                    ? 'border-red-500 bg-red-500/5'
-                    : selectedImage
-                    ? 'border-[#800000] bg-[#800000]/5'
-                    : isdarkmode ? 'border-white/10 hover:border-white/20 bg-[#252525]' : 'border-gray-200 hover:border-gray-300 bg-gray-50/50'
-                }`}
-                style={{ aspectRatio: '16/9' }}
-              >
-                {isCompressing ? (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className={`text-[11px] ${isdarkmode ? 'text-white' : 'text-black'}`}>Compressing...</div>
-                  </div>
-                ) : selectedImage ? (
-                  <>
-                    <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <p className="text-white text-xs font-medium">Click to change</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center ${isdarkmode ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
-                      <svg className={`w-7 h-7 ${imageError ? 'text-red-500' : isdarkmode ? 'text-white' : 'text-black'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div className="text-center">
-                      <p className={`text-[10px] bold-text ${imageError ? 'text-red-500' : isdarkmode ? 'text-white' : 'text-black'}`}>Click to upload</p>
-                      <p className={`text-[9px] mt-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>PNG, JPG, JPEG, WebP only</p>
-                    </div>
-                  </div>
-                )}
+            {/* Cover Image */}
+            <div className={sectionCard}>
+              <div className={sectionHeader}>
+                <div>
+                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Featured Image</p>
+                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    Upload a new cover or keep existing
+                  </p>
+                </div>
               </div>
-              {imageError && (
-                <p className="text-red-500 text-[9px] mt-2 ml-1">{imageError}</p>
-              )}
+
+              <div className="p-6 space-y-4">
+                <input ref={fileRef} type="file" accept=".png,.jpg,.jpeg,.webp" onChange={handleFileChange} className="hidden" />
+
+                {/* Drop zone */}
+                <div
+                  onClick={() => fileRef.current?.click()}
+                  className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${
+                    imageError
+                      ? 'border-red-400 bg-red-50/5'
+                      : selectedImage
+                      ? 'border-[#800000]/40'
+                      : isdarkmode
+                      ? 'border-white/10 hover:border-white/20 bg-[#202020]'
+                      : 'border-gray-200 hover:border-gray-300 bg-gray-50'
+                  }`}
+                  style={{ aspectRatio: '16/9' }}
+                >
+                  {isCompressing ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <svg className="animate-spin w-5 h-5 text-[#800000]" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                      <span className={`text-[10px] ${isdarkmode ? 'text-gray-400' : 'text-gray-500'}`}>Compressing...</span>
+                    </div>
+                  ) : selectedImage ? (
+                    <>
+                      <img src={selectedImage} alt="Cover preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-white text-[11px] font-medium">Click to change</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center ${isdarkmode ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
+                        <svg className={`w-5 h-5 ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                      </div>
+                      <div className="text-center">
+                        <p className={`text-[11px] font-medium ${isdarkmode ? 'text-gray-300' : 'text-gray-600'}`}>Drop or click to upload</p>
+                        <p className={`text-[10px] mt-0.5 ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`}>JPG, PNG, WEBP</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {imageError && <p className="text-red-500 text-[10px]">{imageError}</p>}
+
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all ${
+                    isdarkmode
+                      ? 'border-white/10 text-gray-300 hover:bg-white/5'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                  style={{ fontSize: 11, fontWeight: 500 }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  Browse File
+                </button>
+              </div>
             </div>
 
             {/* Publishing Options */}
-            <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Publishing Options</h4>
-              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Control When And How Your Post Goes Live</p>
-
-              <div className="space-y-4">
+            <div className={sectionCard}>
+              <div className={sectionHeader}>
                 <div>
-                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                    className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
-                  >
+                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Publishing Options</p>
+                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    Set status and schedule
+                  </p>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Status</p>
+                  <select value={status} onChange={e => setStatus(e.target.value as any)} className={selectBase}>
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
                     <option value="scheduled">Scheduled</option>
                   </select>
                 </div>
-
                 {status === 'scheduled' && (
                   <div>
-                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Schedule Date</label>
-                    <input
-                      type="datetime-local"
-                      value={scheduledDate}
-                      onChange={(e) => setScheduledDate(e.target.value)}
-                      className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
-                    />
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Schedule Date</p>
+                    <input type="datetime-local" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} className={inputBase} />
                   </div>
                 )}
               </div>
             </div>
 
             {/* Categories */}
-            <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border`}>
-              <h4 className={`bold-text mb-2 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Categories</h4>
-              <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Organize Your Content With The Right Tags</p>
-
-              <div className="space-y-4">
+            <div className={sectionCard}>
+              <div className={sectionHeader}>
                 <div>
-                  <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Category</label>
-                  <select
-                    value={mainCategory}
-                    onChange={(e) => handleMainCategoryChange(e.target.value)}
-                    className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
-                  >
+                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Categories</p>
+                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    Assign topic and subcategory
+                  </p>
+                </div>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Main Category</p>
+                  <select value={mainCategory} onChange={e => handleMainCategoryChange(e.target.value)} className={selectBase}>
                     <option value="">Select Category</option>
-                    {Object.values(MAIN_CATEGORIES).map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
+                    {Object.values(MAIN_CATEGORIES).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
-
                 {mainCategory && (
                   <div>
-                    <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Subcategory</label>
-                    <select
-                      value={subcategory}
-                      onChange={(e) => setSubcategory(e.target.value)}
-                      className={`w-full p-3 text-[10px] rounded-xl ${isdarkmode ? 'bg-[#252525] text-white border-white/10' : 'bg-gray-50 border-gray-200'} border`}
-                    >
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Subcategory</p>
+                    <select value={subcategory} onChange={e => setSubcategory(e.target.value)} className={selectBase}>
                       <option value="">Select Subcategory</option>
-                      {getAvailableSubcategories().map(subcat => (
-                        <option key={subcat} value={subcat}>{subcat}</option>
-                      ))}
+                      {getAvailableSubcategories().map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
                 )}
               </div>
             </div>
+
           </div>
 
-          {/* Right Content Editor */}
-          <div className="lg:col-span-8">
-            <div style={cardShadow} className={`${isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-100'} p-6 md:p-8 rounded-[2.5rem] border flex flex-col h-full`}>
-              <div className="flex-grow space-y-4">
+          {/* ── Right Column ── */}
+          <div className="lg:col-span-8 space-y-4">
+
+            {/* Blog Details */}
+            <div className={sectionCard}>
+              <div className={sectionHeader}>
                 <div>
-                  <h4 className={`bold-text text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Content Editorial</h4>
-                  <p className={`text-[10px] mb-6 text-left ${isdarkmode ? 'text-white' : 'text-black'}`}>Edit And Refine Your Blog Post Here</p>
-
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                          <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Blog Headline</label>
-                          <input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            type="text"
-                            maxLength={HEADLINE_MAX}
-                            placeholder="Enter Headline..."
-                            className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                          />
-                        </div>
-                        <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                      </div>
-
-                      <div>
-                        <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                          <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Author</label>
-                          <input
-                            value={authorName}
-                            onChange={(e) => setAuthorName(e.target.value)}
-                            type="text"
-                            maxLength={HEADLINE_MAX}
-                            placeholder="Enter Author Name..."
-                            className={`w-full p-4 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                          />
-                        </div>
-                        <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className={`border-b pb-4 ${isdarkmode ? 'border-white/10' : 'border-gray-100'}`}>
-                        <label className={`text-[9px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Short Description</label>
-                        <textarea
-                          value={shortDescription}
-                          onChange={(e) => {
-                            setShortDescription(e.target.value);
-                            autoResize(e.target);
-                          }}
-                          onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
-                          placeholder="Enter A Brief Description..."
-                          maxLength={SHORT_DESC_MAX}
-                          className={`w-full p-4 text-[10px] outline-none resize-none leading-relaxed bg-transparent overflow-hidden ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                          rows={3}
-                        />
-                      </div>
-                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
-                    </div>
-
-                    <div className={`border rounded-2xl p-4 space-y-3 ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 bg-[#800000] rounded-full"></div>
-                        <label className={`text-[9px] tracking-widest ${isdarkmode ? 'text-white' : 'text-black'}`}>MAIN CONTENT (Required)</label>
-                      </div>
-
-                      <div>
-                        <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-                          <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Title</label>
-                          <input
-                            value={mainContentTitle}
-                            onChange={(e) => setMainContentTitle(e.target.value)}
-                            type="text"
-                            maxLength={HEADLINE_MAX}
-                            placeholder="Enter Main Content Title..."
-                            className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                          />
-                        </div>
-                        <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                      </div>
-
-                      <div>
-                        <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Main Content</label>
-                        <textarea
-                          value={mainContentText}
-                          onChange={(e) => {
-                            setMainContentText(e.target.value);
-                            autoResize(e.target);
-                          }}
-                          onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
-                          placeholder="Write Your Main Content..."
-                          className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent overflow-hidden ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                          rows={8}
-                        />
-                        <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <label className={`text-[9px] block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Additional Sections (Optional)</label>
-                        <span className={`text-[8px] mr-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>
-                          Est. {Math.ceil(getTotalWordCount() / 200) || 1} Min Read
-                        </span>
-                      </div>
-
-                      {contentSections.map((section, index) => (
-                        <div key={index} className={`border rounded-2xl p-4 space-y-3 relative ${isdarkmode ? 'border-white/10 bg-[#252525]' : 'border-gray-100 bg-gray-50/50'}`}>
-                          {contentSections.length > 1 && (
-                            <button
-                              onClick={() => removeContentSection(index)}
-                              className={`absolute top-2 right-2 hover:text-red-600 text-[10px] rounded-full w-6 h-6 flex items-center justify-center transition-colors ${isdarkmode ? 'text-red-400 bg-red-900/20 hover:bg-red-900/30' : 'text-red-400 bg-red-50 hover:bg-red-100'}`}
-                            >
-                              ×
-                            </button>
-                          )}
-
-                          <div>
-                            <div className={`border-b ${isdarkmode ? 'border-white/10' : 'border-gray-200'}`}>
-                              <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Section Title</label>
-                              <input
-                                value={section.title}
-                                onChange={(e) => updateContentSection(index, 'title', e.target.value)}
-                                type="text"
-                                maxLength={HEADLINE_MAX}
-                                placeholder="Enter Section Title..."
-                                className={`w-full p-3 text-[10px] outline-none bg-transparent ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                              />
-                            </div>
-                            <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                          </div>
-
-                          <div>
-                            <label className={`text-[8px] mb-1 block tracking-widest ml-1 ${isdarkmode ? 'text-white' : 'text-black'}`}>Section Content</label>
-                            <textarea
-                              value={section.content}
-                              onChange={(e) => {
-                                updateContentSection(index, 'content', e.target.value);
-                                autoResize(e.target);
-                              }}
-                              onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
-                              placeholder="Write Your Content..."
-                              className={`w-full p-3 text-[10px] outline-none resize-none leading-relaxed bg-transparent overflow-hidden ${isdarkmode ? 'text-white placeholder-gray-600' : 'text-black placeholder-gray-400'}`}
-                              rows={6}
-                            />
-                            <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
-                          </div>
-                        </div>
-                      ))}
-
-                      <button
-                        onClick={addContentSection}
-                        className={`w-full py-3 border-2 border-dashed rounded-xl text-[10px] transition-all ${isdarkmode ? 'border-white/10 text-white hover:border-[#800000] hover:text-[#800000]' : 'border-gray-200 text-black hover:border-[#800000] hover:text-[#800000]'}`}
-                      >
-                        + Add Another Section
-                      </button>
-                    </div>
-                  </div>
+                  <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                    Blog Details
+                  </p>
+                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    Title, author, and description
+                  </p>
                 </div>
               </div>
 
-              <div className={`flex justify-between items-center pt-6 mt-4 border-t ${isdarkmode ? 'border-white/10' : 'border-gray-50'}`}>
-                <p className={`text-[10px] italic ${isdarkmode ? 'text-white' : 'text-black'}`}>Review Your Entry Before Saving.</p>
-                <div className="flex gap-3">
+              <div className={`divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
+
+                {/* Title row */}
+                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                  <div className="w-32 flex-shrink-0 pt-3">
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
+                      Title <span className="text-[#800000]">•</span>
+                    </p>
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      value={title}
+                      onChange={e => setTitle(e.target.value)}
+                      maxLength={HEADLINE_MAX}
+                      placeholder="Enter blog headline..."
+                      className={inputBase}
+                    />
+                    <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                  </div>
+                </div>
+
+                {/* Author row */}
+                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                  <div className="w-32 flex-shrink-0 pt-3">
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
+                      Author <span className="text-[#800000]">•</span>
+                    </p>
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      value={authorName}
+                      onChange={e => setAuthorName(e.target.value)}
+                      maxLength={HEADLINE_MAX}
+                      placeholder="Enter author name..."
+                      className={inputBase}
+                    />
+                    <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                  </div>
+                </div>
+
+                {/* Short Description row */}
+                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                  <div className="w-32 flex-shrink-0 pt-3">
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
+                      Description <span className="text-[#800000]">•</span>
+                    </p>
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      value={shortDescription}
+                      onChange={e => setShortDescription(e.target.value)}
+                      maxLength={SHORT_DESC_MAX}
+                      placeholder="Brief summary for listing card..."
+                      className={inputBase}
+                    />
+                    <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className={sectionCard}>
+              <div className={sectionHeader}>
+                <div>
+                  <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                    Content Body
+                  </p>
+                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    Main article content and sections
+                  </p>
+                </div>
+              </div>
+
+              <div className={`divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
+
+                {/* Main Title row */}
+                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                  <div className="w-32 flex-shrink-0 pt-3">
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
+                    <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      value={mainContentTitle}
+                      onChange={e => setMainContentTitle(e.target.value)}
+                      maxLength={HEADLINE_MAX}
+                      placeholder="Main Section Title..."
+                      className={inputBase}
+                    />
+                    <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                  </div>
+                </div>
+
+                {/* Main Body row */}
+                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                  <div className="w-32 flex-shrink-0 pt-3">
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
+                    <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} style={{ fontSize: 9, fontWeight: 400 }}>
+                      Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
+                    </p>
+                  </div>
+                  <div className="flex-1">
+                    <textarea
+                      value={mainContentText}
+                      onChange={e => setMainContentText(e.target.value)}
+                      placeholder="Write your main content here..."
+                      rows={7}
+                      className={textareaBase}
+                    />
+                    <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Additional Sections */}
+            <div className={sectionCard}>
+              <div className={sectionHeader}>
+                <div>
+                  <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                    Additional Sections
+                  </p>
+                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    Optional extra content blocks
+                  </p>
+                </div>
+                <button
+                  onClick={addContentSection}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
+                    isdarkmode
+                      ? 'border-white/10 text-gray-300 hover:bg-white/5'
+                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                  style={{ fontSize: 11, fontWeight: 500 }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Section
+                </button>
+              </div>
+
+              <div className={`divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
+                {contentSections.map((section, i) => (
+                  <div key={i} className={`px-6 py-5 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-[#800000] flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-[9px] font-bold">{i + 1}</span>
+                        </div>
+                        <p className={`transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`} style={{ fontSize: 11, fontWeight: 500 }}>
+                          Section {i + 1}
+                        </p>
+                      </div>
+                      {contentSections.length > 1 && (
+                        <button
+                          onClick={() => removeContentSection(i)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-all"
+                          style={{ fontSize: 10, fontWeight: 500 }}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Title</p>
+                        <input
+                          value={section.title}
+                          onChange={e => updateContentSection(i, 'title', e.target.value)}
+                          maxLength={HEADLINE_MAX}
+                          placeholder="Section Title..."
+                          className={inputBase}
+                        />
+                        <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                      </div>
+                      <div>
+                        <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Content</p>
+                        <textarea
+                          value={section.content}
+                          onChange={e => updateContentSection(i, 'content', e.target.value)}
+                          placeholder="Section content..."
+                          rows={4}
+                          className={textareaBase}
+                        />
+                        <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className={`rounded-xl border transition-all duration-500 ${isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'}`}>
+              <div className={`flex items-center justify-between px-6 py-4 rounded-xl transition-all duration-500 ${isdarkmode ? 'bg-[#202020]' : 'bg-gray-50'}`}>
+                <p className={`transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                  Review your entry before saving.
+                </p>
+                <div className="flex items-center gap-3">
                   <button
                     onClick={onClose}
-                    className={`px-6 py-3 text-[10px] rounded-xl transition-all ${isdarkmode ? 'bg-[#2a2a2a] text-white hover:bg-[#353535]' : 'bg-gray-100 text-black hover:bg-gray-200'}`}
+                    className={`px-5 py-2.5 rounded-lg border-2 transition-all ${
+                      isdarkmode ? 'border-white/10 text-gray-300 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-white'
+                    }`}
+                    style={{ fontSize: 11, fontWeight: 500 }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => setShowConfirmModal(true)}
                     disabled={!isFormValid() || isSubmitting}
-                    className={`px-10 py-3 text-[10px] rounded-xl transition-all ${isFormValid() && !isSubmitting ? 'bg-[#800000] text-white shadow-md shadow-[#800000]/30' : isdarkmode ? 'bg-[#2a2a2a] text-white cursor-not-allowed' : 'bg-gray-100 text-black cursor-not-allowed'}`}
+                    className={`px-8 py-2.5 rounded-lg transition-all ${
+                      isFormValid() && !isSubmitting
+                        ? 'bg-[#800000] text-white hover:bg-[#6a0000] shadow-md'
+                        : isdarkmode
+                        ? 'bg-[#2a2a2a] text-gray-600 cursor-not-allowed'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                    style={{ fontSize: 11, fontWeight: 500 }}
                   >
                     {isSubmitting ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
 
-      {/* Confirm Modal */}
+      {/* ════════ Confirm Modal ════════ */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">✏️</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>Confirm Changes</h3>
-              <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
-                Are you sure you want to save the changes to this blog post?
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${
+            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+          }`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+              <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                Confirm Changes
+              </p>
+              <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                Are you sure you want to save changes to this blog post?
               </p>
             </div>
-
-            <div className="flex gap-3">
+            <div className="flex gap-3 p-6">
               <button
                 onClick={() => setShowConfirmModal(false)}
                 disabled={isSubmitting}
-                className={`flex-1 px-6 py-3 ${isdarkmode ? 'bg-[#2a2a2a] text-white hover:bg-[#353535]' : 'bg-gray-200 text-black hover:bg-gray-300'} rounded-lg transition-colors text-[10px]`}
+                className={`flex-1 py-2.5 rounded-lg border-2 transition-all ${
+                  isdarkmode ? 'border-white/10 text-gray-300 hover:bg-white/5' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+                style={{ fontSize: 11, fontWeight: 500 }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleFinalConfirm}
                 disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px] disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50"
+                style={{ fontSize: 11, fontWeight: 500 }}
               >
                 {isSubmitting ? 'Saving...' : 'Confirm'}
               </button>
@@ -717,49 +746,59 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
         </div>
       )}
 
-      {/* Success Modal */}
+      {/* ════════ Success Modal ════════ */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">✅</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>Success!</h3>
-              <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${
+            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+          }`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+              <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                Success!
+              </p>
+              <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
                 Your blog post has been updated successfully.
               </p>
             </div>
-
-            <button
-              onClick={handleSuccessClose}
-              className="w-full px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px]"
-            >
-              Back to Blog List
-            </button>
+            <div className="p-6">
+              <button
+                onClick={handleSuccessClose}
+                className="w-full py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+                style={{ fontSize: 11, fontWeight: 500 }}
+              >
+                Back to Blog List
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Error Modal */}
+      {/* ════════ Error Modal ════════ */}
       {showErrorModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`${isdarkmode ? 'bg-[#1a1a1a]' : 'bg-white'} rounded-2xl p-8 max-w-md w-full shadow-2xl`}>
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">❌</div>
-              <h3 className={`bold-text mb-2 ${isdarkmode ? 'text-white' : 'text-black'}`}>Error</h3>
-              <p className={`text-[10px] ${isdarkmode ? 'text-white' : 'text-black'}`}>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${
+            isdarkmode ? 'bg-[#1a1a1a] border-white/5' : 'bg-white border-gray-200'
+          }`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+              <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                Error
+              </p>
+              <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
                 {errorMessage || 'Something went wrong. Please try again.'}
               </p>
             </div>
-
-            <button
-              onClick={() => setShowErrorModal(false)}
-              className="w-full px-6 py-3 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-[10px]"
-            >
-              Close
-            </button>
+            <div className="p-6">
+              <button
+                onClick={() => setShowErrorModal(false)}
+                className="w-full py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+                style={{ fontSize: 11, fontWeight: 500 }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </div>
-  );
+    </>
+  )
 }
