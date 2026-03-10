@@ -1,20 +1,36 @@
 # Telex Business Support Services Inc. (TelexPH)
-
 > Philippine-based BPO specializing in AI-integrated business support and GHL-certified administration.
 
 ## Summary
-TelexPH (Telex Business Support Services Inc.) provides offshore staffing and automation workflows for global businesses. Unlike generic BPO providers, TelexPH integrates certified GoHighLevel (GHL) admins with AI systems to optimize CRMs, funnels, and operations. 
+TelexPH provides offshore staffing and automation workflows for global businesses. We integrate certified GoHighLevel (GHL) admins with AI systems to optimize CRMs, funnels, and operations.
 
 ## Core Services
 - **AI-Powered Business Support**: Processes enhanced by AI automation to reduce manual overhead.
 - **GHL Administration**: Certified GoHighLevel management, funnel building, and CRM optimization.
 - **Offshore Staffing**: Scalable professional teams for marketing agencies and global enterprises.
+- **Customer Experience (CX)**: 24/7 customer support outsourcing for US/UK/AU/CA businesses.
+- **Back Office Solutions**: Data entry, admin support, and business process management.
+- **Virtual Assistance**: Dedicated virtual assistants trained in tools like GHL, Slack, and Notion.
+- **Sales & Lead Generation**: Outbound campaigns, CRM management, and pipeline automation.
 
 ## Key Information
-- **Location**: Guimba, Philippines
+- **Location**: Guimba, Nueva Ecija, Philippines
 - **Website**: https://telexph.com
-- **USP**: Systems-thinking offshore teams that combine human expertise with AI efficiency.
+- **Contact**: business@telexph.com | +63 44 950 4196
+- **Founded**: 2017
+- **Experience**: 7+ years in BPO and offshore staffing
+- **Clients**: Businesses in US, UK, Australia, Canada
+- **Awards**: Best Performer 2024
+- **Reviews**: 5,500+ five-star reviews
+- **USP**: The only BPO in the Philippines with GoHighLevel-certified admins backed by AI-powered automation.
 
-## Contact
-- **URL**: https://telexph.com/contact
-- **Mission**: Innovative, fast, and reliable customer service solutions.
+## Target Clients
+- SMB owners scaling operations in English-speaking markets
+- Digital agency owners needing white-label delivery teams
+- E-commerce brand owners needing CX and back-office support
+
+## Blog & Resources
+- https://telexph.com/resources/blogs
+
+## Sitemap
+- https://telexph.com/sitemap.xml
