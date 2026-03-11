@@ -46,11 +46,22 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
   ];
 
   const aboutMegaData = [
-    { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
+    {
+      id: "company",
+      label: "Company",
+      items: [
+        { label: "Company Overview", url: "/about#overview" },
+        { label: "Our Mission",      url: "/about#mission" },
+        { label: "Our Vision",       url: "/about#mission" },
+        { label: "Core Values",      url: "/about#core-values" },
+        { label: "Our Team",         url: "/about#our-team" },
+      ],
+    },
   ];
 
   const resourcesMegaData = [
     { id: "learning", label: "Resource Center", items: ["Case Studies"] },
+    
     { 
       id: "news", 
       label: "Industry Use Cases", 
