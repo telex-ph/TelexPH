@@ -25,7 +25,7 @@ export default function WhatWeOfferHero() {
             opacity: 0.85,
           }}
         >
-          OUR SERVICES
+          SERVICES
         </span>
       </div>
 
@@ -39,7 +39,7 @@ export default function WhatWeOfferHero() {
               color: COLORS.black,
             }}
           >
-            OUR SERVICES
+            SERVICES
           </h1>
 
           <p

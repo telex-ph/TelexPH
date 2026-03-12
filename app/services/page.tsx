@@ -26,16 +26,25 @@ export default function WhatWeOfferPage() {
         <WhatWeOfferHero /> 
         
         <div className="bg-white">
+        <section id="offers">
           <ServiceFeatures />
+        </section>
+        </div>
+  
+        <div className="mt-5">
+        <section id="contact">
+          <ContactSupport />       
+        </section> 
         </div>
 
-        <div className="mt-5">
-          <ContactSupport />        
-        </div>
-        
+        <section id="sales&leads">
         <ServiceProcess /> 
+        </section>
         
+        <section id="testimonials">
         <ServiceTestimonials />
+        </section>
+
       </main>
       
       <Footer />
