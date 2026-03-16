@@ -21,7 +21,6 @@ import {
   Tag,
   FileText,
   Code,
-  Plus,
 } from "lucide-react";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
 
@@ -267,7 +266,6 @@ const ServiceCarousel: React.FC<{ services: ServiceType[] }> = ({
 
 export default function ServiceFeatures() {
   const [services, setServices] = useState<ServiceType[]>([]);
-  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -484,29 +482,10 @@ export default function ServiceFeatures() {
               <ServiceCarousel services={services} />
             </div>
 
-            <div className="hidden lg:block">
-              <div className="grid lg:grid-cols-2 gap-8 lg:gap-10">
-                {(showAll ? services : services.slice(0, 2)).map((service, index) => (
-                  <ServiceCard key={service._id} service={service} index={index} />
-                ))}
-              </div>
-
-              {services.length > 2 && (
-                <div className="w-full flex justify-center mt-12 mb-6">
-                  <button
-                    onClick={() => setShowAll((prev) => !prev)}
-                    className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-10 sm:px-14 py-4 rounded-2xl shadow-[0_10px_20px_rgba(161,0,0,0.3)] hover:shadow-[0_15px_25px_rgba(161,0,0,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300"
-                  >
-                    <span className="text-[13px] sm:text-[14px] tracking-widest uppercase font-medium">
-                      {showAll ? "show less" : "show all services"}
-                    </span>
-                    <Plus
-                      size={18}
-                      className={`transition-transform duration-300 ${showAll ? "rotate-45" : "group-hover:rotate-90"}`}
-                    />
-                  </button>
-                </div>
-              )}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-10">
+              {services.map((service, index) => (
+                <ServiceCard key={service._id} service={service} index={index} />
+              ))}
             </div>
           </>
         )}

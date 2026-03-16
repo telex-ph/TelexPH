@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef, ChangeEvent } from "react";
+import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import Link from "next/link";
 import { 
   Search, 
@@ -29,16 +29,9 @@ export default function CareerPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [showAll, setShowAll] = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const [dragStartX, setDragStartX] = useState(0);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-
-  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -106,8 +99,6 @@ export default function CareerPage() {
     setSearchQuery("");
     setSelectedDept("");
     setSelectedLocation("");
-    setShowAll(false);
-    setCarouselIndex(0);
   };
 
   const filteredJobs = useMemo(() => {
@@ -119,39 +110,6 @@ export default function CareerPage() {
     });
   }, [searchQuery, selectedDept, selectedLocation]);
 
-  // Reset carousel index when filters change
-  useEffect(() => {
-    setCarouselIndex(0);
-  }, [filteredJobs.length]);
-
-  // Desktop: show 3 or all
-  const desktopJobs = showAll ? filteredJobs : filteredJobs.slice(0, 3);
-  const hasMore = filteredJobs.length > 3;
-
-  // Drag handlers
-  const handleDragStart = (clientX: number) => {
-    setDragStartX(clientX);
-    setDragOffset(0);
-    setIsDragging(true);
-  };
-
-  const handleDragMove = (clientX: number) => {
-    if (!isDragging) return;
-    setDragOffset(clientX - dragStartX);
-  };
-
-  const handleDragEnd = (totalJobs: number) => {
-    if (!isDragging) return;
-    const threshold = 50;
-    if (dragOffset < -threshold) {
-      setCarouselIndex((prev) => Math.min(prev + 1, totalJobs - 1));
-    } else if (dragOffset > threshold) {
-      setCarouselIndex((prev) => Math.max(prev - 1, 0));
-    }
-    setDragOffset(0);
-    setIsDragging(false);
-  };
-
   const filterStyles = `
     w-full bg-white border border-gray-200 py-2 px-4 rounded-full
     text-[12px] font-medium text-gray-500 outline-none 
@@ -162,67 +120,6 @@ export default function CareerPage() {
   const handleOpenModal = (job: Job) => {
     setSelectedJob(job);
     setIsModalOpen(true);
-  };
-
-  // Shared card renderer
-  const renderCard = (job: Job, viewOverride?: boolean) => {
-    const grid = viewOverride !== undefined ? viewOverride : isGridView;
-    return (
-      <div
-        key={job.id}
-        className={`bg-white shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-gray-50 transition-all hover:shadow-xl overflow-hidden
-          ${grid 
-            ? "flex flex-col rounded-bl-[40px] rounded-br-[40px] rounded-tl-2xl rounded-tr-2xl" 
-            : "flex flex-col md:flex-row items-stretch rounded-2xl h-auto"
-          }`}
-      >
-        <div className={`relative bg-gray-100 shrink-0 ${grid ? "h-48 sm:h-52 w-full" : "w-full md:w-56 lg:w-64 h-52 md:h-auto md:self-stretch"}`}>
-          <img 
-            src={job.image} 
-            alt={job.title} 
-            className="w-full h-full object-cover object-center absolute inset-0"
-          />
-          <div className="absolute top-0 left-0">
-            <div className="bg-[#800000] text-white text-[9px] sm:text-[10px] py-1.5 px-4 sm:px-5 pr-8 uppercase rounded-br-full font-medium tracking-tight">
-              {job.dept}
-            </div>
-          </div>
-        </div>
-
-        <div className={`p-5 sm:p-6 flex flex-col flex-grow ${grid ? "items-center text-center" : "items-start text-left justify-center md:ml-4"}`}>
-          <div className={`flex flex-col w-full ${grid ? "items-center mb-4" : "items-start mb-2"}`}>
-            <h3 className="text-[16px] sm:text-[18px] text-[#1a191c] leading-[1.3] mb-2 line-clamp-1 uppercase font-semibold">
-              {job.title}
-            </h3>
-            <p className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-widest leading-none font-semibold">
-              {job.location}
-            </p>
-          </div>
-
-          {grid && <div className="w-[80%] border-t-2 border-[#800000] mb-5 opacity-80"></div>}
-          
-          <p className={`text-[12px] sm:text-[13px] text-gray-500 leading-relaxed mb-6 ${grid ? "line-clamp-3 px-2" : "line-clamp-2 w-full"}`}>
-            {job.description}
-          </p>
-
-          <div className={`mt-auto w-full flex items-center ${grid ? "justify-between px-2" : "justify-between"}`}>
-            <Link 
-              href="/careers/job-details" 
-              className="text-[#a10000] text-[12px] sm:text-[13px] uppercase hover:underline underline-offset-4 decoration-2 font-semibold"
-            >
-              view details
-            </Link>
-            
-            <div 
-              onClick={() => handleOpenModal(job)}
-              className="bg-[#800000] rounded-xl text-white shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all w-9 h-9 flex items-center justify-center"
-            >
-              <Settings size={18} className="stroke-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -269,7 +166,7 @@ export default function CareerPage() {
               </button>
             </div>
 
-            <div className="hidden sm:flex items-center bg-gray-50 p-1 rounded-xl border border-gray-100 self-end xl:self-auto">
+            <div className="flex items-center bg-gray-50 p-1 rounded-xl border border-gray-100 self-end xl:self-auto">
               <button 
                 onClick={() => setIsGridView(false)}
                 className={`p-2 rounded-lg transition-all ${!isGridView ? "bg-white shadow-sm text-[#800000]" : "text-gray-300"}`}
@@ -286,61 +183,67 @@ export default function CareerPage() {
           </div>
         </section>
 
-        {/* ── MOBILE: Drag Carousel (hidden on sm+) ── */}
-        {filteredJobs.length > 0 && (
-          <div className="block sm:hidden mb-8">
-            <div
-              className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
-              ref={carouselRef}
-              onMouseDown={(e) => handleDragStart(e.clientX)}
-              onMouseMove={(e) => handleDragMove(e.clientX)}
-              onMouseUp={() => handleDragEnd(filteredJobs.length)}
-              onMouseLeave={() => { if (isDragging) handleDragEnd(filteredJobs.length); }}
-              onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
-              onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
-              onTouchEnd={() => handleDragEnd(filteredJobs.length)}
+        {/* jobs list */}
+        <div className={isGridView 
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" 
+          : "flex flex-col gap-6"
+        }>
+          {filteredJobs.map((job) => (
+            <div 
+              key={job.id} 
+              className={`bg-white shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-gray-50 transition-all hover:shadow-xl overflow-hidden
+                ${isGridView 
+                  ? "flex flex-col rounded-bl-[40px] rounded-br-[40px] rounded-tl-2xl rounded-tr-2xl" 
+                  : "flex flex-col md:flex-row items-stretch rounded-2xl h-auto"
+                }`}
             >
-              <div
-                className={`flex ${isDragging ? "" : "transition-transform duration-500 ease-in-out"}`}
-                style={{ transform: `translateX(calc(-${carouselIndex * 100}% + ${dragOffset}px))` }}
-              >
-                {filteredJobs.map((job) => (
-                  <div key={job.id} className="w-full shrink-0">
-                    {renderCard(job, true)}
+              <div className={`relative bg-gray-100 shrink-0 ${isGridView ? "h-48 sm:h-52 w-full" : "h-48 md:h-auto md:w-64"}`}>
+                <img 
+                  src={job.image} 
+                  alt={job.title} 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-0 left-0">
+                  <div className="bg-[#800000] text-white text-[9px] sm:text-[10px] py-1.5 px-4 sm:px-5 pr-8 uppercase rounded-br-full font-medium tracking-tight">
+                    {job.dept}
                   </div>
-                ))}
+                </div>
+              </div>
+
+              <div className={`p-5 sm:p-6 flex flex-col flex-grow ${isGridView ? "items-center text-center" : "items-start text-left justify-center md:ml-4"}`}>
+                <div className={`flex flex-col w-full ${isGridView ? "items-center mb-4" : "items-start mb-2"}`}>
+                  <h3 className="text-[16px] sm:text-[18px] text-[#1a191c] leading-[1.3] mb-2 line-clamp-1 uppercase font-semibold">
+                    {job.title}
+                  </h3>
+                  <p className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-widest leading-none font-semibold">
+                    {job.location}
+                  </p>
+                </div>
+
+                {isGridView && <div className="w-[80%] border-t-2 border-[#800000] mb-5 opacity-80"></div>}
+                
+                <p className={`text-[12px] sm:text-[13px] text-gray-500 leading-relaxed mb-6 ${isGridView ? "line-clamp-3 px-2" : "line-clamp-2 w-full"}`}>
+                  {job.description}
+                </p>
+
+                <div className={`mt-auto w-full flex items-center ${isGridView ? "justify-between px-2" : "justify-between"}`}>
+                  <Link 
+                    href="/careers/job-details" 
+                    className="text-[#a10000] text-[12px] sm:text-[13px] uppercase hover:underline underline-offset-4 decoration-2 font-semibold"
+                  >
+                    view details
+                  </Link>
+                  
+                  <div 
+                    onClick={() => handleOpenModal(job)}
+                    className="bg-[#800000] rounded-xl text-white shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all w-9 h-9 flex items-center justify-center"
+                  >
+                    <Settings size={18} className="stroke-white" />
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* Dot indicators only */}
-            {filteredJobs.length > 1 && (
-              <div className="flex items-center justify-center gap-1.5 mt-5">
-                {filteredJobs.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCarouselIndex(i)}
-                    className={`rounded-full transition-all duration-300 ${
-                      i === carouselIndex
-                        ? "w-5 h-2 bg-[#800000]"
-                        : "w-2 h-2 bg-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── DESKTOP: Grid / List (hidden on mobile) ── */}
-        <div className={`hidden sm:block`}>
-          {filteredJobs.length > 0 && (
-            <div className={isGridView 
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" 
-              : "flex flex-col gap-6"
-            }>
-              {desktopJobs.map((job) => renderCard(job))}
-            </div>
-          )}
+          ))}
         </div>
 
         {/* empty state */}
@@ -351,23 +254,15 @@ export default function CareerPage() {
             </p>
           </div>
         ) : (
-          /* footer button — hidden on mobile, visible on sm+ only when there are more cards */
-          hasMore && (
-            <div className="hidden sm:flex w-full justify-center mt-12 mb-6 px-4">
-              <button
-                onClick={() => setShowAll((prev) => !prev)}
-                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-10 sm:px-14 py-4 rounded-2xl shadow-[0_10px_20px_rgba(161,0,0,0.3)] hover:shadow-[0_15px_25px_rgba(161,0,0,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300"
-              >
-                <span className="text-[13px] sm:text-[14px] tracking-widest uppercase font-medium">
-                  {showAll ? "show less" : "show all jobs"}
-                </span>
-                <Plus
-                  size={18}
-                  className={`transition-transform duration-300 ${showAll ? "rotate-45" : "group-hover:rotate-90"}`}
-                />
-              </button>
-            </div>
-          )
+          /* footer button */
+          <div className="w-full flex justify-center mt-12 mb-6 px-4">
+            <button 
+              className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-10 sm:px-14 py-4 rounded-2xl shadow-[0_10px_20px_rgba(161,0,0,0.3)] hover:shadow-[0_15px_25px_rgba(161,0,0,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300"
+            >
+              <span className="text-[13px] sm:text-[14px] tracking-widest uppercase font-medium">show all jobs</span>
+              <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+            </button>
+          </div>
         )}
       </div>
 

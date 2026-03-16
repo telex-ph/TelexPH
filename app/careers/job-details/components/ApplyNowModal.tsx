@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState } from "react";
 import { X, ArrowRight, User, Mail, Phone, Briefcase, MessageSquare, Layers, AlertCircle, MapPin, Upload, FileText, Check, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Poppins } from "next/font/google";
@@ -40,13 +39,13 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
         {steps.map((s, i) => {
           const isActive = i + 1 <= currentStep || (currentStep === 0 && i === 0);
           return (
-            <div key={i} className="flex flex-col items-center gap-1.5">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-all duration-300 ${
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div className={`w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs border transition-all duration-300 ${
                 isActive ? "bg-[#800000] border-[#800000] text-white shadow-lg shadow-red-900/20" : "bg-white border-slate-300 text-slate-400"
               }`}>
                 {i + 1}
               </div>
-              <span className={`hidden md:block text-[11px] tracking-normal uppercase ${isActive ? "text-[#800000]" : "text-slate-400"}`}>
+              <span className={`hidden md:block text-[10px] lg:text-[11px] tracking-wide uppercase ${isActive ? "text-[#800000]" : "text-slate-400"}`}>
                 {s}
               </span>
             </div>
@@ -56,17 +55,14 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
     </div>
   );
 
-  const inputClass = "w-full border-b border-slate-200 bg-transparent px-0 py-1 text-[13px] text-slate-800 outline-none focus:border-[#800000] transition-all placeholder:text-slate-300 tracking-normal font-normal";
-  const labelClass = "text-[11px] text-slate-500 flex items-center gap-2 tracking-normal font-normal";
-  const sectionHeader = "text-[12px] text-slate-900 border-l-2 border-[#800000] pl-2 mb-4 mt-2 tracking-normal font-normal";
+  const inputClass = "w-full border-b border-slate-200 bg-transparent px-0 py-2 text-[14px] lg:text-[16px] text-slate-800 outline-none focus:border-[#800000] transition-all placeholder:text-slate-300 tracking-normal font-normal";
+  const labelClass = "text-[11px] lg:text-[12px] text-slate-500 flex items-center gap-2 tracking-widest uppercase font-normal";
+  const sectionHeader = "text-[13px] lg:text-[15px] text-slate-900 border-l-4 border-[#800000] pl-3 mb-6 mt-2 tracking-normal font-normal";
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
-  const modalContent = (
+  return (
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-x-0 bottom-0 top-[130px] z-[9999] flex items-start justify-center px-4 pt-0 pb-4 ${poppins.className}`}>
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-0 md:p-6 lg:p-12 ${poppins.className}`}>
           <style jsx global>{`
             .custom-thin-scroll::-webkit-scrollbar { width: 4px; }
             .custom-thin-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -78,36 +74,37 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-5xl bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden rounded-xl"
-            style={{ height: "700px", maxHeight: "calc(100vh - 130px - 20px)" }}
+            className="relative w-full h-full md:h-[90vh] max-w-[100vw] md:max-w-[95vw] lg:max-w-[85vw] xl:max-w-[1200px] bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden md:rounded-2xl"
           >
             {/* sidebar section */}
-            <div className="w-full md:w-[280px] bg-slate-50 p-8 border-b md:border-b-0 md:border-r border-slate-100 flex flex-row md:flex-col justify-between shrink-0 z-10">
+            <div className="w-full md:w-[300px] lg:w-[350px] bg-slate-50 p-6 md:p-10 lg:p-12 border-b md:border-b-0 md:border-r border-slate-100 flex flex-row md:flex-col justify-between shrink-0 z-10">
               <div className="flex flex-col gap-4 md:gap-8">
                 <div className="bg-white p-3 rounded-xl shadow-sm self-start">
-                  <img src="/images/logo.png" alt="logo" className="h-7 w-auto object-contain" />
+                  <img src="/images/logo.png" alt="logo" className="h-8 md:h-10 w-auto object-contain" />
                 </div>
                 <div>
-                  <h2 className="text-xl text-slate-800 leading-tight tracking-normal font-normal">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl text-slate-800 leading-tight tracking-tight font-normal">
                     Front-End <br className="hidden md:block" />
                     <span className="text-[#800000]">Developer</span>
                   </h2>
-                  <p className="hidden md:block text-slate-400 text-[12px] mt-3 leading-relaxed font-normal tracking-normal">
+                  <p className="hidden md:block text-slate-400 text-sm mt-4 leading-relaxed font-normal">
                     Professional application gateway. Please ensure all data provided is current and verifiable.
                   </p>
                 </div>
               </div>
 
-              <div className="hidden md:block space-y-4">
-                <div>
-                  <h4 className="text-[11px] text-slate-400 uppercase tracking-widest mb-1">Office</h4>
-                  <div className="flex items-start gap-2 text-slate-600 text-[12px] tracking-normal">
-                    <MapPin size={14} className="text-slate-400 mt-0.5 shrink-0" />
-                    <span>Cawayan Bugtong, Guimba, Nueva Ecija</span>
+              <div className="hidden md:block space-y-6">
+                <div className="flex items-center gap-4 text-slate-600">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-slate-100">
+                    <MapPin size={18} className="text-[#800000]" />
+                  </div>
+                  <div className="text-[12px] lg:text-[13px] leading-snug">
+                    <p className="text-slate-400 uppercase text-[10px] tracking-widest">Office</p>
+                    <p>Cawayan Bugtong, Guimba, Nueva Ecija</p>
                   </div>
                 </div>
-                <div className="pt-4 border-t border-slate-200">
-                  <p className="text-[12px] text-slate-400 italic leading-relaxed tracking-normal">
+                <div className="pt-6 border-t border-slate-200">
+                  <p className="text-sm text-slate-400 italic font-normal">
                     "Excellence is a habit."
                   </p>
                 </div>
@@ -120,40 +117,40 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
 
             {/* main section */}
             <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
-              <button onClick={handleClose} className="hidden md:flex absolute top-6 right-6 text-slate-300 hover:text-[#800000] transition-colors z-[140] w-8 h-8 items-center justify-center rounded-full hover:bg-slate-50">
-                <X size={20} />
+              <button onClick={handleClose} className="hidden md:flex absolute top-8 right-8 text-slate-300 hover:text-[#800000] transition-colors z-[140] w-10 h-10 items-center justify-center rounded-full hover:bg-slate-50">
+                <X size={28} />
               </button>
 
-              <div className="flex-1 p-6 md:p-8 overflow-hidden flex flex-col">
+              <div className="flex-1 p-6 md:p-12 lg:p-16 overflow-hidden flex flex-col">
                 {step === 0 ? (
                   <div className="flex flex-col h-full items-center justify-center text-center max-w-3xl mx-auto">
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 mb-8">
-                      <span className="inline-block px-4 py-1.5 bg-red-50 text-[#800000] text-[11px] tracking-[0.2em] uppercase rounded-full font-normal">
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 mb-12">
+                      <span className="inline-block px-4 py-1.5 bg-red-50 text-[#800000] text-[11px] lg:text-[12px] tracking-[0.2em] uppercase rounded-full font-normal">
                         Career Opportunity
                       </span>
-                      <h1 className="text-2xl md:text-3xl text-slate-900 tracking-tight font-normal">
+                      <h1 className="text-4xl md:text-5xl lg:text-6xl text-slate-900 tracking-tight font-normal">
                         Application Form
                       </h1>
-                      <p className="text-slate-500 text-[13px] leading-relaxed font-normal">
+                      <p className="text-slate-500 text-base md:text-lg leading-relaxed font-normal">
                         We are looking for talented individuals to join our growing team. Start your journey by completing the multi-step form.
                       </p>
                     </motion.div>
                     
                     <StepIndicator currentStep={0} />
 
-                    <button onClick={() => setStep(1)} className="group w-full md:w-auto px-8 py-3 bg-[#800000] text-white text-[12px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all hover:bg-[#600000] hover:shadow-xl hover:shadow-red-900/30 rounded-md font-normal">
-                      Begin Application <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+                    <button onClick={() => setStep(1)} className="group w-full md:w-auto px-12 py-4 bg-[#800000] text-white text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-4 transition-all hover:bg-[#600000] hover:shadow-2xl hover:shadow-red-900/30 rounded-xl font-normal">
+                      Begin Application <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                     </button>
                   </div>
                 ) : (
                   <div className="flex flex-col h-full">
                     <StepIndicator currentStep={step} />
                     
-                    <div className="mb-6 shrink-0">
-                      <h1 className="text-xl text-slate-900 tracking-normal font-normal">
+                    <div className="mb-10 shrink-0">
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl text-slate-900 tracking-tight font-normal">
                         {steps[step - 1]}
                       </h1>
-                      <p className="text-slate-400 text-[12px] mt-1 font-normal tracking-normal">Please fill in the required fields marked with an asterisk.</p>
+                      <p className="text-slate-400 text-sm mt-2 font-normal">Please fill in the required fields marked with an asterisk.</p>
                     </div>
 
                     <div className="flex-1 overflow-y-auto custom-thin-scroll pr-4 lg:pr-10">
@@ -179,12 +176,12 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
                         <div className="max-w-5xl space-y-10">
                            <h3 className={sectionHeader}>Document Upload</h3>
                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                              <div className="relative p-8 border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-red-50/30 hover:border-[#800000]/30 transition-all cursor-pointer group">
-                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md mb-4 group-hover:scale-110 transition-transform">
-                                  <Upload className="text-[#800000]" size={22} />
+                              <div className="relative p-12 lg:p-20 border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl flex flex-col items-center justify-center text-center hover:bg-red-50/30 hover:border-[#800000]/30 transition-all cursor-pointer group">
+                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md mb-6 group-hover:scale-110 transition-transform">
+                                  <Upload className="text-[#800000]" size={32} />
                                 </div>
-                                <p className="text-[12px] uppercase tracking-widest text-slate-500 font-normal">Drag files here or click to browse</p>
-                                <p className="text-[11px] text-slate-400 mt-1">Support: PDF, DOCX (Max 10MB)</p>
+                                <p className="text-sm uppercase tracking-widest text-slate-500 font-normal">Drag files here or click to browse</p>
+                                <p className="text-xs text-slate-400 mt-2">Support: PDF, DOCX (Max 10MB)</p>
                               </div>
                               <div className="space-y-4">
                                 <p className={labelClass}>Uploaded Files</p>
@@ -192,7 +189,7 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
                                   <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center"><FileText size={20} className="text-[#800000]" /></div>
                                     <div>
-                                      <p className="text-[13px] text-slate-700 font-normal">application-file.pdf</p>
+                                      <p className="text-sm text-slate-700 font-normal">application-file.pdf</p>
                                       <p className="text-[10px] text-slate-400 uppercase">2.4 MB • Ready</p>
                                     </div>
                                   </div>
@@ -208,11 +205,11 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
                           <h3 className={sectionHeader}>Screening Questionnaire</h3>
                           <div className="space-y-10">
                             <div className="space-y-4">
-                              <label className="text-[13px] text-slate-700 font-normal block">1. Can you describe your relevant experience for this role? *</label>
+                              <label className="text-sm lg:text-base text-slate-700 font-normal block">1. Can you describe your relevant experience for this role? *</label>
                               <textarea rows={4} className={`${inputClass} border border-slate-100 rounded-xl p-4 focus:bg-slate-50`} placeholder="Describe your background..." />
                             </div>
                             <div className="space-y-4">
-                              <label className="text-[13px] text-slate-700 font-normal block">2. What is your primary motivation for joining us? *</label>
+                              <label className="text-sm lg:text-base text-slate-700 font-normal block">2. What is your primary motivation for joining us? *</label>
                               <textarea rows={4} className={`${inputClass} border border-slate-100 rounded-xl p-4 focus:bg-slate-50`} placeholder="Tell us why..." />
                             </div>
                           </div>
@@ -221,15 +218,15 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
                     </div>
 
                     {/* actions */}
-                    <div className="pt-6 mt-auto border-t border-slate-100 flex items-center justify-between bg-white shrink-0">
-                      <button onClick={() => setStep(step - 1)} className="px-6 py-3 text-[12px] text-slate-400 uppercase tracking-widest font-normal hover:text-slate-800 transition-colors">
+                    <div className="pt-8 mt-auto border-t border-slate-100 flex items-center justify-between bg-white shrink-0">
+                      <button onClick={() => setStep(step - 1)} className="px-6 py-3 text-sm text-slate-400 uppercase tracking-widest font-normal hover:text-slate-800 transition-colors">
                         Back
                       </button>
                       <button 
                         onClick={() => step === 5 ? setShowConfirm(true) : setStep(step + 1)} 
-                        className="bg-[#800000] text-white px-8 py-3 text-[12px] uppercase tracking-widest flex items-center gap-3 rounded-md font-normal hover:bg-[#600000] hover:shadow-xl transition-all active:scale-95"
+                        className="bg-[#800000] text-white px-10 py-4 text-sm uppercase tracking-[0.2em] flex items-center gap-4 rounded-xl font-normal hover:bg-[#600000] hover:shadow-xl transition-all active:scale-95"
                       >
-                        {step === 5 ? "Submit Application" : "Continue"} <ArrowRight size={14} />
+                        {step === 5 ? "Submit Application" : "Continue"} <ArrowRight size={18} />
                       </button>
                     </div>
                   </div>
@@ -239,35 +236,33 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
               {/* Overlays */}
               <AnimatePresence>
                 {(showConfirm || isSuccess) && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[150] flex items-center justify-center p-8 bg-white/95 backdrop-blur-md">
-                    <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="relative w-full max-w-[340px]">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[150] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-md">
+                    <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-[450px] bg-white rounded-3xl shadow-2xl p-10 text-center">
                       {isSuccess ? (
-                        <div className="bg-white border border-slate-100 shadow-xl p-8 text-center rounded-md">
-                          <div className="w-10 h-10 bg-green-50 text-green-600 rounded-md flex items-center justify-center mx-auto mb-5 border border-green-100">
-                            <Check size={20} />
+                        <div className="space-y-6">
+                          <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-green-100">
+                            <Check size={40} />
                           </div>
-                          <h3 className="text-xl text-slate-900 font-normal tracking-tight mb-2">Success!</h3>
-                          <p className="text-[13px] text-slate-500 mb-8 leading-relaxed font-normal">
+                          <h3 className="text-3xl text-slate-900 font-normal tracking-tight">Success!</h3>
+                          <p className="text-slate-500 leading-relaxed font-normal">
                             Your application has been received. Our HR team will review your profile and contact you within 3-5 business days.
                           </p>
-                          <button onClick={handleClose} className="w-full py-3.5 bg-[#800000] text-white text-[12px] uppercase tracking-widest rounded-md font-normal hover:bg-[#600000] transition-all">
+                          <button onClick={handleClose} className="w-full py-4 bg-[#800000] text-white text-sm uppercase tracking-widest rounded-xl font-normal hover:bg-[#600000] transition-all">
                             Finish
                           </button>
                         </div>
                       ) : (
-                        <div className="bg-white border border-slate-100 shadow-2xl p-8 rounded-md overflow-hidden relative">
-                          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-50">
-                            <div className="w-9 h-9 bg-red-50 rounded-md flex items-center justify-center">
-                              <AlertCircle size={18} className="text-[#800000]" />
-                            </div>
-                            <h3 className="text-lg text-slate-900 font-normal tracking-tight">Confirm Submission?</h3>
+                        <div className="space-y-6">
+                          <div className="w-16 h-16 bg-red-50 text-[#800000] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <AlertCircle size={32} />
                           </div>
-                          <p className="text-[13px] text-slate-500 font-normal mb-8">Please double-check all information. You won't be able to edit your application once submitted.</p>
-                          <div className="flex gap-3">
-                            <button onClick={() => { setShowConfirm(false); setIsSuccess(true); }} className="flex-1 py-3 bg-[#800000] text-white text-[11px] uppercase tracking-widest rounded-md font-normal hover:bg-[#600000] transition-all shadow-lg shadow-red-900/20">
+                          <h3 className="text-2xl text-slate-900 font-normal tracking-tight">Confirm Submission?</h3>
+                          <p className="text-slate-500 font-normal">Please double-check all information. You won't be able to edit your application once submitted.</p>
+                          <div className="flex flex-col gap-3">
+                            <button onClick={() => { setShowConfirm(false); setIsSuccess(true); }} className="w-full py-4 bg-[#800000] text-white text-sm uppercase tracking-widest rounded-xl font-normal hover:bg-[#600000] transition-all shadow-lg shadow-red-900/20">
                               Yes, Submit Now
                             </button>
-                            <button onClick={() => setShowConfirm(false)} className="flex-1 py-3 bg-white border border-slate-200 text-[11px] uppercase tracking-widest text-slate-400 rounded-md font-normal hover:bg-slate-50 transition-all">
+                            <button onClick={() => setShowConfirm(false)} className="w-full py-4 bg-white border border-slate-200 text-slate-400 text-sm uppercase tracking-widest rounded-xl font-normal hover:bg-slate-50 transition-all">
                               Review Again
                             </button>
                           </div>
@@ -283,7 +278,4 @@ export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
       )}
     </AnimatePresence>
   );
-
-  if (!mounted) return null;
-  return createPortal(modalContent, document.body);
 }

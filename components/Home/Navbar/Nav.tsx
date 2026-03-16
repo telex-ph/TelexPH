@@ -76,14 +76,7 @@ const Nav = ({ openNav }: Props) => {
   }, []);
 
   const servicesMegaData = [
-    { id: "offer", 
-      label: "What We Offer", 
-      items: [
-        { label: "Services",                 url: "/services#offers" },
-        { label: "Technical Helpdesk",       url: "/services#contact" },
-        { label: "Sales & Lead Generation",  url: "/services#sales&leads" },
-        { label: "Testimonials",             url: "/services#testimonials" }
-      ] },
+    { id: "offer", label: "What We Offer", items: ["Customer Support", "Technical Helpdesk", "Sales & Lead Generation"] },
   ];
 
   const aboutMegaData = [

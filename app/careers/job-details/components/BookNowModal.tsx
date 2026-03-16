@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState } from "react";
 import { X, ChevronLeft, ChevronRight, Calendar, Clock, MapPin, ArrowRight, User, Mail, Phone, Briefcase, MessageSquare, Layers, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Poppins } from "next/font/google";
@@ -85,13 +84,10 @@ export default function BookNowModal({ isOpen, onClose }: BookNowModalProps) {
   const labelClass = "text-[11px] text-slate-500 flex items-center gap-2 tracking-normal";
   const sectionHeader = "text-[12px] text-slate-900 border-l-2 border-slate-900 pl-2 mb-4 mt-2 tracking-normal";
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
-  const modalContent = (
+  return (
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-x-0 bottom-0 top-[130px] z-[9999] flex items-start justify-center px-4 pt-0 pb-4 ${poppins.className}`}>
+        <div className={`fixed inset-0 z-[100] flex items-end justify-center bg-slate-900/40 backdrop-blur-sm px-4 pb-6 ${poppins.className}`}>
           <style jsx global>{`
             .custom-thin-scroll::-webkit-scrollbar {
               width: 3px;
@@ -114,8 +110,7 @@ export default function BookNowModal({ isOpen, onClose }: BookNowModalProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="relative w-full max-w-5xl bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden rounded-xl"
-            style={{ height: "700px", maxHeight: "calc(100vh - 130px - 20px)" }}
+            className="relative w-full max-w-5xl bg-white shadow-2xl flex flex-col md:flex-row h-[600px] overflow-hidden rounded-xl"
           >
             {/* sidebar section */}
             <div className="w-full md:w-[280px] bg-slate-50 p-8 border-r border-slate-100 flex flex-col justify-between shrink-0 z-10">
@@ -357,7 +352,4 @@ export default function BookNowModal({ isOpen, onClose }: BookNowModalProps) {
       )}
     </AnimatePresence>
   );
-
-  if (!mounted) return null;
-  return createPortal(modalContent, document.body);
 }
