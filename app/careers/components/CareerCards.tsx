@@ -22,7 +22,6 @@ interface Job {
   location: string;
   description: string;
   image: string;
-  jobKey: string;
 }
 
 export default function CareerPage() {
@@ -59,8 +58,7 @@ export default function CareerPage() {
       dept: "research & analytics",
       location: "clark, pampanga",
       description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
-      jobKey: "global-analytics-consultant",
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop"
     },
     {
       id: 2,
@@ -68,8 +66,7 @@ export default function CareerPage() {
       dept: "information technology",
       location: "clark, pampanga",
       description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
-      jobKey: "frontend-web-developer",
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
     },
     {
       id: 3,
@@ -77,8 +74,7 @@ export default function CareerPage() {
       dept: "information technology",
       location: "clark, pampanga",
       description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop",
-      jobKey: "devops-security-engineer",
+      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop"
     },
     {
       id: 4,
@@ -86,8 +82,7 @@ export default function CareerPage() {
       dept: "operations",
       location: "clark, pampanga",
       description: "the associate sales manager is responsible for overseeing the management of the team(s) supporting accounts to drive the business goals.",
-      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop",
-      jobKey: "associate-sales-manager",
+      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop"
     },
     {
       id: 5,
@@ -95,8 +90,7 @@ export default function CareerPage() {
       dept: "human resource",
       location: "clark, pampanga",
       description: "our psychological health team is a diverse group of specialists dedicated to developing, delivering, and evaluating programs.",
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
-      jobKey: "sr-wellbeing-specialist",
+      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" 
     },
     {
       id: 6,
@@ -104,8 +98,7 @@ export default function CareerPage() {
       dept: "operations",
       location: "clark, pampanga",
       description: "the team leader, operations is responsible for the day-to-day supervision of a group of call center associates.",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop",
-      jobKey: "team-leader",
+      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop"
     }
   ];
 
@@ -214,7 +207,7 @@ export default function CareerPage() {
 
           <div className={`mt-auto w-full flex items-center ${grid ? "justify-between px-2" : "justify-between"}`}>
             <Link 
-              href={`/careers/job-details?job=${job.jobKey}`}
+              href="/careers/job-details" 
               className="text-[#a10000] text-[12px] sm:text-[13px] uppercase hover:underline underline-offset-4 decoration-2 font-semibold"
             >
               view details

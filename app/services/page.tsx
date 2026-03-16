@@ -23,11 +23,8 @@ export default function WhatWeOfferPage() {
       <MobileNav showNav={showNav} closeNav={closeNavHandler} />
 
       <main>
-
-        <section id="hero">
-          <WhatWeOfferHero /> 
-        </section>
-
+        <WhatWeOfferHero /> 
+        
         <div className="bg-white">
         <section id="offers">
           <ServiceFeatures />

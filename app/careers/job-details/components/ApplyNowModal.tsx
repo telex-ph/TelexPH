@@ -9,13 +9,11 @@ import { Poppins } from "next/font/google";
 const poppins = Poppins({ subsets: ["latin"], weight: ["400"] });
 
 interface ApplyNowModalProps {
-  jobTitle: string;
-  jobDept: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function ApplyNowModal({ isOpen, onClose, jobTitle, jobDept }: ApplyNowModalProps) {
+export default function ApplyNowModal({ isOpen, onClose }: ApplyNowModalProps) {
   const [step, setStep] = useState(0);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -90,13 +88,9 @@ export default function ApplyNowModal({ isOpen, onClose, jobTitle, jobDept }: Ap
                   <img src="/images/logo.png" alt="logo" className="h-7 w-auto object-contain" />
                 </div>
                 <div>
-                  <span className="inline-block text-[#800000] text-[10px] font-bold tracking-[0.2em] uppercase underline underline-offset-2 mb-2">
-                    {jobDept}
-                  </span>
                   <h2 className="text-xl text-slate-800 leading-tight tracking-normal font-normal">
-                    {(jobTitle ?? "").split(" ").slice(0, -1).join(" ")}{" "}
-                    <br className="hidden md:block" />
-                    <span className="text-[#800000]">{(jobTitle ?? "").split(" ").slice(-1)[0]}</span>
+                    Front-End <br className="hidden md:block" />
+                    <span className="text-[#800000]">Developer</span>
                   </h2>
                   <p className="hidden md:block text-slate-400 text-[12px] mt-3 leading-relaxed font-normal tracking-normal">
                     Professional application gateway. Please ensure all data provided is current and verifiable.

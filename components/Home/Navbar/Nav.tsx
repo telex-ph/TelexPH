@@ -79,7 +79,7 @@ const Nav = ({ openNav }: Props) => {
     { id: "offer", 
       label: "What We Offer", 
       items: [
-        { label: "Services",                 url: "/services#hero" },
+        { label: "Services",                 url: "/services#offers" },
         { label: "Technical Helpdesk",       url: "/services#contact" },
         { label: "Sales & Lead Generation",  url: "/services#sales&leads" },
         { label: "Testimonials",             url: "/services#testimonials" }
@@ -91,8 +91,9 @@ const Nav = ({ openNav }: Props) => {
       id: "company",
       label: "Company",
       items: [
-        { label: "Company Overview", url: "/about#hero" },
-        { label: "Mission & Vision", url: "/about#mission" },
+        { label: "Company Overview", url: "/about#overview" },
+        { label: "Our Mission",      url: "/about#mission" },
+        { label: "Our Vision",       url: "/about#mission" },
         { label: "Core Values",      url: "/about#core-values" },
         { label: "Our Team",         url: "/about#our-team" },
       ],
@@ -105,13 +106,13 @@ const Nav = ({ openNav }: Props) => {
       id: "news", 
       label: "Industry Use Cases", 
       items: [
-        { label: "Industry Overview",        url: "/resources/IndustryUseCase#overview" }, 
+        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" }, 
         { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
-        { label: "Solutions Applied",        url: "/resources/IndustryUseCase#solutions" },
-        { label: "Scenarios",                url: "/resources/IndustryUseCase#scenarios" },
-        { label: "Benefits & Results",       url: "/resources/IndustryUseCase#results" },
-        { label: "Tools & Technology",       url: "/resources/IndustryUseCase#tools" },
-        { label: "Why Telex",                url: "/resources/IndustryUseCase#why-telex" }
+        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
+        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
+        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
+        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
+        { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
       ]
     },
     { 
@@ -122,11 +123,8 @@ const Nav = ({ openNav }: Props) => {
   ];
 
   const careersMegaData = [
-    { 
-      id: "careers-center", 
-      label: "Careers Center", 
-      items: [{ label: "Careers Home", url: "/careers" }] 
-    },
+    { id: "careers-center", label: "Careers Center", items: [{ label: "Careers Home", url: "/careers" }] },
+    { id: "job-details", label: "Job Details", items: [{ label: "Full Job Details", url: "/careers/job-details" }] },
   ];
 
   const getMegaConfig = (label: string) => {
