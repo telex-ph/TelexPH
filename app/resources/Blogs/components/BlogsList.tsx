@@ -1,0 +1,257 @@
+"use client";
+
+import React from "react";
+import { HiOutlineArrowRight, HiOutlineArrowLeft, HiOutlineArrowUpRight } from "react-icons/hi2";
+
+// Define the Blog interface para mag-match sa database fields
+interface IContentSection {
+  title: string;
+  content: string;
+}
+
+interface IBlog {
+  _id: string;
+  title: string;
+  slug: string;
+  author: string;
+  mainCategory: string;
+  subcategory: string;
+  shortDescription: string;
+  mainContent: IContentSection[];
+  picture: string;
+  status: "published" | "draft" | "scheduled";
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface BlogsListProps {
+  blogs: IBlog[]; // Data mula sa database
+  onArticleClick: (post: IBlog) => void;
+  searchQuery: string;
+  viewMode: 'grid' | 'list'; // ADDED viewMode prop
+}
+
+export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode }: BlogsListProps) {
+  
+  // Helper function para sa date formatting
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Logic para sa pag-organize ng data mula sa 'blogs' prop
+  // 1. Featured Post: Ang pinakabagong blog
+  const featuredPost = blogs.length > 0 ? blogs[0] : null;
+  
+  // 2. Latest Updates (Sidebar): Susunod na 4 na blogs
+  const latestUpdates = blogs.slice(1, 5);
+
+  // 3. Founders Corner / Grid: Ang mga natitirang blogs
+  const gridBlogs = blogs.slice(1); 
+
+  // Kung walang data, wag mag-error, magpakita ng simple message
+  if (!blogs || blogs.length === 0) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-gray-500">No blog posts available.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-[1600px] mx-auto px-10 py-12 bg-white font-['Poppins',_sans-serif]">
+      
+      {/* Featured & Latest Updates Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-24">
+        
+        {/* LEFT: Featured Post (Dynamic) */}
+        <div className="lg:col-span-8 relative group mb-20 lg:mb-0">
+          {featuredPost && (
+            <>
+              <div className="relative h-[450px] w-full overflow-hidden rounded-[40px] shadow-[0_35px_70px_-15px_rgba(0,0,0,0.3)]">
+                <img 
+                  src={featuredPost.picture} 
+                  className="w-full h-full object-cover" 
+                  alt={featuredPost.title} 
+                />
+              </div>
+              <div className="absolute bottom-8 left-8 bg-white px-8 py-5 rounded-[20px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] w-[85%] max-w-[600px] border border-gray-50 flex items-center justify-between gap-6">
+                <div className="flex-grow">
+                  <span className="text-[#800000] font-normal text-[10px] uppercase tracking-[0.2em] mb-2 block">featured blog</span>
+                  <h1 className="text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2">{featuredPost.title}</h1>
+                </div>
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <p className="text-[11px] text-gray-400 font-normal whitespace-nowrap hidden sm:block">{formatDate(featuredPost.createdAt)}</p>
+                  <div 
+                    onClick={() => onArticleClick(featuredPost)}
+                    className="w-10 h-10 bg-[#800000] rounded-full flex items-center justify-center text-white cursor-pointer hover:rotate-45 transition-all shadow-lg"
+                  >
+                      <HiOutlineArrowUpRight className="text-base" />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* RIGHT: Latest Updates (Dynamic) */}
+        <div className="lg:col-span-4">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 tracking-tight border-b border-gray-100 pb-2">Latest Updates</h2>
+          <div className="flex flex-col gap-3">
+            {latestUpdates.map((post) => (
+              <div 
+                key={post._id} 
+                onClick={() => onArticleClick(post)}
+                className="group cursor-pointer flex gap-4 items-center bg-white p-3 rounded-[25px] border border-gray-50 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_35px_-8px_rgba(0,0,0,0.15)] transition-all"
+              >
+                <div className="w-16 h-16 rounded-[18px] overflow-hidden flex-shrink-0">
+                  <img src={post.picture} className="w-full h-full object-cover" alt="Thumb" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-normal text-[#800000] uppercase tracking-widest mb-0.5">{post.mainCategory}</span>
+                  <h4 className="text-[13px] font-bold leading-snug text-gray-900 group-hover:text-[#800000] line-clamp-2 transition-colors">
+                    {post.title}
+                  </h4>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Grid Header */}
+      <div className="flex justify-between items-end mb-8">
+        <div>
+           <span className="text-[#800000] font-normal text-[12px] uppercase tracking-[0.2em] mb-1 block">our journal</span>
+           <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+             {searchQuery ? `Results for "${searchQuery}"` : "Founders Corner"}
+           </h2>
+        </div>
+        <div className="flex gap-3">
+          <button className="w-10 h-10 rounded-xl border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:bg-[#800000] hover:text-white transition-all shadow-sm"><HiOutlineArrowLeft className="text-lg" /></button>
+          <button className="w-10 h-10 rounded-xl border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:bg-[#800000] hover:text-white transition-all shadow-sm"><HiOutlineArrowRight className="text-lg" /></button>
+        </div>
+      </div>
+
+      {/* CONDITIONAL RENDERING: List View or Grid View */}
+      {viewMode === 'list' ? (
+        /* LIST VIEW */
+        <div className="flex flex-col gap-6">
+          {(searchQuery ? blogs : gridBlogs).map((blog) => (
+            <div 
+              key={blog._id} 
+              className="group bg-white rounded-[30px] overflow-hidden shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col md:flex-row transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] hover:translate-y-[-3px]"
+            >
+              <div className="relative md:w-[320px] aspect-[2.6/1] md:aspect-auto md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
+                <img 
+                  src={blog.picture} 
+                  className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" 
+                  alt="Blog" 
+                />
+                <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <span className="bg-white/95 backdrop-blur-sm text-[#800000] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-md">
+                    {blog.mainCategory}
+                  </span>
+                  {blog.subcategory && (
+                    <span className="bg-[#800000]/90 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-[9px] font-medium tracking-wide shadow-md">
+                      {blog.subcategory}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="px-8 py-6 flex flex-col flex-grow justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-1 rounded-full bg-[#800000] opacity-60"></div>
+                    <span className="text-[10px] font-normal text-gray-400 uppercase tracking-widest">{blog.author}</span>
+                  </div>
+                  
+                  <h3 
+                    onClick={() => onArticleClick(blog)}
+                    className="text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-[#800000] transition-colors cursor-pointer"
+                  >
+                    {blog.title}
+                  </h3>
+                  
+                  <p className="text-[14px] text-gray-500 font-normal leading-relaxed line-clamp-2">
+                    {blog.shortDescription}
+                  </p>
+                </div>
+                
+                <div className="flex justify-between items-center border-t border-gray-50 pt-4 mt-4">
+                  <span className="text-[11px] text-gray-400 font-normal uppercase tracking-tighter">{formatDate(blog.createdAt)}</span>
+                  
+                  <div 
+                    onClick={() => onArticleClick(blog)}
+                    className="text-[#800000] font-normal text-[11px] flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer uppercase tracking-widest"
+                  >
+                    Read Article <HiOutlineArrowRight className="text-md" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* GRID VIEW */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {(searchQuery ? blogs : gridBlogs).map((blog) => (
+            <div 
+              key={blog._id} 
+              className="group bg-white rounded-[40px] overflow-hidden shadow-[0_35px_70px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col transition-all duration-500 hover:translate-y-[-5px] w-full"
+            >
+              <div className="relative aspect-[2.6/1] m-4 overflow-hidden rounded-[25px] bg-gray-50">
+                <img src={blog.picture} className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" alt="Blog" />
+                <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <span className="bg-white/95 backdrop-blur-sm text-[#800000] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-md">
+                    {blog.mainCategory}
+                  </span>
+                  {blog.subcategory && (
+                    <span className="bg-[#800000]/90 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-[9px] font-medium tracking-wide shadow-md">
+                      {blog.subcategory}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="px-8 pb-6 pt-2 flex flex-col flex-grow">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-1 h-1 rounded-full bg-[#800000] opacity-60"></div>
+                  <span className="text-[10px] font-normal text-gray-400 uppercase tracking-widest">{blog.author}</span>
+                </div>
+                
+                <h3 
+                  onClick={() => onArticleClick(blog)}
+                  className="text-[19px] font-bold text-gray-900 leading-tight mb-2 group-hover:text-[#800000] transition-colors cursor-pointer line-clamp-2"
+                >
+                  {blog.title}
+                </h3>
+                
+                <p className="text-[13px] text-gray-500 font-normal leading-relaxed mb-4 line-clamp-2">
+                  {blog.shortDescription}
+                </p>
+                
+                <div className="mt-auto flex justify-between items-center border-t border-gray-50 pt-4">
+                  <span className="text-[11px] text-gray-400 font-normal uppercase tracking-tighter">{formatDate(blog.createdAt)}</span>
+                  
+                  <div 
+                    onClick={() => onArticleClick(blog)}
+                    className="text-[#800000] font-normal text-[11px] flex items-center gap-2 group-hover:gap-3 transition-all cursor-pointer uppercase tracking-widest"
+                  >
+                    Read Article <HiOutlineArrowRight className="text-md" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  );
+}
