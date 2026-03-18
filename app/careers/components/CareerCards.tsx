@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import Link from "next/link";
+import ApplyNowModal from "@/app/careers/job-details/components/ApplyNowModal";
+import BookNowModal from "@/app/careers/job-details/components/BookNowModal";
 import { 
   Search, 
   XCircle, 
@@ -12,7 +14,8 @@ import {
   X,
   MapPin,
   Briefcase,
-  Plus
+  Plus,
+  Minus
 } from "lucide-react";
 
 interface Job {
@@ -22,6 +25,7 @@ interface Job {
   location: string;
   description: string;
   image: string;
+  jobKey: string;
 }
 
 export default function CareerPage() {
@@ -32,6 +36,12 @@ export default function CareerPage() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+
+  const [isApplyNowOpen, setIsApplyNowOpen] = useState(false);
+  const [isBookNowOpen, setIsBookNowOpen] = useState(false);
+
+  // New state to toggle showing all jobs
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -47,51 +57,57 @@ export default function CareerPage() {
   const JOBS: Job[] = [
     {
       id: 1,
-      title: "consultant, global analytic design",
+      title: "Global Analytics Design Consultant",
       dept: "research & analytics",
       location: "clark, pampanga",
       description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
+      jobKey: "global-analytics-consultant"
     },
     {
       id: 2,
-      title: "front end web developer",
+      title: "Front End Web Developer",
       dept: "information technology",
       location: "clark, pampanga",
       description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
+      jobKey: "frontend-web-developer"
     },
     {
       id: 3,
-      title: "devops security engineer",
+      title: "DevOps Security Engineer",
       dept: "information technology",
       location: "clark, pampanga",
       description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop",
+      jobKey: "devops-security-engineer"
     },
     {
       id: 4,
-      title: "associates sales manager",
+      title: "Associate Sales Manager",
       dept: "operations",
       location: "clark, pampanga",
       description: "the associate sales manager is responsible for overseeing the management of the team(s) supporting accounts to drive the business goals.",
-      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop",
+      jobKey: "associate-sales-manager"
     },
     {
       id: 5,
-      title: "sr. wellbeing specialist",
+      title: "Sr. Wellbeing Specialist",
       dept: "human resource",
       location: "clark, pampanga",
       description: "our psychological health team is a diverse group of specialists dedicated to developing, delivering, and evaluating programs.",
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" 
+      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+      jobKey: "sr-wellbeing-specialist"
     },
     {
       id: 6,
-      title: "team leader",
+      title: "Team Leader",
       dept: "operations",
       location: "clark, pampanga",
       description: "the team leader, operations is responsible for the day-to-day supervision of a group of call center associates.",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop",
+      jobKey: "team-leader"
     }
   ];
 
@@ -188,65 +204,79 @@ export default function CareerPage() {
           ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" 
           : "flex flex-col gap-6"
         }>
-          {filteredJobs.map((job) => (
-            <div 
-              key={job.id} 
-              className={`bg-white shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-gray-50 transition-all hover:shadow-xl overflow-hidden
-                ${isGridView 
-                  ? "flex flex-col rounded-bl-[40px] rounded-br-[40px] rounded-tl-2xl rounded-tr-2xl" 
-                  : "flex flex-col md:flex-row items-stretch rounded-2xl h-auto"
-                }`}
-            >
-              <div className={`relative bg-gray-100 shrink-0 ${isGridView ? "h-48 sm:h-52 w-full" : "h-48 md:h-auto md:w-64"}`}>
-                <img 
-                  src={job.image} 
-                  alt={job.title} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-0 left-0">
-                  <div className="bg-[#800000] text-white text-[9px] sm:text-[10px] py-1.5 px-4 sm:px-5 pr-8 uppercase rounded-br-full font-medium tracking-tight">
-                    {job.dept}
+          {filteredJobs.map((job, index) => {
+            let displayClass = "flex";
+            if (!showAll) {
+              if (isGridView) {
+                // If more than 3, completely hide them. If it's the 3rd item, hide it on tablet but show on desktop
+                if (index > 2) displayClass = "hidden";
+                else if (index === 2) displayClass = "hidden lg:flex";
+              } else {
+                // In list view, limit to 3 entirely until expanded
+                if (index > 2) displayClass = "hidden";
+              }
+            }
+
+            return (
+              <div 
+                key={job.id} 
+                className={`bg-white shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-gray-50 transition-all hover:shadow-xl overflow-hidden
+                  ${isGridView 
+                    ? `flex-col rounded-bl-[40px] rounded-br-[40px] rounded-tl-2xl rounded-tr-2xl ${displayClass}` 
+                    : `flex-col md:flex-row items-stretch rounded-2xl h-auto ${displayClass}`
+                  }`}
+              >
+                <div className={`relative bg-gray-100 shrink-0 overflow-hidden ${isGridView ? "h-48 sm:h-52 w-full" : "h-48 md:h-auto md:min-h-[200px] md:w-64"}`}>
+                  <img 
+                    src={job.image} 
+                    alt={job.title} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute top-0 left-0 z-10">
+                    <div className="bg-[#800000] text-white text-[9px] sm:text-[10px] py-1.5 px-4 sm:px-5 pr-8 uppercase rounded-br-full font-medium tracking-tight">
+                      {job.dept}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className={`p-5 sm:p-6 flex flex-col flex-grow ${isGridView ? "items-center text-center" : "items-start text-left justify-center md:ml-4"}`}>
-                <div className={`flex flex-col w-full ${isGridView ? "items-center mb-4" : "items-start mb-2"}`}>
-                  <h3 className="text-[16px] sm:text-[18px] text-[#1a191c] leading-[1.3] mb-2 line-clamp-1 uppercase font-semibold">
-                    {job.title}
-                  </h3>
-                  <p className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-widest leading-none font-semibold">
-                    {job.location}
-                  </p>
-                </div>
+                <div className={`p-5 sm:p-6 flex flex-col flex-grow ${isGridView ? "items-center text-center" : "items-start text-left justify-center md:ml-4"}`}>
+                  <div className={`flex flex-col w-full ${isGridView ? "items-center mb-4" : "items-start mb-2"}`}>
+                    <h3 className="text-[16px] sm:text-[18px] text-[#1a191c] leading-[1.3] mb-2 line-clamp-1 uppercase font-semibold">
+                      {job.title}
+                    </h3>
+                    <p className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-widest leading-none font-semibold">
+                      {job.location}
+                    </p>
+                  </div>
 
-                {isGridView && <div className="w-[80%] border-t-2 border-[#800000] mb-5 opacity-80"></div>}
-                
-                <p className={`text-[12px] sm:text-[13px] text-gray-500 leading-relaxed mb-6 ${isGridView ? "line-clamp-3 px-2" : "line-clamp-2 w-full"}`}>
-                  {job.description}
-                </p>
-
-                <div className={`mt-auto w-full flex items-center ${isGridView ? "justify-between px-2" : "justify-between"}`}>
-                  <Link 
-                    href="/careers/job-details" 
-                    className="text-[#a10000] text-[12px] sm:text-[13px] uppercase hover:underline underline-offset-4 decoration-2 font-semibold"
-                  >
-                    view details
-                  </Link>
+                  {isGridView && <div className="w-[80%] border-t-2 border-[#800000] mb-5 opacity-80"></div>}
                   
-                  <div 
-                    onClick={() => handleOpenModal(job)}
-                    className="bg-[#800000] rounded-xl text-white shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all w-9 h-9 flex items-center justify-center"
-                  >
-                    <Settings size={18} className="stroke-white" />
+                  <p className={`text-[12px] sm:text-[13px] text-gray-500 leading-relaxed mb-6 ${isGridView ? "line-clamp-3 px-2" : "line-clamp-2 w-full"}`}>
+                    {job.description}
+                  </p>
+
+                  <div className={`mt-auto w-full flex items-center ${isGridView ? "justify-between px-2" : "justify-between"}`}>
+                    <Link 
+                      href={`/careers/job-details?job=${job.jobKey}`}
+                      className="text-[#a10000] text-[12px] sm:text-[13px] uppercase hover:underline underline-offset-4 decoration-2 font-semibold"
+                    >
+                      view details
+                    </Link>
+                    
+                    <div 
+                      onClick={() => handleOpenModal(job)}
+                      className="bg-[#800000] rounded-xl text-white shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all w-9 h-9 flex items-center justify-center"
+                    >
+                      <Settings size={18} className="stroke-white" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* empty state */}
+        {/* empty state or toggle button */}
         {filteredJobs.length === 0 ? (
           <div className="text-center py-24 sm:py-32">
             <p className="text-gray-400 font-bold uppercase text-[12px] sm:text-[13px] tracking-widest px-4">
@@ -254,27 +284,35 @@ export default function CareerPage() {
             </p>
           </div>
         ) : (
-          /* footer button */
-          <div className="w-full flex justify-center mt-12 mb-6 px-4">
-            <button 
-              className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-10 sm:px-14 py-4 rounded-2xl shadow-[0_10px_20px_rgba(161,0,0,0.3)] hover:shadow-[0_15px_25px_rgba(161,0,0,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300"
-            >
-              <span className="text-[13px] sm:text-[14px] tracking-widest uppercase font-medium">show all jobs</span>
-              <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
-            </button>
-          </div>
+          (isGridView && filteredJobs.length > 2) || (!isGridView && filteredJobs.length > 3) ? (
+            <div className={`w-full justify-center mt-12 mb-6 px-4 ${!showAll && filteredJobs.length === 3 && isGridView ? 'flex lg:hidden' : 'flex'}`}>
+              <button 
+                onClick={() => setShowAll(!showAll)}
+                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-10 sm:px-14 py-4 rounded-2xl shadow-[0_10px_20px_rgba(161,0,0,0.3)] hover:shadow-[0_15px_25px_rgba(161,0,0,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300"
+              >
+                <span className="text-[13px] sm:text-[14px] tracking-widest uppercase font-medium">
+                  {showAll ? "show less jobs" : "show all jobs"}
+                </span>
+                {showAll ? (
+                  <Minus size={18} className="transition-transform duration-300 group-hover:scale-110" />
+                ) : (
+                  <Plus size={18} className="transition-transform duration-300 group-hover:rotate-90" />
+                )}
+              </button>
+            </div>
+          ) : null
         )}
       </div>
 
       {/* modal backdrop & content */}
       {isModalOpen && selectedJob && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-3 sm:p-4 overflow-hidden">
+        <div className="fixed inset-x-0 bottom-0 top-[130px] z-[999] flex items-start justify-center px-4 pt-0 pb-4 overflow-hidden">
           <div 
             className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300"
             onClick={() => setIsModalOpen(false)}
           ></div>
           
-          <div className="relative bg-white w-full max-w-2xl rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:slide-in-from-top-10 duration-500 max-h-[92vh] flex flex-col">
+          <div className="relative bg-white w-full max-w-2xl rounded-[1.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-500 flex flex-col h-auto" style={{ maxHeight: "calc(100vh - 160px)" }}>
             
             {/* close button */}
             <button 
@@ -331,11 +369,17 @@ export default function CareerPage() {
 
               {/* action buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button className="flex-1 group flex items-center justify-center gap-2 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-6 py-4 rounded-xl sm:rounded-2xl shadow-lg hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-semibold">
+                <button
+                  onClick={() => setIsApplyNowOpen(true)}
+                  className="flex-1 group flex items-center justify-center gap-2 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-6 py-4 rounded-xl sm:rounded-2xl shadow-lg hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-semibold"
+                >
                   <span className="text-[12px] sm:text-[13px] tracking-widest uppercase">apply now</span>
                   <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
                 </button>
-                <button className="flex-1 group flex items-center justify-center gap-2 bg-white border-2 border-[#a10000] text-[#a10000] px-6 py-4 rounded-xl sm:rounded-2xl hover:bg-[#a10000] hover:text-white hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-semibold shadow-sm">
+                <button
+                  onClick={() => setIsBookNowOpen(true)}
+                  className="flex-1 group flex items-center justify-center gap-2 bg-white border-2 border-[#a10000] text-[#a10000] px-6 py-4 rounded-xl sm:rounded-2xl hover:bg-[#a10000] hover:text-white hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-semibold shadow-sm"
+                >
                   <span className="text-[12px] sm:text-[13px] tracking-widest uppercase">book now</span>
                   <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
                 </button>
@@ -344,6 +388,20 @@ export default function CareerPage() {
           </div>
         </div>
       )}
+
+      {/* Apply Now Modal */}
+      <ApplyNowModal
+        isOpen={isApplyNowOpen}
+        onClose={() => setIsApplyNowOpen(false)}
+        jobTitle={selectedJob?.title}
+        jobDept={selectedJob?.dept}
+      />
+
+      {/* Book Now Modal */}
+      <BookNowModal
+        isOpen={isBookNowOpen}
+        onClose={() => setIsBookNowOpen(false)}
+      />
     </>
   );
 }

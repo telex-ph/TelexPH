@@ -25,17 +25,21 @@ export default function WhatWeOfferPage() {
       <main>
         <WhatWeOfferHero /> 
         
-        <div className="bg-white">
+        <div id="our-services" className="bg-white">
           <ServiceFeatures />
         </div>
 
-        <div className="mt-5">
-          <ContactSupport />        
+        <div id="contact" className="mt-5">
+          <ContactSupport />        
         </div>
         
-        <ServiceProcess /> 
+        <div id="our-works">
+          <ServiceProcess /> 
+        </div>
         
-        <ServiceTestimonials />
+        <div id="testimonials">
+          <ServiceTestimonials />
+        </div>
       </main>
       
       <Footer />

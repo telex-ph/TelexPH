@@ -2,13 +2,13 @@
 
 import React from "react";
 import Link from "next/link";
-import { MapPin, Calendar, Clock, Banknote } from "lucide-react";
+
 import { COLORS, FONTS, TYPOGRAPHY, getColorWithOpacity } from "@/constant/styles";
 
 export default function CareerHero() {
   return (
     <section 
-      className="relative pt-12 md:pt-20 pb-10 overflow-hidden" 
+      className="relative pt-12 md:pt-25 pb-5 overflow-hidden" 
       style={{ 
         backgroundColor: COLORS.white,
         backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070')`,
@@ -20,7 +20,7 @@ export default function CareerHero() {
     >
 
       <div
-        className="absolute top-[10%] md:top-[15%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[3.5rem] sm:text-[5rem] md:text-[7rem] lg:text-[8rem] opacity-15 select-none pointer-events-none leading-none z-0 whitespace-nowrap"
+        className="absolute top-[10%] md:top-[25%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[3.5rem] sm:text-[5rem] md:text-[7rem] lg:text-[8rem] opacity-15 select-none pointer-events-none leading-none z-0 whitespace-nowrap"
         style={{ 
           fontFamily: "var(--font-poppins), sans-serif", 
           fontWeight: 900 
@@ -82,67 +82,7 @@ export default function CareerHero() {
             <span style={{ color: "#800000", fontWeight: 600 }}>
               overview
             </span>
-          </div>
-
-          <div className="w-full text-left border-t border-gray-100 pt-10 pb-10">
-            <div className="mb-6 ml-0 md:ml-10 flex justify-center md:justify-start">
-              <span 
-                className="px-6 md:px-8 py-2 md:py-2.5 rounded-full text-white text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase"
-                style={{ backgroundColor: "#800000" }}
-              >
-                technology
-              </span>
-            </div>
-
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10 px-0 md:px-0">
-              <div className="space-y-3 ml-0 md:ml-10 text-center md:text-left">
-                <h2 
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl tracking-tight uppercase"
-                  style={{ 
-                    color: "#1a1a1a",
-                    fontFamily: "var(--font-poppins), sans-serif",
-                    fontWeight: 700
-                  }}
-                >
-                  front-end <span style={{ color: "#800000" }}>developer</span>
-                </h2>
-                
-                <div className="flex items-center justify-center md:justify-start gap-2 text-gray-700 italic">
-                  <MapPin size={18} className="text-[#800000] flex-shrink-0" />
-                  <span className="text-sm sm:text-base md:text-lg font-light">
-                    Cawayan Bugtong, Guimba, Nueva Ecija
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-4 mr-0 md:mr-10">
-                <div className="flex items-center gap-3 bg-white px-3 sm:px-4 py-2 rounded-xl border border-gray-100 shadow-sm min-w-[110px]">
-                  <Calendar size={14} className="text-[#800000]" />
-                  <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                    <p className="text-[14px] text-gray-400 uppercase font-extrabold leading-none">posted</p>
-                    <p className="text-[15px] sm:text-[13px] font-bold text-gray-700 uppercase">oct 24, 2025</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white px-3 sm:px-4 py-2 rounded-xl border border-gray-100 shadow-sm min-w-[110px]">
-                  <Clock size={14} className="text-[#800000]" />
-                  <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                    <p className="text-[14px] text-gray-400 uppercase font-extrabold leading-none">type</p>
-                    <p className="text-[15px] sm:text-[13px] font-bold text-gray-700 uppercase">full-time</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 bg-white px-3 sm:px-4 py-2 rounded-xl border border-gray-100 shadow-sm min-w-[110px]">
-                  <Banknote size={14} className="text-[#800000]" />
-                  <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                    <p className="text-[14px] text-gray-400 uppercase font-extrabold leading-none">salary</p>
-                    <p className="text-[15px] sm:text-[13px] font-bold text-gray-700 uppercase">competitive</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full h-[2px]" style={{ backgroundColor: "#800000", opacity: 0.2 }}></div>
+            
           </div>
         </div>
       </div>
