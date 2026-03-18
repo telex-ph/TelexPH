@@ -287,7 +287,7 @@ export default function DashboardLayout({
       name: 'Appointments',
       path: '/admin/dashboard/Appointment',
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
-    }
+    },
   ]
 
   const adminsMenuItem = {
@@ -301,9 +301,19 @@ export default function DashboardLayout({
     ]
   }
 
-  const navigationitems = userData.role === 1 
+  const userManagementMenuItem = {
+    name: 'User Management',
+    path: '/admin/dashboard/user-management',
+    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><line x1="19" x2="19" y1="8" y2="14" /><line x1="22" x2="16" y1="11" y2="11" /></svg>,
+  }
+
+  const navigationitems = userData.role === 1
     ? [...baseNavigationItems, adminsMenuItem]
     : baseNavigationItems
+
+  const vaNavigationItems = userData.role === 1
+    ? [userManagementMenuItem]
+    : []
 
   const poppins: React.CSSProperties = {
     fontFamily: "'Poppins', sans-serif",
@@ -356,7 +366,7 @@ export default function DashboardLayout({
       </div>
 
       {/* Navigation */}
-      <nav className={`flex-1 overflow-y-auto no-scrollbar py-8 space-y-2 transition-all duration-300 ${iscollapsed ? 'px-2' : 'px-6'}`}>
+      <nav className={`flex-1 overflow-y-auto no-scrollbar pt-2 pb-8 space-y-2 transition-all duration-300 ${iscollapsed ? 'px-2' : 'px-6'}`}>
         {/* Section label */}
         {!iscollapsed && (
           <div
@@ -367,8 +377,9 @@ export default function DashboardLayout({
           </div>
         )}
 
-        <div className="space-y-1">
-          {navigationitems.map((item) => (
+        {/* ── Helper to render a nav item ── */}
+        {(() => {
+          const renderItem = (item: typeof navigationitems[0]) => (
             <div key={item.name}>
               {item.hasDropdown ? (
                 <>
@@ -380,9 +391,7 @@ export default function DashboardLayout({
                     <div className={`flex items-center ${iscollapsed ? '' : 'gap-3'}`}>
                       <span className="shrink-0">{item.icon}</span>
                       {(!iscollapsed || ismobilemenuopen) && (
-                        <span style={poppins}>
-                          {item.name}
-                        </span>
+                        <span style={poppins}>{item.name}</span>
                       )}
                     </div>
                     {(!iscollapsed || ismobilemenuopen) && (
@@ -394,7 +403,6 @@ export default function DashboardLayout({
                       </svg>
                     )}
                   </button>
-
                   <div className={`overflow-hidden transition-all duration-300 ${opendropdowns[item.name] && (!iscollapsed || ismobilemenuopen) ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                     <div className="py-2 space-y-1">
                       {item.subItems?.map((sub) => (
@@ -404,12 +412,7 @@ export default function DashboardLayout({
                           className={`group relative flex items-center py-2 pl-6 pr-4 no-underline transition-all active:scale-95 my-1 mx-2 ${getsubnavstyle(sub.path)}`}
                         >
                           <div className={`absolute left-[-8px] w-4 h-px top-1/2 ${isdarkmode ? 'bg-white/10' : 'bg-gray-200'} rounded-tr-lg`} />
-                          <span
-                            className="transition-colors"
-                            style={{ ...poppins, fontSize: '10px' }}
-                          >
-                            {sub.name}
-                          </span>
+                          <span className="transition-colors" style={{ ...poppins, fontSize: '10px' }}>{sub.name}</span>
                         </Link>
                       ))}
                     </div>
@@ -424,16 +427,45 @@ export default function DashboardLayout({
                   <div className={`flex items-center ${iscollapsed ? '' : 'gap-3'}`}>
                     <span className="shrink-0">{item.icon}</span>
                     {(!iscollapsed || ismobilemenuopen) && (
-                      <span style={poppins}>
-                        {item.name}
-                      </span>
+                      <span style={poppins}>{item.name}</span>
                     )}
                   </div>
                 </Link>
               )}
             </div>
-          ))}
-        </div>
+          )
+
+          return (
+            <>
+              {/* Main menu items */}
+              <div className="space-y-1">
+                {navigationitems.map(renderItem)}
+              </div>
+
+              {/* Virtual Assistant section */}
+              {vaNavigationItems.length > 0 && (
+                <>
+                  {/* Divider + label */}
+                  <div className={`pt-5 pb-1 transition-all duration-300 ${iscollapsed ? 'px-0' : 'px-4'}`}>
+                    {(!iscollapsed || ismobilemenuopen) && (
+                      <div
+                        className={`transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+                        style={{ ...poppins, fontSize: '9px' }}
+                      >
+                        Virtual Assistant
+                      </div>
+                    )}
+                  </div>
+
+                  {/* VA nav items */}
+                  <div className="space-y-1">
+                    {vaNavigationItems.map(renderItem)}
+                  </div>
+                </>
+              )}
+            </>
+          )
+        })()}
       </nav>
 
       {/* Bottom: dark mode toggle + profile card */}

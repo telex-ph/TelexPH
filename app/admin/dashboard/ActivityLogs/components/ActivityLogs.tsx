@@ -291,9 +291,60 @@ export default function ActivityLogs() {
         .al-pill:hover { opacity: .78; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
+
+        /* ── Layout grids ── */
+        .al-stat-grid       { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+        .al-search-row      { display: flex; gap: 10px; align-items: center; flex-wrap: nowrap; }
+        .al-filter-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .al-table-wrap      { display: block; }
+        .al-mobile-row      { display: none; }
+        .al-filter-label    { display: inline; }
+
+        /* ── Card header ── */
+        .al-card-header       { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; }
+        .al-card-header-sub   { display: block; }
+        .al-card-header-count { white-space: nowrap; flex-shrink: 0; }
+
+        /* ── Pagination ── */
+        .al-pagination       { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .al-pagination-btns  { display: flex; align-items: center; gap: 8px; }
+
+        /* ── Modal ── */
+        .al-modal-pad       { padding: 32px 36px; }
+        .al-modal-2col      { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+
+        /* ── 1024px breakpoint ── */
+        @media (max-width: 1024px) {
+          .al-stat-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* ── 768px breakpoint ── */
+        @media (max-width: 768px) {
+          .al-stat-grid       { grid-template-columns: repeat(2, 1fr); }
+          .al-search-row      { flex-wrap: wrap; }
+          .al-search-input    { flex: 1 1 100% !important; min-width: 0 !important; }
+          .al-filter-controls { flex: 1 1 100%; flex-wrap: wrap; gap: 6px; }
+          .al-filter-controls > div { flex: 1 1 auto; min-width: 0; }
+          .al-filter-controls select { width: 100% !important; }
+          .al-filter-label    { display: none; }
+          .al-table-wrap      { display: none; }
+          .al-mobile-row      { display: flex !important; }
+          .al-card-header     { flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 16px; }
+          .al-card-header-sub   { display: none; }
+          .al-card-header-count { font-size: 10px !important; }
+          .al-pagination      { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 16px !important; }
+          .al-pagination-btns { flex-wrap: wrap; }
+          .al-modal-pad       { padding: 20px 18px; }
+          .al-modal-2col      { grid-template-columns: 1fr; }
+        }
+
+        /* ── 480px breakpoint ── */
+        @media (max-width: 480px) {
+          .al-stat-grid { grid-template-columns: 1fr 1fr; }
+        }
       `}</style>
 
-      <div style={{ minHeight: '100vh', background: pageBg, padding: '32px', fontFamily: "'Poppins', sans-serif" }}>
+      <div style={{ minHeight: '100vh', background: pageBg, padding: 'clamp(16px, 4vw, 32px)', fontFamily: "'Poppins', sans-serif" }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
           {/* ── Error toast ── */}
@@ -313,22 +364,41 @@ export default function ActivityLogs() {
             </p>
           </div>
 
-          {/* ── Stat Cards (reference image style) ── */}
+          {/* ── Stat Cards ── */}
           {stats && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14 }}>
-              {statCards.map((card, i) => (
+            <div className="al-stat-grid">
+              {statCards.map((card, i) => {
+                const darkGradients = [
+                  `radial-gradient(circle at 85% 15%, rgba(5,150,105,0.45) 0%, transparent 55%), radial-gradient(circle at 10% 90%, rgba(5,150,105,0.2) 0%, transparent 45%)`,
+                  `radial-gradient(circle at 80% 20%, rgba(0,166,81,0.5) 0%, transparent 55%), radial-gradient(circle at 15% 85%, rgba(0,166,81,0.2) 0%, transparent 45%)`,
+                  `radial-gradient(circle at 90% 10%, rgba(0,102,204,0.5) 0%, transparent 50%), radial-gradient(circle at 5% 80%, rgba(0,102,204,0.22) 0%, transparent 40%)`,
+                  `radial-gradient(circle at 85% 20%, rgba(180,83,9,0.5) 0%, transparent 55%), radial-gradient(circle at 10% 85%, rgba(180,83,9,0.2) 0%, transparent 45%)`,
+                  `radial-gradient(circle at 80% 15%, rgba(139,0,0,0.6) 0%, transparent 55%), radial-gradient(circle at 10% 90%, rgba(139,0,0,0.3) 0%, transparent 45%)`,
+                ]
+                const lightGradients = [
+                  `radial-gradient(circle at 85% 15%, rgba(5,150,105,0.18) 0%, transparent 55%), radial-gradient(circle at 10% 90%, rgba(5,150,105,0.09) 0%, transparent 45%)`,
+                  `radial-gradient(circle at 80% 20%, rgba(0,166,81,0.18) 0%, transparent 55%), radial-gradient(circle at 15% 85%, rgba(0,166,81,0.09) 0%, transparent 45%)`,
+                  `radial-gradient(circle at 90% 10%, rgba(0,102,204,0.18) 0%, transparent 50%), radial-gradient(circle at 5% 80%, rgba(0,102,204,0.09) 0%, transparent 40%)`,
+                  `radial-gradient(circle at 85% 20%, rgba(180,83,9,0.18) 0%, transparent 55%), radial-gradient(circle at 10% 85%, rgba(180,83,9,0.09) 0%, transparent 45%)`,
+                  `radial-gradient(circle at 80% 15%, rgba(139,0,0,0.18) 0%, transparent 55%), radial-gradient(circle at 10% 90%, rgba(139,0,0,0.09) 0%, transparent 45%)`,
+                ]
+                const gradient = isdarkmode ? darkGradients[i] : lightGradients[i]
+                const baseBg = card.dark ? (isdarkmode ? '#2d1f1f' : '#2d1f1f') : cardBg
+                return (
                 <div key={i} style={{
                   padding: '20px 22px',
                   borderRadius: 20,
-                  border: card.dark ? 'none' : `1px solid ${borderColor}`,
-                  background: card.dark
-                    ? (isdarkmode ? '#2a3a2a' : '#2d4a35')
-                    : cardBg,
-                  boxShadow: card.dark ? 'none' : (isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)'),
-                  display: 'flex', flexDirection: 'column', gap: 0,
+                  border: `1px solid ${card.dark ? 'rgba(139,0,0,0.3)' : borderColor}`,
+                  background: `${gradient}, ${baseBg}`,
+                  boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)',
+                  position: 'relative' as const, overflow: 'hidden',
+                  display: 'flex', flexDirection: 'column' as const, gap: 0,
                 }}>
+                  {/* Decorative rings */}
+                  <div style={{ position: 'absolute', top: -18, right: -18, width: 80, height: 80, borderRadius: '50%', border: `1.5px solid ${card.iconColor}`, opacity: 0.15, pointerEvents: 'none' as const }} />
+                  <div style={{ position: 'absolute', top: -30, right: -30, width: 110, height: 110, borderRadius: '50%', border: `1px solid ${card.iconColor}`, opacity: 0.08, pointerEvents: 'none' as const }} />
                   {/* Label + Icon row */}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12, position: 'relative' as const }}>
                     <p style={{ fontSize: 11, fontWeight: 500, color: card.dark ? 'rgba(255,255,255,0.7)' : textMuted, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
                       {card.label}
                     </p>
@@ -337,101 +407,81 @@ export default function ActivityLogs() {
                     </div>
                   </div>
                   {/* Number */}
-                  <p style={{ fontSize: 36, fontWeight: 700, color: card.dark ? '#ffffff' : textPrimary, margin: '0 0 6px', lineHeight: 1, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+                  <p style={{ fontSize: 36, fontWeight: 700, color: card.dark ? '#ffffff' : textPrimary, margin: '0 0 6px', lineHeight: 1, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, position: 'relative' as const }}>
                     {card.value}
                   </p>
                   {/* Subtitle */}
-                  <p style={{ fontSize: 11, fontWeight: 400, color: card.dark ? 'rgba(255,255,255,0.6)' : textMuted, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+                  <p style={{ fontSize: 11, fontWeight: 400, color: card.dark ? 'rgba(255,255,255,0.6)' : textMuted, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, position: 'relative' as const }}>
                     {card.subtitle}
                   </p>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
 
-          {/* ── Filters card ── */}
-          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: '24px', boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* ── Filters ── */}
+          <div style={{ background: 'transparent', border: 'none', borderRadius: 24, padding: '0', boxShadow: 'none' }}>
+            <div className="al-search-row">
 
-              {/* Search + Sort row */}
-              <div style={{ display: 'flex', flexWrap: 'wrap' as const, alignItems: 'center', gap: 12 }}>
-                <div style={{ flex: 1, minWidth: 280, position: 'relative' }}>
-                  <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Search by admin email..."
-                    value={searchquery}
-                    onChange={e => setsearchquery(e.target.value)}
-                    style={{ ...inp({ paddingLeft: 36, width: '100%' }) }}
-                  />
+              {/* Search */}
+              <div className="al-search-input" style={{ flex: 1, minWidth: 200, position: 'relative' }}>
+                <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search by admin email..."
+                  value={searchquery}
+                  onChange={e => setsearchquery(e.target.value)}
+                  style={{ ...inp({ paddingLeft: 36, width: '100%' }) }}
+                />
+              </div>
+
+              {/* Filter controls */}
+              <div className="al-filter-controls" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+
+                {/* Filter by Action dropdown */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span className="al-filter-label" style={{ fontSize: 11, color: textMuted, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Action</span>
+                  <select
+                    value={activetab}
+                    onChange={e => setactivetab(e.target.value)}
+                    style={inp({ width: 'auto', padding: '10px 12px', fontSize: 11, cursor: 'pointer' })}
+                  >
+                    {actionTypes.map(a => (
+                      <option key={a} value={a}>{a === 'All' ? 'All Actions' : a}</option>
+                    ))}
+                  </select>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 11, color: textMuted, fontWeight: 400, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Sort by</span>
-                  <select value={sortby} onChange={e => setsortby(e.target.value)} style={inp({ padding: '10px 12px', fontSize: 11, cursor: 'pointer' })}>
+
+                {/* Filter by Module dropdown */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span className="al-filter-label" style={{ fontSize: 11, color: textMuted, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Module</span>
+                  <select
+                    value={filteredmodules[0] || ''}
+                    onChange={e => {
+                      const val = e.target.value
+                      setfilteredmodules(val ? [val] : [])
+                    }}
+                    style={inp({ width: 'auto', padding: '10px 12px', fontSize: 11, cursor: 'pointer' })}
+                  >
+                    <option value="">All Modules</option>
+                    {availableModules.map(m => (
+                      <option key={m} value={m}>{formatModuleName(m)}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Sort by dropdown */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span className="al-filter-label" style={{ fontSize: 11, color: textMuted, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Sort by</span>
+                  <select value={sortby} onChange={e => setsortby(e.target.value)} style={inp({ width: 'auto', padding: '10px 12px', fontSize: 11, cursor: 'pointer' })}>
                     <option value="Newest">Newest First</option>
                     <option value="Oldest">Oldest First</option>
                   </select>
                 </div>
-              </div>
 
-              {/* Filter by Action */}
-              <div>
-                <p style={{ fontSize: 11, fontWeight: 500, color: textMuted, margin: '0 0 10px', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                  Filter by Action
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
-                  {actionTypes.map(action => (
-                    <button
-                      key={action}
-                      className="al-pill"
-                      onClick={() => setactivetab(action)}
-                      style={{
-                        padding: '5px 14px', borderRadius: 8, border: activetab === action ? 'none' : `1px solid ${borderColor}`,
-                        background: activetab === action ? '#800000' : subtleBg,
-                        color: activetab === action ? '#fff' : textMuted,
-                        fontSize: 11, fontWeight: activetab === action ? 500 : 400,
-                        cursor: 'pointer', transition: 'all .15s',
-                        boxShadow: activetab === action ? '0 2px 8px rgba(128,0,0,0.3)' : 'none',
-                        fontFamily: "'Poppins', sans-serif", letterSpacing: 0,
-                      }}
-                    >
-                      {action}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Filter by Module */}
-              <div>
-                <p style={{ fontSize: 11, fontWeight: 500, color: textMuted, margin: '0 0 10px', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                  Filter by Module
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
-                  {availableModules.map(module => {
-                    const sel = filteredmodules.includes(module)
-                    return (
-                      <button
-                        key={module}
-                        className="al-pill"
-                        onClick={() => toggleModuleFilter(module)}
-                        style={{
-                          padding: '5px 14px', borderRadius: 8,
-                          border: sel ? 'none' : `1px solid ${borderColor}`,
-                          background: sel ? '#800000' : subtleBg,
-                          color: sel ? '#fff' : textMuted,
-                          fontSize: 11, fontWeight: sel ? 500 : 400,
-                          cursor: 'pointer', transition: 'all .15s',
-                          boxShadow: sel ? '0 2px 8px rgba(128,0,0,0.3)' : 'none',
-                          fontFamily: "'Poppins', sans-serif", letterSpacing: 0,
-                        }}
-                      >
-                        {formatModuleName(module)}
-                      </button>
-                    )
-                  })}
-                </div>
               </div>
             </div>
           </div>
@@ -440,13 +490,13 @@ export default function ActivityLogs() {
           <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: 'hidden', boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)' }}>
 
             {/* Card header */}
-            <div style={{ padding: '18px 24px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="al-card-header" style={{ borderBottom: `1px solid ${borderColor}` }}>
               <div>
                 <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Activity log records</p>
-                <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>All admin actions and system events</p>
+                <p className="al-card-header-sub" style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>All admin actions and system events</p>
               </div>
               {pagination && (
-                <span style={{ fontSize: 11, color: textMuted, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+                <span className="al-card-header-count" style={{ fontSize: 11, color: textMuted, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
                   Showing <strong style={{ color: textPrimary, fontFamily: "'Poppins', sans-serif" }}>{((pagination.page - 1) * pagination.limit) + 1}</strong> to <strong style={{ color: textPrimary, fontFamily: "'Poppins', sans-serif" }}>{Math.min(pagination.page * pagination.limit, pagination.total)}</strong> of <strong style={{ color: textPrimary, fontFamily: "'Poppins', sans-serif" }}>{pagination.total}</strong> results
                 </span>
               )}
@@ -475,70 +525,71 @@ export default function ActivityLogs() {
             {/* Table */}
             {!isloading && logs.length > 0 && (
               <>
-                {/* Table header row */}
-                <div style={{ display: 'grid', gridTemplateColumns: '140px 160px 1fr 1fr 140px', gap: 16, padding: '11px 24px', background: subtleBg, borderBottom: `1px solid ${borderColor}` }}>
-                  {['Action', 'Module', 'Admin', 'Timestamp', 'Details'].map((col, i) => (
-                    <span key={col} style={{ fontSize: 10, fontWeight: 500, color: textMuted, textAlign: i === 4 ? 'right' as const : 'left' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                      {col}
-                    </span>
+                {/* Desktop table */}
+                <div className="al-table-wrap">
+                  {/* Table header row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '140px 160px 1fr 1fr 140px', gap: 16, padding: '11px 24px', background: subtleBg, borderBottom: `1px solid ${borderColor}` }}>
+                    {['Action', 'Module', 'Admin', 'Timestamp', 'Details'].map((col, i) => (
+                      <span key={col} style={{ fontSize: 10, fontWeight: 500, color: textMuted, textAlign: i === 4 ? 'right' as const : 'left' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+                        {col}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Table rows */}
+                  {logs.map((log, i) => (
+                    <div
+                      key={log._id}
+                      className="al-row"
+                      style={{ display: 'grid', gridTemplateColumns: '140px 160px 1fr 1fr 140px', gap: 16, alignItems: 'center', padding: '14px 24px', borderBottom: i < logs.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}
+                    >
+                      <div><span style={getActionBadgeStyle(log.action)}>{formatAction(log.action)}</span></div>
+                      <div><span style={getModuleBadgeStyle(log.module)}>{formatModuleName(log.module)}</span></div>
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{getAdminName(log)}</p>
+                        <p style={{ fontSize: 11, color: textMuted, margin: '2px 0 0', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{log.admin}</p>
+                      </div>
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{new Date(getTimestamp(log)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                        <p style={{ fontSize: 11, color: textMuted, margin: '2px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{new Date(getTimestamp(log)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end' as const }}>
+                        <button onClick={() => { setselectedlog(log); setshowdetailsmodal(true) }} style={{ padding: '6px 14px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isdarkmode ? 'rgba(255,255,255,0.06)' : '#f9fafb', color: textMuted, fontSize: 11, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>View Details</button>
+                      </div>
+                    </div>
                   ))}
                 </div>
 
-                {/* Table rows */}
+                {/* Mobile card rows */}
                 {logs.map((log, i) => (
                   <div
-                    key={log._id}
-                    className="al-row"
-                    style={{ display: 'grid', gridTemplateColumns: '140px 160px 1fr 1fr 140px', gap: 16, alignItems: 'center', padding: '14px 24px', borderBottom: i < logs.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}
+                    key={`mob-${log._id}`}
+                    className="al-mobile-row"
+                    style={{ flexDirection: 'column' as const, padding: '14px 16px', borderBottom: i < logs.length - 1 ? `1px solid ${borderColor}` : 'none', gap: 10 }}
                   >
-                    {/* Action badge */}
-                    <div>
-                      <span style={getActionBadgeStyle(log.action)}>{formatAction(log.action)}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
+                        <span style={getActionBadgeStyle(log.action)}>{formatAction(log.action)}</span>
+                        <span style={getModuleBadgeStyle(log.module)}>{formatModuleName(log.module)}</span>
+                      </div>
+                      <p style={{ fontSize: 10, color: textMuted, margin: 0, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{new Date(getTimestamp(log)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                     </div>
-
-                    {/* Module badge */}
-                    <div>
-                      <span style={getModuleBadgeStyle(log.module)}>{formatModuleName(log.module)}</span>
-                    </div>
-
-                    {/* Admin */}
-                    <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                        {getAdminName(log)}
-                      </p>
-                      <p style={{ fontSize: 11, color: textMuted, margin: '2px 0 0', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                        {log.admin}
-                      </p>
-                    </div>
-
-                    {/* Timestamp */}
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                        {new Date(getTimestamp(log)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </p>
-                      <p style={{ fontSize: 11, color: textMuted, margin: '2px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                        {new Date(getTimestamp(log)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    </div>
-
-                    {/* View Details button */}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' as const }}>
-                      <button
-                        onClick={() => { setselectedlog(log); setshowdetailsmodal(true) }}
-                        style={{ padding: '6px 14px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isdarkmode ? 'rgba(255,255,255,0.06)' : '#f9fafb', color: textMuted, fontSize: 11, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}
-                      >
-                        View Details
-                      </button>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{getAdminName(log)}</p>
+                        <p style={{ fontSize: 11, color: textMuted, margin: '2px 0 0', fontFamily: "'Poppins', sans-serif" }}>{log.admin}</p>
+                      </div>
+                      <button onClick={() => { setselectedlog(log); setshowdetailsmodal(true) }} style={{ padding: '6px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isdarkmode ? 'rgba(255,255,255,0.06)' : '#f9fafb', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap' as const }}>View</button>
                     </div>
                   </div>
                 ))}
 
                 {/* Pagination footer */}
-                <div style={{ padding: '14px 24px', background: subtleBg, borderTop: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="al-pagination" style={{ padding: '14px 24px', background: subtleBg, borderTop: `1px solid ${borderColor}` }}>
                   <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
                     Page <strong style={{ color: textPrimary, fontFamily: "'Poppins', sans-serif" }}>{pagination?.page}</strong> of <strong style={{ color: textPrimary, fontFamily: "'Poppins', sans-serif" }}>{pagination?.totalPages}</strong>
                   </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div className="al-pagination-btns">
                     <button
                       onClick={handlePreviousPage}
                       disabled={currentpage === 1}
@@ -573,9 +624,9 @@ export default function ActivityLogs() {
 
       {/* ── Details Modal ── */}
       {showdetailsmodal && selectedlog && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20, overflowY: 'auto' }}>
-          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 32, width: '100%', maxWidth: 680, boxShadow: '0 32px 80px rgba(0,0,0,0.32)', fontFamily: "'Poppins', sans-serif" }}>
-            <div style={{ padding: '32px 36px' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 16, overflowY: 'auto' }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 32, width: '100%', maxWidth: 680, boxShadow: '0 32px 80px rgba(0,0,0,0.32)', fontFamily: "'Poppins', sans-serif", margin: 'auto' }}>
+            <div className="al-modal-pad">
 
               {/* Modal header */}
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -583,28 +634,28 @@ export default function ActivityLogs() {
                   <h3 style={{ fontSize: 18, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Activity Details</h3>
                   <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Complete information about this activity log</p>
                 </div>
-                <button onClick={() => setshowdetailsmodal(false)} style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: subtleBg, color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <button onClick={() => setshowdetailsmodal(false)} style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: subtleBg, color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               </div>
 
               {/* Badges */}
-              <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' as const }}>
                 <span style={getActionBadgeStyle(selectedlog.action)}>{formatAction(selectedlog.action)}</span>
                 <span style={getModuleBadgeStyle(selectedlog.module)}>{formatModuleName(selectedlog.module)}</span>
               </div>
 
               {/* Main info card */}
-              <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, padding: '24px', marginBottom: 16 }}>
+              <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, padding: '20px', marginBottom: 16 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   <div>
                     <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: '0 0 6px', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>PERFORMED BY</p>
-                    <p style={{ fontSize: 20, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{getAdminName(selectedlog)}</p>
-                    <p style={{ fontSize: 12, color: textMuted, margin: '3px 0 0', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{selectedlog.admin}</p>
+                    <p style={{ fontSize: 18, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, wordBreak: 'break-word' as const }}>{getAdminName(selectedlog)}</p>
+                    <p style={{ fontSize: 12, color: textMuted, margin: '3px 0 0', fontFamily: "'Poppins', sans-serif", letterSpacing: 0, wordBreak: 'break-all' as const }}>{selectedlog.admin}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: '0 0 6px', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>TIMESTAMP</p>
-                    <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+                    <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, lineHeight: 1.5 }}>
                       {new Date(getTimestamp(selectedlog)).toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                     </p>
                   </div>
@@ -618,7 +669,7 @@ export default function ActivityLogs() {
               </div>
 
               {/* Two-col cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+              <div className="al-modal-2col">
                 <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 14, padding: '16px 18px' }}>
                   <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: '0 0 6px', fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>ACTION TYPE</p>
                   <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{getActionDescription(selectedlog)}</p>
