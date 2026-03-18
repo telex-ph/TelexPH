@@ -50,13 +50,11 @@ const Nav = ({ openNav }: Props) => {
   const handleMouseLeave = () => setOpenDropdownId(null);
 
   const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
-    if (url.startsWith("#")) {
-      e.preventDefault();
-      if (pathname === "/") {
-        scrollToSection(url);
-      } else {
-        router.push("/" + url);
-        setTimeout(() => scrollToSection(url), 100);
+    if (url.includes("#")) {
+      const [path, hash] = url.split("#");
+      if (pathname === path || (path === "" && pathname === "/")) {
+        e.preventDefault();
+        scrollToSection(`#${hash}`);
       }
     }
   };
@@ -64,7 +62,7 @@ const Nav = ({ openNav }: Props) => {
   const scrollToSection = (hash: string) => {
     const element = document.querySelector(hash);
     if (element) {
-      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
+      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 100;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
@@ -76,15 +74,33 @@ const Nav = ({ openNav }: Props) => {
   }, []);
 
   const servicesMegaData = [
-    { id: "offer", label: "What We Offer", items: ["Customer Support", "Technical Helpdesk", "Sales & Lead Generation"] },
+    { 
+      id: "offer", 
+      label: "What We Offer", 
+      items: [
+        { label: "Our Services", url: "/services#our-services" },
+        { label: "Contact Us", url: "/services#contact" },
+        { label: "Our Works", url: "/services#our-works" },
+        { label: "Testimonials", url: "/services#testimonials" }
+      ] 
+    },
   ];
 
   const aboutMegaData = [
-    { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
+    { 
+      id: "company", 
+      label: "Company", 
+      items: [
+        { label: "Company Overview", url: "/about#overview" },
+        { label: "Mission, Vision & Values", url: "/about#mission-vision" },
+        { label: "Why Choose Us", url: "/about#choose-us" },
+        { label: "Our Team", url: "/about#our-team" }
+      ] 
+    },
   ];
 
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
+    { id: "learning", label: "Resource Center", items: ["Case Studies"] },
     { 
       id: "news", 
       label: "Industry Use Cases", 
@@ -96,7 +112,7 @@ const Nav = ({ openNav }: Props) => {
         { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
         { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
         { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
-      ]
+      ] 
     },
     { 
       id: "blogs", 
@@ -165,7 +181,7 @@ const Nav = ({ openNav }: Props) => {
                               const url = typeof item === 'string' ? megaConfig.path : item.url;
                               
                               return (
-                                <Link key={i} href={url} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
+                                <Link key={i} href={url} onClick={(e) => handleScrollClick(e, url)} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
                                   {label}
                                 </Link>
                               );

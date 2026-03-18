@@ -42,11 +42,29 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
   const pathname = usePathname();
 
   const servicesMegaData = [
-    { id: "offer", label: "What We Offer", items: ["Customer Support"] },
+    { 
+      id: "offer", 
+      label: "What We Offer", 
+      items: [
+        { label: "Our Services", url: "/services#our-services" },
+        { label: "Contact Us", url: "/services#contact" },
+        { label: "Our Works", url: "/services#our-works" },
+        { label: "Testimonials", url: "/services#testimonials" }
+      ] 
+    },
   ];
 
   const aboutMegaData = [
-    { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
+    { 
+      id: "company", 
+      label: "Company", 
+      items: [
+        { label: "Company Overview", url: "/about#overview" },
+        { label: "Mission, Vision & Values", url: "/about#mission-vision" },
+        { label: "Why Choose Us", url: "/about#choose-us" },
+        { label: "Our Team", url: "/about#our-team" }
+      ] 
+    },
   ];
 
   const resourcesMegaData = [
@@ -105,15 +123,16 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
   const handleScrollClick = (e: React.MouseEvent | null, url: string) => {
     if (e) e.preventDefault();
     closeNav();
-    if (url.startsWith("#")) {
-      if (pathname === "/") {
-        const element = document.querySelector(url);
+    if (url.includes("#")) {
+      const [path, hash] = url.split("#");
+      if (pathname === path || (path === "" && pathname === "/")) {
+        const element = document.querySelector(`#${hash}`);
         if (element) {
           const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
           window.scrollTo({ top: offsetPosition, behavior: "smooth" });
         }
       } else {
-        router.push("/" + url);
+        router.push(url);
       }
     } else {
       router.push(url);
@@ -164,7 +183,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
                             className="flex items-center justify-between px-10 py-3 border-b border-white"
                             onClick={(e) => handleToggleSub(e, sub.id)}
                           >
-                            <span className={`text-[13px] font-normal uppercase ${isSubOpen ? "text-[#a10000]" : "text-gray-600"}`}>
+                            <span className={`text-[13px] font-normal ${isSubOpen ? "text-[#a10000]" : "text-gray-600"}`}>
                               {sub.label}
                             </span>
                             <HiChevronDown className={`w-4 h-4 transition-transform ${isSubOpen ? "rotate-180 text-[#a10000]" : "text-gray-400"}`} />
