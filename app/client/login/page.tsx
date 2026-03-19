@@ -267,7 +267,7 @@ export default function ClientLoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
           </div>
-
+ 
           {/* Bottom-right lock badge */}
           <div className="pointer-events-none absolute" style={{bottom:28,right:28,width:36,height:36,borderRadius:'50%',background:'rgba(139,0,0,.1)',border:'1.5px solid rgba(139,0,0,.18)',display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#8b0000" strokeWidth={1.8}>
