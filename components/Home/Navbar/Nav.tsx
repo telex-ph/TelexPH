@@ -41,7 +41,7 @@ const Nav = ({ openNav }: Props) => {
   const [activeServicesTab, setActiveServicesTab] = useState("offer");
   const [activeAboutTab, setActiveAboutTab] = useState("company");
   const [activeResourcesTab, setActiveResourcesTab] = useState("learning");
-  const [activeCareersTab, setActiveCareersTab] = useState("careers-center");
+  const [activeCareersTab, setActiveCareersTab] = useState("va-overview");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -122,15 +122,28 @@ const Nav = ({ openNav }: Props) => {
   ];
 
   const careersMegaData = [
-    { id: "careers-center", label: "Careers Center", items: [{ label: "Careers Home", url: "/careers" }] },
-    { id: "job-details", label: "Job Details", items: [{ label: "Full Job Details", url: "/careers/job-details" }] },
+    { 
+      id: "va-overview", 
+      label: "VA Center", 
+      items: [
+        { label: "Virtual Assistant Home", url: "/careers" },
+      ] 
+    },
+    { 
+      id: "va-details", 
+      label: "Virtual Assistant Details", 
+      items: [
+        { label: "Become a VA", url: "/careers/job-details" },
+        { label: "Hire a VA", url: "/careers/job-details" },
+      ] 
+    },
   ];
 
   const getMegaConfig = (label: string) => {
     if (label === "Services") return { data: servicesMegaData, active: activeServicesTab, setter: setActiveServicesTab, path: "/services" };
     if (label === "About") return { data: aboutMegaData, active: activeAboutTab, setter: setActiveAboutTab, path: "/about" };
     if (label === "Resources") return { data: resourcesMegaData, active: activeResourcesTab, setter: setActiveResourcesTab, path: "/resources" };
-    if (label === "Careers") return { data: careersMegaData, active: activeCareersTab, setter: setActiveCareersTab, path: "/careers" };
+    if (label === "Virtual Assistant" || label === "Careers") return { data: careersMegaData, active: activeCareersTab, setter: setActiveCareersTab, path: "/virtual-assistant" };
     return null;
   };
 
@@ -153,14 +166,14 @@ const Nav = ({ openNav }: Props) => {
                   <div key={link.id} className="relative h-full flex items-center" onMouseEnter={() => handleMouseEnter(link.id)} onMouseLeave={handleMouseLeave}>
                     <Link href={link.url} onClick={(e) => handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
                       <span className="text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]">
-                        {link.label}
+                        {link.label === "Careers" ? "Virtual Assistant" : link.label}
                       </span>
                     </Link>
                     {megaConfig && openDropdownId === link.id && (
                       <div className="absolute top-full left-0 mt-[-2px] bg-white border-t-2 border-[#a10000] shadow-xl min-w-[550px] z-20 rounded-b-lg flex overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="w-[40%] bg-[#f8fafc] px-6 py-6 border-r border-gray-200 flex flex-col font-poppins">
                           <h3 className="text-[#a10000] font-bold text-[11px] uppercase tracking-widest border-b border-[#a10000]/20 pb-2 mb-4">
-                            Explore {link.label}
+                            Explore {link.label === "Careers" ? "VA" : link.label}
                           </h3>
                           <div className="flex flex-col space-y-2">
                             {megaConfig.data.map((cat) => (
