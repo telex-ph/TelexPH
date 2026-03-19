@@ -303,11 +303,11 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${API_BASE}/auth/client/me`, { method: 'GET', credentials: 'include' })
+        const res = await fetch(`${API_BASE}/auth/va/me`, { method: 'GET', credentials: 'include' })
         if (res.ok) {
           setClientInfo(await res.json())
         } else if (res.status === 401 || res.status === 403) {
-          router.push('/client/login')
+          router.push('/VirtualAssistant/login')
         }
       } catch (err) {
         console.error('Failed to fetch client profile:', err)
@@ -320,11 +320,11 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
     if (loggingOut) return
     setLoggingOut(true)
     try {
-      await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
+      await fetch(`${API_BASE}/auth/va/logout`, { method: 'POST', credentials: 'include' })
     } catch { /* proceed */ } finally {
       setClientInfo(null)
       setLoggingOut(false)
-      router.push('/client/login')
+      router.push('/VirtualAssistant/login')
     }
   }
 

@@ -2,19 +2,45 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ArrowRight, LayoutGrid, Lock } from "lucide-react";
+import { Eye, EyeOff, BarChart2, Lock, Loader2 } from "lucide-react";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export default function VALoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
+  const [email,        setEmail]        = useState("");
+  const [password,     setPassword]     = useState("");
+  const [remember,     setRemember]     = useState(false);
+  const [isLoading,    setIsLoading]    = useState(false);
+  const [error,        setError]        = useState("");
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: replace with your actual auth logic
-    router.push("/VirtualAssistant/dashboard");
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/va/authenticate`, {
+        method:      "POST",
+        credentials: "include",
+        headers:     { "Content-Type": "application/json" },
+        body:        JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || data.message || "Invalid email or password.");
+        return;
+      }
+
+      router.push("/VirtualAssistant/dashboard");
+    } catch {
+      setError("Unable to connect. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const stats = [
@@ -44,22 +70,20 @@ export default function VALoginPage() {
         {/* ── LEFT: Form ── */}
         <div className="flex-1 flex flex-col justify-center px-8 py-12 md:px-10 bg-white">
 
-          {/* Headline */}
-          <div className="mb-7">
-            <div
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-3 w-fit"
-              style={{ background: "#fff5f5", border: "1px solid #ffd0d0" }}
-            >
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#8B0000" }} />
-              <span className="text-[11px] font-bold tracking-[.06em] uppercase" style={{ color: "#8B0000" }}>VA Portal Access</span>
-            </div>
-            <h1 className="text-[28px] font-black leading-tight mb-2" style={{ color: "#1a0000", letterSpacing: "-0.03em" }}>
-              Sign in to<br />your account
-            </h1>
-            <p className="text-[13px] leading-relaxed" style={{ color: "#b09090" }}>
-              Enter your credentials to continue to your VA workspace and manage your tasks.
-            </p>
-          </div>
+          <form onSubmit={handleSignIn} className="flex flex-col gap-0">
+            {/* Email */}
+            <label className="text-[13px] font-semibold mb-1.5" style={{ color: "#8B0000" }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              className="w-full px-4 py-3 rounded-lg text-sm text-gray-700 outline-none mb-4 transition-all border-[1.5px] border-transparent focus:border-[#8B0000] focus:bg-white"
+              style={{ background: "#f0f4fa" }}
+            />
 
           <form onSubmit={handleSignIn}>
             {/* Email */}
@@ -70,13 +94,11 @@ export default function VALoginPage() {
               <input
                 type="email"
                 required
-                placeholder="you@telexph.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl text-[14px] outline-none transition-all"
-                style={{ background: "#fff5f5", border: "1.5px solid #f5dede", color: "#1a0000" }}
-                onFocus={(e) => { e.target.style.borderColor = "#8B0000"; e.target.style.background = "#fff"; e.target.style.boxShadow = "0 0 0 4px rgba(139,0,0,0.08)"; }}
-                onBlur={(e) => { e.target.style.borderColor = "#f5dede"; e.target.style.background = "#fff5f5"; e.target.style.boxShadow = "none"; }}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                className="w-full px-4 py-3 pr-10 rounded-lg text-sm text-gray-700 outline-none transition-all border-[1.5px] border-transparent focus:border-[#8B0000] focus:bg-white"
+                style={{ background: "#f0f4fa" }}
               />
             </div>
 
@@ -109,8 +131,8 @@ export default function VALoginPage() {
             </div>
 
             {/* Remember + Forgot */}
-            <div className="flex items-center justify-between mt-4 mb-6">
-              <label className="flex items-center gap-2 cursor-pointer text-[13px]" style={{ color: "#b09090" }}>
+            <div className="flex items-center justify-between mb-5">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={remember}
@@ -130,15 +152,21 @@ export default function VALoginPage() {
               </button>
             </div>
 
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200">
+                <p className="text-[12px] text-red-600 font-medium">{error}</p>
+              </div>
+            )}
+
             {/* Sign In */}
             <button
               type="submit"
-              className="w-full py-4 rounded-2xl text-[13px] font-extrabold tracking-[.12em] uppercase text-white flex items-center justify-center gap-2.5 mb-5 transition-all hover:-translate-y-0.5 active:translate-y-0"
-              style={{ background: "#8B0000", boxShadow: "0 6px 22px rgba(139,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.15)" }}
-              onMouseOver={(e) => (e.currentTarget.style.boxShadow = "0 12px 30px rgba(139,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.15)")}
-              onMouseOut={(e) => (e.currentTarget.style.boxShadow = "0 6px 22px rgba(139,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.15)")}
+              disabled={isLoading}
+              className="w-full py-3 rounded-lg text-sm font-bold tracking-widest uppercase text-white transition-opacity hover:opacity-90 active:opacity-80 disabled:opacity-60 flex items-center justify-center gap-2"
+              style={{ background: "#8B0000" }}
             >
-              Sign In <ArrowRight size={18} />
+              {isLoading ? <><Loader2 size={16} className="animate-spin" /> Signing in…</> : "Sign In"}
             </button>
           </form>
 
@@ -155,93 +183,51 @@ export default function VALoginPage() {
           </p>
         </div>
 
-        {/* ── RIGHT Panel ── */}
-        <div
-          className="relative w-full md:w-[400px] flex-shrink-0 flex flex-col px-7 py-8 overflow-hidden"
-          style={{ background: "linear-gradient(145deg, #6b0000 0%, #3a0000 55%, #1c0000 100%)" }}
-        >
-          {/* Decorative circles */}
-          <div className="absolute pointer-events-none" style={{ width: "320px", height: "320px", borderRadius: "50%", background: "rgba(255,255,255,0.04)", top: "-120px", right: "-100px" }} />
-          <div className="absolute pointer-events-none" style={{ width: "180px", height: "180px", borderRadius: "50%", background: "rgba(0,0,0,0.2)", bottom: "-50px", left: "-50px" }} />
+        {/* ── RIGHT: Illustration ── */}
+        <div className="relative w-full md:w-[340px] flex flex-col items-center justify-between py-6 px-5" style={{ background: "#f5eeee" }}>
+          <div className="absolute top-5 right-5 w-[42px] h-[42px] rounded-[10px] flex items-center justify-center" style={{ background: "#8B0000" }}>
+            <BarChart2 size={20} color="white" />
+          </div>
 
-          {/* Top row */}
-          <div className="relative z-10 flex items-center justify-between mb-6">
-            <span className="text-[13px] font-bold tracking-[.06em] uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>VA Dashboard</span>
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)" }}
-            >
-              <LayoutGrid size={18} color="rgba(255,255,255,0.8)" />
+          <div className="w-full mt-14 bg-white rounded-xl overflow-hidden" style={{ boxShadow: "0 8px 24px rgba(139,0,0,0.15)" }}>
+            <div className="flex items-center gap-1.5 px-3 py-2.5" style={{ background: "#8B0000" }}>
+              <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+              <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+              <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+              <div className="flex-1 ml-2 h-2 rounded bg-white opacity-20" />
             </div>
-          </div>
-
-          {/* Headline */}
-          <div className="relative z-10 mb-6">
-            <h2 className="text-[20px] font-extrabold text-white leading-tight mb-2">
-              Your work.<br />Your schedule.<br />Your career.
-            </h2>
-            <p className="text-[12.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
-              Manage clients, tasks, and earnings — all from one secure workspace.
-            </p>
-          </div>
-
-          {/* Stats */}
-          <div className="relative z-10 grid grid-cols-2 gap-2.5 mb-6">
-            {stats.map((s) => (
-              <div
-                key={s.lbl}
-                className="rounded-xl px-3.5 py-3"
-                style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)" }}
-              >
-                <div className="text-[18px] font-extrabold text-white">{s.num}</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{s.lbl}</div>
+            <div className="p-2 flex gap-1.5">
+              <div className="flex-[1.2] rounded-md p-2" style={{ background: "#8B0000" }}>
+                <div className="h-1.5 rounded bg-white opacity-60 mb-1" /><div className="h-1.5 rounded bg-white opacity-35 w-[60%]" />
               </div>
-            ))}
-          </div>
-
-          {/* Bar chart mock */}
-          <div
-            className="relative z-10 rounded-xl overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
-          >
-            <div
-              className="flex items-center gap-1.5 px-3 py-2"
-              style={{ background: "rgba(0,0,0,0.3)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-            >
-              {[0,1,2].map(i => <div key={i} className="w-[7px] h-[7px] rounded-full" style={{ background: "rgba(255,255,255,0.25)" }} />)}
-              <div className="flex-1 ml-2 h-1.5 rounded" style={{ background: "rgba(255,255,255,0.1)" }} />
+              <div className="flex-1 rounded-md p-2" style={{ background: "#fdf2f2" }}>
+                <div className="h-1.5 rounded mb-1" style={{ background: "#e8b4b4" }} /><div className="h-1.5 rounded w-[70%]" style={{ background: "#f5d4d4" }} />
+              </div>
+              <div className="flex-1 rounded-md p-2" style={{ background: "#fdf2f2" }}>
+                <div className="h-1.5 rounded mb-1" style={{ background: "#e8b4b4" }} /><div className="h-1.5 rounded w-[50%]" style={{ background: "#f5d4d4" }} />
+              </div>
             </div>
-            <div className="flex items-end gap-1 px-3 py-3" style={{ minHeight: "64px" }}>
-              {bars.map((h, i) => (
-                <div
-                  key={i}
-                  className="flex-1"
-                  style={{
-                    height: `${h}%`,
-                    background: i === 3 ? "rgba(255,150,150,0.65)" : "rgba(255,120,120,0.4)",
-                    borderRadius: "3px 3px 0 0",
-                  }}
-                />
-              ))}
+            <div className="px-2 pb-2 grid grid-cols-2 gap-1.5">
+              <div className="rounded-md p-2 flex items-end gap-1" style={{ background: "#fdf2f2", height: "56px" }}>
+                {[60, 80, 50, 90, 70].map((h, i) => (
+                  <div key={i} className="flex-1 rounded-sm" style={{ height: `${h}%`, background: "#8B0000", opacity: 0.7 }} />
+                ))}
+              </div>
+              <div className="rounded-md overflow-hidden" style={{ background: "#fdf2f2", height: "56px" }}>
+                <svg width="100%" height="100%" viewBox="0 0 100 40" preserveAspectRatio="none">
+                  <polyline points="0,35 20,25 40,30 60,15 80,20 100,10" fill="none" stroke="#8B0000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
             </div>
           </div>
 
-          {/* Footer */}
-          <div
-            className="relative z-10 mt-auto pt-4 flex items-center justify-between"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
-          >
-            <p className="text-[11.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
-              this portal is for{" "}
-              <span className="font-bold" style={{ color: "rgba(255,255,255,0.7)" }}>VA use only</span>.<br />
-              all access is monitored and logged.
-            </p>
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ml-3"
-              style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
-            >
-              <Lock size={15} color="rgba(255,255,255,0.6)" />
-            </div>
+          <p className="text-[12px] text-gray-400 text-center leading-relaxed mt-4">
+            this portal is for <span className="font-semibold text-gray-500">VA use only</span>. all access
+            <br />attempts are monitored and logged.
+          </p>
+
+          <div className="absolute bottom-5 right-5 w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: "#f5d4d4" }}>
+            <Lock size={16} color="#8B0000" />
           </div>
         </div>
 

@@ -1464,10 +1464,64 @@ const VAJobApplicationForm: React.FC = () => {
     setPage((p) => (p - 1) as Step);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const submit = (): void => {
-    setConfirmCode(randCode());
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string>("");
+
+  const submit = async (): Promise<void> => {
+    setIsSubmitting(true);
+    setSubmitError("");
+    try {
+      const payload = new FormData();
+
+      // Personal info
+      payload.append("firstName",  formData.personal.firstName);
+      payload.append("lastName",   formData.personal.lastName);
+      payload.append("middleName", formData.personal.middleName);
+      payload.append("email",      formData.personal.email);
+      payload.append("phone",      formData.personal.phone);
+      payload.append("address",    formData.personal.address);
+      payload.append("city",       formData.personal.city);
+      payload.append("state",      formData.personal.state);
+      payload.append("zip",        formData.personal.zip);
+      payload.append("country",    formData.personal.country);
+      payload.append("dob",        formData.personal.dob);
+      payload.append("gender",     formData.personal.gender);
+
+      // Service info
+      payload.append("services",         JSON.stringify(formData.service.services));
+      payload.append("experienceLevel",  formData.service.experienceLevel);
+      payload.append("availability",     formData.service.availability);
+      payload.append("timezone",         formData.service.timezone);
+      payload.append("rate",             formData.service.rate);
+      payload.append("startDate",        formData.service.startDate);
+
+      // Cover letter
+      payload.append("coverLetter", formData.resume.coverLetter);
+
+      // Resume file
+      if (formData.resume.resume?.file) {
+        payload.append("resume", formData.resume.resume.file);
+      }
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/applicants`,
+        { method: "POST", body: payload, credentials: "include" }
+      );
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Submission failed. Please try again.");
+      }
+
+      const data = await res.json();
+      setConfirmCode(data.confirmCode || randCode());
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (e: unknown) {
+      setSubmitError(e instanceof Error ? e.message : "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const stepState = (id: number): "active" | "done" | "" => {
@@ -1620,7 +1674,22 @@ const VAJobApplicationForm: React.FC = () => {
                 <button type="button" className="btn btn-next" onClick={goNext}>Continue →</button>
               )}
               {page === 4 && (
-                <button type="button" className="btn btn-submit" onClick={submit}>✔ Submit Application</button>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
+                  {submitError && (
+                    <span style={{ fontSize: "12px", color: "var(--error)", fontWeight: 600 }}>
+                      ⚠ {submitError}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    className="btn btn-submit"
+                    onClick={submit}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
+                  >
+                    {isSubmitting ? "Submitting…" : "✔ Submit Application"}
+                  </button>
+                </div>
               )}
             </div>
           </div>
