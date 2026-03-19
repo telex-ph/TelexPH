@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Check, Plus, MapPin, Calendar, Clock, Banknote } from "lucide-react";
-import ApplyNowModal from "./ApplyNowModal";
-import BookNowModal from "./BookNowModal";
 
 // ─────────────────────────────────────────────
 // Types
@@ -301,10 +299,14 @@ interface JobDetailPanelProps {
   jobKey: JobKey;
 }
 function JobDetailPanel({ jobKey }: JobDetailPanelProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  const router = useRouter();
 
   const job = JOB_DATA[jobKey];
+
+  // Navigate to the VA application form page
+  const handleApplyNow = () => {
+    router.push("/VirtualAssistant/VAforms");
+  };
 
   return (
     <div className="w-full relative bg-white">
@@ -456,8 +458,9 @@ function JobDetailPanel({ jobKey }: JobDetailPanelProps) {
 
                 {/* Action buttons */}
                 <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 relative z-30">
+                  {/* Apply Now → navigates to VA form page */}
                   <div
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={handleApplyNow}
                     className="group flex items-center justify-center gap-2 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-8 py-3 rounded-2xl shadow-[0_10px_20px_rgba(161,0,0,0.3)] hover:shadow-[0_15px_25px_rgba(161,0,0,0.4)] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                     style={{ fontFamily: "'open sans', sans-serif", fontWeight: 600 }}
                   >
@@ -466,7 +469,7 @@ function JobDetailPanel({ jobKey }: JobDetailPanelProps) {
                   </div>
 
                   <button
-                    onClick={() => setIsBookModalOpen(true)}
+                    onClick={() => router.push("/client/login")}
                     className="group flex items-center justify-center gap-2 bg-white border-2 border-[#a10000] text-[#a10000] px-8 py-3 rounded-2xl hover:bg-gradient-to-r hover:from-[#a10000] hover:to-[#ce1212] hover:text-white hover:-translate-y-1 transition-all duration-300 shadow-sm"
                     style={{ fontFamily: "'open sans', sans-serif", fontWeight: 600 }}
                   >
@@ -479,14 +482,6 @@ function JobDetailPanel({ jobKey }: JobDetailPanelProps) {
           </div>
         </div>
       </div>
-
-      <ApplyNowModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        jobTitle={job.jobTitle}
-        jobDept={job.jobDept}
-      />
-      <BookNowModal isOpen={isBookModalOpen} onClose={() => setIsBookModalOpen(false)} />
     </div>
   );
 }
@@ -505,7 +500,6 @@ export default function JobDetails() {
 
   const [selectedJob, setSelectedJob] = useState<JobKey>(getInitialJob);
 
-  // Sync on URL change (browser back / forward)
   useEffect(() => {
     const param = searchParams.get("job");
     if (param && JOB_KEYS.includes(param as JobKey)) {
