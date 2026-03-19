@@ -91,14 +91,19 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
 
   const careersMegaData = [
     { 
-      id: "careers-center", 
-      label: "Careers Center", 
-      items: [{ label: "Careers Home", url: "/careers" }] 
+      id: "va-overview", 
+      label: "Virtual Assistant Center", 
+      items: [
+        { label: "Virtual Assistant Home", url: "/virtual-assistant" },
+      ] 
     },
     { 
-      id: "job-details", 
-      label: "Job Details", 
-      items: [{ label: "Full Job Details", url: "/careers/job-details" }] 
+      id: "va-details", 
+      label: "Virtual Assistant Details", 
+      items: [
+        { label: "Become a VA", url: "/careers/job-details" },
+        { label: "Hire a VA", url: "/careers/job-details" },
+      ] 
     },
   ];
 
@@ -106,7 +111,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
     if (label === "Services") return { data: servicesMegaData, path: "/services" };
     if (label === "About") return { data: aboutMegaData, path: "/about" };
     if (label === "Resources") return { data: resourcesMegaData, path: "/resources" };
-    if (label === "Careers") return { data: careersMegaData, path: "/careers" };
+    if (label === "Virtual Assistant" || label === "Virtual ") return { data: careersMegaData, path: "/virtual-assistant" };
     return null;
   };
 

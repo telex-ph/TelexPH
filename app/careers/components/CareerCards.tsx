@@ -2,8 +2,7 @@
 
 import React, { useState, useMemo, useEffect, ChangeEvent } from "react";
 import Link from "next/link";
-import ApplyNowModal from "@/app/careers/job-details/components/ApplyNowModal";
-import BookNowModal from "@/app/careers/job-details/components/BookNowModal";
+import { useRouter } from "next/navigation";
 import { 
   Search, 
   XCircle, 
@@ -29,6 +28,7 @@ interface Job {
 }
 
 export default function CareerPage() {
+  const router = useRouter();
   const [isGridView, setIsGridView] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
@@ -37,10 +37,8 @@ export default function CareerPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const [isApplyNowOpen, setIsApplyNowOpen] = useState(false);
   const [isBookNowOpen, setIsBookNowOpen] = useState(false);
 
-  // New state to toggle showing all jobs
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
@@ -138,6 +136,12 @@ export default function CareerPage() {
     setIsModalOpen(true);
   };
 
+  // Navigate to VA application form
+  const handleApplyNow = () => {
+    setIsModalOpen(false);
+    router.push("/VirtualAssistant/VAforms");
+  };
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 bg-white min-h-screen overflow-x-hidden">
@@ -208,11 +212,9 @@ export default function CareerPage() {
             let displayClass = "flex";
             if (!showAll) {
               if (isGridView) {
-                // If more than 3, completely hide them. If it's the 3rd item, hide it on tablet but show on desktop
                 if (index > 2) displayClass = "hidden";
                 else if (index === 2) displayClass = "hidden lg:flex";
               } else {
-                // In list view, limit to 3 entirely until expanded
                 if (index > 2) displayClass = "hidden";
               }
             }
@@ -369,15 +371,16 @@ export default function CareerPage() {
 
               {/* action buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                {/* Apply Now → navigates to VA form */}
                 <button
-                  onClick={() => setIsApplyNowOpen(true)}
+                  onClick={handleApplyNow}
                   className="flex-1 group flex items-center justify-center gap-2 bg-gradient-to-r from-[#a10000] to-[#ce1212] text-white px-6 py-4 rounded-xl sm:rounded-2xl shadow-lg hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-semibold"
                 >
                   <span className="text-[12px] sm:text-[13px] tracking-widest uppercase">apply now</span>
                   <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
                 </button>
                 <button
-                  onClick={() => setIsBookNowOpen(true)}
+                  onClick={() => { setIsModalOpen(false); router.push("/client/login"); }}
                   className="flex-1 group flex items-center justify-center gap-2 bg-white border-2 border-[#a10000] text-[#a10000] px-6 py-4 rounded-xl sm:rounded-2xl hover:bg-[#a10000] hover:text-white hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-semibold shadow-sm"
                 >
                   <span className="text-[12px] sm:text-[13px] tracking-widest uppercase">book now</span>
@@ -389,19 +392,6 @@ export default function CareerPage() {
         </div>
       )}
 
-      {/* Apply Now Modal */}
-      <ApplyNowModal
-        isOpen={isApplyNowOpen}
-        onClose={() => setIsApplyNowOpen(false)}
-        jobTitle={selectedJob?.title}
-        jobDept={selectedJob?.dept}
-      />
-
-      {/* Book Now Modal */}
-      <BookNowModal
-        isOpen={isBookNowOpen}
-        onClose={() => setIsBookNowOpen(false)}
-      />
     </>
   );
 }
