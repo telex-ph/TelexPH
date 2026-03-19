@@ -7,12 +7,14 @@ export default function ClientRegisterPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [contactNumber, setContactNumber] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
@@ -28,11 +30,12 @@ export default function ClientRegisterPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ firstName, lastName, email, password }),
+        body: JSON.stringify({ firstName, lastName, email, contactNumber, password }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Registration failed')
-      router.push('/client/dashboard')
+      setSuccess(true)
+      setTimeout(() => router.push('/client/login?registered=1'), 2500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during registration')
     } finally {
@@ -114,6 +117,7 @@ export default function ClientRegisterPage() {
         .fade-up-4 { animation: fadeUp 0.6s ease-out 0.65s both; }
         .fade-up-5 { animation: fadeUp 0.6s ease-out 0.8s both; }
         .fade-up-6 { animation: fadeUp 0.6s ease-out 0.95s both; }
+        .fade-up-7 { animation: fadeUp 0.6s ease-out 1.1s both; }
 
         .input-field {
           width: 100%;
@@ -157,6 +161,22 @@ export default function ClientRegisterPage() {
             </p>
           </div>
 
+          {success && (
+            <div style={{
+              background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 10,
+              padding: '14px 16px', marginBottom: 14, fontSize: 13, color: '#166534',
+              fontWeight: 500, display: 'flex', alignItems: 'center', gap: 10,
+            }}>
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#16a34a" strokeWidth={2} style={{flexShrink:0}}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <div>
+                <div style={{fontWeight: 700, marginBottom: 2}}>Account created successfully!</div>
+                <div style={{fontSize: 12, color: '#15803d'}}>Redirecting you to the login page...</div>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div style={{
               background: '#fff5f5', border: '1.5px solid #e8d0d0', borderRadius: 10,
@@ -195,8 +215,17 @@ export default function ClientRegisterPage() {
                 value={email} onChange={e => setEmail(e.target.value)} required disabled={isLoading} />
             </div>
 
+            {/* Contact Number */}
+            <div className="fade-up-4" style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#aaa', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+              </span>
+              <input type="tel" placeholder="Contact number" className="input-field"
+                value={contactNumber} onChange={e => setContactNumber(e.target.value)} required disabled={isLoading} />
+            </div>
+
             {/* Password */}
-            <div className="fade-up-4">
+            <div className="fade-up-5">
               <div style={{ position: 'relative' }}>
                 <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#aaa', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
                   <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -225,7 +254,7 @@ export default function ClientRegisterPage() {
             </div>
 
             {/* Confirm Password */}
-            <div className="fade-up-5" style={{ position: 'relative' }}>
+            <div className="fade-up-6" style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#aaa', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
                 <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
               </span>
@@ -246,18 +275,18 @@ export default function ClientRegisterPage() {
             </div>
 
             {/* Submit */}
-            <div className="fade-up-6" style={{ marginTop: 2 }}>
-              <button type="submit" disabled={isLoading} className="reg-btn"
+            <div className="fade-up-7" style={{ marginTop: 2 }}>
+              <button type="submit" disabled={isLoading || success} className="reg-btn"
                 style={{
                   width: '100%', padding: '13px',
-                  background: isLoading ? '#b05555' : 'linear-gradient(90deg, #800000, #a00000)',
+                  background: success ? '#4caf7d' : isLoading ? '#b05555' : 'linear-gradient(90deg, #800000, #a00000)',
                   color: '#ffffff', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700,
-                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  cursor: isLoading || success ? 'not-allowed' : 'pointer',
                   boxShadow: '0 4px 16px rgba(128,0,0,0.30)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s',
                 }}>
-                {isLoading ? 'Creating account...' : 'Create Account'}
+                {success ? 'Redirecting...' : isLoading ? 'Creating account...' : 'Create Account'}
               </button>
               <p style={{ textAlign: 'center', marginTop: 14, fontSize: 13, color: '#555', fontWeight: 500 }}>
                 Already have an account?{' '}
