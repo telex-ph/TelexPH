@@ -43,20 +43,32 @@ export default function VALoginPage() {
     }
   };
 
+  const stats = [
+    { num: "2,400+", lbl: "Active VAs" },
+    { num: "98%",    lbl: "Satisfaction" },
+    { num: "150+",   lbl: "Global clients" },
+    { num: "$5M+",   lbl: "Paid out" },
+  ];
+
+  const bars = [45, 70, 55, 90, 65, 48, 78];
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ background: "linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #000000 100%)" }}>
-      <div className="w-full max-w-[820px] bg-white rounded-[20px] overflow-hidden flex flex-col md:flex-row min-h-[480px] shadow-2xl">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden"
+      style={{ background: "#0d0000" }}
+    >
+      {/* Background blobs */}
+      <div className="absolute pointer-events-none" style={{ width: "500px", height: "500px", borderRadius: "50%", background: "rgba(139,0,0,0.35)", top: "-150px", left: "-150px", filter: "blur(80px)" }} />
+      <div className="absolute pointer-events-none" style={{ width: "400px", height: "400px", borderRadius: "50%", background: "rgba(80,0,0,0.3)", bottom: "-100px", right: "-100px", filter: "blur(70px)" }} />
+
+      {/* Card */}
+      <div
+        className="relative z-10 w-full max-w-[900px] flex flex-col md:flex-row rounded-[24px] overflow-hidden min-h-[520px]"
+        style={{ boxShadow: "0 40px 100px rgba(0,0,0,0.6)" }}
+      >
 
         {/* ── LEFT: Form ── */}
-        <div className="flex-1 flex flex-col justify-center px-8 py-12 md:px-10">
-
-          <h1 className="text-2xl font-bold tracking-widest uppercase mb-2" style={{ color: "#8B0000" }}>
-            Welcome Back
-          </h1>
-          <p className="text-sm text-gray-400 leading-relaxed mb-8">
-            Secure verification required. Please provide your<br className="hidden sm:block" />
-            VA login details.
-          </p>
+        <div className="flex-1 flex flex-col justify-center px-8 py-12 md:px-10 bg-white">
 
           <form onSubmit={handleSignIn} className="flex flex-col gap-0">
             {/* Email */}
@@ -73,13 +85,14 @@ export default function VALoginPage() {
               style={{ background: "#f0f4fa" }}
             />
 
-            {/* Password */}
-            <label className="text-[13px] font-semibold mb-1.5" style={{ color: "#8B0000" }}>
-              Password
-            </label>
-            <div className="relative mb-5">
+          <form onSubmit={handleSignIn}>
+            {/* Email */}
+            <div className="mb-4">
+              <label className="block text-[11px] font-extrabold tracking-[.1em] uppercase mb-1.5" style={{ color: "#8B0000" }}>
+                Email Address
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
+                type="email"
                 required
                 placeholder="••••••••"
                 value={password}
@@ -87,13 +100,34 @@ export default function VALoginPage() {
                 className="w-full px-4 py-3 pr-10 rounded-lg text-sm text-gray-700 outline-none transition-all border-[1.5px] border-transparent focus:border-[#8B0000] focus:bg-white"
                 style={{ background: "#f0f4fa" }}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+            </div>
+
+            {/* Password */}
+            <div className="mb-2">
+              <label className="block text-[11px] font-extrabold tracking-[.1em] uppercase mb-1.5" style={{ color: "#8B0000" }}>
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 pr-12 rounded-xl text-[14px] outline-none transition-all"
+                  style={{ background: "#fff5f5", border: "1.5px solid #f5dede", color: "#1a0000" }}
+                  onFocus={(e) => { e.target.style.borderColor = "#8B0000"; e.target.style.background = "#fff"; e.target.style.boxShadow = "0 0 0 4px rgba(139,0,0,0.08)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "#f5dede"; e.target.style.background = "#fff5f5"; e.target.style.boxShadow = "none"; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity"
+                  style={{ color: "#c0a0a0", background: "none", border: "none" }}
+                >
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              </div>
             </div>
 
             {/* Remember + Forgot */}
@@ -103,18 +137,18 @@ export default function VALoginPage() {
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-[15px] h-[15px] cursor-pointer"
                   style={{ accentColor: "#8B0000" }}
                 />
-                <span className="text-[13px] text-gray-400">remember me</span>
+                Remember me
               </label>
               <button
                 type="button"
                 onClick={() => router.push("/VirtualAssistant/forgot-password")}
-                className="text-[13px] font-semibold hover:underline transition-colors"
-                style={{ color: "#8B0000" }}
+                className="text-[13px] font-bold hover:opacity-75 transition-opacity"
+                style={{ color: "#8B0000", background: "none", border: "none" }}
               >
-                forgot password?
+                Forgot password?
               </button>
             </div>
 
@@ -135,6 +169,18 @@ export default function VALoginPage() {
               {isLoading ? <><Loader2 size={16} className="animate-spin" /> Signing in…</> : "Sign In"}
             </button>
           </form>
+
+          <p className="text-center text-[12.5px]" style={{ color: "#c0a0a0" }}>
+            New here?{" "}
+            <button
+              type="button"
+              onClick={() => router.push("/VirtualAssistant/VAforms")}
+              className="font-bold hover:underline underline-offset-[3px]"
+              style={{ color: "#8B0000", background: "none", border: "none" }}
+            >
+              Apply as a Virtual Assistant
+            </button>
+          </p>
         </div>
 
         {/* ── RIGHT: Illustration ── */}
