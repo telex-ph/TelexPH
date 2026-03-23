@@ -84,7 +84,7 @@ const UseCaseScenario = () => {
             </span>
             
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-5xl mb-6 uppercase tracking-tighter leading-none`}
+              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none`}
               style={{ color: COLORS.black }}
             >
               A Day In The

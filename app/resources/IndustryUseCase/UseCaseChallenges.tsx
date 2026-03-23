@@ -50,7 +50,7 @@ const UseCaseChallenges = () => {
           <div className="flex flex-col items-start">
             <div className="inline-block mb-4">
               <span
-                className={`${FONT_CLASSES.openSansBold} text-sm uppercase tracking-[0.25em] py-2 inline-block`}
+                className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block`}
                 style={{ color: MAROON }}
               >
                 — Challenges Identification
@@ -58,7 +58,7 @@ const UseCaseChallenges = () => {
             </div>
             
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none text-left`}
+              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none`}
               style={{ color: COLORS.black }}
             >
               The Friction
@@ -67,7 +67,7 @@ const UseCaseChallenges = () => {
             </h2>
 
             <p
-              className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed text-left`}
+              className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed`}
             >
               Identifying critical bottlenecks that compromise your BPO efficiency and reputation through deep operational analysis.
             </p>

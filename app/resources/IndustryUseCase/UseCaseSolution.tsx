@@ -46,7 +46,7 @@ const UseCaseSolution = () => {
             </div>
             
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
+              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
               style={{ color: COLORS.black }}
             >
               Intelligent 

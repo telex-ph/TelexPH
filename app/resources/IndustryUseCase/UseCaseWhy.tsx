@@ -16,7 +16,7 @@ const UseCaseWhy = () => {
           <div className="flex flex-col items-start text-left">
             <div className="inline-block mb-4">
               <span
-                className={`${FONT_CLASSES.openSansBold} text-sm uppercase tracking-[0.25em] py-2 inline-block font-bold`}
+                className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block font-bold`}
                 style={{ color: COLORS.primary }}
               >
                 — Why Choose Us
