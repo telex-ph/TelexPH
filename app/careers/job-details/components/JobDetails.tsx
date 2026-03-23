@@ -8,29 +8,29 @@ import { Check, Plus, MapPin, Calendar, Clock, Banknote } from "lucide-react";
 // Types
 // ─────────────────────────────────────────────
 type JobKey =
-  | "associate-sales-manager"
-  | "devops-security-engineer"
-  | "frontend-web-developer"
-  | "global-analytics-consultant"
-  | "sr-wellbeing-specialist"
-  | "team-leader";
+  | "virtual-executive-assistant"
+  | "social-media-manager"
+  | "customer-support-specialist"
+  | "digital-marketing-specialist"
+  | "bookkeeping-specialist"
+  | "content-writer";
 
 const JOB_KEYS: JobKey[] = [
-  "associate-sales-manager",
-  "devops-security-engineer",
-  "frontend-web-developer",
-  "global-analytics-consultant",
-  "sr-wellbeing-specialist",
-  "team-leader",
+  "virtual-executive-assistant",
+  "social-media-manager",
+  "customer-support-specialist",
+  "digital-marketing-specialist",
+  "bookkeeping-specialist",
+  "content-writer",
 ];
 
 const jobLabels: { key: JobKey; label: string }[] = [
-  { key: "associate-sales-manager", label: "Associate Sales Manager" },
-  { key: "devops-security-engineer", label: "DevOps Security Engineer" },
-  { key: "frontend-web-developer", label: "Front-End Web Developer" },
-  { key: "global-analytics-consultant", label: "Global Analytics Consultant" },
-  { key: "sr-wellbeing-specialist", label: "Sr. Wellbeing Specialist" },
-  { key: "team-leader", label: "Team Leader" },
+  { key: "virtual-executive-assistant", label: "Virtual Executive Assistant" },
+  { key: "social-media-manager", label: "Social Media Manager" },
+  { key: "customer-support-specialist", label: "Customer Support Specialist" },
+  { key: "digital-marketing-specialist", label: "Digital Marketing Specialist" },
+  { key: "bookkeeping-specialist", label: "Bookkeeping Specialist" },
+  { key: "content-writer", label: "Content Writer" },
 ];
 
 // ─────────────────────────────────────────────
@@ -104,19 +104,19 @@ function Badges({ posted, type = "full-time", salary = "competitive" }: BadgesPr
 // Shared salary range items (same for all jobs)
 // ─────────────────────────────────────────────
 const SALARY_ITEMS = [
-  "Defines the lowest and highest possible salary for the position",
-  "Based on experience, skills, education, and job responsibilities",
-  "May vary depending on performance, tenure, or internal policies",
-  "Helps applicants understand earning potential before applying",
-  "Supports fair and transparent compensation decisions",
+  "Compensation is aligned with the scope of responsibilities and level of expertise required for the role",
+  "Final offer is subject to evaluation of qualifications, relevant experience, and overall fit",
+  "Performance, dedication, and growth within the role may open opportunities for compensation adjustments over time",
+  "Additional allowances and incentives may be considered as part of the overall package",
+  "Further details will be discussed with shortlisted candidates during the recruitment process",
 ];
 
 const BENEFITS_ITEMS = [
-  "Competitive salary based on skills and experience",
-  "Flexible working hours or remote work options",
-  "Opportunities for learning, training, and career growth",
-  "Health insurance and paid leave benefits",
-  "Collaborative and inclusive team culture",
+  "Work-from-home setup with a structured and supportive remote work environment",
+  "Opportunities to grow professionally through mentorship, feedback, and skill development",
+  "Collaborative team culture that values communication, reliability, and mutual respect",
+  "Exposure to international clients and diverse industries that broaden professional experience",
+  "Performance-based recognition and pathways for advancement within the organization",
 ];
 
 // ─────────────────────────────────────────────
@@ -140,154 +140,154 @@ interface JobData {
 }
 
 const JOB_DATA: Record<JobKey, JobData> = {
-  "associate-sales-manager": {
+  "virtual-executive-assistant": {
     department: "operations",
-    titleLeft: "associate",
-    titleRed: "sales manager",
-    posted: "dec 02, 2025",
-    jobTitle: "Associate Sales Manager",
+    titleLeft: "virtual executive",
+    titleRed: "assistant",
+    posted: "mar 01, 2026",
+    jobTitle: "Virtual Executive Assistant",
     jobDept: "Operations",
-    img1: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop",
-    img1Alt: "sales team meeting",
-    img2: "https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=800&auto=format&fit=crop",
-    img2Alt: "business discussion",
-    summary:
-      "The Associate Sales Manager is a results-driven leader within our Operations division, responsible for overseeing day-to-day sales team performance and driving revenue growth across assigned accounts. This position demands a dynamic individual who can motivate a team, build strong client relationships, and execute strategic sales plans with precision. The ideal candidate has a track record of meeting and exceeding sales targets while developing the professional capabilities of team members under their supervision, contributing directly to the organization's business goals and long-term growth strategy.",
-    description:
-      "The Associate Sales Manager is responsible for overseeing the management of sales teams supporting assigned accounts to drive business goals. This role entails coaching and developing sales representatives, analyzing performance metrics, coordinating with cross-functional teams, and implementing strategies to maximize revenue. The ASM ensures that client expectations are met, maintains strong account relationships, and escalates issues to senior management when necessary.",
-    requirementsIntro:
-      "Candidates must demonstrate strong leadership qualities and a solid background in sales management, with the ability to inspire teams and translate strategic objectives into measurable results within a fast-paced operations environment.",
-    requirements: [
-      "Bachelor's degree in Business Administration, Marketing, or a related field",
-      "Minimum 2–4 years of experience in sales, with at least 1 year in a supervisory or team lead capacity",
-      "Proven track record of meeting or exceeding sales quotas and KPIs",
-      "Strong communication, negotiation, and interpersonal skills",
-      "Proficiency in CRM software (e.g., Salesforce, HubSpot) and Microsoft Office Suite",
-    ],
-  },
-  "devops-security-engineer": {
-    department: "information technology",
-    titleLeft: "devops",
-    titleRed: "security engineer",
-    posted: "nov 05, 2025",
-    jobTitle: "DevOps Security Engineer",
-    jobDept: "Information Technology",
-    img1: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop",
-    img1Alt: "cybersecurity",
-    img2: "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?q=80&w=800&auto=format&fit=crop",
-    img2Alt: "server room",
-    summary:
-      "The DevOps Security Engineer occupies a critical position within our Information Technology team, responsible for embedding security practices throughout the entire software development lifecycle. This role combines deep DevOps expertise with a strong foundation in cybersecurity to proactively identify, mitigate, and respond to vulnerabilities in our infrastructure and applications. The successful candidate will champion a security-first culture, drive automation of security testing pipelines, and ensure our systems meet the highest standards of compliance and resilience in an ever-evolving threat landscape.",
-    description:
-      "The DevOps Security Engineer is responsible for designing, implementing, and maintaining secure CI/CD pipelines, infrastructure-as-code, and cloud environments. This role works closely with development and operations teams to integrate automated security testing, threat modeling, and vulnerability management into every stage of deployment. The engineer also leads incident response efforts, conducts security audits, and ensures ongoing compliance with industry frameworks such as ISO 27001, SOC 2, and NIST.",
-    requirementsIntro:
-      "The ideal candidate brings a blend of DevOps engineering and cybersecurity expertise, with hands-on experience securing cloud-native environments and automated deployment pipelines in production-grade systems.",
-    requirements: [
-      "Proven experience with CI/CD tools such as Jenkins, GitLab CI, or GitHub Actions",
-      "Strong knowledge of cloud platforms (AWS, Azure, or GCP) and infrastructure security best practices",
-      "Hands-on experience with container security, Kubernetes hardening, and Docker environments",
-      "Familiarity with SAST, DAST, and SIEM tools for automated security scanning and monitoring",
-      "Relevant certifications such as AWS Security Specialty, CISSP, CEH, or CompTIA Security+ preferred",
-    ],
-  },
-  "frontend-web-developer": {
-    department: "information technology",
-    titleLeft: "front-end",
-    titleRed: "developer",
-    posted: "oct 24, 2025",
-    jobTitle: "Front-End Developer",
-    jobDept: "Information Technology",
-    img1: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
-    img1Alt: "developer at work",
-    img2: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=800&auto=format&fit=crop",
-    img2Alt: "coding on screen",
-    summary:
-      "The Front-End Web Developer is a key member of our Information Technology team, responsible for building and maintaining visually engaging, high-performance web interfaces that deliver seamless user experiences. This role requires a developer who is not only technically proficient in modern front-end technologies but also has a strong sense of design aesthetics and an understanding of user behavior. The ideal candidate thrives in an agile environment, collaborates effectively with designers and back-end engineers, and consistently delivers clean, scalable, and accessible code.",
-    description:
-      "The Front-End Web Developer is responsible for creating responsive, user-friendly web interfaces that ensure a smooth and visually appealing experience. Working under the IT department, this role bridges the gap between design and technology by translating UI/UX wireframes and prototypes into functional, pixel-perfect web pages. The developer is also expected to contribute to code reviews, maintain documentation, and keep up with emerging front-end trends and best practices.",
-    requirementsIntro:
-      "The candidate shall be proficient in modern web technologies and frameworks, with a strong portfolio demonstrating previous front-end projects. Experience working in collaborative, agile development teams is highly preferred.",
-    requirements: [
-      "Proficient in HTML5, CSS3, and JavaScript (ES6+) with a solid understanding of responsive design",
-      "Experience with React.js, Vue.js, or similar modern front-end frameworks",
-      "Familiarity with version control systems such as Git and collaborative workflows",
-      "Understanding of RESTful APIs and experience integrating front-end with back-end services",
-      "Ability to optimize web applications for maximum speed, scalability, and accessibility",
-    ],
-  },
-  "global-analytics-consultant": {
-    department: "research & analytics",
-    titleLeft: "global analytics",
-    titleRed: "consultant",
-    posted: "jan 15, 2025",
-    jobTitle: "Global Analytics Consultant",
-    jobDept: "Research & Analytics",
-    img1: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
-    img1Alt: "data analytics workspace",
-    img2: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
-    img2Alt: "consulting team discussion",
-    summary:
-      "The Consultant for Global Analytic Design plays a pivotal role in shaping data-driven strategies that power organizational decisions at a global scale. This position sits at the intersection of research methodology, data visualization, and strategic consulting, requiring a professional who can translate complex datasets into compelling, actionable insights. The ideal candidate is adept at working with cross-functional and multicultural teams across multiple time zones, delivering analytic frameworks that align with international business objectives while maintaining rigorous standards of accuracy and clarity.",
-    description:
-      "The Global Analytics Consultant is responsible for developing and implementing comprehensive analytic frameworks used across international markets. Working closely with research leads, data engineers, and senior stakeholders, this role drives the design of reporting structures, dashboards, and insights models that inform strategic direction. The consultant ensures consistency in analytic methodology while adapting deliverables to meet the needs of diverse global clients and internal partners.",
-    requirementsIntro:
-      "The successful candidate shall bring strong analytical expertise and a consultative mindset, with demonstrated experience in designing research frameworks and analytic solutions for global or enterprise-level organizations.",
-    requirements: [
-      "Bachelor's or Master's degree in Statistics, Data Science, Business Analytics, or a related field",
-      "Minimum 3–5 years of experience in analytics consulting or research design",
-      "Proficiency in data visualization tools such as Tableau, Power BI, or Looker",
-      "Strong command of statistical analysis methods and tools (R, Python, SPSS, or SAS)",
-      "Excellent communication skills with the ability to present findings to executive stakeholders",
-    ],
-  },
-  "sr-wellbeing-specialist": {
-    department: "human resource",
-    titleLeft: "sr. wellbeing",
-    titleRed: "specialist",
-    posted: "jan 10, 2026",
-    jobTitle: "Sr. Wellbeing Specialist",
-    jobDept: "Human Resource",
-    img1: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
-    img1Alt: "wellbeing team",
-    img2: "https://images.unsplash.com/photo-1591522811280-a8759970b03f?q=80&w=800&auto=format&fit=crop",
-    img2Alt: "counseling session",
-    summary:
-      "The Senior Wellbeing Specialist is a compassionate and highly skilled professional within our Human Resource division, dedicated to developing, delivering, and evaluating programs that support the psychological health and overall wellness of our workforce. This role leads a diverse team of specialists committed to creating a workplace culture where mental health is prioritized, stigma is eliminated, and every employee feels supported. The ideal candidate brings clinical or organizational psychology expertise, program design experience, and a genuine passion for making a measurable difference in people's lives.",
-    description:
-      "The Senior Wellbeing Specialist leads the design and implementation of employee wellness initiatives, psychological health programs, and support services that foster a resilient and thriving workforce. This role involves collaborating with HR leadership, department managers, and external mental health providers to build comprehensive intervention strategies, conduct wellbeing assessments, and develop data-driven recommendations that continuously improve the organization's approach to employee health.",
-    requirementsIntro:
-      "The successful applicant shall hold relevant credentials in psychology or human wellness and possess demonstrated experience in designing and managing workplace wellbeing programs within mid-to-large-scale organizations.",
-    requirements: [
-      "Bachelor's or Master's degree in Psychology, Counseling, Social Work, or a related field",
-      "Licensed Psychologist or Registered Guidance Counselor (LGC/RPm) preferred",
-      "Minimum 4–6 years of experience in employee wellness, EAP management, or organizational psychology",
-      "Experience in program design, facilitation, and evaluation of wellbeing initiatives",
-      "Strong empathy, active listening, and stakeholder engagement skills",
-    ],
-  },
-  "team-leader": {
-    department: "operations",
-    titleLeft: "team",
-    titleRed: "leader",
-    posted: "feb 18, 2026",
-    jobTitle: "Team Leader",
-    jobDept: "Operations",
-    img1: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop",
-    img1Alt: "team leader",
+    img1: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=800&auto=format&fit=crop",
+    img1Alt: "virtual assistant working remotely",
     img2: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=800&auto=format&fit=crop",
-    img2Alt: "call center operations",
+    img2Alt: "remote team collaboration",
     summary:
-      "The Team Leader, Operations is a frontline people manager responsible for the day-to-day supervision, coaching, and performance management of a group of call center associates. This role is pivotal in ensuring that service level agreements are consistently met, team morale remains high, and each associate has the guidance they need to succeed. The ideal candidate leads by example, communicates with clarity and empathy, and possesses the operational acumen to make real-time decisions that keep the team running at peak efficiency while delivering outstanding service to clients and customers alike.",
+      "The Virtual Executive Assistant is a highly organized and proactive professional within our Operations division, dedicated to providing comprehensive administrative and operational support to executives and business owners across different time zones. This role demands a detail-oriented individual who can manage multiple priorities simultaneously, communicate with clarity and professionalism, and take ownership of tasks with minimal supervision. The ideal candidate is tech-savvy, adaptable, and committed to delivering consistent, high-quality assistance that empowers clients to focus on the highest-value aspects of their business.",
     description:
-      "The Team Leader, Operations is responsible for the daily supervision of a group of call center associates, ensuring adherence to schedules, quality standards, and client-specific processes. The TL monitors real-time performance metrics, conducts one-on-one coaching sessions, facilitates team huddles, and serves as the primary escalation point for complex customer interactions. This role also collaborates closely with workforce management, quality assurance, and training teams to drive continuous improvement across the floor.",
+      "The Virtual Executive Assistant is responsible for managing executive calendars, coordinating meetings and travel arrangements, handling email correspondence, preparing reports and presentations, and supporting day-to-day administrative operations. This role also involves liaising with internal teams and external stakeholders on behalf of the client, maintaining organized digital filing systems, and ensuring that all executive priorities are tracked and executed with accuracy and timeliness.",
     requirementsIntro:
-      "Candidates must have prior experience in a BPO or call center environment with a demonstrated ability to lead, mentor, and develop front-line agents toward consistent performance excellence and client satisfaction targets.",
+      "Candidates must demonstrate exceptional organizational skills and a strong background in administrative support, with the ability to manage executive-level responsibilities independently in a fully remote setting.",
     requirements: [
-      "At least 1–2 years of experience as a Team Leader or Senior Agent in a BPO or call center setting",
-      "Strong understanding of call center KPIs including AHT, CSAT, FCR, and service level metrics",
-      "Excellent verbal and written communication skills with the ability to give clear, constructive feedback",
-      "Ability to manage performance issues, conduct disciplinary actions, and implement improvement plans",
-      "Amenable to work on shifting schedules including weekends and holidays",
+      "At least 1–3 years of experience as a virtual assistant, executive assistant, or in a similar administrative role",
+      "Proficiency in productivity tools such as Google Workspace, Microsoft Office, Zoom, Slack, and project management platforms like Asana or Trello",
+      "Excellent written and verbal English communication skills with a professional and client-centric approach",
+      "Strong time management skills with the ability to handle multiple tasks and shifting priorities effectively",
+      "Reliable internet connection and a dedicated, distraction-free remote work setup",
+    ],
+  },
+  "social-media-manager": {
+    department: "marketing",
+    titleLeft: "social media",
+    titleRed: "manager",
+    posted: "feb 20, 2026",
+    jobTitle: "Social Media Manager",
+    jobDept: "Marketing",
+    img1: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=800&auto=format&fit=crop",
+    img1Alt: "social media content creation",
+    img2: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=800&auto=format&fit=crop",
+    img2Alt: "digital marketing workspace",
+    summary:
+      "The Social Media Manager is a creative and analytically minded professional within our Marketing division, responsible for building and maintaining a compelling online presence for clients across key social media platforms. This role goes beyond content posting — it involves developing strategic content calendars, cultivating engaged communities, monitoring performance metrics, and translating brand identity into consistent, on-target digital storytelling. The ideal candidate is deeply familiar with platform trends, audience behavior, and content best practices, and brings a genuine passion for crafting content that drives meaningful engagement and growth.",
+    description:
+      "The Social Media Manager oversees the planning, creation, scheduling, and publishing of content across platforms such as Instagram, Facebook, LinkedIn, TikTok, and X (formerly Twitter). This role includes developing monthly content calendars aligned with client goals, engaging with audiences through comments and messages, tracking analytics to assess performance, and presenting insights and recommendations. The manager also coordinates with graphic designers and copywriters to ensure visual and messaging consistency.",
+    requirementsIntro:
+      "The ideal candidate brings hands-on experience managing social media accounts for businesses or brands, with a proven ability to grow audiences organically and deliver content that aligns with strategic objectives.",
+    requirements: [
+      "Minimum 1–2 years of experience managing social media accounts for brands, businesses, or agencies",
+      "Proficiency with major platforms including Instagram, Facebook, LinkedIn, TikTok, and X, along with scheduling tools such as Buffer, Later, or Hootsuite",
+      "Strong writing and editing skills with the ability to adapt tone and voice to different brand identities",
+      "Basic graphic design skills using Canva or Adobe Express; experience with video editing tools is an advantage",
+      "Familiarity with social media analytics and the ability to interpret data to inform content strategy",
+    ],
+  },
+  "customer-support-specialist": {
+    department: "client services",
+    titleLeft: "customer support",
+    titleRed: "specialist",
+    posted: "mar 05, 2026",
+    jobTitle: "Customer Support Specialist",
+    jobDept: "Client Services",
+    img1: "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=800&auto=format&fit=crop",
+    img1Alt: "customer support specialist with headset",
+    img2: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
+    img2Alt: "remote support workspace with laptop",
+    summary:
+      "The Customer Support Specialist is a client-facing professional within our Client Services division, responsible for delivering responsive, empathetic, and solution-oriented support to customers across various communication channels. This role is central to the client experience — ensuring that inquiries are resolved efficiently, concerns are addressed with care, and every interaction reflects the highest standard of service. The ideal candidate is patient, articulate, and genuinely motivated by helping people, with the ability to stay calm and effective under pressure while maintaining professionalism in all customer interactions.",
+    description:
+      "The Customer Support Specialist handles inbound customer inquiries via email, live chat, and ticketing platforms, providing timely and accurate resolutions to a wide range of issues. This role involves documenting support cases, escalating complex concerns to appropriate teams, following up to ensure customer satisfaction, and contributing to knowledge base articles and FAQs. The specialist also tracks recurring issues and reports trends to help improve service quality and client retention.",
+    requirementsIntro:
+      "Candidates must possess strong communication skills and a customer-first mindset, with experience in handling support tickets, resolving issues, and maintaining positive client relationships in a remote environment.",
+    requirements: [
+      "At least 1–2 years of experience in customer service, client support, or a related role, preferably in a remote or BPO setting",
+      "Proficiency in helpdesk and CRM tools such as Zendesk, Freshdesk, HubSpot, or similar platforms",
+      "Excellent verbal and written English communication skills with a warm, professional, and solution-oriented tone",
+      "Ability to handle multiple conversations simultaneously while maintaining accuracy and composure",
+      "Strong problem-solving skills and a genuine commitment to delivering an outstanding customer experience",
+    ],
+  },
+  "digital-marketing-specialist": {
+    department: "marketing",
+    titleLeft: "digital marketing",
+    titleRed: "specialist",
+    posted: "feb 10, 2026",
+    jobTitle: "Digital Marketing Specialist",
+    jobDept: "Marketing",
+    img1: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+    img1Alt: "digital marketing analytics dashboard",
+    img2: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop",
+    img2Alt: "marketing team strategy session",
+    summary:
+      "The Digital Marketing Specialist is a results-driven professional within our Marketing division, responsible for planning and executing integrated online marketing campaigns that drive brand awareness, lead generation, and client growth. This role requires a strategic thinker who is equally comfortable analyzing performance data as they are crafting compelling campaign narratives. The ideal candidate is well-versed in the latest digital marketing tools and trends, and possesses the versatility to manage campaigns across multiple channels — from SEO and paid ads to email marketing and content — while consistently delivering measurable results.",
+    description:
+      "The Digital Marketing Specialist is responsible for developing and executing multi-channel digital marketing strategies that include search engine optimization, paid advertising (Google Ads, Meta Ads), email marketing, and content promotion. This role involves conducting keyword research, managing ad budgets, analyzing campaign performance using analytics tools, and producing reports that communicate insights and recommendations. The specialist collaborates with content and design teams to ensure cohesive messaging and brand consistency across all digital touchpoints.",
+    requirementsIntro:
+      "The successful candidate shall demonstrate strong digital marketing expertise with hands-on experience running paid and organic campaigns, along with a data-driven approach to optimizing performance across multiple platforms.",
+    requirements: [
+      "Minimum 2–3 years of experience in digital marketing, preferably in an agency or remote client-service environment",
+      "Proficiency in Google Ads, Meta Ads Manager, and SEO tools such as SEMrush, Ahrefs, or Google Search Console",
+      "Experience with email marketing platforms such as Mailchimp, Klaviyo, or ActiveCampaign",
+      "Strong analytical skills with the ability to interpret campaign data and translate findings into actionable strategy",
+      "Google Ads or Meta Blueprint certification is an advantage but not strictly required",
+    ],
+  },
+  "bookkeeping-specialist": {
+    department: "finance & accounting",
+    titleLeft: "bookkeeping",
+    titleRed: "specialist",
+    posted: "jan 28, 2026",
+    jobTitle: "Bookkeeping Specialist",
+    jobDept: "Finance & Accounting",
+    img1: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=800&auto=format&fit=crop",
+    img1Alt: "bookkeeping and financial records",
+    img2: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=800&auto=format&fit=crop",
+    img2Alt: "accountant reviewing financial data",
+    summary:
+      "The Bookkeeping Specialist is a detail-oriented and highly dependable professional within our Finance & Accounting division, responsible for maintaining accurate and up-to-date financial records for clients across various industries. This role is critical to ensuring financial clarity and compliance, enabling business owners to make informed decisions based on reliable data. The ideal candidate is proficient in accounting software, possesses a thorough understanding of bookkeeping principles, and is committed to delivering precise, timely, and well-organized financial reports that meet each client's unique needs.",
+    description:
+      "The Bookkeeping Specialist is responsible for recording financial transactions, reconciling bank statements, managing accounts payable and receivable, processing payroll, and maintaining accurate general ledger entries. This role also involves preparing monthly financial reports, supporting tax preparation by organizing relevant financial documents, and flagging discrepancies or irregularities for client review. The specialist works closely with clients to ensure financial data is consistently organized, accessible, and audit-ready.",
+    requirementsIntro:
+      "Candidates must have a solid foundation in bookkeeping and accounting practices, with demonstrated experience managing financial records for small to mid-sized businesses in a remote or virtual capacity.",
+    requirements: [
+      "At least 1–3 years of bookkeeping or accounting experience, preferably supporting international or remote clients",
+      "Proficiency in accounting software such as QuickBooks Online, Xero, Wave, or FreshBooks",
+      "Strong understanding of double-entry bookkeeping, bank reconciliation, and basic financial reporting",
+      "High attention to detail with a commitment to accuracy, confidentiality, and data integrity",
+      "A degree or diploma in Accounting, Finance, or a related field is preferred; equivalent professional experience is considered",
+    ],
+  },
+  "content-writer": {
+    department: "creative services",
+    titleLeft: "content",
+    titleRed: "writer",
+    posted: "mar 10, 2026",
+    jobTitle: "Content Writer",
+    jobDept: "Creative Services",
+    img1: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
+    img1Alt: "content writer at work",
+    img2: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+    img2Alt: "creative team brainstorming",
+    summary:
+      "The Content Writer is a skilled and versatile communicator within our Creative Services division, responsible for producing high-quality written content that informs, engages, and converts across various platforms and formats. This role requires a writer who can seamlessly adapt their voice and style to match different brand identities, target audiences, and content objectives — whether crafting long-form blog articles, compelling website copy, engaging social media captions, or persuasive email campaigns. The ideal candidate is self-driven, research-oriented, and deeply passionate about the power of words to shape perception and drive action.",
+    description:
+      "The Content Writer is responsible for researching, writing, editing, and publishing original content for clients across industries including e-commerce, real estate, health and wellness, technology, and professional services. This role involves working from content briefs, conducting keyword research to support SEO goals, adhering to brand guidelines, and meeting editorial deadlines with consistency. The writer collaborates with marketing and design teams to ensure content is aligned with campaign objectives and platform-specific best practices.",
+    requirementsIntro:
+      "The ideal candidate possesses a strong command of the English language with a versatile writing style, proven experience creating content for diverse industries, and a working knowledge of SEO best practices.",
+    requirements: [
+      "At least 1–2 years of professional writing experience, with a portfolio demonstrating diverse content formats and industry verticals",
+      "Excellent grammar, spelling, and editorial judgment with the ability to self-edit and meet tight deadlines",
+      "Familiarity with SEO writing principles, keyword integration, and tools such as Surfer SEO, Clearscope, or Google Search Console",
+      "Ability to adapt tone and style across different brand voices — from formal and authoritative to casual and conversational",
+      "Experience with content management systems such as WordPress and basic knowledge of on-page SEO is a plus",
     ],
   },
 };
@@ -436,7 +436,7 @@ function JobDetailPanel({ jobKey }: JobDetailPanelProps) {
                   className="text-[14px] sm:text-[15px] leading-relaxed text-gray-600 text-justify mb-6 lg:mb-8"
                   style={{ textJustify: "inter-character", textIndent: "40px" }}
                 >
-                  The company offers a supportive and flexible work environment that values professional growth, work-life balance, and employee well-being.
+                  We foster a remote work environment that champions personal growth, professional fulfillment, and the well-being of every team member — because we believe our people are the foundation of everything we deliver.
                 </p>
                 <CheckList items={BENEFITS_ITEMS} italic />
               </div>
@@ -452,7 +452,7 @@ function JobDetailPanel({ jobKey }: JobDetailPanelProps) {
                   className="text-[14px] sm:text-[15px] leading-relaxed text-gray-600 text-justify mb-6 lg:mb-8"
                   style={{ textJustify: "inter-character", textIndent: "40px" }}
                 >
-                  The salary range refers to the minimum to maximum compensation offered for a specific position, based on factors such as role responsibilities, experience level, skills, and company budget. It provides applicants with a clear expectation of potential earnings while allowing flexibility for negotiation depending on qualifications and performance.
+                  Compensation for this position is thoughtfully structured to reflect the nature of the role, the level of expertise required, and the value each team member brings to the organization. While a specific range is part of our internal evaluation process, we are committed to offering packages that are fair, competitive, and rewarding for qualified candidates.
                 </p>
                 <CheckList items={SALARY_ITEMS} italic />
 
@@ -495,7 +495,7 @@ export default function JobDetails() {
   const getInitialJob = (): JobKey => {
     const param = searchParams.get("job");
     if (param && JOB_KEYS.includes(param as JobKey)) return param as JobKey;
-    return "associate-sales-manager";
+    return "virtual-executive-assistant";
   };
 
   const [selectedJob, setSelectedJob] = useState<JobKey>(getInitialJob);

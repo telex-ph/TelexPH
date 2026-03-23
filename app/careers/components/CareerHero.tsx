@@ -15,7 +15,7 @@ export default function CareerHero() {
         }}
       >
         <span style={{ WebkitTextStroke: `1px ${COLORS.dark}`, WebkitTextFillColor: "transparent", opacity: 0.85 }}>
-          CAREERS
+          VA CAREERS
         </span>
       </div>
 
@@ -29,7 +29,7 @@ export default function CareerHero() {
               color: COLORS.black,
             }}
           >
-            OUR CAREERS
+            VIRTUAL ASSISTANT
           </h1>
 
           <p className="text-md md:text-lg max-w-2xl mx-auto mb-8 font-normal" style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.7) }}>
@@ -56,7 +56,7 @@ export default function CareerHero() {
             </span>
             
             <span style={{ color: COLORS.primary, fontWeight: 600 }}>
-              Careers
+              VA Careers
             </span>
           </div>
 

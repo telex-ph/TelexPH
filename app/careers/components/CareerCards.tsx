@@ -55,57 +55,57 @@ export default function CareerPage() {
   const JOBS: Job[] = [
     {
       id: 1,
-      title: "Global Analytics Design Consultant",
-      dept: "research & analytics",
-      location: "clark, pampanga",
-      description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
-      jobKey: "global-analytics-consultant"
+      title: "Virtual Executive Assistant",
+      dept: "operations",
+      location: "remote / work from home",
+      description: "provide high-level administrative and operational support to executives and business owners, managing calendars, correspondence, meetings, and day-to-day tasks with precision and discretion.",
+      image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=800&auto=format&fit=crop",
+      jobKey: "virtual-executive-assistant"
     },
     {
       id: 2,
-      title: "Front End Web Developer",
-      dept: "information technology",
-      location: "clark, pampanga",
-      description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
-      jobKey: "frontend-web-developer"
+      title: "Social Media Manager",
+      dept: "marketing",
+      location: "remote / work from home",
+      description: "develop and execute social media strategies across key platforms, create engaging content calendars, grow brand audiences, and analyze performance metrics to drive consistent digital engagement.",
+      image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=800&auto=format&fit=crop",
+      jobKey: "social-media-manager"
     },
     {
       id: 3,
-      title: "DevOps Security Engineer",
-      dept: "information technology",
-      location: "clark, pampanga",
-      description: "provide exceptional customer support via phone, email, and chat. handle inquiries, resolve issues, and ensure customer satisfaction through personalized service.",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop",
-      jobKey: "devops-security-engineer"
+      title: "Customer Support Specialist",
+      dept: "client services",
+      location: "remote / work from home",
+      description: "deliver responsive and empathetic customer support through email, live chat, and ticketing systems, resolving inquiries efficiently while ensuring a consistently positive client experience.",
+      image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=800&auto=format&fit=crop",
+      jobKey: "customer-support-specialist"
     },
     {
       id: 4,
-      title: "Associate Sales Manager",
-      dept: "operations",
-      location: "clark, pampanga",
-      description: "the associate sales manager is responsible for overseeing the management of the team(s) supporting accounts to drive the business goals.",
-      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop",
-      jobKey: "associate-sales-manager"
+      title: "Digital Marketing Specialist",
+      dept: "marketing",
+      location: "remote / work from home",
+      description: "plan and execute integrated digital marketing campaigns across seo, paid ads, email, and content channels, using data-driven insights to optimize performance and support client growth goals.",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      jobKey: "digital-marketing-specialist"
     },
     {
       id: 5,
-      title: "Sr. Wellbeing Specialist",
-      dept: "human resource",
-      location: "clark, pampanga",
-      description: "our psychological health team is a diverse group of specialists dedicated to developing, delivering, and evaluating programs.",
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
-      jobKey: "sr-wellbeing-specialist"
+      title: "Bookkeeping Specialist",
+      dept: "finance & accounting",
+      location: "remote / work from home",
+      description: "maintain accurate financial records for clients by managing transactions, reconciling accounts, processing payroll, and preparing organized reports that support informed business decisions.",
+      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=800&auto=format&fit=crop",
+      jobKey: "bookkeeping-specialist"
     },
     {
       id: 6,
-      title: "Team Leader",
-      dept: "operations",
-      location: "clark, pampanga",
-      description: "the team leader, operations is responsible for the day-to-day supervision of a group of call center associates.",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop",
-      jobKey: "team-leader"
+      title: "Content Writer",
+      dept: "creative services",
+      location: "remote / work from home",
+      description: "research and produce compelling, seo-informed written content across formats including blogs, website copy, and email campaigns — adapting voice and style to match diverse brand identities and audiences.",
+      image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800&auto=format&fit=crop",
+      jobKey: "content-writer"
     }
   ];
 
@@ -164,10 +164,11 @@ export default function CareerPage() {
               <div className="relative w-full">
                 <select className={filterStyles} value={selectedDept} onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedDept(e.target.value)}>
                   <option value="">department</option>
-                  <option value="research & analytics">research & analytics</option>
-                  <option value="information technology">information technology</option>
                   <option value="operations">operations</option>
-                  <option value="human resource">human resource</option>
+                  <option value="marketing">marketing</option>
+                  <option value="client services">client services</option>
+                  <option value="finance & accounting">finance & accounting</option>
+                  <option value="creative services">creative services</option>
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"><ChevronDown size={12} className="text-gray-400" /></div>
               </div>
@@ -175,7 +176,7 @@ export default function CareerPage() {
               <div className="relative w-full">
                 <select className={filterStyles} value={selectedLocation} onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedLocation(e.target.value)}>
                   <option value="">location</option>
-                  <option value="clark, pampanga">clark, pampanga</option>
+                  <option value="remote / work from home">remote / work from home</option>
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"><ChevronDown size={12} className="text-gray-400" /></div>
               </div>
@@ -222,7 +223,7 @@ export default function CareerPage() {
             return (
               <div 
                 key={job.id} 
-                className={`bg-white shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-gray-50 transition-all hover:shadow-xl overflow-hidden
+                className={`bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-gray-200 transition-all hover:shadow-[0_16px_48px_rgba(0,0,0,0.18)] hover:-translate-y-1 overflow-hidden
                   ${isGridView 
                     ? `flex-col rounded-bl-[40px] rounded-br-[40px] rounded-tl-2xl rounded-tr-2xl ${displayClass}` 
                     : `flex-col md:flex-row items-stretch rounded-2xl h-auto ${displayClass}`

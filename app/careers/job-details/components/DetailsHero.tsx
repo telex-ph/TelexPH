@@ -41,7 +41,7 @@ export default function CareerHero() {
               color: COLORS.black,
             }}
           >
-            JOB DESCRIPTION
+            VIRTUAL ASSISTANT
           </h1>
 
           <p className="text-sm sm:text-md md:text-lg max-w-2xl mx-auto mb-8 font-normal" style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.7) }}>
@@ -60,7 +60,7 @@ export default function CareerHero() {
               className="transition-colors hover:text-[#800000]" 
               style={{ color: getColorWithOpacity("dark", 0.7), fontWeight: 600 }}
             >
-              home
+              Home
             </Link>
             
             <span className="mx-2" style={{ color: getColorWithOpacity("dark", 0.4), fontWeight: 600 }}>
@@ -72,7 +72,7 @@ export default function CareerHero() {
               className="transition-colors hover:text-[#800000]" 
               style={{ color: getColorWithOpacity("dark", 0.7), fontWeight: 600 }}
             >
-              career
+              VA Careers
             </Link>
             
             <span className="mx-2" style={{ color: getColorWithOpacity("dark", 0.4), fontWeight: 600 }}>
@@ -80,7 +80,7 @@ export default function CareerHero() {
             </span>
             
             <span style={{ color: "#800000", fontWeight: 600 }}>
-              overview
+              VA Details
             </span>
             
           </div>
