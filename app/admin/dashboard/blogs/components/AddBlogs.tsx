@@ -27,6 +27,7 @@ const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
 
 interface ContentSection { title: string; content: string }
 type ModalType = 'image' | 'title' | 'content' | 'full' | null
+type TabType = 'details' | 'content' | 'sections'
 
 // ─── Micro Components ─────────────────────────────────────────────────────────
 const Spinner = () => (
@@ -63,6 +64,83 @@ const PaperclipIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) =>
       d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
   </svg>
 )
+
+// ─── Custom Dropdown ──────────────────────────────────────────────────────────
+interface DropdownOption { value: string; label: string }
+interface CustomDropdownProps {
+  value: string
+  onChange: (val: string) => void
+  options: DropdownOption[]
+  placeholder?: string
+  isdarkmode: boolean
+}
+
+const CustomDropdown = ({ value, onChange, options, placeholder = 'Select...', isdarkmode }: CustomDropdownProps) => {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const selected = options.find(o => o.value === value)
+
+  return (
+    <div ref={ref} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => setOpen(prev => !prev)}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none text-[12px] ${
+          isdarkmode
+            ? 'bg-[#202020] border-white/10 text-gray-300 hover:border-white/20'
+            : 'bg-gray-50 border-gray-200 text-gray-800 hover:border-gray-300'
+        } ${open ? (isdarkmode ? 'border-white/30' : 'border-gray-400') : ''}`}
+      >
+        <span className={selected ? '' : isdarkmode ? 'text-gray-600' : 'text-gray-400'}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <svg
+          className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''} ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className={`absolute z-30 mt-1.5 w-full rounded-lg border shadow-lg overflow-hidden transition-all duration-200 ${
+          isdarkmode ? 'bg-[#1a1a1a] border-white/10' : 'bg-white border-gray-200'
+        }`}>
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false) }}
+              className={`w-full text-left px-4 py-2.5 text-[12px] transition-all duration-150 flex items-center gap-2 ${
+                opt.value === value
+                  ? 'bg-[#800000] text-white'
+                  : isdarkmode
+                  ? 'text-gray-300 hover:bg-white/5'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              {opt.value === value && (
+                <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+              <span className={opt.value === value ? '' : 'ml-5'}>{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── AI Helpers ───────────────────────────────────────────────────────────────
 async function callGemini(systemPrompt: string, userPrompt: string): Promise<string> {
@@ -132,6 +210,37 @@ const MODAL_CONFIGS: Record<NonNullable<ModalType>, AIModalConfig> = {
   full:    { title: 'Generate Full Blog',   hint: 'Enter a topic and AI will generate the title, description, and all content sections.', placeholder: 'e.g., How TelexPH helps startups reduce operational costs...', withImageAttach: false },
 }
 
+// ─── Tab Config ───────────────────────────────────────────────────────────────
+const TABS: { key: TabType; label: string; icon: React.ReactNode }[] = [
+  {
+    key: 'details',
+    label: 'Blog Details',
+    icon: (
+      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'content',
+    label: 'Content Body',
+    icon: (
+      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'sections',
+    label: 'Extra Sections',
+    icon: (
+      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+      </svg>
+    ),
+  },
+]
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AddBlogs() {
   const { isdarkmode } = useDarkMode()
@@ -154,6 +263,9 @@ export default function AddBlogs() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   // UI state
+  const [activeTab, setActiveTab] = useState<TabType>('details')
+  const [publishingOpen, setPublishingOpen] = useState(true)
+  const [categoriesOpen, setCategoriesOpen] = useState(true)
   const [isCompressing, setIsCompressing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imageError, setImageError] = useState('')
@@ -419,6 +531,10 @@ Return ONLY JSON:
 
   const labelCls = `uppercase tracking-widest transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`
 
+  const dividerCls = `divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`
+
+  const rowHoverCls = `flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`
+
   return (
     <>
       <style jsx global>{`
@@ -553,66 +669,106 @@ Return ONLY JSON:
               </div>
             </div>
 
-            {/* Publishing Options */}
+            {/* Publishing Options — Accordion */}
             <div className={sectionCard}>
-              <div className={sectionHeader}>
-                <div>
+              <button
+                type="button"
+                onClick={() => setPublishingOpen(prev => !prev)}
+                className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 ${
+                  isdarkmode ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                } ${!publishingOpen ? 'rounded-xl' : `border-b ${isdarkmode ? 'border-white/5' : 'border-gray-200'}`}`}
+              >
+                <div className="text-left">
                   <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Publishing Options</p>
                   <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
                     Set status and schedule
                   </p>
                 </div>
-              </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Status</p>
-                  <select value={status} onChange={e => setStatus(e.target.value as any)} className={selectBase}>
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="scheduled">Scheduled</option>
-                  </select>
-                </div>
-                {status === 'scheduled' && (
+                <svg
+                  className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${publishingOpen ? 'rotate-180' : ''} ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${publishingOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="p-6 space-y-4">
                   <div>
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Schedule Date</p>
-                    <input
-                      type="datetime-local"
-                      value={scheduledDate}
-                      onChange={e => setScheduledDate(e.target.value)}
-                      className={inputBase}
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Status</p>
+                    <CustomDropdown
+                      value={status}
+                      onChange={val => setStatus(val as any)}
+                      options={[
+                        { value: 'draft', label: 'Draft' },
+                        { value: 'published', label: 'Published' },
+                        { value: 'scheduled', label: 'Scheduled' },
+                      ]}
+                      placeholder="Select Status"
+                      isdarkmode={isdarkmode}
                     />
                   </div>
-                )}
+                  {status === 'scheduled' && (
+                    <div>
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Schedule Date</p>
+                      <input
+                        type="datetime-local"
+                        value={scheduledDate}
+                        onChange={e => setScheduledDate(e.target.value)}
+                        className={inputBase}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Categories */}
+            {/* Categories — Accordion */}
             <div className={sectionCard}>
-              <div className={sectionHeader}>
-                <div>
+              <button
+                type="button"
+                onClick={() => setCategoriesOpen(prev => !prev)}
+                className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 ${
+                  isdarkmode ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                } ${!categoriesOpen ? 'rounded-xl' : `border-b ${isdarkmode ? 'border-white/5' : 'border-gray-200'}`}`}
+              >
+                <div className="text-left">
                   <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Categories</p>
                   <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
                     Assign topic and subcategory
                   </p>
                 </div>
-              </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Main Category</p>
-                  <select value={mainCategory} onChange={e => handleMainCategoryChange(e.target.value)} className={selectBase}>
-                    <option value="">Select Category</option>
-                    {Object.values(MAIN_CATEGORIES).map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                {mainCategory && (
+                <svg
+                  className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${categoriesOpen ? 'rotate-180' : ''} ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${categoriesOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="p-6 space-y-4">
                   <div>
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Subcategory</p>
-                    <select value={subcategory} onChange={e => setSubcategory(e.target.value)} className={selectBase}>
-                      <option value="">Select Subcategory</option>
-                      {getAvailableSubcategories().map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
+                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Main Category</p>
+                    <CustomDropdown
+                      value={mainCategory}
+                      onChange={handleMainCategoryChange}
+                      options={Object.values(MAIN_CATEGORIES).map(c => ({ value: c, label: c }))}
+                      placeholder="Select Category"
+                      isdarkmode={isdarkmode}
+                    />
                   </div>
-                )}
+                  {mainCategory && (
+                    <div>
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Subcategory</p>
+                      <CustomDropdown
+                        value={subcategory}
+                        onChange={setSubcategory}
+                        options={getAvailableSubcategories().map(s => ({ value: s, label: s }))}
+                        placeholder="Select Subcategory"
+                        isdarkmode={isdarkmode}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -621,240 +777,242 @@ Return ONLY JSON:
           {/* ── Right Column ── */}
           <div className="lg:col-span-8 space-y-4">
 
-            {/* Blog Details — Title, Author, Description */}
+            {/* ── Tabbed Panel ── */}
             <div className={sectionCard}>
-              <div className={sectionHeader}>
-                <div>
-                  <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
-                    Blog Details
-                  </p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Title, author, and description
-                  </p>
+
+              {/* Tab Bar */}
+              <div className={`flex items-center border-b transition-all duration-500 ${
+                isdarkmode ? 'bg-[#202020] border-white/5' : 'bg-gray-50 border-gray-200'
+              }`}>
+                {TABS.map((tab) => {
+                  const isActive = activeTab === tab.key
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`relative flex items-center gap-2 px-5 py-4 transition-all duration-200 ${
+                        isActive
+                          ? isdarkmode
+                            ? 'text-white'
+                            : 'text-gray-800'
+                          : isdarkmode
+                          ? 'text-gray-500 hover:text-gray-300'
+                          : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                      style={{ fontSize: 12, fontWeight: isActive ? 600 : 400 }}
+                    >
+                      {tab.icon}
+                      {tab.label}
+                      {/* Active indicator */}
+                      {isActive && (
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#800000] rounded-full" />
+                      )}
+                    </button>
+                  )
+                })}
+
+                {/* Right-side action button per tab */}
+                <div className="ml-auto px-4">
+                  {activeTab === 'details' && (
+                    <button
+                      onClick={() => openModal('title')}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+                      style={{ fontSize: 10, fontWeight: 500 }}
+                    >
+                      <SparkleIcon className="w-3 h-3" />
+                      AI Title
+                    </button>
+                  )}
+                  {activeTab === 'content' && (
+                    <button
+                      onClick={() => openModal('content')}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+                      style={{ fontSize: 11, fontWeight: 500 }}
+                    >
+                      <SparkleIcon className="w-3.5 h-3.5" />
+                      Write with AI
+                    </button>
+                  )}
+                  {activeTab === 'sections' && (
+                    <button
+                      onClick={addContentSection}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
+                        isdarkmode
+                          ? 'border-white/10 text-gray-300 hover:bg-white/5'
+                          : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                      style={{ fontSize: 11, fontWeight: 500 }}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Add Section
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* Table-style rows */}
-              <div className={`divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
-
-                {/* Title row */}
-                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
-                  <div className="w-32 flex-shrink-0 pt-3">
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                      Title <span className="text-[#800000]">•</span>
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
+              {/* ── Tab: Blog Details ── */}
+              {activeTab === 'details' && (
+                <div className={dividerCls}>
+                  {/* Title row */}
+                  <div className={rowHoverCls}>
+                    <div className="w-32 flex-shrink-0 pt-3">
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
+                        Title <span className="text-[#800000]">•</span>
+                      </p>
+                    </div>
+                    <div className="flex-1">
                       <input
                         value={title}
                         onChange={e => setTitle(e.target.value)}
                         maxLength={HEADLINE_MAX}
                         placeholder="e.g., Top 10 Hidden Gems in Palawan"
-                        className={`flex-1 px-4 py-2.5 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] ${
-                          isdarkmode
-                            ? 'bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30'
-                            : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400'
-                        }`}
+                        className={inputBase}
                       />
-                      <button
-                        onClick={() => openModal('title')}
-                        className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all flex-shrink-0"
-                        style={{ fontSize: 10, fontWeight: 500 }}
-                      >
-                        <SparkleIcon className="w-3 h-3" />
-                        AI
-                      </button>
+                      <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                     </div>
-                    <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                  </div>
+
+                  {/* Author row */}
+                  <div className={rowHoverCls}>
+                    <div className="w-32 flex-shrink-0 pt-3">
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
+                        Author <span className="text-[#800000]">•</span>
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        value={authorName}
+                        onChange={e => setAuthorName(e.target.value)}
+                        maxLength={HEADLINE_MAX}
+                        placeholder="e.g., Admin Team"
+                        className={inputBase}
+                      />
+                      <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                    </div>
+                  </div>
+
+                  {/* Short Description row */}
+                  <div className={rowHoverCls}>
+                    <div className="w-32 flex-shrink-0 pt-3">
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
+                        Description <span className="text-[#800000]">•</span>
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        value={shortDescription}
+                        onChange={e => setShortDescription(e.target.value)}
+                        maxLength={SHORT_DESC_MAX}
+                        placeholder="Brief summary for listing card..."
+                        className={inputBase}
+                      />
+                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Author row */}
-                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
-                  <div className="w-32 flex-shrink-0 pt-3">
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                      Author <span className="text-[#800000]">•</span>
-                    </p>
+              {/* ── Tab: Content Body ── */}
+              {activeTab === 'content' && (
+                <div className={dividerCls}>
+                  {/* Main Section Title row */}
+                  <div className={rowHoverCls}>
+                    <div className="w-32 flex-shrink-0 pt-3">
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
+                      <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        value={mainContentTitle}
+                        onChange={e => setMainContentTitle(e.target.value)}
+                        maxLength={HEADLINE_MAX}
+                        placeholder="Main Section Title..."
+                        className={inputBase}
+                      />
+                      <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <input
-                      value={authorName}
-                      onChange={e => setAuthorName(e.target.value)}
-                      maxLength={HEADLINE_MAX}
-                      placeholder="e.g., Admin Team"
-                      className={inputBase}
-                    />
-                    <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                  </div>
-                </div>
 
-                {/* Short Description row */}
-                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
-                  <div className="w-32 flex-shrink-0 pt-3">
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                      Description <span className="text-[#800000]">•</span>
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <input
-                      value={shortDescription}
-                      onChange={e => setShortDescription(e.target.value)}
-                      maxLength={SHORT_DESC_MAX}
-                      placeholder="Brief summary for listing card..."
-                      className={inputBase}
-                    />
-                    <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Content Body */}
-            <div className={sectionCard}>
-              <div className={sectionHeader}>
-                <div>
-                  <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
-                    Content Body
-                  </p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Main article content and sections
-                  </p>
-                </div>
-                <button
-                  onClick={() => openModal('content')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
-                  style={{ fontSize: 11, fontWeight: 500 }}
-                >
-                  <SparkleIcon className="w-3.5 h-3.5" />
-                  Write with AI
-                </button>
-              </div>
-
-              {/* Main section row */}
-              <div className={`divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
-
-                {/* Main Section Title row */}
-                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
-                  <div className="w-32 flex-shrink-0 pt-3">
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
-                    <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
-                  </div>
-                  <div className="flex-1">
-                    <input
-                      value={mainContentTitle}
-                      onChange={e => setMainContentTitle(e.target.value)}
-                      maxLength={HEADLINE_MAX}
-                      placeholder="Main Section Title..."
-                      className={inputBase}
-                    />
-                    <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                  {/* Main Content Text row */}
+                  <div className={rowHoverCls}>
+                    <div className="w-32 flex-shrink-0 pt-3">
+                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
+                      <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} style={{ fontSize: 9, fontWeight: 400 }}>
+                        Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <textarea
+                        value={mainContentText}
+                        onChange={e => setMainContentText(e.target.value)}
+                        placeholder="Write your main content here..."
+                        rows={6}
+                        className={textareaBase}
+                      />
+                      <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Main Content Text row */}
-                <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
-                  <div className="w-32 flex-shrink-0 pt-3">
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
-                    <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-600' : 'text-gray-400'}`} style={{ fontSize: 9, fontWeight: 400 }}>
-                      Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <textarea
-                      value={mainContentText}
-                      onChange={e => setMainContentText(e.target.value)}
-                      placeholder="Write your main content here..."
-                      rows={6}
-                      className={textareaBase}
-                    />
-                    <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Additional Sections */}
-            <div className={sectionCard}>
-              <div className={sectionHeader}>
-                <div>
-                  <p className={`transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`} style={{ fontSize: 13, fontWeight: 600 }}>
-                    Additional Sections
-                  </p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Optional extra content blocks
-                  </p>
-                </div>
-                <button
-                  onClick={addContentSection}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
-                    isdarkmode
-                      ? 'border-white/10 text-gray-300 hover:bg-white/5'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
-                  style={{ fontSize: 11, fontWeight: 500 }}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add Section
-                </button>
-              </div>
-
-              <div className={`divide-y transition-all duration-500 ${isdarkmode ? 'divide-white/5' : 'divide-gray-100'}`}>
-                {contentSections.map((section, i) => (
-                  <div key={i} className={`px-6 py-5 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-[#800000] flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-[9px] font-bold">{i + 1}</span>
+              {/* ── Tab: Additional Sections ── */}
+              {activeTab === 'sections' && (
+                <div className={dividerCls}>
+                  {contentSections.map((section, i) => (
+                    <div key={i} className={`px-6 py-5 transition-all duration-300 ${isdarkmode ? 'hover:bg-[#202020]' : 'hover:bg-gray-50'}`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-[#800000] flex items-center justify-center flex-shrink-0">
+                            <span className="text-white text-[9px] font-bold">{i + 1}</span>
+                          </div>
+                          <p className={`transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`} style={{ fontSize: 11, fontWeight: 500 }}>
+                            Section {i + 1}
+                          </p>
                         </div>
-                        <p className={`transition-colors ${isdarkmode ? 'text-gray-400' : 'text-gray-600'}`} style={{ fontSize: 11, fontWeight: 500 }}>
-                          Section {i + 1}
-                        </p>
+                        {contentSections.length > 1 && (
+                          <button
+                            onClick={() => removeContentSection(i)}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-all"
+                            style={{ fontSize: 10, fontWeight: 500 }}
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Remove
+                          </button>
+                        )}
                       </div>
-                      {contentSections.length > 1 && (
-                        <button
-                          onClick={() => removeContentSection(i)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-all"
-                          style={{ fontSize: 10, fontWeight: 500 }}
-                        >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Title</p>
-                        <input
-                          value={section.title}
-                          onChange={e => updateContentSection(i, 'title', e.target.value)}
-                          maxLength={HEADLINE_MAX}
-                          placeholder="Section Title..."
-                          className={inputBase}
-                        />
-                        <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                      </div>
-                      <div>
-                        <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Content</p>
-                        <textarea
-                          value={section.content}
-                          onChange={e => updateContentSection(i, 'content', e.target.value)}
-                          placeholder="Section content..."
-                          rows={4}
-                          className={textareaBase}
-                        />
-                        <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
+                      <div className="space-y-3">
+                        <div>
+                          <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Title</p>
+                          <input
+                            value={section.title}
+                            onChange={e => updateContentSection(i, 'title', e.target.value)}
+                            maxLength={HEADLINE_MAX}
+                            placeholder="Section Title..."
+                            className={inputBase}
+                          />
+                          <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                        </div>
+                        <div>
+                          <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Content</p>
+                          <textarea
+                            value={section.content}
+                            onChange={e => updateContentSection(i, 'content', e.target.value)}
+                            placeholder="Section content..."
+                            rows={4}
+                            className={textareaBase}
+                          />
+                          <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
+
             </div>
 
             {/* Footer / Submit */}
