@@ -283,11 +283,14 @@ export default function UserManagement() {
         .um-card-header-sub { display: block; }
         .um-card-header-count { white-space: nowrap; flex-shrink: 0; }
 
+        /* Mobile rows hidden by default on desktop */
+        .um-mobile-row { display: none !important; }
+
         @media (max-width: 768px) {
           .um-card-header { flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 16px; }
           .um-card-header-sub { display: none; }
           .um-card-header-count { font-size: 10px !important; }
-          .um-mobile-row { padding: 12px 16px !important; }
+          .um-mobile-row { display: flex !important; }
           .um-pagination { padding: 12px 16px !important; }
         }
         .um-filter-label { display: inline; }
@@ -302,7 +305,6 @@ export default function UserManagement() {
           .um-search-input { flex: 1 1 100% !important; min-width: 0 !important; }
           .um-filter-controls { display: flex; gap: 8px; align-items: center; flex: 1 1 100%; }
           .um-table-wrap  { display: none; }
-          .um-mobile-row  { display: flex !important; }
           .um-edit-grid   { grid-template-columns: 1fr; }
           .um-info-grid   { grid-template-columns: 1fr; }
           .um-modal-pad   { padding: 20px 18px; }
@@ -538,12 +540,17 @@ export default function UserManagement() {
                 ))}
               </div>
 
-              {/* Mobile rows — visible only on small screens */}
+              {/* Mobile rows — hidden on desktop via CSS, shown on mobile via media query */}
               {vas.map((va, i) => (
                 <div
                   key={`mob-${va._id}`}
                   className="um-mobile-row um-row"
-                  style={{ borderBottom: i < vas.length - 1 ? `1px solid ${borderColor}` : 'none', padding: '12px 16px', gap: 12, alignItems: 'flex-start' }}
+                  style={{
+                    borderBottom: i < vas.length - 1 ? `1px solid ${borderColor}` : 'none',
+                    padding: '12px 16px',
+                    gap: 12,
+                    alignItems: 'flex-start' as const,
+                  }}
                 >
                   {/* Avatar */}
                   <div style={{ width: 38, height: 38, borderRadius: 11, background: '#800000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden', marginTop: 2 }}>
