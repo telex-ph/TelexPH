@@ -2,18 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2, Activity, Lock } from "lucide-react";
+import { Eye, EyeOff, BarChart2, Lock, Loader2 } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-const STATS = [
-  { num: "2,400+", lbl: "Active VAs" },
-  { num: "98%",    lbl: "Satisfaction" },
-  { num: "150+",   lbl: "Clients" },
-  { num: "$5M+",   lbl: "Paid out" },
-];
-
-const BAR_HEIGHTS = [45, 62, 50, 80, 58, 90, 70];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export default function VALoginPage() {
   const router = useRouter();
@@ -28,6 +19,7 @@ export default function VALoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
     try {
       const res = await fetch(`${API_BASE}/auth/va/authenticate`, {
         method:      "POST",
@@ -35,11 +27,14 @@ export default function VALoginPage() {
         headers:     { "Content-Type": "application/json" },
         body:        JSON.stringify({ email, password }),
       });
+
       const data = await res.json();
+
       if (!res.ok) {
         setError(data.error || data.message || "Invalid email or password.");
         return;
       }
+
       router.push("/VirtualAssistant/dashboard");
     } catch {
       setError("Unable to connect. Please try again.");
@@ -48,567 +43,195 @@ export default function VALoginPage() {
     }
   };
 
+  const stats = [
+    { num: "2,400+", lbl: "Active VAs" },
+    { num: "98%",    lbl: "Satisfaction" },
+    { num: "150+",   lbl: "Global clients" },
+    { num: "$5M+",   lbl: "Paid out" },
+  ];
+
+  const bars = [45, 70, 55, 90, 65, 48, 78];
+
   return (
-    <div style={styles.page}>
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden"
+      style={{ background: "#0d0000" }}
+    >
       {/* Background blobs */}
-      <div style={styles.blob1} />
-      <div style={styles.blob2} />
-      <div style={styles.glowLine} />
+      <div className="absolute pointer-events-none" style={{ width: "500px", height: "500px", borderRadius: "50%", background: "rgba(139,0,0,0.35)", top: "-150px", left: "-150px", filter: "blur(80px)" }} />
+      <div className="absolute pointer-events-none" style={{ width: "400px", height: "400px", borderRadius: "50%", background: "rgba(80,0,0,0.3)", bottom: "-100px", right: "-100px", filter: "blur(70px)" }} />
 
       {/* Card */}
-      <div style={styles.card}>
+      <div
+        className="relative z-10 w-full max-w-[900px] flex flex-col md:flex-row rounded-[24px] overflow-hidden min-h-[520px]"
+        style={{ boxShadow: "0 40px 100px rgba(0,0,0,0.6)" }}
+      >
 
         {/* ── LEFT: Form ── */}
-        <div style={styles.left}>
+        <div className="flex-1 flex flex-col justify-center px-8 py-12 md:px-10 bg-white">
 
-          {/* Brand */}
-          <div style={styles.brand}>
-            <div style={styles.brandIcon}>
-              <Activity size={18} color="#fff" />
-            </div>
-            <span style={styles.brandName}>VAportal</span>
-            <span style={styles.brandBadge}>Secure</span>
-          </div>
-
-          <h1 style={styles.heading}>Welcome back</h1>
-          <p style={styles.subhead}>Sign in to your Virtual Assistant account</p>
-
-          <form onSubmit={handleSignIn} style={styles.form}>
-
+          <form onSubmit={handleSignIn} className="flex flex-col gap-0">
             {/* Email */}
-            <div style={styles.fieldGroup}>
-              <label style={styles.fieldLabel}>Email address</label>
+            <label className="text-[13px] font-semibold mb-1.5" style={{ color: "#8B0000" }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              className="w-full px-4 py-3 rounded-lg text-sm text-gray-700 outline-none mb-4 transition-all border-[1.5px] border-transparent focus:border-[#8B0000] focus:bg-white"
+              style={{ background: "#f0f4fa" }}
+            />
+
+          <form onSubmit={handleSignIn}>
+            {/* Email */}
+            <div className="mb-4">
+              <label className="block text-[11px] font-extrabold tracking-[.1em] uppercase mb-1.5" style={{ color: "#8B0000" }}>
+                Email Address
+              </label>
               <input
                 type="email"
                 required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                style={styles.input}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#8B0000";
-                  e.currentTarget.style.background  = "#fff";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "#f0e8e8";
-                  e.currentTarget.style.background  = "#fdf8f8";
-                }}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                className="w-full px-4 py-3 pr-10 rounded-lg text-sm text-gray-700 outline-none transition-all border-[1.5px] border-transparent focus:border-[#8B0000] focus:bg-white"
+                style={{ background: "#f0f4fa" }}
               />
             </div>
 
             {/* Password */}
-            <div style={styles.fieldGroup}>
-              <label style={styles.fieldLabel}>Password</label>
-              <div style={styles.passWrap}>
+            <div className="mb-2">
+              <label className="block text-[11px] font-extrabold tracking-[.1em] uppercase mb-1.5" style={{ color: "#8B0000" }}>
+                Password
+              </label>
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   required
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
-                  style={{ ...styles.input, paddingRight: "44px" }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "#8B0000";
-                    e.currentTarget.style.background  = "#fff";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#f0e8e8";
-                    e.currentTarget.style.background  = "#fdf8f8";
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 pr-12 rounded-xl text-[14px] outline-none transition-all"
+                  style={{ background: "#fff5f5", border: "1.5px solid #f5dede", color: "#1a0000" }}
+                  onFocus={(e) => { e.target.style.borderColor = "#8B0000"; e.target.style.background = "#fff"; e.target.style.boxShadow = "0 0 0 4px rgba(139,0,0,0.08)"; }}
+                  onBlur={(e) => { e.target.style.borderColor = "#f5dede"; e.target.style.background = "#fff5f5"; e.target.style.boxShadow = "none"; }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={styles.eyeBtn}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity"
+                  style={{ color: "#c0a0a0", background: "none", border: "none" }}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
             </div>
 
             {/* Remember + Forgot */}
-            <div style={styles.rowMeta}>
-              <label style={styles.rememberLabel}>
+            <div className="flex items-center justify-between mb-5">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
-                  style={{ accentColor: "#8B0000", width: 14, height: 14, cursor: "pointer" }}
+                  className="w-[15px] h-[15px] cursor-pointer"
+                  style={{ accentColor: "#8B0000" }}
                 />
                 Remember me
               </label>
               <button
                 type="button"
                 onClick={() => router.push("/VirtualAssistant/forgot-password")}
-                style={styles.forgotBtn}
+                className="text-[13px] font-bold hover:opacity-75 transition-opacity"
+                style={{ color: "#8B0000", background: "none", border: "none" }}
               >
                 Forgot password?
               </button>
             </div>
 
-            {/* Error */}
+            {/* Error message */}
             {error && (
-              <div style={styles.errorBox}>
-                <p style={styles.errorText}>{error}</p>
+              <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200">
+                <p className="text-[12px] text-red-600 font-medium">{error}</p>
               </div>
             )}
 
-            {/* Submit */}
+            {/* Sign In */}
             <button
               type="submit"
               disabled={isLoading}
-              style={{
-                ...styles.submitBtn,
-                opacity: isLoading ? 0.65 : 1,
-                cursor: isLoading ? "not-allowed" : "pointer",
-              }}
+              className="w-full py-3 rounded-lg text-sm font-bold tracking-widest uppercase text-white transition-opacity hover:opacity-90 active:opacity-80 disabled:opacity-60 flex items-center justify-center gap-2"
+              style={{ background: "#8B0000" }}
             >
-              {isLoading
-                ? <><Loader2 size={15} className="animate-spin" /> Signing in…</>
-                : "Sign in"
-              }
+              {isLoading ? <><Loader2 size={16} className="animate-spin" /> Signing in…</> : "Sign In"}
             </button>
-
-            {/* Divider */}
-            <div style={styles.divider}>
-              <div style={styles.dividerLine} />
-              <span style={styles.dividerText}>or</span>
-              <div style={styles.dividerLine} />
-            </div>
-
-            {/* Apply link */}
-            <p style={styles.applyText}>
-              New here?{" "}
-              <button
-                type="button"
-                onClick={() => router.push("/VirtualAssistant/VAforms")}
-                style={styles.applyLink}
-              >
-                Apply as a Virtual Assistant
-              </button>
-            </p>
-
           </form>
+
+          <p className="text-center text-[12.5px]" style={{ color: "#c0a0a0" }}>
+            New here?{" "}
+            <button
+              type="button"
+              onClick={() => router.push("/VirtualAssistant/VAforms")}
+              className="font-bold hover:underline underline-offset-[3px]"
+              style={{ color: "#8B0000", background: "none", border: "none" }}
+            >
+              Apply as a Virtual Assistant
+            </button>
+          </p>
         </div>
 
-        {/* ── RIGHT: Stats & Charts ── */}
-        <div style={styles.right}>
+        {/* ── RIGHT: Illustration ── */}
+        <div className="relative w-full md:w-[340px] flex flex-col items-center justify-between py-6 px-5" style={{ background: "#f5eeee" }}>
+          <div className="absolute top-5 right-5 w-[42px] h-[42px] rounded-[10px] flex items-center justify-center" style={{ background: "#8B0000" }}>
+            <BarChart2 size={20} color="white" />
+          </div>
 
-          {/* Stat grid */}
-          <div style={styles.statGrid}>
-            {STATS.map((s) => (
-              <div key={s.lbl} style={styles.statCard}>
-                <div style={styles.statNum}>{s.num}</div>
-                <div style={styles.statLbl}>{s.lbl}</div>
+          <div className="w-full mt-14 bg-white rounded-xl overflow-hidden" style={{ boxShadow: "0 8px 24px rgba(139,0,0,0.15)" }}>
+            <div className="flex items-center gap-1.5 px-3 py-2.5" style={{ background: "#8B0000" }}>
+              <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+              <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+              <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+              <div className="flex-1 ml-2 h-2 rounded bg-white opacity-20" />
+            </div>
+            <div className="p-2 flex gap-1.5">
+              <div className="flex-[1.2] rounded-md p-2" style={{ background: "#8B0000" }}>
+                <div className="h-1.5 rounded bg-white opacity-60 mb-1" /><div className="h-1.5 rounded bg-white opacity-35 w-[60%]" />
               </div>
-            ))}
-          </div>
-
-          {/* Bar chart */}
-          <div style={styles.chartBox}>
-            <div style={styles.chartHeader}>
-              <span style={styles.chartTitle}>Monthly earnings</span>
-            </div>
-            <div style={styles.chartVal}>$48,200</div>
-            <div style={styles.chartChange}>↑ 12.4% this month</div>
-            <div style={styles.bars}>
-              {BAR_HEIGHTS.map((h, i) => (
-                <div
-                  key={i}
-                  style={{
-                    ...styles.bar,
-                    height: `${h}%`,
-                    background: i === 5 ? "#8B0000" : "rgba(139,0,0,0.3)",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Sparkline */}
-          <div style={styles.sparkBox}>
-            <div style={styles.sparkLabel}>Task completion</div>
-            <div style={styles.sparkRow}>
-              <div>
-                <div style={styles.sparkBig}>1,284</div>
-                <div style={styles.sparkSub}>tasks this quarter</div>
+              <div className="flex-1 rounded-md p-2" style={{ background: "#fdf2f2" }}>
+                <div className="h-1.5 rounded mb-1" style={{ background: "#e8b4b4" }} /><div className="h-1.5 rounded w-[70%]" style={{ background: "#f5d4d4" }} />
               </div>
-              <svg width="80" height="40" viewBox="0 0 80 40">
-                <polyline
-                  points="0,32 13,24 26,28 40,14 53,18 66,8 80,4"
-                  fill="none"
-                  stroke="#8B0000"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <polyline
-                  points="0,32 13,24 26,28 40,14 53,18 66,8 80,4 80,40 0,40"
-                  fill="rgba(139,0,0,0.18)"
-                  stroke="none"
-                />
-              </svg>
+              <div className="flex-1 rounded-md p-2" style={{ background: "#fdf2f2" }}>
+                <div className="h-1.5 rounded mb-1" style={{ background: "#e8b4b4" }} /><div className="h-1.5 rounded w-[50%]" style={{ background: "#f5d4d4" }} />
+              </div>
+            </div>
+            <div className="px-2 pb-2 grid grid-cols-2 gap-1.5">
+              <div className="rounded-md p-2 flex items-end gap-1" style={{ background: "#fdf2f2", height: "56px" }}>
+                {[60, 80, 50, 90, 70].map((h, i) => (
+                  <div key={i} className="flex-1 rounded-sm" style={{ height: `${h}%`, background: "#8B0000", opacity: 0.7 }} />
+                ))}
+              </div>
+              <div className="rounded-md overflow-hidden" style={{ background: "#fdf2f2", height: "56px" }}>
+                <svg width="100%" height="100%" viewBox="0 0 100 40" preserveAspectRatio="none">
+                  <polyline points="0,35 20,25 40,30 60,15 80,20 100,10" fill="none" stroke="#8B0000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
             </div>
           </div>
 
-          {/* Notice */}
-          <div style={styles.notice}>
-            <Lock size={12} color="#8B0000" style={{ flexShrink: 0 }} />
-            <span style={styles.noticeText}>
-              VA portal only — all access is monitored and logged.
-            </span>
-          </div>
+          <p className="text-[12px] text-gray-400 text-center leading-relaxed mt-4">
+            this portal is for <span className="font-semibold text-gray-500">VA use only</span>. all access
+            <br />attempts are monitored and logged.
+          </p>
 
+          <div className="absolute bottom-5 right-5 w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: "#f5d4d4" }}>
+            <Lock size={16} color="#8B0000" />
+          </div>
         </div>
+
       </div>
     </div>
   );
 }
-
-/* ─────────────── Styles ─────────────── */
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#0a0000",
-    padding: "32px 16px",
-    position: "relative",
-    overflow: "hidden",
-  },
-  blob1: {
-    position: "absolute",
-    width: 520,
-    height: 520,
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(160,0,0,0.4) 0%, transparent 70%)",
-    top: -160,
-    left: -120,
-    pointerEvents: "none",
-  },
-  blob2: {
-    position: "absolute",
-    width: 380,
-    height: 380,
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(100,0,0,0.35) 0%, transparent 70%)",
-    bottom: -100,
-    right: -80,
-    pointerEvents: "none",
-  },
-  glowLine: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    background:
-      "linear-gradient(90deg, transparent, rgba(139,0,0,0.6), transparent)",
-  },
-  card: {
-    position: "relative",
-    zIndex: 10,
-    width: "100%",
-    maxWidth: 880,
-    display: "flex",
-    borderRadius: 20,
-    overflow: "hidden",
-    border: "1px solid rgba(139,0,0,0.25)",
-  },
-
-  /* ── LEFT ── */
-  left: {
-    flex: 1,
-    background: "#fff",
-    padding: "52px 48px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 36,
-  },
-  brandIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 9,
-    background: "#8B0000",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  brandName: {
-    fontSize: 15,
-    fontWeight: 500,
-    color: "#1a0000",
-    letterSpacing: "-0.3px",
-  },
-  brandBadge: {
-    fontSize: 10,
-    fontWeight: 500,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    background: "#fff0f0",
-    color: "#8B0000",
-    borderRadius: 4,
-    padding: "2px 7px",
-    border: "1px solid #f5caca",
-  },
-  heading: {
-    fontSize: 28,
-    fontWeight: 500,
-    color: "#1a0000",
-    letterSpacing: "-0.5px",
-    lineHeight: 1.2,
-    marginBottom: 6,
-  },
-  subhead: {
-    fontSize: 14,
-    color: "#aaa",
-    marginBottom: 32,
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  fieldGroup: {
-    marginBottom: 18,
-  },
-  fieldLabel: {
-    display: "block",
-    fontSize: 11,
-    fontWeight: 500,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    color: "#8B0000",
-    marginBottom: 6,
-  },
-  input: {
-    width: "100%",
-    padding: "11px 14px",
-    borderRadius: 10,
-    border: "1.5px solid #f0e8e8",
-    background: "#fdf8f8",
-    fontSize: 14,
-    color: "#1a0000",
-    outline: "none",
-    transition: "border-color 0.15s, background 0.15s",
-  },
-  passWrap: {
-    position: "relative",
-  },
-  eyeBtn: {
-    position: "absolute",
-    right: 14,
-    top: "50%",
-    transform: "translateY(-50%)",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    color: "#ccc",
-    padding: 0,
-    display: "flex",
-    alignItems: "center",
-  },
-  rowMeta: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 24,
-  },
-  rememberLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: 7,
-    cursor: "pointer",
-    fontSize: 13,
-    color: "#888",
-  },
-  forgotBtn: {
-    fontSize: 13,
-    fontWeight: 500,
-    color: "#8B0000",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    padding: 0,
-  },
-  errorBox: {
-    marginBottom: 16,
-    padding: "10px 14px",
-    borderRadius: 8,
-    background: "#fff5f5",
-    border: "1px solid #fecaca",
-  },
-  errorText: {
-    fontSize: 12,
-    color: "#b91c1c",
-    fontWeight: 500,
-    margin: 0,
-  },
-  submitBtn: {
-    width: "100%",
-    padding: 13,
-    background: "#8B0000",
-    color: "#fff",
-    border: "none",
-    borderRadius: 10,
-    fontSize: 13,
-    fontWeight: 500,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginBottom: 20,
-    transition: "opacity 0.15s, transform 0.1s",
-  },
-  divider: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    background: "#f0e8e8",
-  },
-  dividerText: {
-    fontSize: 12,
-    color: "#ccc",
-  },
-  applyText: {
-    textAlign: "center",
-    fontSize: 13,
-    color: "#bbb",
-    margin: 0,
-  },
-  applyLink: {
-    color: "#8B0000",
-    fontWeight: 500,
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    fontSize: 13,
-    padding: 0,
-  },
-
-  /* ── RIGHT ── */
-  right: {
-    width: 320,
-    background: "#0d0000",
-    padding: "40px 28px",
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-    borderLeft: "1px solid rgba(139,0,0,0.2)",
-  },
-  statGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 10,
-  },
-  statCard: {
-    background: "rgba(139,0,0,0.12)",
-    border: "1px solid rgba(139,0,0,0.2)",
-    borderRadius: 12,
-    padding: "14px 12px",
-  },
-  statNum: {
-    fontSize: 20,
-    fontWeight: 500,
-    color: "#fff",
-    marginBottom: 2,
-  },
-  statLbl: {
-    fontSize: 10,
-    color: "rgba(255,255,255,0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "0.07em",
-  },
-  chartBox: {
-    background: "rgba(139,0,0,0.08)",
-    border: "1px solid rgba(139,0,0,0.18)",
-    borderRadius: 14,
-    padding: 16,
-  },
-  chartHeader: {
-    marginBottom: 4,
-  },
-  chartTitle: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "0.07em",
-  },
-  chartVal: {
-    fontSize: 22,
-    fontWeight: 500,
-    color: "#fff",
-  },
-  chartChange: {
-    fontSize: 11,
-    color: "#4caf7d",
-    marginBottom: 14,
-  },
-  bars: {
-    display: "flex",
-    alignItems: "flex-end",
-    gap: 5,
-    height: 64,
-  },
-  bar: {
-    flex: 1,
-    borderRadius: "4px 4px 0 0",
-    transition: "background 0.2s",
-  },
-  sparkBox: {
-    background: "rgba(139,0,0,0.08)",
-    border: "1px solid rgba(139,0,0,0.18)",
-    borderRadius: 14,
-    padding: 16,
-  },
-  sparkLabel: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
-    textTransform: "uppercase",
-    letterSpacing: "0.07em",
-    marginBottom: 10,
-  },
-  sparkRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  sparkBig: {
-    fontSize: 20,
-    fontWeight: 500,
-    color: "#fff",
-  },
-  sparkSub: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.3)",
-    marginTop: 2,
-  },
-  notice: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    background: "rgba(139,0,0,0.1)",
-    border: "1px solid rgba(139,0,0,0.2)",
-    borderRadius: 10,
-    padding: "10px 12px",
-    marginTop: "auto",
-  },
-  noticeText: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.35)",
-    lineHeight: 1.5,
-  },
-};
