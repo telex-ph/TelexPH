@@ -1,9 +1,17 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useDarkMode } from '../../layout'
 
+// ── API Config ─────────────────────────────────────────────────────────────────
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+
 // ── Types ──────────────────────────────────────────────────────────────────────
+type FormSection = {
+  topic: string
+  content: string
+}
+
 type CaseStudyRecord = {
   _id: string
   title: string
@@ -12,12 +20,11 @@ type CaseStudyRecord = {
   status: string
   tags: string[]
   start: string
+  end: string
   cover: string
-}
-
-type FormSection = {
-  topic: string
-  content: string
+  challenge: string
+  solution: string
+  sections: FormSection[]
 }
 
 type FormData = {
@@ -41,13 +48,37 @@ const PLACEHOLDER_COVERS = [
   'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80',
 ]
 
-// ── Mock data ──────────────────────────────────────────────────────────────────
-const MOCK_RECORDS: CaseStudyRecord[] = [
-  { _id: '1', title: 'AI in Healthcare',        subtitle: 'How AI transforms patient care',               author: 'Dr. Smith', status: 'Active',    tags: ['AI', 'Healthcare', 'Technology'], start: '2026-02-10', cover: PLACEHOLDER_COVERS[0] },
-  { _id: '2', title: 'Blockchain Supply Chain',  subtitle: 'Decentralized logistics',                     author: 'Jane Doe',  status: 'Completed', tags: ['Blockchain', 'Logistics'],        start: '2026-02-15', cover: PLACEHOLDER_COVERS[1] },
-  { _id: '3', title: 'Remote Work Analytics',    subtitle: 'Measuring productivity in distributed teams', author: 'Bob Lee',   status: 'Draft',     tags: ['Analytics', 'Remote'],            start: '',           cover: PLACEHOLDER_COVERS[2] },
-  { _id: '4', title: 'Green Energy Systems',     subtitle: 'Renewable integration case',                  author: 'Alice K.',  status: 'Scheduled', tags: ['Energy', 'Sustainability'],       start: '2026-03-01', cover: PLACEHOLDER_COVERS[3] },
-]
+// ── Transform backend data to CaseStudyRecord format ──────────────────────────
+const transformBackendRecord = (item: any): CaseStudyRecord => ({
+  _id: item._id,
+  title: item.title || '',
+  subtitle: item.subtitle || '',
+  author: item.author || '',
+  status: item.status
+    ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
+    : 'Draft',
+  tags: Array.isArray(item.tags) ? item.tags : [],
+  start: item.startDate
+    ? new Date(item.startDate).toISOString().split('T')[0]
+    : '',
+  end: item.endDate
+    ? new Date(item.endDate).toISOString().split('T')[0]
+    : '',
+  cover: item.cover || '',
+  // challenge and solution are arrays of { title, text } — extract the text
+  challenge: Array.isArray(item.challenge)
+    ? item.challenge.map((c: any) => c.text || '').join('\n\n')
+    : item.challenge || '',
+  solution: Array.isArray(item.solution)
+    ? item.solution.map((s: any) => s.text || '').join('\n\n')
+    : item.solution || '',
+  sections: Array.isArray(item.sections)
+    ? item.sections.map((s: any) => ({
+        topic: s.subtitle || s.title || s.topic || s.heading || '',
+        content: s.text || s.content || s.body || s.description || '',
+      }))
+    : [{ topic: '', content: '' }],
+})
 
 const STATUS_OPTIONS   = ['Active', 'Draft', 'Completed', 'Scheduled']
 const CATEGORY_OPTIONS = ['Technology', 'Healthcare', 'Finance', 'Marketing', 'Operations', 'Research', 'Design', 'Analytics']
@@ -116,135 +147,31 @@ const StatTile = ({ label, count, gradient, gradientLight, accentColor, accentCo
       minHeight: 130,
     }}
   >
-    {/* Layered papercut blobs — flowing in from the right side */}
     <svg
       viewBox="0 0 300 140"
       xmlns="http://www.w3.org/2000/svg"
-      style={{
-        position: 'absolute',
-        top: 0, left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-      }}
+      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
       preserveAspectRatio="none"
     >
-      {/* Back layer — furthest right, most transparent */}
-      <path
-        d="M300,0 L300,140 C280,140 260,120 255,95 C250,70 265,45 260,20 C257,8 300,0 300,0 Z"
-        fill={dark ? accentColor : accentColorLight}
-        opacity="0.10"
-      />
-      {/* Layer 2 */}
-      <path
-        d="M300,0 L300,140 C270,140 240,115 232,82 C224,50 242,22 235,5 C300,0 300,0 300,0 Z"
-        fill={dark ? accentColor : accentColorLight}
-        opacity="0.14"
-      />
-      {/* Layer 3 */}
-      <path
-        d="M300,0 L300,140 C255,140 215,108 205,70 C195,32 218,8 208,0 Z"
-        fill={dark ? accentColor : accentColorLight}
-        opacity="0.18"
-      />
-      {/* Layer 4 */}
-      <path
-        d="M300,0 L300,140 C238,140 190,100 178,58 C166,16 192,0 182,0 Z"
-        fill={dark ? accentColor : accentColorLight}
-        opacity="0.22"
-      />
-      {/* Front layer — closest, most opaque */}
-      <path
-        d="M300,0 L300,140 C220,140 165,92 152,48 C142,14 165,0 155,0 Z"
-        fill={dark ? accentColor : accentColorLight}
-        opacity="0.28"
-      />
+      <path d="M300,0 L300,140 C280,140 260,120 255,95 C250,70 265,45 260,20 C257,8 300,0 300,0 Z" fill={dark ? accentColor : accentColorLight} opacity="0.10" />
+      <path d="M300,0 L300,140 C270,140 240,115 232,82 C224,50 242,22 235,5 C300,0 300,0 300,0 Z" fill={dark ? accentColor : accentColorLight} opacity="0.14" />
+      <path d="M300,0 L300,140 C255,140 215,108 205,70 C195,32 218,8 208,0 Z" fill={dark ? accentColor : accentColorLight} opacity="0.18" />
+      <path d="M300,0 L300,140 C238,140 190,100 178,58 C166,16 192,0 182,0 Z" fill={dark ? accentColor : accentColorLight} opacity="0.22" />
+      <path d="M300,0 L300,140 C220,140 165,92 152,48 C142,14 165,0 155,0 Z" fill={dark ? accentColor : accentColorLight} opacity="0.28" />
     </svg>
-
-    {/* Gradient bottom border — accent color only */}
-    <div style={{
-      position: 'absolute',
-      bottom: 0, left: 0, right: 0,
-      height: 4,
-      borderRadius: '0 0 20px 20px',
-      background: dark
-        ? `linear-gradient(to right, ${accentColor}ff, ${accentColor}33)`
-        : `linear-gradient(to right, ${accentColorLight}cc, ${accentColorLight}11)`,
-    }} />
-
-    {/* Top row: label + icon */}
+    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, borderRadius: '0 0 20px 20px', background: dark ? `linear-gradient(to right, ${accentColor}ff, ${accentColor}33)` : `linear-gradient(to right, ${accentColorLight}cc, ${accentColorLight}11)` }} />
     <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-      <p style={{
-        fontSize: 9,
-        fontWeight: 700,
-        letterSpacing: '0.13em',
-        textTransform: 'uppercase' as const,
-        margin: 0,
-        color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)',
-        fontFamily: "'Poppins', sans-serif",
-      }}>
-        {label}
-      </p>
-      <div style={{
-        width: 38,
-        height: 38,
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.75)',
-        backdropFilter: 'blur(6px)',
-        border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.9)',
-        color: dark ? accentColor : accentColorLight,
-        flexShrink: 0,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-      }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d={iconPath} />
-        </svg>
+      <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.13em', textTransform: 'uppercase' as const, margin: 0, color: dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)', fontFamily: "'Poppins', sans-serif" }}>{label}</p>
+      <div style={{ width: 38, height: 38, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.75)', backdropFilter: 'blur(6px)', border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.9)', color: dark ? accentColor : accentColorLight, flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={iconPath} /></svg>
       </div>
     </div>
-
-    {/* Count */}
-    <p style={{
-      position: 'relative',
-      fontSize: 34,
-      fontWeight: 700,
-      margin: '0 0 14px',
-      lineHeight: 1,
-      color: dark ? '#ffffff' : '#111827',
-      fontFamily: "'Poppins', sans-serif",
-      letterSpacing: '-0.02em',
-    }}>
-      {count}
-    </p>
-
-    {/* Change row */}
+    <p style={{ position: 'relative', fontSize: 34, fontWeight: 700, margin: '0 0 14px', lineHeight: 1, color: dark ? '#ffffff' : '#111827', fontFamily: "'Poppins', sans-serif", letterSpacing: '-0.02em' }}>{count}</p>
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 3,
-        fontSize: 10,
-        fontWeight: 600,
-        padding: '3px 9px',
-        borderRadius: 20,
-        background: dark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.65)',
-        backdropFilter: 'blur(4px)',
-        border: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.9)',
-        color: changeUp ? (dark ? '#34d399' : '#059669') : (dark ? '#f87171' : '#dc2626'),
-        fontFamily: "'Poppins', sans-serif",
-      }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, fontWeight: 600, padding: '3px 9px', borderRadius: 20, background: dark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.65)', backdropFilter: 'blur(4px)', border: dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(255,255,255,0.9)', color: changeUp ? (dark ? '#34d399' : '#059669') : (dark ? '#f87171' : '#dc2626'), fontFamily: "'Poppins', sans-serif" }}>
         {changeUp ? '↑' : '↓'} {change.split(' ')[0]}
       </span>
-      <span style={{
-        fontSize: 10,
-        fontWeight: 400,
-        color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.38)',
-        fontFamily: "'Poppins', sans-serif",
-      }}>
-        vs last month
-      </span>
+      <span style={{ fontSize: 10, fontWeight: 400, color: dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.38)', fontFamily: "'Poppins', sans-serif" }}>vs last month</span>
     </div>
   </div>
 )
@@ -276,17 +203,7 @@ const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, textMuted
           const ds = dateStr(d)
           const hasEv = records.some(r => r.start === ds)
           return (
-            <div
-              key={i}
-              onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()}
-              style={{
-                aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                fontSize: 10, borderRadius: 8, cursor: 'pointer', fontWeight: isToday ? 700 : 400,
-                background: isToday ? '#800000' : 'transparent',
-                color: isToday ? '#fff' : textMuted,
-                fontFamily: "'Poppins', sans-serif", gap: 2,
-              }}
-            >
+            <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontSize: 10, borderRadius: 8, cursor: 'pointer', fontWeight: isToday ? 700 : 400, background: isToday ? '#800000' : 'transparent', color: isToday ? '#fff' : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
               {d}
               {hasEv && <div style={{ width: 4, height: 4, borderRadius: '50%', background: isToday ? 'rgba(255,255,255,0.8)' : '#3b82f6' }} />}
             </div>
@@ -322,12 +239,8 @@ const ConfirmModal = ({ isOpen, isEdit, isLoading, onClose, onConfirm, cardBg, b
   return (
     <Backdrop>
       <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: '32px 28px', maxWidth: 420, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', fontFamily: "'Poppins', sans-serif" }}>
-        <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>
-          {isEdit ? 'Update case study?' : 'Create case study?'}
-        </h3>
-        <p style={{ fontSize: 12, color: textMuted, margin: '0 0 28px', fontFamily: "'Poppins', sans-serif" }}>
-          {isEdit ? 'Save the changes to this case study?' : 'Are you sure you want to create this case study?'}
-        </p>
+        <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>{isEdit ? 'Update case study?' : 'Create case study?'}</h3>
+        <p style={{ fontSize: 12, color: textMuted, margin: '0 0 28px', fontFamily: "'Poppins', sans-serif" }}>{isEdit ? 'Save the changes to this case study?' : 'Are you sure you want to create this case study?'}</p>
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
           <button onClick={onConfirm} disabled={isLoading} style={{ flex: 2, padding: '11px 0', borderRadius: 12, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: isLoading ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
@@ -362,10 +275,10 @@ const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm, card
   )
 }
 
+// ── UPDATED PreviewModal — now shows challenge, solution, endDate, sections ────
 const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }: {
   isOpen: boolean; data: CaseStudyRecord | null; allRecords: CaseStudyRecord[]; onClose: () => void; onEdit: (r: CaseStudyRecord) => void
-  closeLabel?: string
-  cardBg: string; borderColor: string; textPrimary: string; textMuted: string; textSecondary: string; subtleBg: string
+  closeLabel?: string; cardBg: string; borderColor: string; textPrimary: string; textMuted: string; textSecondary: string; subtleBg: string
 }) => {
   if (!isOpen || !data) return null
   const st = getStatusStyle(data.status)
@@ -383,6 +296,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
           </div>
         </div>
         <div style={{ padding: '22px 26px 30px' }}>
+          {/* Title + Status */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
             <div>
               <h2 style={{ fontSize: 19, fontWeight: 700, color: textPrimary, margin: '0 0 5px', fontFamily: "'Poppins', sans-serif" }}>{data.title}</h2>
@@ -390,13 +304,63 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
             </div>
             <span style={{ fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{data.status}</span>
           </div>
+
+          {/* Author */}
           <p style={{ fontSize: 12, color: textMuted, margin: '0 0 16px', fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.author}</strong></p>
+
+          {/* Tags */}
           {data.tags.length > 0 && (
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' as const, marginBottom: 16 }}>
               {data.tags.map(t => <span key={t} style={{ fontSize: 10, padding: '3px 11px', borderRadius: 20, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
             </div>
           )}
-          {data.start && <p style={{ fontSize: 11, color: textMuted, margin: '0 0 22px', fontFamily: "'Poppins', sans-serif" }}>📅 Started: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.start}</strong></p>}
+
+          {/* Dates */}
+          <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' as const }}>
+            {data.start && (
+              <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
+                📅 Started: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.start}</strong>
+              </p>
+            )}
+            {data.end && (
+              <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
+                🏁 Ended: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.end}</strong>
+              </p>
+            )}
+          </div>
+
+          {/* Challenge */}
+          {data.challenge && (
+            <div style={{ marginBottom: 14, padding: '12px 14px', borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#800000', margin: '0 0 5px', textTransform: 'uppercase' as const, letterSpacing: '0.07em', fontFamily: "'Poppins', sans-serif" }}>Challenge</p>
+              <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{data.challenge}</p>
+            </div>
+          )}
+
+          {/* Solution */}
+          {data.solution && (
+            <div style={{ marginBottom: 14, padding: '12px 14px', borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#059669', margin: '0 0 5px', textTransform: 'uppercase' as const, letterSpacing: '0.07em', fontFamily: "'Poppins', sans-serif" }}>Solution</p>
+              <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{data.solution}</p>
+            </div>
+          )}
+
+          {/* Content Sections */}
+          {data.sections && data.sections.some(s => s.topic || s.content) && (
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: textSecondary, margin: '0 0 10px', textTransform: 'uppercase' as const, letterSpacing: '0.07em', fontFamily: "'Poppins', sans-serif" }}>Content</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {data.sections.filter(s => s.topic || s.content).map((s, i) => (
+                  <div key={i} style={{ padding: '10px 14px', borderRadius: 10, background: subtleBg, border: `1px solid ${borderColor}` }}>
+                    {s.topic && <p style={{ fontSize: 12, fontWeight: 600, color: textSecondary, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>{s.topic}</p>}
+                    {s.content && <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{s.content}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={onClose} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>{closeLabel || 'Close'}</button>
             <button onClick={() => { onEdit(data); onClose() }} style={{ flex: 2, padding: '11px 0', borderRadius: 12, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Edit this study</button>
@@ -422,7 +386,6 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
   const dateStr = (d: number) => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
   const monthPrefix = `${y}-${String(m + 1).padStart(2, '0')}`
   const monthEvents = records.filter(r => r.start.startsWith(monthPrefix))
-
   return (
     <Backdrop>
       <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 560, width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.28)', overflow: 'hidden', fontFamily: "'Poppins', sans-serif" }}>
@@ -453,10 +416,7 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
               const ds = dateStr(d)
               const evs = records.filter(r => r.start === ds)
               return (
-                <div key={i} onClick={() => evs.length ? onDateClick(ds) : undefined}
-                  style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: evs.length ? 'pointer' : 'default', gap: 2,
-                    background: isToday ? '#800000' : subtleBg,
-                    border: isToday ? 'none' : `1px solid transparent` }}>
+                <div key={i} onClick={() => evs.length ? onDateClick(ds) : undefined} style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 10, cursor: evs.length ? 'pointer' : 'default', gap: 2, background: isToday ? '#800000' : subtleBg, border: isToday ? 'none' : `1px solid transparent` }}>
                   <span style={{ fontSize: 12, fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : textMuted, fontFamily: "'Poppins', sans-serif" }}>{d}</span>
                   {evs.length > 0 && <div style={{ width: 4, height: 4, borderRadius: '50%', background: isToday ? 'rgba(255,255,255,0.8)' : '#3b82f6', marginTop: 1 }} />}
                 </div>
@@ -510,8 +470,7 @@ const DateModal = ({ isOpen, dateStr, studies, onClose, onSelectStudy, cardBg, b
           {studies.map(r => {
             const st = getStatusStyle(r.status)
             return (
-              <div key={r._id} style={{ padding: '12px 14px', borderRadius: 14, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer' }}
-                onClick={() => { onSelectStudy(r); onClose() }}>
+              <div key={r._id} style={{ padding: '12px 14px', borderRadius: 14, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer' }} onClick={() => { onSelectStudy(r); onClose() }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
@@ -552,7 +511,29 @@ export default function CaseStudies() {
   const inputBg       = dark ? '#161616'                      : '#ffffff'
   const hoverBg       = dark ? 'rgba(255,255,255,0.04)'       : 'rgba(0,0,0,0.02)'
 
-  const [records, setRecords] = useState<CaseStudyRecord[]>(MOCK_RECORDS)
+  const [records, setRecords] = useState<CaseStudyRecord[]>([])
+  const [isFetchingRecords, setIsFetchingRecords] = useState(true)
+
+  const fetchRecords = async () => {
+    try {
+      setIsFetchingRecords(true)
+      const res = await fetch(`${API_BASE_URL}/api/casestudies`, {
+        credentials: 'include',
+      })
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = await res.json()
+      setRecords(data.map(transformBackendRecord))
+    } catch (err) {
+      console.error('Error fetching case studies:', err)
+    } finally {
+      setIsFetchingRecords(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchRecords()
+  }, [])
+
   const [form, setForm] = useState<FormData>({ ...DEFAULT_FORM })
   const [coverPreview, setCoverPreview] = useState<string>('')
   const [dragOver, setDragOver] = useState(false)
@@ -565,8 +546,28 @@ export default function CaseStudies() {
   const [showCalendar, setShowCalendar]   = useState(false)
   const [showDateModal, setShowDateModal] = useState(false)
 
-  const [isLoading, setIsLoading]   = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isLoading, setIsLoading]     = useState(false)
+  const [isDeleting, setIsDeleting]   = useState(false)
+  const [isFetchingFull, setIsFetchingFull] = useState(false)
+
+  // ── Fetch full single record from /api/casestudies/:id ────────────────────
+  const fetchFullRecord = async (id: string): Promise<CaseStudyRecord | null> => {
+    try {
+      setIsFetchingFull(true)
+      const res = await fetch(`${API_BASE_URL}/api/casestudies/${id}`, {
+        credentials: 'include',
+      })
+      if (!res.ok) throw new Error('Failed to fetch record')
+      const data = await res.json()
+      console.log('Full record from API:', data) // helpful for debugging field names
+      return transformBackendRecord(data)
+    } catch (err) {
+      console.error('Error fetching full record:', err)
+      return null
+    } finally {
+      setIsFetchingFull(false)
+    }
+  }
 
   const [previewData, setPreviewData]                 = useState<CaseStudyRecord | null>(null)
   const [deleteTarget, setDeleteTarget]               = useState<CaseStudyRecord | null>(null)
@@ -598,9 +599,10 @@ export default function CaseStudies() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  const [hoveredEvent, setHoveredEvent] = useState<{ record: CaseStudyRecord; x: number; y: number } | null>(null)
 
+  const [hoveredEvent, setHoveredEvent] = useState<{ record: CaseStudyRecord; x: number; y: number } | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
+
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3000)
@@ -657,65 +659,112 @@ export default function CaseStudies() {
     transition: 'border-color .15s', fontFamily: "'Poppins', sans-serif", ...overrides,
   })
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.title.trim() || !form.author.trim()) {
       showToast('Title and Author are required.', 'error')
       setShowConfirm(false)
       return
     }
+
     setIsLoading(true)
-    setTimeout(() => {
-      const newIdx = records.length % PLACEHOLDER_COVERS.length
-      const record: CaseStudyRecord = {
-        _id: editingId || String(Date.now()),
-        title: form.title, subtitle: form.subtitle, author: form.author,
-        status: form.status, tags: form.tags, start: form.startDate,
-        cover: coverPreview || PLACEHOLDER_COVERS[newIdx],
+
+    try {
+      const formDataToSend = new FormData()
+      formDataToSend.append('title', form.title)
+      if (form.subtitle) formDataToSend.append('subtitle', form.subtitle)
+      formDataToSend.append('author', form.author)
+      formDataToSend.append('status', form.status.toLowerCase())
+      if (form.tags.length > 0) formDataToSend.append('tags', form.tags.map(t => t.toLowerCase()).join(','))
+      if (form.startDate) formDataToSend.append('startDate', form.startDate)
+      if (form.endDate) formDataToSend.append('endDate', form.endDate)
+      formDataToSend.append('challenge', form.challenge)
+      formDataToSend.append('solution', form.solution)
+      form.sections.forEach((s, i) => {
+        formDataToSend.append(`subtitle${i}`, s.topic)
+        formDataToSend.append(`text${i}`, s.content)
+      })
+      if (fileRef.current?.files?.[0]) {
+        formDataToSend.append('cover', fileRef.current.files[0])
       }
-      if (isEditMode && editingId) {
-        setRecords(prev => prev.map(r => r._id === editingId ? record : r))
-        showToast('Case study updated!', 'success')
-      } else {
-        setRecords(prev => [record, ...prev])
-        showToast('Case study created!', 'success')
+
+      const url = isEditMode && editingId
+        ? `${API_BASE_URL}/api/casestudies/${editingId}`
+        : `${API_BASE_URL}/api/casestudies`
+      const method = isEditMode ? 'PATCH' : 'POST'
+
+      const res = await fetch(url, { method, body: formDataToSend, credentials: 'include' })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Failed to save')
       }
-      setIsLoading(false)
+
+      showToast(isEditMode ? 'Case study updated!' : 'Case study created!', 'success')
+      await fetchRecords()
       setShowConfirm(false)
-      // Redirect back to where the edit was triggered from
       const goBack = returnTo
       resetForm()
       if (goBack === 'calendar') {
         setShowCalendarPage(true)
         setShowFormOnly(false)
       }
-    }, 800)
+    } catch (err: any) {
+      showToast(err.message || 'Something went wrong', 'error')
+      setShowConfirm(false)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleEdit = (r: CaseStudyRecord, from: 'main' | 'calendar' = 'main') => {
+  // ── handleView — fetches full record then opens PreviewModal ─────────────
+  const handleView = async (r: CaseStudyRecord) => {
+    const full = await fetchFullRecord(r._id)
+    setPreviewData(full ?? r) // fallback to list data if fetch fails
+    setShowPreview(true)
+  }
+
+  // ── handleEdit — fetches full record then populates form ──────────────────
+  const handleEdit = async (r: CaseStudyRecord, from: 'main' | 'calendar' = 'main') => {
+    const full = await fetchFullRecord(r._id)
+    const data = full ?? r // fallback to list data if fetch fails
     setForm({
-      title: r.title, subtitle: r.subtitle, author: r.author,
-      status: r.status, tags: r.tags, startDate: r.start, endDate: '',
-      challenge: '', solution: '', sections: [{ topic: '', content: '' }],
+      title: data.title,
+      subtitle: data.subtitle,
+      author: data.author,
+      status: data.status,
+      tags: data.tags,
+      startDate: data.start,
+      endDate: data.end,
+      challenge: data.challenge,
+      solution: data.solution,
+      sections: data.sections.length > 0 ? data.sections : [{ topic: '', content: '' }],
     })
-    setCoverPreview(r.cover)
+    setCoverPreview(data.cover)
     setIsEditMode(true)
-    setEditingId(r._id)
+    setEditingId(data._id)
     setShowFormOnly(true)
     setShowCalendarPage(false)
     setReturnTo(from)
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!deleteTarget) return
     setIsDeleting(true)
-    setTimeout(() => {
-      setRecords(prev => prev.filter(r => r._id !== deleteTarget._id))
-      showToast('Case study deleted.', 'success')
-      setIsDeleting(false)
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/casestudies/${deleteTarget._id}/archive`, {
+        method: 'PATCH',
+        credentials: 'include',
+      })
+      if (!res.ok) throw new Error('Failed to archive')
+      showToast('Case study archived.', 'success')
+      await fetchRecords()
       setShowDelete(false)
       setDeleteTarget(null)
-    }, 600)
+    } catch (err) {
+      showToast('Failed to archive case study.', 'error')
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   const handleDayClick = (ds: string) => {
@@ -761,52 +810,11 @@ export default function CaseStudies() {
   }
   const modalTheme = { cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg }
 
-  // ── Stat tile configs — mirrors admin dashboard performance card meta ────────
   const statTileConfigs = [
-    {
-      label: 'Active',
-      count: counts.Active,
-      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)',
-      gradientLight: 'linear-gradient(150deg, #c8dcff 0%, #dbeafe 50%, #bdd3ff 100%)',
-      accentColor: '#60a5fa',
-      accentColorLight: '#1d4ed8',
-      iconPath: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-      change: '+12.5% from Last Month',
-      changeUp: true,
-    },
-    {
-      label: 'Done',
-      count: counts.Completed,
-      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #1e1b4b 60%, #312e81 100%)',
-      gradientLight: 'linear-gradient(150deg, #d8ccff 0%, #e9d5ff 50%, #d4bfff 100%)',
-      accentColor: '#a78bfa',
-      accentColorLight: '#6d28d9',
-      iconPath: 'M5 13l4 4L19 7',
-      change: '+8.2% from Last Month',
-      changeUp: true,
-    },
-    {
-      label: 'Draft',
-      count: counts.Draft,
-      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #1c1917 60%, #292524 100%)',
-      gradientLight: 'linear-gradient(150deg, #ffd8a8 0%, #ffedd5 50%, #fecb8a 100%)',
-      accentColor: '#fb923c',
-      accentColorLight: '#c2410c',
-      iconPath: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
-      change: '-3.1% from Last Month',
-      changeUp: false,
-    },
-    {
-      label: 'Schedule',
-      count: counts.Scheduled,
-      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #14532d 60%, #166534 100%)',
-      gradientLight: 'linear-gradient(150deg, #a8f0cc 0%, #dcfce7 50%, #90eabc 100%)',
-      accentColor: '#4ade80',
-      accentColorLight: '#15803d',
-      iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-      change: '+15.3% from Last Month',
-      changeUp: true,
-    },
+    { label: 'Active', count: counts.Active, gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)', gradientLight: 'linear-gradient(150deg, #c8dcff 0%, #dbeafe 50%, #bdd3ff 100%)', accentColor: '#60a5fa', accentColorLight: '#1d4ed8', iconPath: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', change: '+12.5% from Last Month', changeUp: true },
+    { label: 'Done', count: counts.Completed, gradient: 'linear-gradient(135deg, #1a1a2e 0%, #1e1b4b 60%, #312e81 100%)', gradientLight: 'linear-gradient(150deg, #d8ccff 0%, #e9d5ff 50%, #d4bfff 100%)', accentColor: '#a78bfa', accentColorLight: '#6d28d9', iconPath: 'M5 13l4 4L19 7', change: '+8.2% from Last Month', changeUp: true },
+    { label: 'Draft', count: counts.Draft, gradient: 'linear-gradient(135deg, #1a1a2e 0%, #1c1917 60%, #292524 100%)', gradientLight: 'linear-gradient(150deg, #ffd8a8 0%, #ffedd5 50%, #fecb8a 100%)', accentColor: '#fb923c', accentColorLight: '#c2410c', iconPath: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', change: '-3.1% from Last Month', changeUp: false },
+    { label: 'Schedule', count: counts.Scheduled, gradient: 'linear-gradient(135deg, #1a1a2e 0%, #14532d 60%, #166534 100%)', gradientLight: 'linear-gradient(150deg, #a8f0cc 0%, #dcfce7 50%, #90eabc 100%)', accentColor: '#4ade80', accentColorLight: '#15803d', iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', change: '+15.3% from Last Month', changeUp: true },
   ]
 
   return (
@@ -826,8 +834,6 @@ export default function CaseStudies() {
         .stat-tile:hover { transform: translateY(-2px); }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
-
-        /* ── MOBILE RESPONSIVE ── */
         @media (max-width: 768px) {
           .cs-page-wrap { padding: 16px 12px !important; }
           .cs-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
@@ -853,48 +859,22 @@ export default function CaseStudies() {
           .cs-cell-events { display: flex; flex-direction: column; gap: 3; width: 100%; }
           .cs-cell-avatars { display: flex; align-items: center; }
           .cs-cell-dot { display: none; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: #3b82f6; }
-          @media (max-width: 768px) {
-            .cs-cell-events { display: none !important; }
-            .cs-cell-avatars { display: none !important; }
-            .cs-cell-dot { display: block !important; }
-            .cs-cell-dot-today { background: rgba(255,255,255,0.85) !important; }
-            .cs-cal-cell { height: 44px !important; min-height: 44px !important; max-height: 44px !important; overflow: hidden !important; position: relative !important; align-items: center !important; justify-content: center !important; flex-direction: row !important; padding: 0 !important; }
-            .cs-cal-cell > span { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; margin: 0 !important; }
-            .cs-cal-grid > div { height: 44px !important; min-height: 44px !important; max-height: 44px !important; }
-            .cs-events-panel-desktop { display: none !important; }
-          }
-          @media (min-width: 769px) {
-            .cs-events-panel-desktop { display: flex !important; }
-            .cs-bottomsheet-overlay { display: none !important; }
-          }
-          /* Mobile event modal */
-          .cs-bottomsheet-overlay {
-            position: fixed; inset: 0; z-index: 1000;
-            background: rgba(0,0,0,0.45);
-            display: none;
-            align-items: center; justify-content: center;
-            padding: 20px;
-          }
-          .cs-bottomsheet-overlay.active {
-            display: flex;
-          }
-          @media (min-width: 769px) {
-            .cs-bottomsheet-overlay { display: none !important; }
-          }
-          @media (max-width: 768px) {
-            .cs-bottomsheet-overlay.active { display: flex; }
-          }
-          .cs-bottomsheet {
-            width: 100%; max-width: 420px; max-height: 80vh;
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            animation: modalIn .22s cubic-bezier(.32,1.1,.6,1) both;
-          }
-          @keyframes modalIn {
-            from { transform: scale(0.93); opacity: 0; }
-            to   { transform: scale(1);    opacity: 1; }
-          }
+          .cs-cell-events { display: none !important; }
+          .cs-cell-avatars { display: none !important; }
+          .cs-cell-dot { display: block !important; }
+          .cs-cell-dot-today { background: rgba(255,255,255,0.85) !important; }
+          .cs-cal-cell { height: 44px !important; min-height: 44px !important; max-height: 44px !important; overflow: hidden !important; position: relative !important; align-items: center !important; justify-content: center !important; flex-direction: row !important; padding: 0 !important; }
+          .cs-cal-cell > span { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; margin: 0 !important; }
+          .cs-cal-grid > div { height: 44px !important; min-height: 44px !important; max-height: 44px !important; }
+          .cs-events-panel-desktop { display: none !important; }
+          .cs-bottomsheet-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; padding: 20px; }
+          .cs-bottomsheet-overlay.active { display: flex; }
+          .cs-bottomsheet { width: 100%; max-width: 420px; max-height: 80vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; animation: modalIn .22s cubic-bezier(.32,1.1,.6,1) both; }
+          @keyframes modalIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        }
+        @media (min-width: 769px) {
+          .cs-events-panel-desktop { display: flex !important; }
+          .cs-bottomsheet-overlay { display: none !important; }
         }
         @media (max-width: 480px) {
           .cs-stat-grid { grid-template-columns: 1fr !important; }
@@ -905,42 +885,14 @@ export default function CaseStudies() {
 
       {toast && <Toast message={toast.msg} type={toast.type} />}
 
-      {/* ── EVENT TOOLTIP BUBBLE ─────────────────────────────────────────── */}
       {hoveredEvent && (() => {
         const { record: r, x, y } = hoveredEvent
         const st = getStatusStyle(r.status)
         return (
-          <div style={{
-            position: 'fixed',
-            left: x, top: y - 8,
-            transform: 'translateX(-50%) translateY(-100%)',
-            zIndex: 3000,
-            background: dark ? '#1e1e1e' : '#ffffff',
-            border: `1px solid ${borderColor}`,
-            borderRadius: 14,
-            padding: '12px 14px',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-            minWidth: 200, maxWidth: 260,
-            pointerEvents: 'none',
-            fontFamily: "'Poppins', sans-serif",
-          }}>
-            {/* Bubble tail */}
-            <div style={{
-              position: 'absolute',
-              bottom: -7, left: '50%',
-              transform: 'translateX(-50%)',
-              width: 14, height: 7,
-              overflow: 'hidden',
-            }}>
-              <div style={{
-                width: 12, height: 12,
-                background: dark ? '#1e1e1e' : '#ffffff',
-                border: `1px solid ${borderColor}`,
-                transform: 'rotate(45deg)',
-                margin: '-6px auto 0',
-              }} />
+          <div style={{ position: 'fixed', left: x, top: y - 8, transform: 'translateX(-50%) translateY(-100%)', zIndex: 3000, background: dark ? '#1e1e1e' : '#ffffff', border: `1px solid ${borderColor}`, borderRadius: 14, padding: '12px 14px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', minWidth: 200, maxWidth: 260, pointerEvents: 'none', fontFamily: "'Poppins', sans-serif" }}>
+            <div style={{ position: 'absolute', bottom: -7, left: '50%', transform: 'translateX(-50%)', width: 14, height: 7, overflow: 'hidden' }}>
+              <div style={{ width: 12, height: 12, background: dark ? '#1e1e1e' : '#ffffff', border: `1px solid ${borderColor}`, transform: 'rotate(45deg)', margin: '-6px auto 0' }} />
             </div>
-            {/* Content */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", lineHeight: 1.3 }}>{r.title}</p>
               <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
@@ -959,74 +911,36 @@ export default function CaseStudies() {
         )
       })()}
 
+      {isFetchingFull && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.48)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, fontFamily: "'Poppins', sans-serif" }}>
+          <div style={{ background: cardBg, borderRadius: 20, padding: '28px 36px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, border: `1px solid ${borderColor}`, boxShadow: '0 24px 64px rgba(0,0,0,0.28)' }}>
+            <div style={{ width: 28, height: 28, border: '3px solid #e5e7eb', borderTopColor: '#800000', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <p style={{ fontSize: 13, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Loading case study...</p>
+          </div>
+        </div>
+      )}
       <ConfirmModal   isOpen={showConfirm}   isEdit={isEditMode} isLoading={isLoading}  onClose={() => setShowConfirm(false)}   onConfirm={handleSubmit}       {...modalTheme} />
       <DeleteModal    isOpen={showDelete}    isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
       <PreviewModal   isOpen={showPreview}   data={previewData}  allRecords={records} onClose={() => { setShowPreview(false); if (selectedDate) setShowBottomSheet(true) }}  onEdit={(r) => handleEdit(r, showCalendarPage ? 'calendar' : 'main')} closeLabel={selectedDate ? '← Back to events' : 'Close'} {...modalTheme} />
       <CalendarModal  isOpen={showCalendar}  records={records}   selectedMonthIndex={selectedMonthIndex} onClose={() => setShowCalendar(false)} onMonthChange={setSelectedMonthIndex} onDateClick={handleDayClick} {...modalTheme} />
-      <DateModal      isOpen={showDateModal} dateStr={selectedDate} studies={selectedDateStudies} onClose={() => setShowDateModal(false)} onSelectStudy={(r) => { setPreviewData(r); setShowPreview(true) }} {...modalTheme} />
+      <DateModal      isOpen={showDateModal} dateStr={selectedDate} studies={selectedDateStudies} onClose={() => setShowDateModal(false)} onSelectStudy={(r) => { handleView(r) }} {...modalTheme} />
 
       <div style={{ maxWidth: 1200, margin: '0 auto' }} ref={formRef}>
 
-        {/* ── PAGE HEADER ─────────────────────────────────────────────────── */}
+        {/* PAGE HEADER */}
         <div className="cs-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${borderColor}` }}>
           <div>
-            <h1 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, lineHeight: 1.3, fontFamily: "'Poppins', sans-serif" }}>
-              Case study
-            </h1>
-            <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
-              Manage your case studies / Create, edit, and organize your research projects with ease
-            </p>
+            <h1 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, lineHeight: 1.3, fontFamily: "'Poppins', sans-serif" }}>Case study</h1>
+            <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Manage your case studies / Create, edit, and organize your research projects with ease</p>
           </div>
           {(showFormOnly || showCalendarPage) ? (
-            <button
-              onClick={() => { setShowFormOnly(false); setShowCalendarPage(false); setIsEditMode(false); setEditingId(null); setForm({ ...DEFAULT_FORM }); setCoverPreview('') }}
-              className="cs-header-btn"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '9px 16px',
-                borderRadius: 8,
-                border: `1px solid ${borderColor}`,
-                background: 'transparent',
-                color: textMuted,
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: 'pointer',
-                fontFamily: "'Poppins', sans-serif",
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 5l-7 7 7 7" />
-              </svg>
+            <button onClick={() => { setShowFormOnly(false); setShowCalendarPage(false); setIsEditMode(false); setEditingId(null); setForm({ ...DEFAULT_FORM }); setCoverPreview('') }} className="cs-header-btn" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
               Back to Case Studies
             </button>
           ) : (
-            <button
-              onClick={() => { setIsEditMode(false); setForm(DEFAULT_FORM); setShowFormOnly(true); setShowCalendarPage(false) }}
-              className="cs-header-btn"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '9px 16px',
-                borderRadius: 8,
-                border: 'none',
-                background: '#800000',
-                color: '#fff',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: "'Poppins', sans-serif",
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+            <button onClick={() => { setIsEditMode(false); setForm(DEFAULT_FORM); setShowFormOnly(true); setShowCalendarPage(false) }} className="cs-header-btn" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
               Add Case Study
             </button>
           )}
@@ -1035,47 +949,29 @@ export default function CaseStudies() {
         {/* TOP ROW */}
         {!showFormOnly && !showCalendarPage && (
         <div className="cs-top-row" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16, marginBottom: 16, alignItems: 'stretch' }}>
-
-          {/* Quick Stats — performance card style */}
           <div style={{ ...card, padding: '22px 22px' }}>
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Quick stats</p>
               <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Current system overview and counts</p>
             </div>
-
-            {/* 2×2 stat tiles — same design as admin dashboard performance cards */}
             <div className="cs-stat-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 0 }}>
               {statTileConfigs.map((cfg, idx) => (
                 <div key={idx} className="stat-tile" style={{ transition: 'transform .18s' }}>
-                  <StatTile
-                    label={cfg.label}
-                    count={cfg.count}
-                    gradient={cfg.gradient}
-                    gradientLight={cfg.gradientLight}
-                    accentColor={cfg.accentColor}
-                    accentColorLight={cfg.accentColorLight}
-                    iconPath={cfg.iconPath}
-                    change={cfg.change}
-                    changeUp={cfg.changeUp}
-                    dark={dark}
-                  />
+                  <StatTile label={cfg.label} count={cfg.count} gradient={cfg.gradient} gradientLight={cfg.gradientLight} accentColor={cfg.accentColor} accentColorLight={cfg.accentColorLight} iconPath={cfg.iconPath} change={cfg.change} changeUp={cfg.changeUp} dark={dark} />
                 </div>
               ))}
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, marginTop: 14, borderTop: `1px solid ${borderColor}` }}>
               <div>
                 <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: '0 0 2px', fontFamily: "'Poppins', sans-serif" }}>Total case studies</p>
                 <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>All statuses combined</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                <span style={{ fontSize: 26, fontWeight: 700, color: textPrimary, lineHeight: 1, fontFamily: "'Poppins', sans-serif" }}>{records.length}</span>
+                <span style={{ fontSize: 26, fontWeight: 700, color: textPrimary, lineHeight: 1, fontFamily: "'Poppins', sans-serif" }}>{isFetchingRecords ? '…' : records.length}</span>
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' as const, color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)', fontFamily: "'Poppins', sans-serif" }}>entries</span>
               </div>
             </div>
           </div>
-
-          {/* Timeline & Events */}
           <div style={{ ...card, padding: '22px 22px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
@@ -1083,54 +979,33 @@ export default function CaseStudies() {
                 <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Scheduled activities and research milestones</p>
               </div>
               <button onClick={() => setShowCalendarPage(true)} className="icon-btn" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: textMuted, flexShrink: 0 }}>
-                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />
-                </svg>
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
               </button>
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <MiniCalendar
-                records={records} subtleBg={subtleBg} borderColor={borderColor}
-                textSecondary={textSecondary} textMuted={textMuted}
-                onDayClick={handleDayClick}
-                onOpenCalendar={() => setShowCalendarPage(true)}
-              />
+              <MiniCalendar records={records} subtleBg={subtleBg} borderColor={borderColor} textSecondary={textSecondary} textMuted={textMuted} onDayClick={handleDayClick} onOpenCalendar={() => setShowCalendarPage(true)} />
             </div>
           </div>
         </div>
-        )} {/* end !showFormOnly TOP ROW */}
+        )}
 
-        {/* ── FORM ──────────────────────────────────────────────────────────── */}
+        {/* FORM */}
         {(showFormOnly || isEditMode) && !showCalendarPage && (
         <div style={{ ...card, padding: '22px 22px', marginBottom: 16 }}>
           <div style={{ marginBottom: 18 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-              {isEditMode ? 'Edit case study' : 'Create new case study'}
-            </p>
-            <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
-              {isEditMode ? 'Update the fields below and save your changes' : 'Fill in the details below to add a new case study'}
-            </p>
+            <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{isEditMode ? 'Edit case study' : 'Create new case study'}</p>
+            <p style={{ fontSize: 11, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{isEditMode ? 'Update the fields below and save your changes' : 'Fill in the details below to add a new case study'}</p>
           </div>
-
-          {/* Cover + right */}
           <div className="cs-form-cover-row" style={{ display: 'grid', gridTemplateColumns: '175px 1fr', gap: 14, marginBottom: 13 }}>
             <div>
               <span style={lbl}>Cover image <span style={{ color: '#800000' }}>*</span></span>
-              <div
-                onClick={() => fileRef.current?.click()}
-                onDragOver={e => { e.preventDefault(); setDragOver(true) }}
-                onDragLeave={() => setDragOver(false)}
-                onDrop={e => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]) }}
-                style={{ border: `1.5px dashed ${dragOver ? '#800000' : borderColor}`, borderRadius: 10, cursor: 'pointer', transition: 'all .15s', overflow: 'hidden', height: 150, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: dragOver ? 'rgba(128,0,0,0.04)' : subtleBg, position: 'relative' }}
-              >
+              <div onClick={() => fileRef.current?.click()} onDragOver={e => { e.preventDefault(); setDragOver(true) }} onDragLeave={() => setDragOver(false)} onDrop={e => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]) }} style={{ border: `1.5px dashed ${dragOver ? '#800000' : borderColor}`, borderRadius: 10, cursor: 'pointer', transition: 'all .15s', overflow: 'hidden', height: 150, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: dragOver ? 'rgba(128,0,0,0.04)' : subtleBg, position: 'relative' }}>
                 {coverPreview ? (
                   <img src={coverPreview} alt="cover" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
                 ) : (
                   <>
                     <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(128,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 7 }}>
-                      <svg width="14" height="14" fill="none" stroke="#800000" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <svg width="14" height="14" fill="none" stroke="#800000" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     </div>
                     <p style={{ fontSize: 10, color: textSecondary, margin: 0, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Click to upload</p>
                     <p style={{ fontSize: 9, color: textMuted, margin: '3px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>PNG, JPG, WebP · 10MB</p>
@@ -1139,7 +1014,6 @@ export default function CaseStudies() {
               </div>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFile(e.target.files?.[0])} />
             </div>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div className="cs-form-title-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
@@ -1161,18 +1035,13 @@ export default function CaseStudies() {
                   {STATUS_OPTIONS.map(s => {
                     const st = getStatusStyle(s); const sel = form.status === s
                     return (
-                      <button key={s} className="pill-btn" onClick={() => updateForm('status', s)}
-                        style={{ padding: '5px 12px', borderRadius: 20, border: sel ? st.border : `1px solid ${borderColor}`, background: sel ? st.bg : 'transparent', color: sel ? st.color : textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', fontFamily: "'Poppins', sans-serif" }}>
-                        {s}
-                      </button>
+                      <button key={s} className="pill-btn" onClick={() => updateForm('status', s)} style={{ padding: '5px 12px', borderRadius: 20, border: sel ? st.border : `1px solid ${borderColor}`, background: sel ? st.bg : 'transparent', color: sel ? st.color : textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', fontFamily: "'Poppins', sans-serif" }}>{s}</button>
                     )
                   })}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Categories */}
           <div style={{ marginBottom: 13 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={lbl}>Categories <span style={{ color: '#800000' }}>*</span></span>
@@ -1182,16 +1051,11 @@ export default function CaseStudies() {
               {CATEGORY_OPTIONS.map(t => {
                 const sel = form.tags.includes(t)
                 return (
-                  <button key={t} className="pill-btn" onClick={() => toggleTag(t)}
-                    style={{ padding: '4px 12px', borderRadius: 20, border: sel ? '1px solid rgba(128,0,0,0.3)' : `1px solid ${borderColor}`, background: sel ? 'rgba(128,0,0,0.09)' : subtleBg, color: sel ? '#800000' : textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', fontFamily: "'Poppins', sans-serif" }}>
-                    {t}
-                  </button>
+                  <button key={t} className="pill-btn" onClick={() => toggleTag(t)} style={{ padding: '4px 12px', borderRadius: 20, border: sel ? '1px solid rgba(128,0,0,0.3)' : `1px solid ${borderColor}`, background: sel ? 'rgba(128,0,0,0.09)' : subtleBg, color: sel ? '#800000' : textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', fontFamily: "'Poppins', sans-serif" }}>{t}</button>
                 )
               })}
             </div>
           </div>
-
-          {/* Dates */}
           <div className="cs-form-date-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 13 }}>
             <div>
               <span style={lbl}>Start date <span style={{ color: '#800000' }}>*</span></span>
@@ -1202,8 +1066,6 @@ export default function CaseStudies() {
               <input type="date" style={inp()} value={form.endDate} onChange={e => updateForm('endDate', e.target.value)} />
             </div>
           </div>
-
-          {/* Challenge + Solution */}
           <div className="cs-form-challenge-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 13 }}>
             <div>
               <span style={lbl}>Challenge <span style={{ color: '#800000' }}>*</span></span>
@@ -1214,15 +1076,11 @@ export default function CaseStudies() {
               <textarea style={inp({ minHeight: 72, resize: 'vertical' as const })} placeholder="Describe the solution..." value={form.solution} onChange={e => updateForm('solution', e.target.value)} />
             </div>
           </div>
-
-          {/* Content Sections */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={lbl}>Content sections</span>
               {form.sections.length < 5 && (
-                <button onClick={addSection} style={{ fontSize: 10, color: '#800000', background: 'rgba(128,0,0,0.07)', border: '1px solid rgba(128,0,0,0.2)', borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>
-                  + Add section
-                </button>
+                <button onClick={addSection} style={{ fontSize: 10, color: '#800000', background: 'rgba(128,0,0,0.07)', border: '1px solid rgba(128,0,0,0.2)', borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>+ Add section</button>
               )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1237,28 +1095,16 @@ export default function CaseStudies() {
                     <textarea style={inp({ fontSize: 11, minHeight: 50, resize: 'none' as const })} placeholder={`Content ${i + 1}`} value={s.content} onChange={e => updateSection(i, 'content', e.target.value)} />
                   </div>
                   {form.sections.length > 1 && (
-                    <button onClick={() => removeSection(i)} className="icon-btn"
-                      style={{ marginTop: 21, width: 26, height: 26, borderRadius: 6, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                    <button onClick={() => removeSection(i)} className="icon-btn" style={{ marginTop: 21, width: 26, height: 26, borderRadius: 6, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                   )}
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Actions */}
           <div className="cs-form-actions" style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => {
-              if (isEditMode) {
-                if (returnTo === 'calendar') { resetForm(); setShowCalendarPage(true) }
-                else { resetForm() }
-              } else {
-                clearForm()
-              }
-            }} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+            <button onClick={() => { if (isEditMode) { if (returnTo === 'calendar') { resetForm(); setShowCalendarPage(true) } else { resetForm() } } else { clearForm() } }} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
               {isEditMode ? 'Cancel edit' : 'Reset form'}
             </button>
             <button onClick={() => setShowConfirm(true)} style={{ flex: 2, padding: '10px 0', borderRadius: 10, border: 'none', background: '#800000', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
@@ -1266,9 +1112,9 @@ export default function CaseStudies() {
             </button>
           </div>
         </div>
-        )} {/* end form conditional */}
+        )}
 
-        {/* ── CALENDAR PAGE ─────────────────────────────────────────────────── */}
+        {/* CALENDAR PAGE */}
         {showCalendarPage && (() => {
           const now = new Date()
           const y = now.getFullYear()
@@ -1283,64 +1129,33 @@ export default function CaseStudies() {
           const dayStr = selectedDate || todayStr
           const dayEvents = records.filter(r => r.start === dayStr)
           const dayLabel = selectedDate ? selectedDate : 'Today'
-
           const EVENT_LIMIT = 5
-
           const tabEvents = eventPanelTab === 'today' ? dayEvents : monthEvents
           const visibleEvents = showAllEvents ? tabEvents : tabEvents.slice(0, EVENT_LIMIT)
           const hasMore = tabEvents.length > EVENT_LIMIT
 
           return (
             <div className="cs-calendar-layout" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 16, alignItems: 'start' }}>
-
-              {/* ── LEFT: Events Panel (desktop only) ── */}
               <div className="cs-calendar-events cs-events-panel-desktop" style={{ ...card, padding: '0', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
-                {/* Red header */}
                 <div style={{ background: '#800000', padding: '16px 18px' }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: 0, fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     Events
                   </p>
                 </div>
-
-                {/* Divider */}
                 <div style={{ height: 1, background: borderColor }} />
-
-                {/* Tabs — on white/card background */}
                 <div style={{ display: 'flex', borderBottom: `1px solid ${borderColor}` }}>
                   {(['today', 'month'] as const).map(tab => (
                     <button key={tab} onClick={() => { setEventPanelTab(tab); setShowAllEvents(false); if (tab === 'month') { setSelectedDate(''); setSelectedDateStudies([]) } }}
-                      style={{
-                        flex: 1, padding: '9px 0', border: 'none', background: 'transparent',
-                        borderBottom: eventPanelTab === tab ? '2px solid #800000' : '2px solid transparent',
-                        color: eventPanelTab === tab ? '#800000' : textMuted,
-                        fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400,
-                        cursor: 'pointer',
-                        fontFamily: "'Poppins', sans-serif", transition: 'all .15s',
-                      }}>
+                      style={{ flex: 1, padding: '9px 0', border: 'none', background: 'transparent', borderBottom: eventPanelTab === tab ? '2px solid #800000' : '2px solid transparent', color: eventPanelTab === tab ? '#800000' : textMuted, fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", transition: 'all .15s' }}>
                       {tab === 'today' ? dayLabel : MONTHS[m]}
                     </button>
                   ))}
                 </div>
-
-                {/* Event count */}
                 <div style={{ padding: '10px 18px 6px' }}>
-                  <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-                    {tabEvents.length} event{tabEvents.length !== 1 ? 's' : ''}
-                    {eventPanelTab === 'today' ? ` — ${dayLabel}` : ` — ${MONTHS[m]}`}
-                  </p>
+                  <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{tabEvents.length} event{tabEvents.length !== 1 ? 's' : ''}{eventPanelTab === 'today' ? ` — ${dayLabel}` : ` — ${MONTHS[m]}`}</p>
                 </div>
-
-                {/* Scrollable event list */}
-                <div style={{
-                  padding: '0 18px',
-                  overflowY: showAllEvents ? 'auto' : 'visible',
-                  maxHeight: showAllEvents ? 320 : 'none',
-                  display: 'flex', flexDirection: 'column', gap: 8,
-                }}>
+                <div style={{ padding: '0 18px', overflowY: showAllEvents ? 'auto' : 'visible', maxHeight: showAllEvents ? 320 : 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {tabEvents.length === 0 ? (
                     <div style={{ padding: '28px 0', textAlign: 'center' as const }}>
                       <div style={{ width: 36, height: 36, borderRadius: '50%', background: subtleBg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
@@ -1348,269 +1163,132 @@ export default function CaseStudies() {
                       </div>
                       <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>No events</p>
                     </div>
-                  ) : (
-                    visibleEvents.map(r => {
-                      const st = getStatusStyle(r.status)
-                      return (
-                        <div key={r._id}
-                          onClick={() => { setPreviewData(r); setShowPreview(true) }}
-                          style={{ padding: '10px 12px', borderRadius: 12, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer', transition: 'all .15s', flexShrink: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-                            <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                            <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
-                          </div>
-                          <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {r.author}</p>
-                        </div>
-                      )
-                    })
-                  )}
-                </div>
-
-                {/* Show all / collapse button */}
-                {hasMore && (
-                  <div style={{ padding: '10px 18px 16px' }}>
-                    <button onClick={() => setShowAllEvents(!showAllEvents)}
-                      style={{ width: '100%', fontSize: 10, fontWeight: 500, color: '#800000', background: 'rgba(128,0,0,0.06)', border: '1px solid rgba(128,0,0,0.18)', borderRadius: 8, padding: '7px 0', cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
-                      {showAllEvents ? `↑ Show less` : `↓ Show all ${tabEvents.length} events`}
-                    </button>
-                  </div>
-                )}
-
-                {!hasMore && <div style={{ height: 16 }} />}
-              </div>
-
-              {/* ── RIGHT: Calendar ── */}
-              <div className="cs-calendar-grid" style={{ ...card, padding: '0', overflow: 'hidden' }}>
-                {/* Red header */}
-                <div style={{ background: '#800000', padding: '16px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: 0, fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Timeline & Events
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <button onClick={() => { setSelectedMonthIndex(m === 0 ? 11 : m - 1); setSelectedDate(''); setSelectedDateStudies([]) }}
-                      style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', minWidth: 110, textAlign: 'center' as const, fontFamily: "'Poppins', sans-serif" }}>{MONTHS[m]} {y}</span>
-                    <button onClick={() => { setSelectedMonthIndex(m === 11 ? 0 : m + 1); setSelectedDate(''); setSelectedDateStudies([]) }}
-                      style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div style={{ height: 1, background: borderColor }} />
-
-                <div style={{ padding: '16px 22px 20px' }}>
-
-                {/* Day headers */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 6 }}>
-                  {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d, i) => (
-                    <div key={i} style={{ textAlign: 'center' as const, fontSize: 10, fontWeight: 600, color: textMuted, padding: '4px 0', fontFamily: "'Poppins', sans-serif" }}>{d}</div>
-                  ))}
-                </div>
-
-                {/* Day cells */}
-                <div className="cs-cal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 16 }}>
-                  {cells.map((d, i) => {
-                    if (!d) return <div key={i} style={isMobile ? { height: 44, minHeight: 44 } : { minHeight: 72 }} />
-                    const isToday = isCurrentMonth && d === today
-                    const ds = dateStrFn(d)
-                    const evs = records.filter(r => r.start === ds)
-                    const isSelected = selectedDate === ds
+                  ) : visibleEvents.map(r => {
+                    const st = getStatusStyle(r.status)
                     return (
-                      <div key={i}
-                        className="cs-cal-cell"
-                        onClick={() => {
-                          if (isSelected) { setSelectedDate(''); setSelectedDateStudies([]); setShowBottomSheet(false) }
-                          else { setSelectedDate(ds); setSelectedDateStudies(evs); setEventPanelTab('today'); setShowAllEvents(false); setShowBottomSheet(true) }
-                        }}
-                        style={{
-                          ...(isMobile
-                            ? { height: 44, minHeight: 44, maxHeight: 44, overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }
-                            : { minHeight: 72, maxHeight: 100, overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '6px 7px', position: 'relative' }
-                          ),
-                          borderRadius: 10, cursor: 'pointer',
-                          background: isToday ? '#800000' : isSelected ? 'rgba(128,0,0,0.05)' : subtleBg,
-                          border: isToday ? 'none' : isSelected ? '1.5px solid rgba(128,0,0,0.35)' : evs.length ? '1px solid rgba(59,130,246,0.22)' : `1px solid ${borderColor}`,
-                          transition: 'all .15s',
-                        }}
-                      >
-                        {/* Date number — top left on desktop, centered on mobile */}
-                        <span style={{
-                          fontSize: 11, fontWeight: isToday ? 700 : 400, lineHeight: 1,
-                          color: isToday ? '#fff' : isSelected ? '#800000' : textMuted,
-                          flexShrink: 0, marginBottom: isMobile ? 0 : 3,
-                          fontFamily: "'Poppins', sans-serif",
-                        }}>{d}</span>
-
-                        {/* First event — pill (hidden on mobile) */}
-                        {evs.length > 0 && !isMobile && (
-                          <div className="cs-cell-events">
-                            <div
-                              onMouseEnter={e => {
-                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                                setHoveredEvent({ record: evs[0], x: rect.left + rect.width / 2, y: rect.top })
-                              }}
-                              onMouseLeave={() => setHoveredEvent(null)}
-                              style={{
-                                width: '100%', fontSize: 9, fontWeight: 500,
-                                color: isToday ? 'rgba(255,255,255,0.9)' : '#3b82f6',
-                                background: isToday ? 'rgba(255,255,255,0.18)' : 'rgba(59,130,246,0.12)',
-                                borderRadius: 4, padding: '2px 5px',
-                                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
-                                fontFamily: "'Poppins', sans-serif", cursor: 'pointer',
-                                maxWidth: '100%', flexShrink: 0,
-                              }}
-                            >
-                              {evs[0].title}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Dot indicator — shown only on mobile via CSS */}
-                        {evs.length > 0 && (
-                          <div className={`cs-cell-dot${isToday ? ' cs-cell-dot-today' : ''}`} />
-                        )}
-
-                        {/* Remaining events — avatar initials (hidden on mobile) */}
-                        {evs.length > 1 && !isMobile && (
-                          <div className="cs-cell-avatars" style={{ gap: 0, marginTop: 'auto', paddingTop: 4 }}>
-                            {evs.slice(1, 4).map((ev, idx) => (
-                              <div key={ev._id}
-                                onMouseEnter={e => {
-                                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                                  setHoveredEvent({ record: ev, x: rect.left + rect.width / 2, y: rect.top })
-                                }}
-                                onMouseLeave={() => setHoveredEvent(null)}
-                                style={{
-                                  width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                                  background: `hsl(${(idx * 75 + 190) % 360}, 52%, 58%)`,
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  fontSize: 8, fontWeight: 700, color: '#fff',
-                                  border: `1.5px solid ${isToday ? 'rgba(255,255,255,0.4)' : cardBg}`,
-                                  marginLeft: idx > 0 ? -5 : 0,
-                                  fontFamily: "'Poppins', sans-serif", cursor: 'pointer',
-                                }}>
-                                {ev.title.charAt(0).toUpperCase()}
-                              </div>
-                            ))}
-                            {evs.length > 4 && (
-                              <div style={{
-                                width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                                background: isToday ? 'rgba(255,255,255,0.22)' : dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.09)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: 7, fontWeight: 700,
-                                color: isToday ? '#fff' : textMuted,
-                                border: `1.5px solid ${isToday ? 'rgba(255,255,255,0.4)' : cardBg}`,
-                                marginLeft: -5,
-                                fontFamily: "'Poppins', sans-serif",
-                              }}>
-                                +{evs.length - 4}
-                              </div>
-                            )}
-                          </div>
-                        )}
+                      <div key={r._id} onClick={() => handleView(r)} style={{ padding: '10px 12px', borderRadius: 12, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer', transition: 'all .15s', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+                          <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
+                          <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
+                        </div>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {r.author}</p>
                       </div>
                     )
                   })}
                 </div>
-
-                {/* Legend */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, background: '#800000' }} />
-                    <span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Today</span>
+                {hasMore && (
+                  <div style={{ padding: '10px 18px 16px' }}>
+                    <button onClick={() => setShowAllEvents(!showAllEvents)} style={{ width: '100%', fontSize: 10, fontWeight: 500, color: '#800000', background: 'rgba(128,0,0,0.06)', border: '1px solid rgba(128,0,0,0.18)', borderRadius: 8, padding: '7px 0', cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>
+                      {showAllEvents ? `↑ Show less` : `↓ Show all ${tabEvents.length} events`}
+                    </button>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6' }} />
-                    <span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Has events</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, background: 'rgba(128,0,0,0.08)', border: '1.5px solid rgba(128,0,0,0.35)' }} />
-                    <span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Selected</span>
-                  </div>
-                </div>
-                </div> {/* end inner padding div */}
+                )}
+                {!hasMore && <div style={{ height: 16 }} />}
               </div>
 
+              <div className="cs-calendar-grid" style={{ ...card, padding: '0', overflow: 'hidden' }}>
+                <div style={{ background: '#800000', padding: '16px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: 0, fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', gap: 7 }}>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Timeline & Events
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button onClick={() => { setSelectedMonthIndex(m === 0 ? 11 : m - 1); setSelectedDate(''); setSelectedDateStudies([]) }} style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', minWidth: 110, textAlign: 'center' as const, fontFamily: "'Poppins', sans-serif" }}>{MONTHS[m]} {y}</span>
+                    <button onClick={() => { setSelectedMonthIndex(m === 11 ? 0 : m + 1); setSelectedDate(''); setSelectedDateStudies([]) }} style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.15)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div style={{ height: 1, background: borderColor }} />
+                <div style={{ padding: '16px 22px 20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 6 }}>
+                    {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d, i) => (
+                      <div key={i} style={{ textAlign: 'center' as const, fontSize: 10, fontWeight: 600, color: textMuted, padding: '4px 0', fontFamily: "'Poppins', sans-serif" }}>{d}</div>
+                    ))}
+                  </div>
+                  <div className="cs-cal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 16 }}>
+                    {cells.map((d, i) => {
+                      if (!d) return <div key={i} style={isMobile ? { height: 44, minHeight: 44 } : { minHeight: 72 }} />
+                      const isToday = isCurrentMonth && d === today
+                      const ds = dateStrFn(d)
+                      const evs = records.filter(r => r.start === ds)
+                      const isSelected = selectedDate === ds
+                      return (
+                        <div key={i} className="cs-cal-cell"
+                          onClick={() => { if (isSelected) { setSelectedDate(''); setSelectedDateStudies([]); setShowBottomSheet(false) } else { setSelectedDate(ds); setSelectedDateStudies(evs); setEventPanelTab('today'); setShowAllEvents(false); setShowBottomSheet(true) } }}
+                          style={{ ...(isMobile ? { height: 44, minHeight: 44, maxHeight: 44, overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 } : { minHeight: 72, maxHeight: 100, overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '6px 7px', position: 'relative' }), borderRadius: 10, cursor: 'pointer', background: isToday ? '#800000' : isSelected ? 'rgba(128,0,0,0.05)' : subtleBg, border: isToday ? 'none' : isSelected ? '1.5px solid rgba(128,0,0,0.35)' : evs.length ? '1px solid rgba(59,130,246,0.22)' : `1px solid ${borderColor}`, transition: 'all .15s' }}>
+                          <span style={{ fontSize: 11, fontWeight: isToday ? 700 : 400, lineHeight: 1, color: isToday ? '#fff' : isSelected ? '#800000' : textMuted, flexShrink: 0, marginBottom: isMobile ? 0 : 3, fontFamily: "'Poppins', sans-serif" }}>{d}</span>
+                          {evs.length > 0 && !isMobile && (
+                            <div className="cs-cell-events">
+                              <div onMouseEnter={e => { const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setHoveredEvent({ record: evs[0], x: rect.left + rect.width / 2, y: rect.top }) }} onMouseLeave={() => setHoveredEvent(null)} style={{ width: '100%', fontSize: 9, fontWeight: 500, color: isToday ? 'rgba(255,255,255,0.9)' : '#3b82f6', background: isToday ? 'rgba(255,255,255,0.18)' : 'rgba(59,130,246,0.12)', borderRadius: 4, padding: '2px 5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif", cursor: 'pointer', maxWidth: '100%', flexShrink: 0 }}>{evs[0].title}</div>
+                            </div>
+                          )}
+                          {evs.length > 0 && <div className={`cs-cell-dot${isToday ? ' cs-cell-dot-today' : ''}`} />}
+                          {evs.length > 1 && !isMobile && (
+                            <div className="cs-cell-avatars" style={{ gap: 0, marginTop: 'auto', paddingTop: 4 }}>
+                              {evs.slice(1, 4).map((ev, idx) => (
+                                <div key={ev._id} onMouseEnter={e => { const rect = (e.currentTarget as HTMLElement).getBoundingClientRect(); setHoveredEvent({ record: ev, x: rect.left + rect.width / 2, y: rect.top }) }} onMouseLeave={() => setHoveredEvent(null)} style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, background: `hsl(${(idx * 75 + 190) % 360}, 52%, 58%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#fff', border: `1.5px solid ${isToday ? 'rgba(255,255,255,0.4)' : cardBg}`, marginLeft: idx > 0 ? -5 : 0, fontFamily: "'Poppins', sans-serif", cursor: 'pointer' }}>{ev.title.charAt(0).toUpperCase()}</div>
+                              ))}
+                              {evs.length > 4 && <div style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, background: isToday ? 'rgba(255,255,255,0.22)' : dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 700, color: isToday ? '#fff' : textMuted, border: `1.5px solid ${isToday ? 'rgba(255,255,255,0.4)' : cardBg}`, marginLeft: -5, fontFamily: "'Poppins', sans-serif" }}>+{evs.length - 4}</div>}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: '#800000' }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Today</span></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6' }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Has events</span></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: 'rgba(128,0,0,0.08)', border: '1.5px solid rgba(128,0,0,0.35)' }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Selected</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
           )
         })()}
 
-        {/* ── MOBILE BOTTOM SHEET (calendar events) ── */}
+        {/* MOBILE BOTTOM SHEET */}
         {showCalendarPage && showBottomSheet && typeof window !== 'undefined' && window.innerWidth <= 768 && (
           <div className={`cs-bottomsheet-overlay${showBottomSheet ? ' active' : ''}`} onClick={() => { setShowBottomSheet(false); setSelectedDate(''); setSelectedDateStudies([]) }}>
             <div className="cs-bottomsheet" style={{ background: cardBg }} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-              {/* Header */}
               <div style={{ background: '#800000', padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: 0, fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                   {selectedDate || 'Events'}
                 </p>
-                <button onClick={() => { setShowBottomSheet(false); setSelectedDate(''); setSelectedDateStudies([]) }}
-                  style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <button onClick={() => { setShowBottomSheet(false); setSelectedDate(''); setSelectedDateStudies([]) }} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               </div>
-              {/* Divider */}
               <div style={{ height: 1, background: borderColor }} />
-              {/* Tabs */}
               <div style={{ display: 'flex', borderBottom: `1px solid ${borderColor}` }}>
                 {(['today', 'month'] as const).map(tab => {
-                  const now2 = new Date()
-                  const y2 = now2.getFullYear()
-                  const m2 = selectedMonthIndex
-                  const todayStr2 = `${y2}-${String(now2.getMonth() + 1).padStart(2, '0')}-${String(now2.getDate()).padStart(2, '0')}`
-                  const dayLabel2 = selectedDate || 'Today'
+                  const m2 = selectedMonthIndex; const dayLabel2 = selectedDate || 'Today'
                   return (
-                    <button key={tab}
-                      onClick={() => {
-                        setEventPanelTab(tab)
-                        if (tab === 'month') { setSelectedDate(''); setSelectedDateStudies([]) }
-                      }}
-                      style={{
-                        flex: 1, padding: '9px 0', border: 'none', background: 'transparent',
-                        borderBottom: eventPanelTab === tab ? '2px solid #800000' : '2px solid transparent',
-                        color: eventPanelTab === tab ? '#800000' : textMuted,
-                        fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400,
-                        cursor: 'pointer', fontFamily: "'Poppins', sans-serif", transition: 'all .15s',
-                      }}>
+                    <button key={tab} onClick={() => { setEventPanelTab(tab); if (tab === 'month') { setSelectedDate(''); setSelectedDateStudies([]) } }} style={{ flex: 1, padding: '9px 0', border: 'none', background: 'transparent', borderBottom: eventPanelTab === tab ? '2px solid #800000' : '2px solid transparent', color: eventPanelTab === tab ? '#800000' : textMuted, fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", transition: 'all .15s' }}>
                       {tab === 'today' ? dayLabel2 : MONTHS[m2]}
                     </button>
                   )
                 })}
               </div>
-              {/* Count */}
               <div style={{ padding: '8px 18px 4px' }}>
                 <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-                  {(eventPanelTab === 'today' ? selectedDateStudies : records.filter(r => r.start.startsWith(`${new Date().getFullYear()}-${String(selectedMonthIndex + 1).padStart(2, '0')}`))).length} event{(eventPanelTab === 'today' ? selectedDateStudies : records.filter(r => r.start.startsWith(`${new Date().getFullYear()}-${String(selectedMonthIndex + 1).padStart(2, '0')}`))).length !== 1 ? 's' : ''}
+                  {(eventPanelTab === 'today' ? selectedDateStudies : records.filter(r => r.start.startsWith(`${new Date().getFullYear()}-${String(selectedMonthIndex + 1).padStart(2, '0')}`))).length} events
                 </p>
               </div>
-              {/* Scrollable events */}
               <div style={{ overflowY: 'auto', flex: 1, padding: '0 18px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {(() => {
-                  const now2 = new Date()
-                  const y2 = now2.getFullYear()
-                  const monthPrefix2 = `${y2}-${String(selectedMonthIndex + 1).padStart(2, '0')}`
-                  const monthEvs = records.filter(r => r.start.startsWith(monthPrefix2))
-                  const listEvents = eventPanelTab === 'today' ? selectedDateStudies : monthEvs
+                  const monthPrefix2 = `${new Date().getFullYear()}-${String(selectedMonthIndex + 1).padStart(2, '0')}`
+                  const listEvents = eventPanelTab === 'today' ? selectedDateStudies : records.filter(r => r.start.startsWith(monthPrefix2))
                   return listEvents.length === 0 ? (
-                    <div style={{ padding: '28px 0', textAlign: 'center' as const }}>
-                      <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>No events</p>
-                    </div>
+                    <div style={{ padding: '28px 0', textAlign: 'center' as const }}><p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>No events</p></div>
                   ) : listEvents.map(r => {
                     const st = getStatusStyle(r.status)
                     return (
-                      <div key={r._id}
-                        onClick={() => { setShowBottomSheet(false); setPreviewData(r); setShowPreview(true) }}
-                        style={{ padding: '12px 14px', borderRadius: 12, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer' }}>
+                      <div key={r._id} onClick={() => { setShowBottomSheet(false); handleView(r) }} style={{ padding: '12px 14px', borderRadius: 12, border: `1px solid ${borderColor}`, background: subtleBg, cursor: 'pointer' }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
                           <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                           <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
@@ -1626,11 +1304,9 @@ export default function CaseStudies() {
           </div>
         )}
 
-        {/* ── LIBRARY ───────────────────────────────────────────────────────── */}
+        {/* LIBRARY */}
         {!showFormOnly && !showCalendarPage && (
         <div style={{ ...card, overflow: 'hidden' }}>
-
-          {/* Toolbar */}
           <div className="cs-library-toolbar" style={{ padding: '13px 18px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' as const }}>
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Case study library</p>
@@ -1638,9 +1314,7 @@ export default function CaseStudies() {
             </div>
             <div style={{ flex: 1 }} />
             <div className="cs-library-search" style={{ position: 'relative' }}>
-              <svg style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <svg style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               <input type="text" placeholder="Search by title or author..." value={search} onChange={e => setSearch(e.target.value)} style={inp({ width: 210, paddingLeft: 30, fontSize: 11 })} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1663,11 +1337,9 @@ export default function CaseStudies() {
             </div>
           </div>
 
-          {/* Status tabs */}
           <div style={{ display: 'flex', padding: '0 18px', borderBottom: `1px solid ${borderColor}`, background: subtleBg }}>
             {(['All', 'Active', 'Draft', 'Completed', 'Scheduled'] as const).map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                style={{ padding: '9px 12px', border: 'none', borderBottom: activeTab === tab ? '2px solid #800000' : '2px solid transparent', background: 'transparent', color: activeTab === tab ? '#800000' : textMuted, fontSize: 11, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>
+              <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: '9px 12px', border: 'none', borderBottom: activeTab === tab ? '2px solid #800000' : '2px solid transparent', background: 'transparent', color: activeTab === tab ? '#800000' : textMuted, fontSize: 11, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>
                 {tab}
                 <span style={{ marginLeft: 5, fontSize: 9, padding: '1px 5px', borderRadius: 10, background: activeTab === tab ? 'rgba(128,0,0,0.10)' : dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)', color: activeTab === tab ? '#800000' : textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>
                   {counts[tab as keyof typeof counts]}
@@ -1680,32 +1352,32 @@ export default function CaseStudies() {
             </span>
           </div>
 
-          {/* Category filter */}
           <div className="cs-tag-filter" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderBottom: `1px solid ${borderColor}`, flexWrap: 'wrap' as const, background: cardBg }}>
             <span style={{ fontSize: 10, fontWeight: 600, color: textMuted, marginRight: 2, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>Category:</span>
             {LIB_CATEGORIES.map(tag => {
               const sel = activeTagFilter === tag
               return (
-                <button key={tag} className="pill-btn" onClick={() => setActiveTagFilter(tag)}
-                  style={{ padding: '3px 11px', borderRadius: 20, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', border: sel ? '1px solid rgba(128,0,0,0.3)' : `1px solid ${borderColor}`, background: sel ? 'rgba(128,0,0,0.09)' : subtleBg, color: sel ? '#800000' : textMuted, fontFamily: "'Poppins', sans-serif" }}>
-                  {tag}
-                </button>
+                <button key={tag} className="pill-btn" onClick={() => setActiveTagFilter(tag)} style={{ padding: '3px 11px', borderRadius: 20, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all .15s', border: sel ? '1px solid rgba(128,0,0,0.3)' : `1px solid ${borderColor}`, background: sel ? 'rgba(128,0,0,0.09)' : subtleBg, color: sel ? '#800000' : textMuted, fontFamily: "'Poppins', sans-serif" }}>{tag}</button>
               )
             })}
           </div>
 
-          {/* Empty state */}
-          {filtered.length === 0 && (
+          {isFetchingRecords && (
             <div style={{ padding: '48px 20px', textAlign: 'center' }}>
-              <p style={{ fontSize: 13, color: textMuted, fontWeight: 500, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>No case studies found</p>
-              <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-                {search ? 'Try adjusting your search.' : 'Create your first case study above.'}
-              </p>
+              <div style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #e5e7eb', borderTopColor: '#800000', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              <p style={{ fontSize: 12, color: textMuted, marginTop: 10, fontFamily: "'Poppins', sans-serif" }}>Loading case studies...</p>
             </div>
           )}
 
-          {/* ── GRID VIEW ─────────────────────────────────────────────────── */}
-          {filtered.length > 0 && viewMode === 'grid' && (
+          {!isFetchingRecords && filtered.length === 0 && (
+            <div style={{ padding: '48px 20px', textAlign: 'center' }}>
+              <p style={{ fontSize: 13, color: textMuted, fontWeight: 500, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>No case studies found</p>
+              <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{search ? 'Try adjusting your search.' : 'Create your first case study above.'}</p>
+            </div>
+          )}
+
+          {!isFetchingRecords && filtered.length > 0 && viewMode === 'grid' && (
             <div className="cs-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14, padding: 16 }}>
               {filtered.map(r => {
                 const st = getStatusStyle(r.status)
@@ -1714,25 +1386,12 @@ export default function CaseStudies() {
                 return (
                   <div key={r._id} className="cs-card" style={{ border: `1px solid ${isBeingEdited ? '#800000' : borderColor}`, borderRadius: 14, overflow: 'hidden', background: cardBg, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: 140, position: 'relative', overflow: 'hidden', flexShrink: 0, background: '#e5e7eb' }}>
-                      <img
-                        src={coverSrc}
-                        alt={r.title}
-                        className="cs-card-img"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        onError={e => {
-                          const el = e.currentTarget as HTMLImageElement
-                          el.style.display = 'none'
-                          const parent = el.parentElement
-                          if (parent) parent.style.background = 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))'
-                        }}
-                      />
+                      <img src={coverSrc} alt={r.title} className="cs-card-img" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { const el = e.currentTarget as HTMLImageElement; el.style.display = 'none'; const parent = el.parentElement; if (parent) parent.style.background = 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))' }} />
                       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.38) 100%)' }} />
                       <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
                         <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 5, background: 'rgba(128,0,0,0.88)', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Case study</span>
                       </div>
-                      {isBeingEdited && (
-                        <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: '#800000', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Editing</div>
-                      )}
+                      {isBeingEdited && <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: '#800000', color: '#fff', fontFamily: "'Poppins', sans-serif" }}>Editing</div>}
                     </div>
                     <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
@@ -1748,7 +1407,7 @@ export default function CaseStudies() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 9, borderTop: `1px solid ${borderColor}`, marginTop: 4 }}>
                         <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 9px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <button onClick={() => { setPreviewData(r); setShowPreview(true) }} style={{ padding: '4px 9px', borderRadius: 7, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>View</button>
+                          <button onClick={() => handleView(r)} style={{ padding: '4px 9px', borderRadius: 7, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>View</button>
                           <button onClick={() => handleEdit(r, 'main')} style={{ padding: '4px 9px', borderRadius: 7, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                           <button onClick={() => { setDeleteTarget(r); setShowDelete(true) }} style={{ padding: '4px 8px', borderRadius: 7, border: '1px solid rgba(220,38,38,0.3)', background: 'rgba(220,38,38,0.07)', color: '#dc2626', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                             <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -1762,8 +1421,7 @@ export default function CaseStudies() {
             </div>
           )}
 
-          {/* ── LIST VIEW ─────────────────────────────────────────────────── */}
-          {filtered.length > 0 && viewMode === 'list' && (
+          {!isFetchingRecords && filtered.length > 0 && viewMode === 'list' && (
             <div>
               <div className="cs-list-header" style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 2fr 110px 130px', gap: 14, padding: '9px 18px', background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: 'uppercase' as const, letterSpacing: '0.07em', borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
                 <span>Cover</span><span>Title</span><span>Author</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' as const }}>Actions</span>
@@ -1774,17 +1432,7 @@ export default function CaseStudies() {
                 return (
                   <div key={r._id} className="arc-row cs-list-row" style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 2fr 110px 130px', gap: 14, alignItems: 'center', padding: '10px 18px', borderBottom: i < filtered.length - 1 ? `1px solid ${borderColor}` : 'none', transition: 'background .15s' }}>
                     <div style={{ width: 40, height: 40, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#e5e7eb' }}>
-                      <img
-                        src={coverSrc}
-                        alt={r.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        onError={e => {
-                          const el = e.currentTarget as HTMLImageElement
-                          el.style.display = 'none'
-                          const parent = el.parentElement
-                          if (parent) parent.style.background = 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))'
-                        }}
-                      />
+                      <img src={coverSrc} alt={r.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { const el = e.currentTarget as HTMLImageElement; el.style.display = 'none'; const parent = el.parentElement; if (parent) parent.style.background = 'linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))' }} />
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
@@ -1797,7 +1445,7 @@ export default function CaseStudies() {
                     </div>
                     <span style={{ fontSize: 9, fontWeight: 500, padding: '3px 9px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, display: 'inline-block', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                     <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' as const }}>
-                      <button onClick={() => { setPreviewData(r); setShowPreview(true) }} style={{ padding: '4px 9px', borderRadius: 7, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>View</button>
+                      <button onClick={() => handleView(r)} style={{ padding: '4px 9px', borderRadius: 7, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>View</button>
                       <button onClick={() => handleEdit(r, 'main')} style={{ padding: '4px 9px', borderRadius: 7, border: 'none', background: '#800000', color: '#fff', fontSize: 10, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                       <button onClick={() => { setDeleteTarget(r); setShowDelete(true) }} style={{ padding: '4px 8px', borderRadius: 7, border: '1px solid rgba(220,38,38,0.3)', background: 'rgba(220,38,38,0.07)', color: '#dc2626', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                         <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -1815,7 +1463,7 @@ export default function CaseStudies() {
             </div>
           )}
         </div>
-        )} {/* end !showFormOnly LIBRARY */}
+        )}
 
       </div>
     </div>
