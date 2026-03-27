@@ -97,6 +97,20 @@ const Nav = ({ openNav }: Props) => {
         { label: "Our Team", url: "/about#our-team" }
       ] 
     },
+    {
+      id: "platforms",
+      label: "Platforms",
+      items: [
+        { label: "Platform Overview", url: "/platform" },
+      ]
+    },
+    {
+      id: "tools",
+      label: "Tools",
+      items: [
+        { label: "Tools Overview", url: "/about/tools" },
+      ]
+    },
   ];
 
   const resourcesMegaData = [
