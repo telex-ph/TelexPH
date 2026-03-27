@@ -62,7 +62,6 @@ type VA = {
   workHistory: { client: string; role: string; duration: string; rating: number; review: string }[];
 }
 
-// Fallback mock data (used while API loads or on failure)
 const VA_LIST: VA[] = [
   { id: 'va-001', name: 'Maria Santos', role: 'Customer Service Specialist', avatar: 'MS', rating: 4.9, reviews: 124, experience: '5 yrs', availability: 'Available', hourlyRate: 12, completedJobs: 87, responseTime: '< 1 hr', skills: ['Live Chat', 'Email Support', 'CRM', 'Zendesk', 'HubSpot', 'Freshdesk', 'Intercom', 'CSAT Reporting'], bio: 'Dedicated CSR with 5 years in SaaS and eCommerce support. Expert in de-escalation and CRM documentation.', categoryIds: ['csr'], location: 'Cebu City, PH', timezone: 'PST (UTC+8)', languages: ['English', 'Filipino'], education: 'BS Business Administration — University of San Carlos', portfolioItems: [{ title: 'SaaS Helpdesk Overhaul', desc: 'Restructured ticket triage system reducing avg resolution time from 48hrs to 6hrs.', tag: 'Process' }, { title: 'eCommerce Live Chat', desc: 'Managed 200+ daily chats with 98% CSAT score for a US-based retail brand.', tag: 'Live Chat' }, { title: 'CRM Migration', desc: 'Led migration of 8,000 customer records from Freshdesk to HubSpot with zero data loss.', tag: 'CRM' }], workHistory: [{ client: 'TechFlow Inc.', role: 'Senior CSR', duration: '2 yrs', rating: 5.0, review: 'Maria is phenomenal. She reduced our support backlog by 60% in the first month.' }, { client: 'ShopNow PH', role: 'CSR Team Lead', duration: '1.5 yrs', rating: 4.9, review: 'Reliable, professional, and truly cares about the customer experience.' }, { client: 'CloudBase SaaS', role: 'CSR Specialist', duration: '8 mos', rating: 4.8, review: 'Handled high-volume queues with ease. Would rehire without hesitation.' }] },
   { id: 'va-002', name: 'James Reyes', role: 'Technical Support Engineer', avatar: 'JR', rating: 4.8, reviews: 98, experience: '6 yrs', availability: 'Available', hourlyRate: 15, completedJobs: 63, responseTime: '< 2 hrs', skills: ['Tier 1–2 Support', 'API Troubleshooting', 'Shopify', 'SaaS Backends', 'Postman', 'SQL Basics', 'Jira', 'Confluence'], bio: 'Technical support pro with deep eCommerce and SaaS platform knowledge. Handles complex escalations with ease.', categoryIds: ['csr', 'tech'], location: 'Manila, PH', timezone: 'PST (UTC+8)', languages: ['English', 'Filipino'], education: 'BS Information Technology — De La Salle University', portfolioItems: [{ title: 'API Integration Support', desc: 'Supported 50+ merchant API integrations for a payments SaaS platform.', tag: 'Technical' }, { title: 'Shopify Backend Ops', desc: 'Managed order discrepancy resolution and fulfillment troubleshooting for D2C brand.', tag: 'eCommerce' }], workHistory: [{ client: 'PayFlow Ltd.', role: 'Tech Support Lead', duration: '2.5 yrs', rating: 4.9, review: 'James knows SaaS support inside out. Exceptional communicator with deep technical chops.' }, { client: 'Storefront Co.', role: 'eCommerce TSR', duration: '2 yrs', rating: 4.7, review: 'Handled escalations calmly and documented everything perfectly.' }] },
@@ -272,8 +271,8 @@ function StepProjectBrief({ service, onBack, onNext }: { service: SelectedServic
       <ProgressBar activeIndex={1} />
       <div style={{ marginBottom: 24 }}>
         <p style={{ fontSize: 11, color: '#800000', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Step 2 of 6</p>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Tell Us About Your Project</h2>
-        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Help us match you with the right VA for <strong style={{ color: '#800000' }}>{service.name}</strong>.</p>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Project Overview</h2>
+        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Please provide project details to help us identify the most suitable virtual assistant for <strong style={{ color: '#800000' }}>{service.name}</strong>.</p>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, alignItems: 'start' }}>
         <div style={{ ...cardStyle, padding: '28px' }}>
@@ -292,18 +291,6 @@ function StepProjectBrief({ service, onBack, onNext }: { service: SelectedServic
                 <select style={{ ...fieldStyle, cursor: 'pointer' }} value={form.hours} onChange={e => update('hours', e.target.value)}>
                   {['10', '20', '30', '40'].map(h => <option key={h} value={h}>{h} hrs / week</option>)}
                 </select>
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Preferred Timezone</label>
-                <select style={{ ...fieldStyle, cursor: 'pointer' }} value={form.timezone} onChange={e => update('timezone', e.target.value)}>
-                  {['PST', 'EST', 'CST', 'MST', 'GMT', 'UTC+8'].map(tz => <option key={tz} value={tz}>{tz}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Key KPIs</label>
-                <input style={fieldStyle} value={form.kpis} onChange={e => update('kpis', e.target.value)} placeholder="e.g. CSAT ≥ 95%, 10 posts/mo" />
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -351,7 +338,7 @@ function StepProjectBrief({ service, onBack, onNext }: { service: SelectedServic
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// STEP 3 — CHOOSE VA (with real API fetch)
+// STEP 3 — CHOOSE VA
 // ═══════════════════════════════════════════════════════════════════════════════
 function StepChooseVA({ service, brief, onBack, onSelect }: { service: SelectedService; brief: ProjectBriefData; onBack: () => void; onSelect: (va: VA) => void }) {
   const [search, setSearch]       = useState('')
@@ -364,11 +351,16 @@ function StepChooseVA({ service, brief, onBack, onSelect }: { service: SelectedS
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    const token = localStorage.getItem('token')
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/va-users`, {
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    // ✅ FIXED URL — removed /backend prefix
+    fetch('/api/va-users', {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
     })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
+      })
       .then(json => {
         if (cancelled) return
         const docs = json.data ?? json
@@ -408,8 +400,8 @@ function StepChooseVA({ service, brief, onBack, onSelect }: { service: SelectedS
       <ProgressBar activeIndex={2} />
       <div style={{ marginBottom: 20 }}>
         <p style={{ fontSize: 11, color: '#800000', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Step 3 of 6</p>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Choose Your VA</h2>
-        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Select a virtual assistant for <strong style={{ color: '#800000' }}>{service.name}</strong></p>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Select a Virtual Assistant</h2>
+        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Browse and select a qualified virtual assistant for <strong style={{ color: '#800000' }}>{service.name}</strong>.</p>
       </div>
 
       {loading && <div style={{ padding: '10px 14px', background: '#fff8e1', borderRadius: 8, fontSize: 12, color: '#b45309', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>⏳ Loading available VAs…</div>}
@@ -448,42 +440,52 @@ function StepChooseVA({ service, brief, onBack, onSelect }: { service: SelectedS
           {filtered.map(va => {
             const avail = AVAIL_COLORS[va.availability]
             return (
-              <div key={va.id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', gap: 14, padding: '20px', transition: 'all 0.2s', borderColor: '#f0edec' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 28px rgba(0,0,0,0.1)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#e8c0c0' }}
+              <div key={va.id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', transition: 'all 0.2s', borderColor: '#f0edec', overflow: 'hidden' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 10px 32px rgba(0,0,0,0.1)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#d9a0a0' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)'; (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.borderColor = '#f0edec' }}
               >
-                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg,#800000,#c05050)', color: '#fff', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{va.avatar}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{va.name}</div>
-                    <div style={{ fontSize: 11, color: '#888', fontFamily: "'Poppins', sans-serif", marginBottom: 5 }}>{va.role}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Stars rating={va.rating} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.rating}</span>
-                      <span style={{ fontSize: 10, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>({va.reviews})</span>
+                <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid #f5f2f2' }}>
+                  <div style={{ display: 'flex', gap: 13, alignItems: 'flex-start', marginBottom: 12 }}>
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                      <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#800000,#c05050)', color: '#fff', fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif" }}>{va.avatar}</div>
+                      <div style={{ position: 'absolute', bottom: -2, right: -2, width: 12, height: 12, borderRadius: '50%', background: avail.dot, border: '2px solid #fff' }} />
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: avail.bg, borderRadius: 20, padding: '3px 9px', flexShrink: 0 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: avail.dot }} />
-                    <span style={{ fontSize: 10, fontWeight: 600, color: avail.color, fontFamily: "'Poppins', sans-serif" }}>{va.availability}</span>
-                  </div>
-                </div>
-                <p style={{ fontSize: 11.5, color: '#555', fontFamily: "'Poppins', sans-serif", lineHeight: 1.55, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}>{va.bio}</p>
-                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                  {va.skills.slice(0, 4).map(s => <span key={s} style={{ fontSize: 10, background: '#f5f3f3', color: '#555', borderRadius: 5, padding: '2px 7px', fontFamily: "'Poppins', sans-serif", border: '1px solid #ece8e8' }}>{s}</span>)}
-                  {va.skills.length > 4 && <span style={{ fontSize: 10, color: '#aaa', fontFamily: "'Poppins', sans-serif", padding: '2px 4px' }}>+{va.skills.length - 4}</span>}
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-                  {[{ label: 'Rate', value: `$${va.hourlyRate}/hr` }, { label: 'Jobs Done', value: String(va.completedJobs) }, { label: 'Response', value: va.responseTime }].map(s => (
-                    <div key={s.label} style={{ background: '#faf9f9', borderRadius: 8, padding: '8px 6px', textAlign: 'center', border: '1px solid #f0edec' }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{s.value}</div>
-                      <div style={{ fontSize: 9.5, color: '#aaa', fontFamily: "'Poppins', sans-serif", marginTop: 1 }}>{s.label}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{va.name}</div>
+                      <div style={{ fontSize: 11.5, color: '#777', fontFamily: "'Poppins', sans-serif", marginBottom: 6, fontWeight: 500 }}>{va.role}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <Stars rating={va.rating} />
+                        <span style={{ fontSize: 11.5, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.rating}</span>
+                        <span style={{ fontSize: 10.5, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>({va.reviews} reviews)</span>
+                      </div>
                     </div>
-                  ))}
+                    <span style={{ fontSize: 9.5, fontWeight: 700, background: avail.bg, color: avail.color, borderRadius: 6, padding: '3px 8px', fontFamily: "'Poppins', sans-serif", flexShrink: 0, letterSpacing: '0.03em' }}>{va.availability}</span>
+                  </div>
+                  <p style={{ fontSize: 11.5, color: '#666', fontFamily: "'Poppins', sans-serif", lineHeight: 1.6, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}>{va.bio}</p>
                 </div>
-                <button onClick={() => onSelect(va)} disabled={va.availability === 'On Leave'} style={{ width: '100%', padding: '10px 0', background: va.availability === 'On Leave' ? '#f0edec' : '#800000', color: va.availability === 'On Leave' ? '#bbb' : '#fff', border: 'none', borderRadius: 9, fontSize: 12, fontWeight: 600, fontFamily: "'Poppins', sans-serif", cursor: va.availability === 'On Leave' ? 'not-allowed' : 'pointer', letterSpacing: '0.02em', transition: 'background 0.15s' }}>
-                  {va.availability === 'On Leave' ? 'Unavailable' : 'View Profile →'}
-                </button>
+                <div style={{ padding: '14px 20px', flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    {va.skills.slice(0, 4).map(s => <span key={s} style={{ fontSize: 10, background: '#f8f7f7', color: '#555', borderRadius: 5, padding: '3px 8px', fontFamily: "'Poppins', sans-serif", border: '1px solid #ece8e8', fontWeight: 500 }}>{s}</span>)}
+                    {va.skills.length > 4 && <span style={{ fontSize: 10, color: '#bbb', fontFamily: "'Poppins', sans-serif", padding: '3px 4px' }}>+{va.skills.length - 4} more</span>}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                    {[{ label: 'Hourly Rate', value: `$${va.hourlyRate}` }, { label: 'Projects', value: String(va.completedJobs) }, { label: 'Response', value: va.responseTime }].map(s => (
+                      <div key={s.label} style={{ background: '#faf9f9', borderRadius: 8, padding: '9px 8px', textAlign: 'center', border: '1px solid #f0edec' }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", lineHeight: 1 }}>{s.value}</div>
+                        <div style={{ fontSize: 9.5, color: '#aaa', fontFamily: "'Poppins', sans-serif", marginTop: 3 }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ padding: '0 20px 18px' }}>
+                  <button onClick={() => onSelect(va)} disabled={va.availability === 'On Leave'}
+                    style={{ width: '100%', padding: '11px 0', background: va.availability === 'On Leave' ? '#f0edec' : '#800000', color: va.availability === 'On Leave' ? '#bbb' : '#fff', border: 'none', borderRadius: 9, fontSize: 12.5, fontWeight: 600, fontFamily: "'Poppins', sans-serif", cursor: va.availability === 'On Leave' ? 'not-allowed' : 'pointer', letterSpacing: '0.03em', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                  >
+                    {va.availability === 'On Leave' ? 'Currently Unavailable' : (
+                      <><span>View Full Profile</span><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
+                    )}
+                  </button>
+                </div>
               </div>
             )
           })}
@@ -503,49 +505,46 @@ function StepChooseVA({ service, brief, onBack, onSelect }: { service: SelectedS
 // ═══════════════════════════════════════════════════════════════════════════════
 function StepVAProfile({ va, service, onBack, onNext }: { va: VA; service: SelectedService; onBack: () => void; onNext: () => void }) {
   const [activeTab, setActiveTab] = useState<'overview' | 'portfolio' | 'history'>('overview')
+  const TABS = ['overview', 'portfolio', 'history'] as const
+  const avail = AVAIL_COLORS[va.availability]
+
   return (
     <div>
       <BackBtn label="Back to Choose VA" onClick={onBack} />
       <ProgressBar activeIndex={3} />
-      <div style={{ marginBottom: 22 }}>
+      <div style={{ marginBottom: 24 }}>
         <p style={{ fontSize: 11, color: '#800000', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Step 4 of 6</p>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>VA Profile</h2>
-        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Review {va.name}'s full profile, skills, and work history.</p>
+        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Review the complete professional profile of <strong style={{ color: '#800000' }}>{va.name}</strong> before proceeding.</p>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ ...cardStyle, overflow: 'hidden' }}>
-            <div style={{ height: 80, background: 'linear-gradient(135deg,#800000 0%,#b03030 100%)', position: 'relative' }}>
-              <div style={{ position: 'absolute', bottom: -26, left: 24, width: 52, height: 52, borderRadius: 13, background: 'linear-gradient(135deg,#800000,#c05050)', border: '3px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 15, fontWeight: 700, fontFamily: "'Poppins', sans-serif" }}>{va.avatar}</div>
-            </div>
-            <div style={{ padding: '34px 24px 22px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-                <div>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', margin: '0 0 2px', fontFamily: "'Poppins', sans-serif" }}>{va.name}</h3>
-                  <div style={{ fontSize: 12, color: '#888', fontFamily: "'Poppins', sans-serif" }}>{va.role}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                    <Stars rating={va.rating} size={13} />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.rating}</span>
-                    <span style={{ fontSize: 11, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>({va.reviews} reviews)</span>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#f0fdf4', borderRadius: 20, padding: '4px 10px' }}>
-                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e' }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#16a34a', fontFamily: "'Poppins', sans-serif" }}>{va.availability}</span>
+          <div style={{ ...cardStyle, padding: '24px' }}>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+              <div style={{ width: 64, height: 64, borderRadius: 16, background: 'linear-gradient(135deg,#800000,#c05050)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 20, fontWeight: 700, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>{va.avatar}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", marginBottom: 2 }}>{va.name}</div>
+                <div style={{ fontSize: 12, color: '#888', fontFamily: "'Poppins', sans-serif", marginBottom: 8 }}>{va.role}</div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Stars rating={va.rating} size={13} /><span style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.rating}</span><span style={{ fontSize: 11, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>({va.reviews} reviews)</span></div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: avail.bg, borderRadius: 20, padding: '2px 10px' }}><div style={{ width: 6, height: 6, borderRadius: '50%', background: avail.dot }} /><span style={{ fontSize: 11, fontWeight: 600, color: avail.color, fontFamily: "'Poppins', sans-serif" }}>{va.availability}</span></div>
                 </div>
               </div>
-              <p style={{ fontSize: 12.5, color: '#555', lineHeight: 1.7, margin: '14px 0 0', fontFamily: "'Poppins', sans-serif" }}>{va.bio}</p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
-                {[va.location, va.timezone, va.languages.join(' · ')].map((m, i) => (
-                  <div key={i} style={{ fontSize: 11, color: '#666', fontFamily: "'Poppins', sans-serif", background: '#faf9f9', borderRadius: 6, padding: '4px 8px', border: '1px solid #f0edec' }}>{m}</div>
-                ))}
-              </div>
             </div>
+            <div style={{ marginTop: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {[{ label: 'Location', value: va.location }, { label: 'Timezone', value: va.timezone }, { label: 'Languages', value: va.languages.join(', ') }, { label: 'Experience', value: va.experience }].map(s => (
+                <div key={s.label} style={{ background: '#faf9f9', borderRadius: 8, padding: '8px 12px', border: '1px solid #f0edec' }}>
+                  <div style={{ fontSize: 9.5, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'Poppins', sans-serif", marginBottom: 2 }}>{s.label}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13, color: '#555', lineHeight: 1.65, margin: '16px 0 0', fontFamily: "'Poppins', sans-serif" }}>{va.bio}</p>
           </div>
           <div style={{ ...cardStyle, overflow: 'hidden' }}>
             <div style={{ display: 'flex', gap: 4, padding: '12px 16px', borderBottom: '1px solid #f5f2f2' }}>
-              {(['overview', 'portfolio', 'history'] as const).map(t => (
-                <button key={t} onClick={() => setActiveTab(t)} style={{ background: activeTab === t ? '#800000' : 'none', color: activeTab === t ? '#fff' : '#888', border: 'none', borderRadius: 8, padding: '8px 16px', fontSize: 12.5, fontFamily: "'Poppins', sans-serif", fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s' }}>
+              {TABS.map(t => (
+                <button key={t} onClick={() => setActiveTab(t)} style={{ background: activeTab === t ? '#800000' : 'none', color: activeTab === t ? '#fff' : '#888', border: 'none', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", fontSize: 12.5, fontWeight: 500, padding: '9px 16px', borderRadius: 8, transition: 'all 0.15s' }}>
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               ))}
@@ -554,13 +553,11 @@ function StepVAProfile({ va, service, onBack, onNext }: { va: VA; service: Selec
               {activeTab === 'overview' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, fontFamily: "'Poppins', sans-serif" }}>Skills & Expertise</div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {va.skills.map(s => <span key={s} style={{ background: '#f5f3f3', border: '1px solid #ece8e8', color: '#444', fontSize: 11, fontFamily: "'Poppins', sans-serif", borderRadius: 6, padding: '4px 10px' }}>{s}</span>)}
-                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, fontFamily: "'Poppins', sans-serif" }}>Skills & Expertise</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>{va.skills.map(s => <span key={s} style={{ background: '#f5f3f3', border: '1px solid #ece8e8', color: '#444', fontSize: 11, fontFamily: "'Poppins', sans-serif", borderRadius: 6, padding: '4px 10px' }}>{s}</span>)}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, fontFamily: "'Poppins', sans-serif" }}>Education</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, fontFamily: "'Poppins', sans-serif" }}>Education</div>
                     <div style={{ fontSize: 12.5, color: '#444', fontFamily: "'Poppins', sans-serif" }}>{va.education}</div>
                   </div>
                 </div>
@@ -569,8 +566,8 @@ function StepVAProfile({ va, service, onBack, onNext }: { va: VA; service: Selec
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {va.portfolioItems.map((item, i) => (
                     <div key={i} style={{ padding: '14px 16px', borderRadius: 10, background: '#faf9f9', border: '1px solid #f0edec', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <div style={{ width: 34, height: 34, borderRadius: 9, background: '#fff0f0', border: '1px solid #f0c0c0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                      <div style={{ width: 36, height: 36, borderRadius: 9, background: '#fff0f0', border: '1px solid #f0c0c0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -588,14 +585,8 @@ function StepVAProfile({ va, service, onBack, onNext }: { va: VA; service: Selec
                   {va.workHistory.map((h, i) => (
                     <div key={i} style={{ padding: '14px 16px', borderRadius: 10, background: '#faf9f9', border: '1px solid #f0edec' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                        <div>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{h.client}</span>
-                          <span style={{ fontSize: 11, color: '#888', fontFamily: "'Poppins', sans-serif", marginLeft: 8 }}>· {h.role} · {h.duration}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Stars rating={h.rating} size={11} />
-                          <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{h.rating}</span>
-                        </div>
+                        <div><span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{h.client}</span><span style={{ fontSize: 11, color: '#888', fontFamily: "'Poppins', sans-serif", marginLeft: 8 }}>· {h.role} · {h.duration}</span></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Stars rating={h.rating} size={11} /><span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{h.rating}</span></div>
                       </div>
                       <p style={{ fontSize: 12, color: '#666', fontStyle: 'italic', margin: 0, lineHeight: 1.55, fontFamily: "'Poppins', sans-serif" }}>"{h.review}"</p>
                     </div>
@@ -612,15 +603,19 @@ function StepVAProfile({ va, service, onBack, onNext }: { va: VA; service: Selec
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
               {[{ label: 'Experience', value: va.experience }, { label: 'Jobs Completed', value: String(va.completedJobs) }, { label: 'Avg. Response', value: va.responseTime }, { label: 'Languages', value: va.languages.join(', ') }].map(s => (
                 <div key={s.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontFamily: "'Poppins', sans-serif" }}>
-                  <span style={{ color: '#aaa' }}>{s.label}</span>
-                  <span style={{ color: '#1a1a2e', fontWeight: 600 }}>{s.value}</span>
+                  <span style={{ color: '#aaa' }}>{s.label}</span><span style={{ color: '#1a1a2e', fontWeight: 600 }}>{s.value}</span>
                 </div>
               ))}
             </div>
-            <button onClick={onNext} style={{ width: '100%', padding: '12px 0', background: '#800000', color: '#fff', border: 'none', borderRadius: 10, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', letterSpacing: '0.02em', fontFamily: "'Poppins', sans-serif", transition: 'background 0.15s' }}>
-              Book Interview →
+            <button onClick={onNext} style={{ width: '100%', padding: '13px 0', background: '#800000', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.03em', fontFamily: "'Poppins', sans-serif", transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: '0 4px 14px rgba(128,0,0,0.2)' }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.845v6.31a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+              View Interview Recording
             </button>
-            <div style={{ textAlign: 'center', fontSize: 10, color: '#bbb', marginTop: 8, fontFamily: "'Poppins', sans-serif" }}>Free 30-min discovery call</div>
+            <div style={{ textAlign: 'center', fontSize: 10.5, color: '#aaa', marginTop: 8, fontFamily: "'Poppins', sans-serif", lineHeight: 1.5 }}>Watch the VA\'s pre-recorded interview before proceeding</div>
+          </div>
+          <div style={{ ...cardStyle, padding: '14px 16px', background: '#fff6f6', borderColor: '#f0c0c0' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#800000', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6, fontFamily: "'Poppins', sans-serif" }}>Selected Service</div>
+            <div style={{ fontSize: 12, color: '#333', fontFamily: "'Poppins', sans-serif", fontWeight: 500 }}>{service.name}</div>
           </div>
         </div>
       </div>
@@ -629,269 +624,193 @@ function StepVAProfile({ va, service, onBack, onNext }: { va: VA; service: Selec
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// STEP 5 — INTERVIEW
+// STEP 5 — INTERVIEW RECORDING (view-only)
 // ═══════════════════════════════════════════════════════════════════════════════
 function StepInterview({ va, service, onBack, onNext }: { va: VA; service: SelectedService; onBack: () => void; onNext: () => void }) {
-  const calDays = getCalendarDays()
-  const [activeView, setActiveView]   = useState<'schedule' | 'recordings'>('recordings')
-  const [selectedDay, setSelectedDay]   = useState(calDays[1].date)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
-  const [scheduled, setScheduled]     = useState(false)
-  const [playingId, setPlayingId]     = useState<string | null>(null)
-  const [playProgress, setPlayProgress] = useState(0)
-  const [activeChapter, setActiveChapter] = useState(0)
+  const [playingId,     setPlayingId]     = React.useState<string | null>(null)
+  const [activeChapter, setActiveChapter] = React.useState(0)
+  const [playProgress,  setPlayProgress]  = React.useState(0)
 
   const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
     completed: { bg: '#f0fdf4', color: '#16a34a', label: 'Completed' },
     upcoming:  { bg: '#eff6ff', color: '#2563eb', label: 'Upcoming' },
     missed:    { bg: '#fef2f2', color: '#dc2626', label: 'Missed' },
   }
+
   const rec = MOCK_RECORDINGS[0]
 
   return (
     <div>
       <BackBtn label="Back to VA Profile" onClick={onBack} />
       <ProgressBar activeIndex={4} />
-      <div style={{ marginBottom: 22 }}>
+      <div style={{ marginBottom: 24 }}>
         <p style={{ fontSize: 11, color: '#800000', fontWeight: 700, margin: '0 0 2px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Step 5 of 6</p>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Interview Recording</h2>
-        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Review {va.name}'s interview recording or schedule a live call.</p>
-      </div>
-      <div style={{ display: 'inline-flex', background: '#f5f3f3', borderRadius: 10, padding: 4, gap: 2, marginBottom: 24, border: '1px solid #ece8e8' }}>
-        {(['recordings', 'schedule'] as const).map(v => (
-          <button key={v} onClick={() => setActiveView(v)} style={{ background: activeView === v ? '#800000' : 'transparent', color: activeView === v ? '#fff' : '#888', border: 'none', borderRadius: 8, padding: '8px 16px', fontSize: 12, fontFamily: "'Poppins', sans-serif", fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s' }}>
-            {v === 'recordings' ? `🎥 Recordings (${MOCK_RECORDINGS.filter(r => r.status === 'completed').length})` : '📅 Schedule Interview'}
-          </button>
-        ))}
+        <p style={{ fontSize: 13, color: '#666', margin: '4px 0 0' }}>Review the pre-recorded interview of <strong style={{ color: '#800000' }}>{va.name}</strong> before proceeding.</p>
       </div>
 
-      {activeView === 'recordings' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ ...cardStyle, overflow: 'hidden' }}>
-              <div style={{ background: '#0d0d18', aspectRatio: '16/9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', minHeight: 260 }}>
-                <div style={{ width: 90, height: 90, borderRadius: 20, background: 'linear-gradient(135deg,rgba(128,0,128,0.4),rgba(80,0,128,0.6))', border: '2px solid rgba(150,80,200,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, position: 'relative' }}>
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: 20, background: 'rgba(100,0,150,0.2)' }} />
-                  <span style={{ color: 'rgba(180,100,220,0.9)', fontSize: 22, fontWeight: 700, fontFamily: "'Poppins', sans-serif", zIndex: 1 }}>{va.avatar}</span>
-                  {playingId !== rec.id && (
-                    <button onClick={() => { setPlayingId(rec.id); setPlayProgress(0) }} style={{ position: 'absolute', inset: 0, borderRadius: 20, background: 'rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid rgba(255,255,255,0.4)' }}>
-                        <svg width={14} height={14} viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
-                      </div>
-                    </button>
-                  )}
+      {/* Notice banner */}
+      <div style={{ ...cardStyle, padding: '12px 18px', marginBottom: 24, background: '#fffbf5', borderColor: '#f0d9b5', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span style={{ fontSize: 12, color: '#78350f', fontFamily: "'Poppins', sans-serif" }}>
+          This is a pre-recorded interview for your review. You may proceed to send a hire request once you have evaluated the recording.
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Audio Player Card */}
+          <div style={{ ...cardStyle, padding: '24px 26px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 18, fontFamily: "'Poppins', sans-serif" }}>Now Playing</div>
+
+            {/* Waveform visual area */}
+            <div style={{ background: '#1a1a2e', borderRadius: 14, padding: '24px 22px', marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,#800000 0%,#1a1a2e 60%)', opacity: 0.6 }} />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, border: '1.5px solid rgba(255,255,255,0.2)', transition: 'all 0.15s' }}
+                  onClick={() => setPlayingId(playingId ? null : rec.id)}>
+                  {playingId
+                    ? <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                    : <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>
+                  }
                 </div>
-                <div style={{ color: '#fff', fontSize: 16, fontWeight: 700, fontFamily: "'Poppins', sans-serif" }}>{va.name}</div>
-                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: "'Poppins', sans-serif", marginTop: 2 }}>{va.role}</div>
-                <div style={{ position: 'absolute', bottom: 16, left: 16, background: 'rgba(20,20,36,0.9)', borderRadius: 8, padding: '7px 12px' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', fontFamily: "'Poppins', sans-serif" }}>{va.name}</div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: "'Poppins', sans-serif" }}>{va.role} · Applicant</div>
-                </div>
-              </div>
-              <div style={{ padding: '16px 20px 20px', background: '#fff' }}>
-                <div style={{ marginBottom: 8, position: 'relative', cursor: 'pointer' }} onClick={e => {
-                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                  setPlayProgress(Math.round(((e.clientX - rect.left) / rect.width) * 100))
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 48 }}>
-                    {Array.from({ length: 80 }, (_, i) => {
-                      const h = [20, 35, 55, 40, 65, 80, 45, 30, 55, 70, 50, 40, 75, 60, 35, 50, 65, 45, 30, 60, 80, 55, 40, 70, 50, 35, 60, 45, 80, 55, 40, 65, 30, 50, 70, 45, 60, 80, 35, 55, 40, 65, 50, 30, 70, 45, 60, 80, 35, 55, 40, 30, 65, 50, 70, 80, 45, 60, 35, 55, 40, 65, 30, 80, 50, 70, 45, 60, 55, 35, 40, 65, 50, 30, 70, 80, 45, 60, 55, 35][i % 80]
-                      const pct = (i / 80) * 100
-                      const isPlayed = pct <= playProgress
-                      const isHigh = h > 60
-                      return <div key={i} style={{ flex: 1, borderRadius: 2, height: `${h}%`, background: isPlayed ? (isHigh ? '#ef4444' : '#d97706') : (isHigh ? '#f5a0a0' : '#e5e7eb'), transition: 'background 0.1s' }} />
-                    })}
-                  </div>
-                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${playProgress}%`, width: 2, background: '#ef4444', borderRadius: 2 }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, color: '#aaa', fontFamily: "'Poppins', sans-serif", marginBottom: 12 }}>
-                  {['0:00', '1:38', '3:30', '4:55', '8:42'].map(t => <span key={t}>{t}</span>)}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <button style={{ width: 36, height: 36, borderRadius: '50%', background: '#f5f3f3', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
-                  </button>
-                  <button onClick={() => setPlayingId(playingId === rec.id ? null : rec.id)} style={{ width: 44, height: 44, borderRadius: '50%', background: '#ef4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(239,68,68,0.3)' }}>
-                    {playingId === rec.id
-                      ? <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-                      : <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>}
-                  </button>
-                  <button style={{ width: 36, height: 36, borderRadius: '50%', background: '#f5f3f3', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
-                  </button>
-                  <div style={{ flex: 1, textAlign: 'center' }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>
-                      {String(Math.floor((playProgress / 100) * 8)).padStart(2,'0')}:{String(Math.floor(((playProgress / 100) * 8 % 1) * 60)).padStart(2,'0')} <span style={{ fontSize: 12, color: '#aaa', fontWeight: 400 }}>/ 8:42</span>
-                    </div>
-                    <div style={{ fontSize: 10, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>{rec.chapters[activeChapter]?.label || 'Chapter 1: Intro & Motivation'}</div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    {['0.75x', '1x', '1.5x', '2x'].map(spd => (
-                      <button key={spd} style={{ padding: '4px 8px', borderRadius: 6, border: '1.5px solid #e0dcdc', background: spd === '1x' ? '#ef4444' : '#fff', color: spd === '1x' ? '#fff' : '#555', fontSize: 10.5, fontFamily: "'Poppins', sans-serif", fontWeight: 600, cursor: 'pointer' }}>{spd}</button>
-                    ))}
-                  </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#fff', fontFamily: "'Poppins', sans-serif", marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.title}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: "'Poppins', sans-serif" }}>{rec.date} &middot; {rec.duration}</div>
                 </div>
               </div>
-              <div style={{ margin: '0 20px 20px', background: '#fef3f2', border: '1px solid #fde8e8', borderRadius: 10, padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <div style={{ width: 28, height: 28, borderRadius: 7, background: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, fontFamily: "'Poppins', sans-serif" }}>Q1</span>
-                </div>
-                <div>
-                  <div style={{ fontSize: 9.5, fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.07em', fontFamily: "'Poppins', sans-serif", marginBottom: 3 }}>Current Question</div>
-                  <div style={{ fontSize: 12.5, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", fontWeight: 500, lineHeight: 1.5 }}>Tell us about yourself and why you're interested in the {va.role} position.</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ ...cardStyle, padding: '18px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>All Recordings</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {MOCK_RECORDINGS.map(r => {
-                  const st = STATUS_STYLE[r.status]
-                  return (
-                    <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, border: '1px solid #f0edec', background: '#faf9f9' }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg,#800000,#c05050)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
-                        <span style={{ color: '#fff', fontSize: 11, fontWeight: 700, fontFamily: "'Poppins', sans-serif" }}>{r.thumbnail}</span>
-                        {r.status === 'completed' && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width={14} height={14} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>
-                        </div>}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</div>
-                        <div style={{ fontSize: 11, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>{r.date} · {r.duration}</div>
-                      </div>
-                      <span style={{ fontSize: 10, fontWeight: 600, background: st.bg, color: st.color, borderRadius: 20, padding: '3px 10px', fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>{st.label}</span>
-                    </div>
-                  )
+              {/* Fake waveform bars */}
+              <div style={{ display: 'flex', gap: 2, alignItems: 'center', marginTop: 16, height: 28 }}>
+                {Array.from({ length: 48 }).map((_, i) => {
+                  const filled = playProgress / 100 > i / 48
+                  const h = [14,18,10,22,16,26,12,20,8,24,18,14,22,10,28,16,12,24,20,14,18,22,10,26,16,20,12,24,18,14,22,28,10,16,20,24,14,18,22,12,26,16,20,14,18,22,10,16][i]
+                  return <div key={i} style={{ flex: 1, height: h, borderRadius: 2, background: filled ? '#fff' : 'rgba(255,255,255,0.2)', transition: 'background 0.1s' }} />
                 })}
               </div>
             </div>
-          </div>
-          <div style={{ position: 'sticky', top: 80, display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ ...cardStyle, padding: '18px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>Interview Chapters</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {rec.chapters.map((ch, i) => (
-                  <button key={i} onClick={() => { setActiveChapter(i); setPlayingId(rec.id); setPlayProgress([0, 20, 42, 60][i]) }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 9, border: `1.5px solid ${activeChapter === i ? '#800000' : '#f0edec'}`, background: activeChapter === i ? '#fff5f5' : '#faf9f9', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
-                    <div style={{ width: 24, height: 24, borderRadius: 6, background: activeChapter === i ? '#800000' : '#e8e4e4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      {activeChapter === i
-                        ? <svg width={10} height={10} viewBox="0 0 24 24" fill="#fff" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-                        : <span style={{ fontSize: 9, fontWeight: 700, color: '#888', fontFamily: "'Poppins', sans-serif" }}>{i+1}</span>}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 11.5, fontWeight: 600, color: activeChapter === i ? '#800000' : '#1a1a2e', fontFamily: "'Poppins', sans-serif", lineHeight: 1.3 }}>{ch.label}</div>
-                      <div style={{ fontSize: 10, color: '#aaa', fontFamily: "'Poppins', sans-serif", marginTop: 2 }}>Starts at {ch.start}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div style={{ ...cardStyle, padding: '18px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, fontFamily: "'Poppins', sans-serif" }}>Evaluator Notes</div>
-              <textarea rows={4} placeholder="Add your observations about this candidate..." style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e4e4', borderRadius: 9, fontSize: 12, fontFamily: "'Poppins', sans-serif", color: '#333', background: '#faf9f9', outline: 'none', resize: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <button onClick={onNext} style={{ width: '100%', padding: '13px 0', background: '#800000', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", letterSpacing: '0.02em', boxShadow: '0 4px 12px rgba(128,0,0,0.25)' }}>
-              Send Hire Request →
-            </button>
-          </div>
-        </div>
-      )}
 
-      {activeView === 'schedule' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20, alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {scheduled ? (
-              <div style={{ ...cardStyle, padding: '40px 32px', textAlign: 'center' }}>
-                <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                  <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', margin: '0 0 8px', fontFamily: "'Poppins', sans-serif" }}>Interview Scheduled!</h3>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#800000', fontFamily: "'Poppins', sans-serif", marginBottom: 24 }}>
-                  {new Date(selectedDay).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {selectedTime}
-                </div>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-                  <button onClick={() => { setScheduled(false); setSelectedTime(null) }} style={{ padding: '10px 20px', background: '#f5f3f3', color: '#444', border: 'none', borderRadius: 9, fontSize: 12, fontWeight: 600, fontFamily: "'Poppins', sans-serif", cursor: 'pointer' }}>Reschedule</button>
-                  <button onClick={onNext} style={{ padding: '10px 20px', background: '#800000', color: '#fff', border: 'none', borderRadius: 9, fontSize: 12, fontWeight: 600, fontFamily: "'Poppins', sans-serif", cursor: 'pointer' }}>Proceed to Hire →</button>
-                </div>
+            {/* Scrubber */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+              <span style={{ fontSize: 10.5, color: '#aaa', fontFamily: "'Poppins', sans-serif'" , minWidth: 32 }}>0:00</span>
+              <div style={{ flex: 1, height: 5, background: '#f0edec', borderRadius: 10, overflow: 'hidden', cursor: 'pointer' }}
+                onClick={e => { const r = (e.currentTarget as HTMLDivElement).getBoundingClientRect(); setPlayProgress(Math.round(((e.clientX - r.left) / r.width) * 100)) }}>
+                <div style={{ height: '100%', width: `${playProgress}%`, background: '#800000', borderRadius: 10, transition: 'width 0.1s' }} />
               </div>
-            ) : (
-              <>
-                <div style={{ ...cardStyle, padding: '20px 22px' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>Select a Date</div>
-                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-                    {calDays.map(d => (
-                      <button key={d.date} disabled={d.isWeekend} onClick={() => { setSelectedDay(d.date); setSelectedTime(null) }}
-                        style={{ minWidth: 52, padding: '8px 6px', textAlign: 'center', cursor: d.isWeekend ? 'not-allowed' : 'pointer', background: selectedDay === d.date ? '#800000' : '#fff', border: `1.5px solid ${selectedDay === d.date ? '#800000' : '#e8e4e4'}`, borderRadius: 10, opacity: d.isWeekend ? 0.4 : 1, transition: 'all 0.15s' }}>
-                        <div style={{ fontSize: 9, fontWeight: 600, color: selectedDay === d.date ? 'rgba(255,255,255,0.8)' : '#aaa', textTransform: 'uppercase', marginBottom: 3, fontFamily: "'Poppins', sans-serif" }}>{d.label}</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: selectedDay === d.date ? '#fff' : d.isToday ? '#800000' : '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{d.day}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ ...cardStyle, padding: '20px 22px' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>Available Times</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-                    {TIME_SLOTS.map(slot => (
-                      <button key={slot.time} disabled={!slot.available} onClick={() => setSelectedTime(slot.time)}
-                        style={{ padding: '9px 0', borderRadius: 8, border: `1.5px solid ${selectedTime === slot.time ? '#800000' : '#e8e4e4'}`, background: selectedTime === slot.time ? '#800000' : (slot.available ? '#fff' : '#f5f3f3'), color: selectedTime === slot.time ? '#fff' : (slot.available ? '#444' : '#ccc'), fontSize: 12, fontFamily: "'Poppins', sans-serif", fontWeight: 500, cursor: slot.available ? 'pointer' : 'not-allowed', transition: 'all 0.15s' }}>
-                        {slot.time}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-          {!scheduled && (
-            <div style={{ position: 'sticky', top: 80 }}>
-              <div style={{ ...cardStyle, padding: '20px' }}>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>Booking Summary</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
-                  {[{ label: 'Type', value: 'Discovery Call' }, { label: 'Duration', value: '30 minutes' }, { label: 'Format', value: 'Google Meet / Zoom' }, { label: 'Date', value: selectedDay ? new Date(selectedDay).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—' }, { label: 'Time', value: selectedTime ?? '—' }].map(s => (
-                    <div key={s.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontFamily: "'Poppins', sans-serif" }}>
-                      <span style={{ color: '#aaa' }}>{s.label}</span>
-                      <span style={{ color: '#1a1a2e', fontWeight: 600 }}>{s.value}</span>
-                    </div>
-                  ))}
-                </div>
-                <button disabled={!selectedTime} onClick={() => setScheduled(true)} style={{ width: '100%', padding: '11px 0', background: selectedTime ? '#800000' : '#f0edec', color: selectedTime ? '#fff' : '#ccc', border: 'none', borderRadius: 10, fontSize: 12.5, fontWeight: 600, fontFamily: "'Poppins', sans-serif", cursor: selectedTime ? 'pointer' : 'not-allowed', transition: 'background 0.15s' }}>
-                  Confirm Interview
-                </button>
-              </div>
+              <span style={{ fontSize: 10.5, color: '#aaa', fontFamily: "'Poppins', sans-serif", minWidth: 32, textAlign: 'right' }}>{rec.duration}</span>
             </div>
-          )}
+          </div>
+
+          {/* All Recordings List */}
+          <div style={{ ...cardStyle, padding: '20px 22px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 16, fontFamily: "'Poppins', sans-serif" }}>All Recordings</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {MOCK_RECORDINGS.map(r => {
+                const st = STATUS_STYLE[r.status]
+                const isActive = playingId === r.id
+                return (
+                  <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', borderRadius: 10, border: `1.5px solid ${isActive ? '#c9a0a0' : '#f0edec'}`, background: isActive ? '#fff8f8' : '#faf9f9', transition: 'all 0.15s', cursor: r.status === 'completed' ? 'pointer' : 'default' }}
+                    onClick={() => r.status === 'completed' && setPlayingId(isActive ? null : r.id)}>
+                    <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(135deg,#800000,#c05050)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+                      <span style={{ color: '#fff', fontSize: 11, fontWeight: 700, fontFamily: "'Poppins', sans-serif" }}>{r.thumbnail}</span>
+                      {r.status === 'completed' && (
+                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {isActive
+                            ? <svg width={14} height={14} viewBox="0 0 24 24" fill="#fff" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                            : <svg width={14} height={14} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>
+                          }
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif", marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.title}</div>
+                      <div style={{ fontSize: 11, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>{r.date} &middot; {r.duration}</div>
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 600, background: st.bg, color: st.color, borderRadius: 20, padding: '3px 10px', fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>{st.label}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Right Sidebar */}
+        <div style={{ position: 'sticky', top: 80, display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Interview Chapters */}
+          <div style={{ ...cardStyle, padding: '18px 20px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14, fontFamily: "'Poppins', sans-serif" }}>Interview Chapters</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {rec.chapters.map((ch, i) => (
+                <button key={i} onClick={() => { setActiveChapter(i); setPlayingId(rec.id); setPlayProgress([0, 20, 42, 60][i] ?? 0) }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 9, border: `1.5px solid ${activeChapter === i ? '#800000' : '#f0edec'}`, background: activeChapter === i ? '#fff5f5' : '#faf9f9', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 7, background: activeChapter === i ? '#800000' : '#ece8e8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {activeChapter === i
+                      ? <svg width={10} height={10} viewBox="0 0 24 24" fill="#fff" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                      : <span style={{ fontSize: 9, fontWeight: 700, color: '#888', fontFamily: "'Poppins', sans-serif" }}>{i + 1}</span>}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11.5, fontWeight: 600, color: activeChapter === i ? '#800000' : '#1a1a2e', fontFamily: "'Poppins', sans-serif", lineHeight: 1.3 }}>{ch.label}</div>
+                    <div style={{ fontSize: 10, color: '#aaa', fontFamily: "'Poppins', sans-serif", marginTop: 2 }}>Starts at {ch.start}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Evaluator Notes */}
+          <div style={{ ...cardStyle, padding: '18px 20px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10, fontFamily: "'Poppins', sans-serif" }}>Evaluator Notes</div>
+            <textarea rows={4} placeholder="Add your observations about this candidate..." style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #e8e4e4', borderRadius: 9, fontSize: 12, fontFamily: "'Poppins', sans-serif", color: '#333', background: '#faf9f9', outline: 'none', resize: 'none', boxSizing: 'border-box' }} />
+          </div>
+
+          {/* Proceed CTA */}
+          <button onClick={onNext} style={{ width: '100%', padding: '13px 0', background: '#800000', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", letterSpacing: '0.03em', boxShadow: '0 4px 14px rgba(128,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}>
+            Proceed to Hire Request
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <div style={{ textAlign: 'center', fontSize: 10.5, color: '#aaa', fontFamily: "'Poppins', sans-serif" }}>
+            You may proceed once you have reviewed the recording.
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// STEP 6 — HIRE REQUEST (real API call)
+// STEP 6 — HIRE REQUEST
 // ═══════════════════════════════════════════════════════════════════════════════
 function StepHireRequest({ va, service, brief, onBack, onSubmit }: { va: VA; service: SelectedService; brief: ProjectBriefData; onBack: () => void; onSubmit: () => void }) {
-  const [form, setForm]   = useState<HireRequest>({ message: '', startDate: brief.startDate || '', contractType: 'full-time', hoursPerWeek: brief.hours, agreedToTerms: false })
+  const [form, setForm]       = useState<HireRequest>({ message: '', startDate: brief.startDate || '', contractType: 'full-time', hoursPerWeek: brief.hours, agreedToTerms: false })
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
   const update = (k: keyof HireRequest, v: string | boolean) => setForm(f => ({ ...f, [k]: v }))
   const canSubmit = form.message.trim() && form.startDate && form.agreedToTerms && !loading
 
+  // ✅ FIXED URL — removed /backend prefix
   const handleSubmit = async () => {
     if (!canSubmit) return
     setLoading(true)
     setError('')
     try {
-      const token = localStorage.getItem('token')
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/hire-requests`, {
+      const res = await fetch('/api/hire-requests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          vaId: va.id, serviceId: service.id, serviceName: service.name,
-          projectBrief: brief, message: form.message,
-          contractType: form.contractType, hoursPerWeek: form.hoursPerWeek,
+          vaId:         va.id,
+          serviceId:    service.id,
+          serviceName:  service.name,
+          projectBrief: brief,
+          message:      form.message,
+          contractType: form.contractType,
+          hoursPerWeek: form.hoursPerWeek,
+          startDate:    form.startDate,
         }),
       })
       const data = await res.json()
-      if (!data.success) throw new Error(data.message || 'Failed to send hire request')
+      if (!res.ok) throw new Error(data.message || 'Failed to send hire request')
       onSubmit()
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
@@ -923,10 +842,7 @@ function StepHireRequest({ va, service, brief, onBack, onSubmit }: { va: VA; ser
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.name}</div>
                 <div style={{ fontSize: 12, color: '#888', fontFamily: "'Poppins', sans-serif", marginBottom: 6 }}>{va.role}</div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Stars rating={va.rating} size={11} />
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.rating}</span>
-                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Stars rating={va.rating} size={11} /><span style={{ fontSize: 11, fontWeight: 700, color: '#1a1a2e', fontFamily: "'Poppins', sans-serif" }}>{va.rating}</span></div>
                   <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>● {va.availability}</span>
                 </div>
               </div>
@@ -1095,10 +1011,10 @@ function StepSuccess({ va, service }: { va: VA; service: SelectedService }) {
 // MAIN
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function VAHiringFlow() {
-  const [step, setStep]                   = useState<Step>('services')
+  const [step, setStep]                       = useState<Step>('services')
   const [selectedService, setSelectedService] = useState<SelectedService | null>(null)
-  const [projectBrief, setProjectBrief]   = useState<ProjectBriefData | null>(null)
-  const [selectedVA, setSelectedVA]       = useState<VA | null>(null)
+  const [projectBrief, setProjectBrief]       = useState<ProjectBriefData | null>(null)
+  const [selectedVA, setSelectedVA]           = useState<VA | null>(null)
   const goTo = (s: Step) => setStep(s)
 
   return (
