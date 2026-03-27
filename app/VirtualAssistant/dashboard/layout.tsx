@@ -22,9 +22,10 @@ const NavIcon = ({ children, active }: { children: React.ReactNode; active?: boo
 )
 
 // ─── NAV ICONS ────────────────────────────────────────────────────────────────
-const DashIco     = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" d2="M9 22V12h6v10" size={13} /></NavIcon>
-const AssessIco   = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4" size={13} /></NavIcon>
-const SettingsIco = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
+const DashIco      = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" d2="M9 22V12h6v10" size={13} /></NavIcon>
+const AssessIco    = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4" size={13} /></NavIcon>
+const MessagingIco = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
+const SettingsIco  = ({ a }: { a?: boolean }) => <NavIcon active={a}><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
 
 const ChevronLeft  = () => <Ico d="M15 18l-6-6 6-6" size={14} sw={1.5} />
 const ChevronRight = () => <Ico d="M9 18l6-6-6-6" size={14} sw={1.5} />
@@ -45,10 +46,11 @@ type ClientInfo = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
-// ─── NAV DATA — Only 3 items ───────────────────────────────────────────────────
+// ─── NAV DATA ─────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
-  { label: 'Dashboard',  href: '/VirtualAssistant/dashboard',            icon: (a: boolean) => <DashIco a={a} /> },
-  { label: 'Assessment', href: '/VirtualAssistant/dashboard/VAassesment', icon: (a: boolean) => <AssessIco a={a} /> },
+  { label: 'Dashboard',  href: '/VirtualAssistant/dashboard',                icon: (a: boolean) => <DashIco a={a} /> },
+  { label: 'Assessment', href: '/VirtualAssistant/dashboard/VAassesment',    icon: (a: boolean) => <AssessIco a={a} /> },
+  { label: 'Messaging',  href: '/VirtualAssistant/dashboard/VAmessaging',    icon: (a: boolean) => <MessagingIco a={a} /> },
 ]
 
 // ─── HEADER ───────────────────────────────────────────────────────────────────
@@ -137,6 +139,8 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
   const [mobileOpen, setMobileOpen] = useState(false)
   const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
   const [loggingOut, setLoggingOut] = useState(false)
+
+  const isMessaging = pathname === '/VirtualAssistant/dashboard/VAmessaging'
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -270,7 +274,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
-        <main style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>{children}</main>
+        <main style={{ flex: 1, overflowY: 'auto', padding: isMessaging ? '0' : '20px' }}>{children}</main>
       </div>
     </div>
   )

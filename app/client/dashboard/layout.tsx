@@ -3,50 +3,46 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
+// ─── BASE ICON ────────────────────────────────────────────────────────────────
 const Ico = ({ d, d2, size = 16, sw = 1.2 }: { d: string; d2?: string; size?: number; sw?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
     <path d={d} />{d2 && <path d={d2} />}
   </svg>
 )
 
+// ─── NAV ICON WRAPPER ─────────────────────────────────────────────────────────
 const NavIcon = ({ children }: { children: React.ReactNode }) => (
-  <span style={{ width: 26, height: 26, borderRadius: 6, border: '1px solid #e0dede', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: '#fff', color: '#333' }}>{children}</span>
+  <span style={{ width: 26, height: 26, borderRadius: 6, border: '1px solid #e0dede', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: '#fff', color: '#333' }}>
+    {children}
+  </span>
 )
 
-const CalIcon      = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
-const BookingIcon  = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
-const SubIcon      = () => <NavIcon><Ico d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" size={13} /></NavIcon>
-const SearchIcoNav = () => <NavIcon><Ico d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" size={13} /></NavIcon>
-const HeartIco     = () => <NavIcon><Ico d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" size={13} /></NavIcon>
-const ListIco      = () => <NavIcon><Ico d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" size={13} sw={2} /></NavIcon>
-const ViewIco      = () => <NavIcon><Ico d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" d2="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" size={13} /></NavIcon>
-const RecIco       = () => <NavIcon><Ico d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" d2="M19 10v1a7 7 0 0 1-14 0v-1M12 19v4M8 23h8" size={13} /></NavIcon>
-const UsersIco     = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /></NavIcon>
-const BillIco      = () => <NavIcon><Ico d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" d2="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" size={13} /></NavIcon>
-const FeedbackIco  = () => <NavIcon><Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
-const SupportIco   = () => <NavIcon><Ico d="M3 18v-6a9 9 0 0 1 18 0v6" d2="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" size={13} /></NavIcon>
-const SettingsIco  = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
+// ─── NAV ICONS ────────────────────────────────────────────────────────────────
+const CalIcon       = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
+const BookingIcon   = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
+const SubIcon       = () => <NavIcon><Ico d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" size={13} /></NavIcon>
+const VAServicesIco = () => <NavIcon><Ico d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" d2="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" size={13} /></NavIcon>
+const VAIco         = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /></NavIcon>
+const FeedbackIco   = () => <NavIcon><Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
+const SupportIco    = () => <NavIcon><Ico d="M3 18v-6a9 9 0 0 1 18 0v6" d2="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" size={13} /></NavIcon>
+const SettingsIco   = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
+const BillingIco    = () => <NavIcon><Ico d="M3 10h18M7 15h.01M11 15h2M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" size={13} /></NavIcon>
+const ServicesIco   = () => <NavIcon><Ico d="M4 6h16M4 10h16M4 14h16M4 18h16" size={13} /></NavIcon>
+// ─── MESSAGING ICON (new) ─────────────────────────────────────────────────────
+const MessagingIco  = () => <NavIcon><Ico d="M8 9h8M8 13h6M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
 
-const ChevronDown  = () => <Ico d="M6 9l6 6 6-6" size={13} sw={1.5} />
+// ─── UTILITY ICONS ────────────────────────────────────────────────────────────
+const ChevronDown  = () => <Ico d="M6 9l6 6 6-6"    size={13} sw={1.5} />
 const ChevronUp    = () => <Ico d="M18 15l-6-6-6 6" size={13} sw={1.5} />
 const ChevronLeft  = () => <Ico d="M15 18l-6-6 6-6" size={14} sw={1.5} />
-const ChevronRight = () => <Ico d="M9 18l6-6-6-6" size={14} sw={1.5} />
+const ChevronRight = () => <Ico d="M9 18l6-6-6-6"   size={14} sw={1.5} />
 const SearchIco    = () => <Ico d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" size={14} />
 const BellIco      = () => <Ico d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" size={16} />
 const LogoutIco    = () => <Ico d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" size={13} />
 const MenuIco      = () => <Ico d="M3 12h18M3 6h18M3 18h18" size={18} />
 const ProfileIco   = () => <Ico d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} />
 
-const Badge = ({ dot, dotColor, label }: { dot?: boolean; dotColor?: string; label?: string }) => {
-  if (dot && label) return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#f0eeee', borderRadius: 20, padding: '2px 8px', fontSize: 10.5, color: '#666' }}>
-      <span style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
-      {label}
-    </span>
-  )
-  return null
-}
-
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 type ClientInfo = {
   id: string
   firstName: string
@@ -59,36 +55,43 @@ type ClientInfo = {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
 // ─── NAV DATA ─────────────────────────────────────────────────────────────────
+// General: Dashboard + Appointments + Messaging
 const NAV_GENERAL = [
-  { label: 'Dashboard',     href: '/client/dashboard',              icon: <CalIcon /> },
-  { label: 'Appointments',  href: '/client/dashboard/Appointments', icon: <BookingIcon /> },
-  { label: 'Subscriptions', href: '/client/dashboard/Subscription', icon: <SubIcon /> },
+  { label: 'Dashboard',    href: '/client/dashboard',                       icon: <CalIcon /> },
+  { label: 'Appointments', href: '/client/dashboard/Appointments',          icon: <BookingIcon /> },
+  { label: 'Messaging',    href: '/client/dashboard/ClientMessaging',       icon: <MessagingIco /> },
 ]
 
-const NAV_VIRTUAL_ASSISTANT = [
-  {
-    label: 'Manage Hiring',
-    icon: <SearchIcoNav />,
-    children: [
-      { label: 'Browse VAs',    href: '/client/dashboard/BrowseVAs' },
-      { label: 'Shortlisted',   href: '/client/dashboard/Shortlisted' },
-      { label: 'VA Requirements', href: '/client/dashboard/VArequirements' },
-    ]
-  },
-  {
-    label: 'VA Review',
-    icon: <ViewIco />,
-    children: [
-      { label: 'View Application',    href: '/client/dashboard/ViewApplication' },
-      { label: 'Interview Recording', href: '/client/dashboard/InterviewRecording', badge: 'REC' },
-    ]
-  },
-]
+// Services dropdown: Subscriptions + VA Services
+const NAV_SERVICES_DROPDOWN = {
+  label: 'Services',
+  icon: <ServicesIco />,
+  children: [
+    { label: 'Subscriptions', href: '/client/dashboard/Subscription', badge: undefined },
+    { label: 'VA Services',   href: '/client/dashboard/VAservices',   badge: undefined },
+  ],
+}
 
-const NAV_ACTIVE_TEAM = [
-  { label: 'My VAs',     href: '/client/dashboard/MyVAs',     icon: <UsersIco /> },
-  { label: 'VA Billing', href: '/client/dashboard/VAbilling', icon: <BillIco /> },
-]
+// Virtual Assistant dropdown: Browse VAs, Shortlisted, Interview Recording, My VAs
+const NAV_VA_DROPDOWN = {
+  label: 'Virtual Assistant',
+  icon: <VAIco />,
+  children: [
+    { label: 'Browse VAs',          href: '/client/dashboard/BrowseVAs',         badge: undefined },
+    { label: 'Shortlisted',         href: '/client/dashboard/Shortlisted',        badge: undefined },
+    { label: 'Interview Recording', href: '/client/dashboard/InterviewRecording', badge: 'REC' },
+    { label: 'My VAs',              href: '/client/dashboard/MyVAs',              badge: undefined },
+  ],
+}
+
+// Billing dropdown: VA Billing
+const NAV_BILLING_DROPDOWN = {
+  label: 'Billing',
+  icon: <BillingIco />,
+  children: [
+    { label: 'VA Billing', href: '/client/dashboard/VAbilling', badge: undefined },
+  ],
+}
 
 const NAV_SUPPORT = [
   { label: 'Feedback',       href: '/client/dashboard/feedback',        icon: <FeedbackIco /> },
@@ -97,11 +100,19 @@ const NAV_SUPPORT = [
 ]
 
 // ─── HEADER ───────────────────────────────────────────────────────────────────
-function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void; clientInfo: ClientInfo | null; onLogout: () => void }) {
+function Header({
+  onMenuClick,
+  clientInfo,
+  onLogout,
+}: {
+  onMenuClick: () => void
+  clientInfo: ClientInfo | null
+  onLogout: () => void
+}) {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+  const router  = useRouter()
+  const today   = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -111,27 +122,39 @@ function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  const goToAccountSettings = () => {
-    setShowUserMenu(false)
-    router.push('/client/dashboard/AccountSettings')
-  }
-
   const avatarLetter = clientInfo ? clientInfo.firstName.charAt(0).toUpperCase() : '?'
   const displayName  = clientInfo ? `${clientInfo.firstName} ${clientInfo.lastName}` : 'Loading...'
   const displayEmail = clientInfo?.email ?? ''
 
   return (
     <header style={{ height: 56, background: '#fff', borderBottom: '1px solid #f0eeee', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 14, position: 'sticky', top: 0, zIndex: 100 }}>
-      <button className="mobile-only" onClick={onMenuClick} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#333' }}><MenuIco /></button>
-      <div style={{ flex: 1 }}><div className="desktop-only" style={{ fontSize: 12, color: '#aaa' }}>{today}</div></div>
-      <div className="search-box" style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f7f5f5', border: '1px solid #ece8e8', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: '#aaa', width: 180 }}><SearchIco /><span>Search..</span></div>
-      <div style={{ position: 'relative', cursor: 'pointer', color: '#888', display: 'flex' }}><BellIco /><span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: '#800000', border: '1px solid #fff' }} /></div>
+      <button className="mobile-only" onClick={onMenuClick} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#333' }}>
+        <MenuIco />
+      </button>
+
+      <div style={{ flex: 1 }}>
+        <div className="desktop-only" style={{ fontSize: 12, color: '#aaa' }}>{today}</div>
+      </div>
+
+      <div className="search-box" style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f7f5f5', border: '1px solid #ece8e8', borderRadius: 8, padding: '6px 12px', fontSize: 12, color: '#aaa', width: 180 }}>
+        <SearchIco /><span>Search..</span>
+      </div>
+
+      <div style={{ position: 'relative', cursor: 'pointer', color: '#888', display: 'flex' }}>
+        <BellIco />
+        <span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: '#800000', border: '1px solid #fff' }} />
+      </div>
+
       <div style={{ position: 'relative' }} ref={menuRef}>
-        <div onClick={() => setShowUserMenu(!showUserMenu)} style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, cursor: 'pointer', overflow: 'hidden' }}>
+        <div
+          onClick={() => setShowUserMenu(!showUserMenu)}
+          style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, cursor: 'pointer', overflow: 'hidden' }}
+        >
           {clientInfo?.profilePicture
             ? <img src={clientInfo.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : avatarLetter}
         </div>
+
         {showUserMenu && (
           <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, width: 190, background: '#fff', borderRadius: 10, boxShadow: '0 8px 20px rgba(0,0,0,0.08)', border: '1px solid #f0eeee', overflow: 'hidden', zIndex: 110 }}>
             <div style={{ padding: '10px 14px', borderBottom: '1px solid #f5f2f2' }}>
@@ -139,10 +162,16 @@ function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void
               <div style={{ fontSize: 10, color: '#aaa' }}>{displayEmail}</div>
             </div>
             <div style={{ padding: '5px' }}>
-              <div onClick={goToAccountSettings} style={{ padding: '6px 10px', fontSize: 12, borderRadius: 6, cursor: 'pointer', color: '#444', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div
+                onClick={() => { setShowUserMenu(false); router.push('/client/dashboard/AccountSettings') }}
+                style={{ padding: '6px 10px', fontSize: 12, borderRadius: 6, cursor: 'pointer', color: '#444', display: 'flex', alignItems: 'center', gap: 8 }}
+              >
                 <ProfileIco /> Profile Settings
               </div>
-              <div onClick={onLogout} style={{ padding: '6px 10px', fontSize: 12, borderRadius: 6, cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div
+                onClick={onLogout}
+                style={{ padding: '6px 10px', fontSize: 12, borderRadius: 6, cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', gap: 10 }}
+              >
                 <LogoutIco /> Logout
               </div>
             </div>
@@ -153,133 +182,132 @@ function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void
   )
 }
 
-// ─── GENERIC NAV SECTION ──────────────────────────────────────────────────────
-function NavSection({ label, items, collapsed, pathname, openMenus, onToggle }: any) {
-  const isActive = (href?: string) => !!href && pathname === href
+// ─── FLAT NAV SECTION ─────────────────────────────────────────────────────────
+function NavSection({
+  label,
+  items,
+  collapsed,
+  pathname,
+}: {
+  label: string
+  items: { label: string; href: string; icon: React.ReactNode }[]
+  collapsed: boolean
+  pathname: string
+}) {
+  const isActive = (href: string) => pathname === href
+
   return (
     <div style={{ marginBottom: 6 }}>
       {!collapsed && label && (
-        <div style={{ fontSize: 10, color: '#aaa', padding: '10px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</div>
+        <div style={{ fontSize: 10, color: '#aaa', padding: '10px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          {label}
+        </div>
       )}
-      {items.map((item: any) => {
-        const open = openMenus[item.label] ?? false
-        const anyChild = item.children?.some((c: any) => pathname === c.href)
-        if (item.children) {
-          return (
-            <div key={item.label}>
-              <div onClick={() => onToggle(item.label)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', borderRadius: 8, cursor: 'pointer', background: anyChild ? '#f5f3f3' : 'transparent', color: '#333' }}>
-                {item.icon}
-                {!collapsed && <><span style={{ flex: 1, fontSize: 12 }}>{item.label}</span><span style={{ color: '#aaa', display: 'flex' }}>{open ? <ChevronUp /> : <ChevronDown />}</span></>}
-              </div>
-              {open && !collapsed && (
-                <div style={{ position: 'relative', marginLeft: 23, marginTop: 2 }}>
-                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 15, width: '1px', background: '#e0dede' }} />
-                  {item.children.map((child: any) => (
-                    <div key={child.href} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                      <div style={{ position: 'absolute', left: 0, top: 15, width: 12, height: '1px', background: '#e0dede' }} />
-                      <div style={{ position: 'absolute', left: 12, top: 12, width: 4, height: 4, borderRadius: '50%', border: '1px solid #e0dede', background: '#fff' }} />
-                      <Link href={child.href} style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px 6px 22px', borderRadius: 6, fontSize: 11.5, color: isActive(child.href) ? '#800000' : '#777', background: isActive(child.href) ? '#fff5f5' : 'transparent' }}>
-                        <span>{child.label}</span>
-                        {child.badge && <span style={{ fontSize: 8, fontWeight: 700, background: '#ef4444', color: '#fff', padding: '2px 5px', borderRadius: 4 }}>{child.badge}</span>}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        }
-        return (
-          <Link key={item.label} href={item.href!} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', borderRadius: 8, color: isActive(item.href) ? '#800000' : '#333', background: isActive(item.href) ? '#fff5f5' : 'transparent' }}>
-            {item.icon}{!collapsed && <><span style={{ flex: 1, fontSize: 12 }}>{item.label}</span>{item.dot && <Badge dot dotColor={item.dotColor} label={item.dotLabel} />}</>}
-          </Link>
-        )
-      })}
+      {items.map((item) => (
+        <Link
+          key={item.label}
+          href={item.href}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '7px 10px', borderRadius: 8,
+            color: isActive(item.href) ? '#800000' : '#333',
+            background: isActive(item.href) ? '#fff5f5' : 'transparent',
+          }}
+        >
+          {item.icon}
+          {!collapsed && <span style={{ flex: 1, fontSize: 12 }}>{item.label}</span>}
+        </Link>
+      ))}
     </div>
   )
 }
 
-// ─── VIRTUAL ASSISTANT SECTION ────────────────────────────────────────────────
-function VirtualAssistantSection({ collapsed, pathname, openMenus, onToggle, sectionOpen, onSectionToggle }: {
-  collapsed: boolean; pathname: string; openMenus: Record<string, boolean>;
-  onToggle: (l: string) => void; sectionOpen: boolean; onSectionToggle: () => void
+// ─── REUSABLE ACCORDION DROPDOWN ─────────────────────────────────────────────
+function NavDropdown({
+  sectionLabel,
+  triggerLabel,
+  triggerIcon,
+  children,
+  collapsed,
+  pathname,
+  open,
+  onToggle,
+}: {
+  sectionLabel: string
+  triggerLabel: string
+  triggerIcon: React.ReactNode
+  children: { label: string; href: string; badge?: string }[]
+  collapsed: boolean
+  pathname: string
+  open: boolean
+  onToggle: () => void
 }) {
-  const isActive = (href?: string) => !!href && pathname === href
+  const isActive  = (href: string) => pathname === href
+  const anyActive = children.some((c) => pathname === c.href)
 
   if (collapsed) return null
 
   return (
     <div style={{ marginBottom: 6 }}>
-      {/* Collapsible section header */}
+      {sectionLabel && (
+        <div style={{ fontSize: 10, color: '#aaa', padding: '10px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          {sectionLabel}
+        </div>
+      )}
+
+      {/* Accordion trigger */}
       <div
-        onClick={onSectionToggle}
-        style={{ fontSize: 10, color: '#aaa', padding: '10px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.04em', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', userSelect: 'none' }}
+        onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '7px 10px', borderRadius: 8, cursor: 'pointer',
+          color: '#333',
+          background: anyActive && !open ? '#f5f3f3' : 'transparent',
+        }}
       >
-        <span>Virtual Assistant</span>
-        <span style={{ display: 'flex', opacity: 0.7 }}>{sectionOpen ? <ChevronUp /> : <ChevronDown />}</span>
+        {triggerIcon}
+        <span style={{ flex: 1, fontSize: 12 }}>{triggerLabel}</span>
+        <span style={{ color: '#aaa', display: 'flex' }}>
+          {open ? <ChevronUp /> : <ChevronDown />}
+        </span>
       </div>
 
-      {sectionOpen && (
-        <>
-          {/* Manage Hiring + VA Review groups */}
-          {NAV_VIRTUAL_ASSISTANT.map((group) => {
-            const open = openMenus[group.label] ?? false
-            const anyChild = group.children.some((c) => pathname === c.href)
-            return (
-              <div key={group.label}>
-                <div onClick={() => onToggle(group.label)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', borderRadius: 8, cursor: 'pointer', background: anyChild ? '#f5f3f3' : 'transparent', color: '#333' }}>
-                  {group.icon}
-                  <span style={{ flex: 1, fontSize: 12 }}>{group.label}</span>
-                  <span style={{ color: '#aaa', display: 'flex' }}>{open ? <ChevronUp /> : <ChevronDown />}</span>
-                </div>
-                {open && (
-                  <div style={{ position: 'relative', marginLeft: 23, marginTop: 2 }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 15, width: '1px', background: '#e0dede' }} />
-                    {group.children.map((child) => (
-                      <div key={child.href} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 15, width: 12, height: '1px', background: '#e0dede' }} />
-                        <div style={{ position: 'absolute', left: 12, top: 12, width: 4, height: 4, borderRadius: '50%', border: '1px solid #e0dede', background: '#fff' }} />
-                        <Link href={child.href} style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px 6px 22px', borderRadius: 6, fontSize: 11.5, color: isActive(child.href) ? '#800000' : '#777', background: isActive(child.href) ? '#fff5f5' : 'transparent' }}>
-                          <span>{child.label}</span>
-                          {child.badge && <span style={{ fontSize: 8, fontWeight: 700, background: '#ef4444', color: '#fff', padding: '2px 5px', borderRadius: 4 }}>{child.badge}</span>}
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+      {/* Expanded children with tree lines */}
+      {open && (
+        <div style={{ position: 'relative', marginLeft: 23, marginTop: 2 }}>
+          {/* Vertical tree line */}
+          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 15, width: '1px', background: '#e0dede' }} />
 
-          {/* Active Team — same accordion + tree-line style as the groups above */}
-          {(() => {
-            const open = openMenus['Active Team'] ?? false
-            const anyChild = NAV_ACTIVE_TEAM.some((c) => pathname === c.href)
-            return (
-              <div>
-                <div onClick={() => onToggle('Active Team')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px', borderRadius: 8, cursor: 'pointer', background: anyChild ? '#f5f3f3' : 'transparent', color: '#333' }}>
-                  <UsersIco />
-                  <span style={{ flex: 1, fontSize: 12 }}>Active Team</span>
-                  <span style={{ color: '#aaa', display: 'flex' }}>{open ? <ChevronUp /> : <ChevronDown />}</span>
-                </div>
-                {open && (
-                  <div style={{ position: 'relative', marginLeft: 23, marginTop: 2 }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 15, width: '1px', background: '#e0dede' }} />
-                    {NAV_ACTIVE_TEAM.map((child) => (
-                      <div key={child.href} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 15, width: 12, height: '1px', background: '#e0dede' }} />
-                        <div style={{ position: 'absolute', left: 12, top: 12, width: 4, height: 4, borderRadius: '50%', border: '1px solid #e0dede', background: '#fff' }} />
-                        <Link href={child.href} style={{ display: 'flex', flex: 1, alignItems: 'center', padding: '6px 12px 6px 22px', borderRadius: 6, fontSize: 11.5, color: isActive(child.href) ? '#800000' : '#777', background: isActive(child.href) ? '#fff5f5' : 'transparent' }}>
-                          {child.label}
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
+          {children.map((child) => (
+            <div key={child.href} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              {/* Horizontal branch */}
+              <div style={{ position: 'absolute', left: 0, top: 15, width: 12, height: '1px', background: '#e0dede' }} />
+              {/* Dot — filled when active */}
+              <div style={{
+                position: 'absolute', left: 12, top: 12,
+                width: 4, height: 4, borderRadius: '50%',
+                border: '1px solid #e0dede',
+                background: isActive(child.href) ? '#800000' : '#fff',
+              }} />
+              <Link
+                href={child.href}
+                style={{
+                  display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between',
+                  padding: '6px 12px 6px 22px', borderRadius: 6, fontSize: 11.5,
+                  color: isActive(child.href) ? '#800000' : '#777',
+                  background: isActive(child.href) ? '#fff5f5' : 'transparent',
+                }}
+              >
+                <span>{child.label}</span>
+                {child.badge && (
+                  <span style={{ fontSize: 8, fontWeight: 700, background: '#ef4444', color: '#fff', padding: '2px 5px', borderRadius: 4 }}>
+                    {child.badge}
+                  </span>
                 )}
-              </div>
-            )
-          })()}
-        </>
+              </Link>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )
@@ -289,15 +317,16 @@ function VirtualAssistantSection({ collapsed, pathname, openMenus, onToggle, sec
 export default function ClientDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router   = useRouter()
+
   const [collapsed,     setCollapsed]     = useState(false)
   const [mobileOpen,    setMobileOpen]    = useState(false)
-  const [openMenus,     setOpenMenus]     = useState<Record<string, boolean>>({})
-  const [vaSectionOpen, setVaSectionOpen] = useState(true)
+  const [servicesOpen,  setServicesOpen]  = useState(false)
+  const [vaOpen,        setVaOpen]        = useState(false)
+  const [billingOpen,   setBillingOpen]   = useState(false)
   const [clientInfo,    setClientInfo]    = useState<ClientInfo | null>(null)
   const [loggingOut,    setLoggingOut]    = useState(false)
 
-  const toggle = (l: string) => setOpenMenus(p => ({ ...p, [l]: !p[l] }))
-
+  // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -319,7 +348,9 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
     setLoggingOut(true)
     try {
       await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
-    } catch { /* proceed */ } finally {
+    } catch {
+      // proceed regardless
+    } finally {
       setClientInfo(null)
       setLoggingOut(false)
       router.push('/client/login')
@@ -335,26 +366,47 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; font-weight: 400; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
         a { text-decoration: none; color: inherit; }
         @media (max-width: 768px) {
           .desktop-only { display: none !important; }
-          .search-box { display: none !important; }
-          .sidebar { position: fixed !important; left: 0 !important; top: 0 !important; width: 240px !important; min-width: 240px !important; height: 100vh !important; transform: translateX(-100%); transition: transform 0.25s ease !important; z-index: 200 !important; }
+          .search-box   { display: none !important; }
+          .sidebar {
+            position: fixed !important; left: 0 !important; top: 0 !important;
+            width: 240px !important; min-width: 240px !important; height: 100vh !important;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease !important;
+            z-index: 200 !important;
+          }
           .sidebar.open { transform: translateX(0) !important; box-shadow: 4px 0 24px rgba(0,0,0,0.13) !important; }
           .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 190; }
           .overlay.active { display: block !important; }
         }
         @media (min-width: 769px) {
           .mobile-only { display: none !important; }
-          .overlay { display: none !important; }
+          .overlay     { display: none !important; }
         }
       `}</style>
 
+      {/* Mobile overlay */}
       <div className={`overlay ${mobileOpen ? 'active' : ''}`} onClick={() => setMobileOpen(false)} />
 
-      <aside className={`sidebar ${mobileOpen ? 'open' : ''}`} style={{ width: collapsed ? 64 : 240, minWidth: collapsed ? 64 : 240, background: '#ffffff', height: '100vh', display: 'flex', flexDirection: 'column', borderRight: '1px solid #eeebeb', transition: 'all 0.2s ease', zIndex: 150 }}>
-
+      {/* ── SIDEBAR ── */}
+      <aside
+        className={`sidebar ${mobileOpen ? 'open' : ''}`}
+        style={{
+          width: collapsed ? 64 : 240,
+          minWidth: collapsed ? 64 : 240,
+          background: '#ffffff',
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRight: '1px solid #eeebeb',
+          transition: 'all 0.2s ease',
+          zIndex: 150,
+        }}
+      >
         {/* Logo bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', padding: '0 14px', height: 56, borderBottom: '1px solid #eeebeb' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -366,33 +418,87 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
                 <rect x="8" y="8" width="5" height="5" rx="1" fill="white" />
               </svg>
             </div>
-            {!collapsed && <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Client Portal</span>}
+            {!collapsed && (
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Client Portal
+              </span>
+            )}
           </div>
-          <button onClick={() => setCollapsed(!collapsed)} className="desktop-only" style={{ background: 'none', border: '1px solid #e0dede', borderRadius: 6, cursor: 'pointer', color: '#aaa', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          {/* Collapse toggle — desktop */}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="desktop-only"
+            style={{ background: 'none', border: '1px solid #e0dede', borderRadius: 6, cursor: 'pointer', color: '#aaa', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          >
             {collapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
-          <button onClick={() => setMobileOpen(false)} className="mobile-only" style={{ background: 'none', border: '1px solid #e0dede', borderRadius: 6, cursor: 'pointer', color: '#aaa', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><ChevronLeft /></button>
+          {/* Close button — mobile */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="mobile-only"
+            style={{ background: 'none', border: '1px solid #e0dede', borderRadius: 6, cursor: 'pointer', color: '#aaa', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          >
+            <ChevronLeft />
+          </button>
         </div>
 
-        {/* Scrollable nav */}
+        {/* Scrollable nav area */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
-          <NavSection label="General" items={NAV_GENERAL} collapsed={collapsed} pathname={pathname} openMenus={openMenus} onToggle={toggle} />
 
-          <VirtualAssistantSection
+          {/* General: Dashboard + Appointments + Messaging */}
+          <NavSection label="General" items={NAV_GENERAL} collapsed={collapsed} pathname={pathname} />
+
+          {/* Services dropdown: Subscriptions + VA Services */}
+          <NavDropdown
+            sectionLabel="Services"
+            triggerLabel={NAV_SERVICES_DROPDOWN.label}
+            triggerIcon={NAV_SERVICES_DROPDOWN.icon}
+            children={NAV_SERVICES_DROPDOWN.children}
             collapsed={collapsed}
             pathname={pathname}
-            openMenus={openMenus}
-            onToggle={toggle}
-            sectionOpen={vaSectionOpen}
-            onSectionToggle={() => setVaSectionOpen(v => !v)}
+            open={servicesOpen}
+            onToggle={() => setServicesOpen((v) => !v)}
           />
+
+          {/* Virtual Assistant dropdown */}
+          <NavDropdown
+            sectionLabel="Virtual Assistant"
+            triggerLabel={NAV_VA_DROPDOWN.label}
+            triggerIcon={NAV_VA_DROPDOWN.icon}
+            children={NAV_VA_DROPDOWN.children}
+            collapsed={collapsed}
+            pathname={pathname}
+            open={vaOpen}
+            onToggle={() => setVaOpen((v) => !v)}
+          />
+
+          {/* Billing dropdown */}
+          <NavDropdown
+            sectionLabel="Billing"
+            triggerLabel={NAV_BILLING_DROPDOWN.label}
+            triggerIcon={NAV_BILLING_DROPDOWN.icon}
+            children={NAV_BILLING_DROPDOWN.children}
+            collapsed={collapsed}
+            pathname={pathname}
+            open={billingOpen}
+            onToggle={() => setBillingOpen((v) => !v)}
+          />
+
         </div>
 
-        {/* Bottom: Support + profile card */}
+        {/* Bottom: Support links + profile card */}
         <div style={{ padding: '10px', borderTop: '1px solid #f5f2f2' }}>
-          <NavSection label="" items={NAV_SUPPORT} collapsed={collapsed} pathname={pathname} openMenus={openMenus} onToggle={toggle} />
+          <NavSection label="" items={NAV_SUPPORT} collapsed={collapsed} pathname={pathname} />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '8px 0' : '10px 12px', borderRadius: 10, background: '#fff', border: collapsed ? 'none' : '1px solid #ece8e8', justifyContent: collapsed ? 'center' : 'flex-start', marginTop: 6 }}>
+          {/* Profile card */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: collapsed ? '8px 0' : '10px 12px',
+            borderRadius: 10, background: '#fff',
+            border: collapsed ? 'none' : '1px solid #ece8e8',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            marginTop: 6,
+          }}>
             <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#800000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, flexShrink: 0, overflow: 'hidden' }}>
               {clientInfo?.profilePicture
                 ? <img src={clientInfo.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -401,10 +507,19 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
             {!collapsed && (
               <>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <div style={{ fontSize: 11.5, color: '#1a1a2e', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 500 }}>{sidebarName}</div>
-                  <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>{sidebarEmail}</div>
+                  <div style={{ fontSize: 11.5, color: '#1a1a2e', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 500 }}>
+                    {sidebarName}
+                  </div>
+                  <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>
+                    {sidebarEmail}
+                  </div>
                 </div>
-                <button onClick={handleLogout} disabled={loggingOut} title="Logout" style={{ background: 'none', border: 'none', cursor: loggingOut ? 'not-allowed' : 'pointer', color: loggingOut ? '#ccc' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6, flexShrink: 0 }}>
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  title="Logout"
+                  style={{ background: 'none', border: 'none', cursor: loggingOut ? 'not-allowed' : 'pointer', color: loggingOut ? '#ccc' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6, flexShrink: 0 }}
+                >
                   <LogoutIco />
                 </button>
               </>
@@ -413,9 +528,12 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
         </div>
       </aside>
 
+      {/* ── MAIN CONTENT ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
-        <main style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>{children}</main>
+        <main style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+          {children}
+        </main>
       </div>
     </div>
   )
