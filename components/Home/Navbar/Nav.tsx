@@ -99,9 +99,9 @@ const Nav = ({ openNav }: Props) => {
     },
     {
       id: "platforms",
-      label: "Platforms",
+      label: "Expertise",
       items: [
-        { label: "Platform Overview", url: "/platform" },
+        { label: "Expertise Overview", url: "/platform" },
       ]
     },
     {
