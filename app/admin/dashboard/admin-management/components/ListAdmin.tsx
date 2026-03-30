@@ -25,7 +25,6 @@ export default function ListAdmin() {
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api'
 
-  // ── Theme tokens (identical to ActivityLogs) ──────────────────────────────
   const pageBg      = isdarkmode ? '#0f0f0f'                : '#f8f9fa'
   const cardBg      = isdarkmode ? '#1a1a1a'                : '#ffffff'
   const subtleBg    = isdarkmode ? '#202020'                : '#f9fafb'
@@ -34,7 +33,6 @@ export default function ListAdmin() {
   const textMuted   = isdarkmode ? '#6b7280'                : '#6b7280'
   const inputBg     = isdarkmode ? '#202020'                : '#f9fafb'
 
-  // ── Mappings ──────────────────────────────────────────────────────────────
   const departments: { [key: number]: string } = {
     1: 'Compliance', 2: 'Innovation', 3: 'Marketing', 4: 'Recruitment', 5: 'Human Resources',
   }
@@ -47,7 +45,6 @@ export default function ListAdmin() {
   const departmentList = Object.entries(departments).map(([k, v]) => ({ id: parseInt(k), name: v }))
   const roleList       = Object.entries(roles).map(([k, v]) => ({ id: parseInt(k), name: v }))
 
-  // ── Shared inp() — identical to ActivityLogs ──────────────────────────────
   const inp = (extra: React.CSSProperties = {}): React.CSSProperties => ({
     padding: '10px 14px', borderRadius: 12, border: `1.5px solid ${borderColor}`,
     background: inputBg, color: textPrimary, fontSize: 12, fontWeight: 400,
@@ -78,7 +75,6 @@ export default function ListAdmin() {
   const getUserInitials = (admin: any) =>
     `${admin.firstName?.charAt(0) || ''}${admin.lastName?.charAt(0) || ''}`.toUpperCase()
 
-  // ── Data ──────────────────────────────────────────────────────────────────
   const loadAdmins = async () => {
     try {
       setIsLoading(true); setError(null)
@@ -98,21 +94,12 @@ export default function ListAdmin() {
   useEffect(() => { loadAdmins() }, [])
   useEffect(() => { setCurrentPage(1) }, [selectedDepartment, selectedRole, searchQuery, activeTab, sortBy])
 
-  // ── Filtering + sorting ───────────────────────────────────────────────────
   const getFilteredAdmins = () => {
     let f = admins
-
-    // Tab filter (Active = not archived, Inactive = archived)
     if (activeTab === 'Active')   f = f.filter(a => !a.isArchived)
     if (activeTab === 'Inactive') f = f.filter(a => a.isArchived)
-
-    // Department filter
     if (selectedDepartment !== 'All') f = f.filter(a => a.department === parseInt(selectedDepartment))
-
-    // Role filter
     if (selectedRole !== 'All') f = f.filter(a => a.role === parseInt(selectedRole))
-
-    // Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       f = f.filter(a =>
@@ -121,8 +108,6 @@ export default function ListAdmin() {
         a.contactNumber?.toLowerCase().includes(q)
       )
     }
-
-    // Sort
     f = [...f].sort((a, b) => {
       const nameA = `${a.firstName} ${a.lastName}`.toLowerCase()
       const nameB = `${b.firstName} ${b.lastName}`.toLowerCase()
@@ -132,7 +117,6 @@ export default function ListAdmin() {
       if (sortBy === 'Oldest')   return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       return 0
     })
-
     return f
   }
 
@@ -140,12 +124,10 @@ export default function ListAdmin() {
   const totalPages     = Math.ceil(filteredAdmins.length / cardsPerPage)
   const currentCards   = filteredAdmins.slice((currentPage - 1) * cardsPerPage, currentPage * cardsPerPage)
 
-  // ── Counts for tabs ───────────────────────────────────────────────────────
   const allCount      = admins.length
   const activeCount   = admins.filter(a => !a.isArchived).length
   const inactiveCount = admins.filter(a => a.isArchived).length
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleEdit  = (admin: any) => { setSelectedAdmin(admin); setIsEditing(true) }
   const closeEdit   = () => { setIsEditing(false); setSelectedAdmin(null) }
   const handleSave  = () => { loadAdmins(); closeEdit() }
@@ -170,7 +152,6 @@ export default function ListAdmin() {
 
   return (
     <>
-      {/* ── Global styles — identical to ActivityLogs ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
         *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -179,6 +160,7 @@ export default function ListAdmin() {
         .la-row:hover { background: ${isdarkmode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'} !important; }
         .la-pill:hover { opacity: .78; }
         .la-card:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.28) !important; }
         @keyframes spin { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
@@ -208,18 +190,137 @@ export default function ListAdmin() {
           {/* ── Summary stat cards ── */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
             {[
-              { label: 'Total Admins', value: admins.length,   subtitle: 'All accounts',     iconColor: '#800000', icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg> },
-              { label: 'Active',       value: activeCount,     subtitle: 'Can log in',        iconColor: '#059669', icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> },
-              { label: 'Inactive',     value: inactiveCount,   subtitle: 'Disabled accounts', iconColor: '#dc2626', icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg> },
-              { label: 'Filtered',     value: filteredAdmins.length, subtitle: 'Current view', iconColor: '#0066CC', icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg> },
+              {
+                label: 'TOTAL ADMINS',
+                value: admins.length,
+                subtitle: 'All accounts',
+                overlay: 'linear-gradient(135deg, rgba(60,0,0,0.88) 0%, rgba(100,0,0,0.75) 100%)',
+                // Server rack / data center — admin panel vibe
+                bg: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=60',
+                icon: (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+                  </svg>
+                ),
+              },
+              {
+                label: 'ACTIVE',
+                value: activeCount,
+                subtitle: 'Can log in',
+                overlay: 'linear-gradient(135deg, rgba(0,50,20,0.88) 0%, rgba(0,80,30,0.75) 100%)',
+                // Team working / active collaboration
+                bg: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&q=60',
+                icon: (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                ),
+              },
+              {
+                label: 'INACTIVE',
+                value: inactiveCount,
+                subtitle: 'Disabled accounts',
+                overlay: 'linear-gradient(135deg, rgba(0,25,80,0.90) 0%, rgba(0,40,110,0.78) 100%)',
+                // Lock / security — access control vibe
+                bg: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&q=60',
+                icon: (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                  </svg>
+                ),
+              },
+              {
+                label: 'FILTERED',
+                value: filteredAdmins.length,
+                subtitle: 'Current view',
+                overlay: 'linear-gradient(135deg, rgba(30,20,0,0.90) 0%, rgba(70,45,0,0.80) 100%)',
+                // Analytics / dashboard screen — data overview vibe
+                bg: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=60',
+                icon: (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                  </svg>
+                ),
+              },
             ].map((card, i) => (
-              <div key={i} style={{ padding: '20px 22px', borderRadius: 20, border: `1px solid ${borderColor}`, background: cardBg, boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <p style={{ fontSize: 11, fontWeight: 500, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{card.label}</p>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: `${card.iconColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.iconColor, flexShrink: 0 }}>{card.icon}</div>
+              <div
+                key={i}
+                className="stat-card"
+                style={{
+                  borderRadius: 18,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  minHeight: 148,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  padding: '18px 20px 16px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.20)',
+                  transition: 'transform .2s, box-shadow .2s',
+                  cursor: 'default',
+                }}
+              >
+                {/* Background image */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  backgroundImage: `url(${card.bg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  zIndex: 0,
+                }} />
+                {/* Color overlay */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: card.overlay,
+                  zIndex: 1,
+                }} />
+
+                {/* Top: label + icon */}
+                <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 600,
+                    color: 'rgba(255,255,255,0.80)',
+                    letterSpacing: '0.08em',
+                    fontFamily: "'Poppins', sans-serif",
+                    textTransform: 'uppercase' as const,
+                  }}>
+                    {card.label}
+                  </span>
+                  <div style={{
+                    width: 30, height: 30, borderRadius: 8,
+                    background: 'rgba(255,255,255,0.18)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'rgba(255,255,255,0.92)',
+                    flexShrink: 0,
+                  }}>
+                    {card.icon}
+                  </div>
                 </div>
-                <p style={{ fontSize: 36, fontWeight: 700, color: textPrimary, margin: '0 0 6px', lineHeight: 1, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{card.value}</p>
-                <p style={{ fontSize: 11, fontWeight: 400, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{card.subtitle}</p>
+
+                {/* Value */}
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                  <p style={{
+                    fontSize: 54, fontWeight: 700, color: '#ffffff',
+                    margin: '4px 0 0', lineHeight: 1,
+                    fontFamily: "'Poppins', sans-serif",
+                    letterSpacing: '-2px',
+                  }}>
+                    {card.value}
+                  </p>
+                </div>
+
+                {/* Subtitle */}
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                  <p style={{
+                    fontSize: 11, color: 'rgba(255,255,255,0.68)',
+                    margin: '8px 0 0', fontWeight: 400,
+                    fontFamily: "'Poppins', sans-serif", letterSpacing: 0,
+                    display: 'flex', alignItems: 'center', gap: 5,
+                  }}>
+                    <span style={{ fontSize: 16, lineHeight: 1 }}>•</span>
+                    {card.subtitle}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -261,10 +362,9 @@ export default function ListAdmin() {
           {/* ── Main content card ── */}
           <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: 'hidden', boxShadow: isdarkmode ? 'none' : '0 2px 12px rgba(0,0,0,0.05)' }}>
 
-            {/* ══ TOOLBAR — matching the screenshot exactly ══ */}
+            {/* ══ TOOLBAR ══ */}
             <div style={{ padding: '14px 20px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' as const, background: cardBg }}>
 
-              {/* Search input */}
               <div style={{ position: 'relative', flexShrink: 0 }}>
                 <svg style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: textMuted, pointerEvents: 'none' as const }} width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -278,10 +378,8 @@ export default function ListAdmin() {
                 />
               </div>
 
-              {/* Divider */}
               <div style={{ width: 1, height: 28, background: borderColor, flexShrink: 0 }} />
 
-              {/* Tab pills: All / Active / Inactive */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {([
                   { key: 'All',      count: allCount },
@@ -321,10 +419,8 @@ export default function ListAdmin() {
                 })}
               </div>
 
-              {/* Divider */}
               <div style={{ width: 1, height: 28, background: borderColor, flexShrink: 0 }} />
 
-              {/* Sort by */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                 <span style={{ fontSize: 11, color: textMuted, fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, whiteSpace: 'nowrap' as const }}>Sort by</span>
                 <select
@@ -339,18 +435,14 @@ export default function ListAdmin() {
                 </select>
               </div>
 
-              {/* Spacer */}
               <div style={{ flex: 1 }} />
 
-              {/* Showing count */}
               <span style={{ fontSize: 11, color: textMuted, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, whiteSpace: 'nowrap' as const }}>
                 Showing <strong style={{ color: textPrimary }}>{filteredAdmins.length}</strong> of <strong style={{ color: textPrimary }}>{allCount}</strong>
               </span>
 
-              {/* Divider */}
               <div style={{ width: 1, height: 28, background: borderColor, flexShrink: 0 }} />
 
-              {/* View mode toggle */}
               <div style={{ display: 'flex', gap: 4 }}>
                 {(['list', 'grid'] as const).map(mode => (
                   <button
@@ -375,7 +467,7 @@ export default function ListAdmin() {
               </div>
             </div>
 
-            {/* ── Card header (below toolbar) ── */}
+            {/* ── Card header ── */}
             <div style={{ padding: '18px 24px', borderBottom: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Administrator records</p>
@@ -478,7 +570,7 @@ export default function ListAdmin() {
               </div>
             )}
 
-            {/* ── Pagination footer — identical to ActivityLogs ── */}
+            {/* ── Pagination ── */}
             {!isLoading && filteredAdmins.length > 0 && totalPages > 1 && (
               <div style={{ padding: '14px 24px', background: subtleBg, borderTop: `1px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>

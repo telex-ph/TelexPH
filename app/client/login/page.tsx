@@ -9,14 +9,23 @@ export default function ClientLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => { 
+    setMounted(true)
+    // Show success message if redirected from registration
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('registered') === '1') {
+      setSuccess('Account created successfully! You can now sign in.')
+    }
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
     setIsLoading(true)
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/client/authenticate`, {
@@ -100,6 +109,13 @@ export default function ClientLoginPage() {
             Secure verification required. Please provide your<br/>client login details.
           </p>
 
+          {success && (
+            <div className="mb-5 rounded-lg px-4 py-3 text-[12px] font-light" style={{background:'#f0fdf4',border:'1px solid #86efac',color:'#166534',display:'flex',alignItems:'center',gap:8}}>
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{flexShrink:0,color:'#16a34a'}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              {success}
+            </div>
+          )}
+
           {error && (
             <div className="mb-5 rounded-lg px-4 py-3 text-[12px] font-light" style={{background:'#fff5f5',border:'1px solid #e5c0c0',color:'#7f1d1d'}}>
               {error}
@@ -128,11 +144,8 @@ export default function ClientLoginPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex cursor-pointer items-center gap-2 text-[12px] font-light select-none" style={{color:'#888'}}>
-                <input type="checkbox" className="h-3.5 w-3.5 accent-[#8b0000]" style={{cursor:'pointer'}}/>
-                remember me
-              </label>
-              <Link href="#" className="text-[12px] font-medium no-underline" style={{color:'#8b0000'}}>forgot password?</Link>
+              <span></span>
+              <Link href="#" className="text-[12px] font-medium no-underline" style={{color:'#8b0000'}}>Forgot password?</Link>
             </div>
 
             <button type="submit" disabled={isLoading}
@@ -142,6 +155,13 @@ export default function ClientLoginPage() {
                 ?<><span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white" style={{animation:'spin .7s linear infinite'}}/>Processing...</>
                 :'Sign In'}
             </button>
+
+            <p className="mt-1 text-center text-[12px] font-light" style={{color:'#888'}}>
+              Don&apos;t have an account?{' '}
+              <Link href="/client/register" className="font-medium no-underline" style={{color:'#8b0000'}}>
+                Create one
+              </Link>
+            </p>
           </form>
         </div>
 
@@ -247,7 +267,7 @@ export default function ClientLoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
           </div>
-
+ 
           {/* Bottom-right lock badge */}
           <div className="pointer-events-none absolute" style={{bottom:28,right:28,width:36,height:36,borderRadius:'50%',background:'rgba(139,0,0,.1)',border:'1.5px solid rgba(139,0,0,.18)',display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#8b0000" strokeWidth={1.8}>

@@ -6,7 +6,7 @@ export const navLinks = [
   },
   {
     id: 2,
-    url: "#about",
+    url: "/#about",
     label: "About",
     dropdown: [
       { id: 21, url: "/about", label: "Company Overview" },
@@ -14,12 +14,12 @@ export const navLinks = [
   },
   {
     id: 3,
-    url: "#services",
+    url: "/#services",
     label: "Services",
   },
   {
     id: 4,
-    url: "#choose",
+    url: "/#choose",
     label: "Why us",
   },
   {

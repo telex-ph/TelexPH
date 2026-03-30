@@ -71,7 +71,7 @@ const UseCaseOverview = () => {
             </span>
           </div>
           <h2
-            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
+            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
             style={{ color: COLORS.black }}
           >
             Redefining the
@@ -89,15 +89,15 @@ const UseCaseOverview = () => {
         <div className="grid lg:grid-cols-12 gap-6 mb-24">
           <div className="lg:col-span-8 overflow-hidden bg-gray-50 border border-gray-100 h-[400px] rounded-xl shadow-sm group">
             <img 
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop" 
+              src="/images/usecase3.jpg" 
               alt="Operations Command Center"
               className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
             />
           </div>
-          
+                    
           <div className="lg:col-span-4 overflow-hidden bg-gray-50 border border-gray-100 h-[400px] rounded-xl shadow-sm group">
             <img 
-              src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1000&auto=format&fit=crop" 
+              src="/images/usecase5.jpg" 
               alt="Data Infrastructure"
               className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
             />

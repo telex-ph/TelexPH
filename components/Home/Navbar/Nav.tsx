@@ -41,7 +41,7 @@ const Nav = ({ openNav }: Props) => {
   const [activeServicesTab, setActiveServicesTab] = useState("offer");
   const [activeAboutTab, setActiveAboutTab] = useState("company");
   const [activeResourcesTab, setActiveResourcesTab] = useState("learning");
-  const [activeCareersTab, setActiveCareersTab] = useState("careers-center");
+  const [activeCareersTab, setActiveCareersTab] = useState("va-overview");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -50,13 +50,11 @@ const Nav = ({ openNav }: Props) => {
   const handleMouseLeave = () => setOpenDropdownId(null);
 
   const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
-    if (url.startsWith("#")) {
-      e.preventDefault();
-      if (pathname === "/") {
-        scrollToSection(url);
-      } else {
-        router.push("/" + url);
-        setTimeout(() => scrollToSection(url), 100);
+    if (url.includes("#")) {
+      const [path, hash] = url.split("#");
+      if (pathname === path || (path === "" && pathname === "/")) {
+        e.preventDefault();
+        scrollToSection(`#${hash}`);
       }
     }
   };
@@ -64,7 +62,7 @@ const Nav = ({ openNav }: Props) => {
   const scrollToSection = (hash: string) => {
     const element = document.querySelector(hash);
     if (element) {
-      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 80;
+      const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - 100;
       window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
@@ -76,15 +74,47 @@ const Nav = ({ openNav }: Props) => {
   }, []);
 
   const servicesMegaData = [
-    { id: "offer", label: "What We Offer", items: ["Customer Support", "Technical Helpdesk", "Sales & Lead Generation"] },
+    { 
+      id: "offer", 
+      label: "What We Offer", 
+      items: [
+        { label: "Our Services", url: "/services#our-services" },
+        { label: "Contact Us", url: "/services#contact" },
+        { label: "Our Works", url: "/services#our-works" },
+        { label: "Testimonials", url: "/services#testimonials" }
+      ] 
+    },
   ];
 
   const aboutMegaData = [
-    { id: "company", label: "Company", items: ["Company Overview", "Our Mission", "Our Vision", "Core Values"] },
+    { 
+      id: "company", 
+      label: "Company", 
+      items: [
+        { label: "Company Overview", url: "/about#overview" },
+        { label: "Mission, Vision & Values", url: "/about#mission-vision" },
+        { label: "Why Choose Us", url: "/about#choose-us" },
+        { label: "Our Team", url: "/about#our-team" }
+      ] 
+    },
+    {
+      id: "platforms",
+      label: "Platforms",
+      items: [
+        { label: "Platform Overview", url: "/platform" },
+      ]
+    },
+    {
+      id: "tools",
+      label: "Tools",
+      items: [
+        { label: "Tools Overview", url: "/about/tools" },
+      ]
+    },
   ];
 
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies", "Events", "Guides", "Videos", "Webinars", "White Papers"] },
+    { id: "learning", label: "Resource Center", items: ["Case Studies"] },
     { 
       id: "news", 
       label: "Industry Use Cases", 
@@ -96,7 +126,7 @@ const Nav = ({ openNav }: Props) => {
         { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
         { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
         { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
-      ]
+      ] 
     },
     { 
       id: "blogs", 
@@ -106,15 +136,28 @@ const Nav = ({ openNav }: Props) => {
   ];
 
   const careersMegaData = [
-    { id: "careers-center", label: "Careers Center", items: [{ label: "Careers Home", url: "/careers" }] },
-    { id: "job-details", label: "Job Details", items: [{ label: "Full Job Details", url: "/careers/job-details" }] },
+    { 
+      id: "va-overview", 
+      label: "VA Center", 
+      items: [
+        { label: "Virtual Assistant Home", url: "/careers" },
+      ] 
+    },
+    { 
+      id: "va-details", 
+      label: "Virtual Assistant Details", 
+      items: [
+        { label: "Become a VA", url: "/careers/job-details" },
+        { label: "Hire a VA", url: "/careers/job-details" },
+      ] 
+    },
   ];
 
   const getMegaConfig = (label: string) => {
     if (label === "Services") return { data: servicesMegaData, active: activeServicesTab, setter: setActiveServicesTab, path: "/services" };
     if (label === "About") return { data: aboutMegaData, active: activeAboutTab, setter: setActiveAboutTab, path: "/about" };
     if (label === "Resources") return { data: resourcesMegaData, active: activeResourcesTab, setter: setActiveResourcesTab, path: "/resources" };
-    if (label === "Careers") return { data: careersMegaData, active: activeCareersTab, setter: setActiveCareersTab, path: "/careers" };
+    if (label === "Virtual Assistant" || label === "Careers") return { data: careersMegaData, active: activeCareersTab, setter: setActiveCareersTab, path: "/virtual-assistant" };
     return null;
   };
 
@@ -137,14 +180,14 @@ const Nav = ({ openNav }: Props) => {
                   <div key={link.id} className="relative h-full flex items-center" onMouseEnter={() => handleMouseEnter(link.id)} onMouseLeave={handleMouseLeave}>
                     <Link href={link.url} onClick={(e) => handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
                       <span className="text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]">
-                        {link.label}
+                        {link.label === "Careers" ? "Virtual Assistant" : link.label}
                       </span>
                     </Link>
                     {megaConfig && openDropdownId === link.id && (
                       <div className="absolute top-full left-0 mt-[-2px] bg-white border-t-2 border-[#a10000] shadow-xl min-w-[550px] z-20 rounded-b-lg flex overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="w-[40%] bg-[#f8fafc] px-6 py-6 border-r border-gray-200 flex flex-col font-poppins">
                           <h3 className="text-[#a10000] font-bold text-[11px] uppercase tracking-widest border-b border-[#a10000]/20 pb-2 mb-4">
-                            Explore {link.label}
+                            Explore {link.label === "Careers" ? "VA" : link.label}
                           </h3>
                           <div className="flex flex-col space-y-2">
                             {megaConfig.data.map((cat) => (
@@ -165,7 +208,7 @@ const Nav = ({ openNav }: Props) => {
                               const url = typeof item === 'string' ? megaConfig.path : item.url;
                               
                               return (
-                                <Link key={i} href={url} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
+                                <Link key={i} href={url} onClick={(e) => handleScrollClick(e, url)} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
                                   {label}
                                 </Link>
                               );

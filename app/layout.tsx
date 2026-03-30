@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 const openSans = Open_Sans({
-  subsets: ["latin"],
+  subsets: ["latin"], 
   weight: ["700"],
   variable: "--font-open-sans",
   display: "swap",

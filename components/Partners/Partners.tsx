@@ -11,7 +11,7 @@ interface PartnersProps {
 
 // 2. UPDATED FUNCTION SIGNATURE to accept backgroundColor prop
 const Partners: React.FC<PartnersProps> = ({ 
-  imageSrc = "/images/partnership.webp", 
+  imageSrc = "/images/partnership7.jpg", 
   backgroundColor = "bg-white" // Set default to bg-white
 }) => {
   const partnershipFeatures = [
