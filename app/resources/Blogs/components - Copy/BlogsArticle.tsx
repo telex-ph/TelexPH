@@ -59,7 +59,7 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
       // 👁️ TRACK VIEW: I-call ang GET /:id endpoint ng backend
       // Ang endpoint na ito ay nag-rerecord na ng view sa Analytics collection
       // (non-blocking — hindi naaapektuhan ang display kahit mag-fail)
-      fetch(`http://localhost:3000/api/blogs/${post._id}`)
+      fetch(`https://telexph-admin.onrender.com/api/blogs/${post._id}`)
         .catch((err) => console.error("⚠️ View tracking failed (non-critical):", err));
     }
   }, [post._id]); // Nag-re-run ulit kapag nagbago ang blog (e.g. nag-click ng ibang article)
@@ -67,7 +67,7 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
   // Check if current user has liked this blog
   const checkLikeStatus = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/blogs/${post._id}/like-status`);
+      const response = await fetch(`https://telexph-admin.onrender.com/api/blogs/${post._id}/like-status`);
       const data = await response.json();
       setHasLiked(data.hasLiked);
       setLikeCount(data.likeCount);
@@ -83,7 +83,7 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
     setIsLiking(true);
     
     try {
-      const url = `http://localhost:3000/api/blogs/${post._id}/like`;
+      const url = `https://telexph-admin.onrender.com/api/blogs/${post._id}/like`;
       const method = hasLiked ? 'DELETE' : 'POST';
       
       const response = await fetch(url, { method });

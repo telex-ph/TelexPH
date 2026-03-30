@@ -24,7 +24,7 @@ export default function ClientRegisterPage() {
     if (password !== confirmPassword) { setError('Passwords do not match'); return }
     setIsLoading(true)
     try {
-      const response = await fetch(`http://localhost:3000/auth/client/register`, {
+      const response = await fetch(`https://telexph-admin.onrender.com/auth/client/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

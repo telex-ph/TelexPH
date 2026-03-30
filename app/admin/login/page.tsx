@@ -22,7 +22,7 @@ export default function LoginPage() {
     setIsLoading(true)
  
     try {
-      const response = await fetch(`http://localhost:3000/auth/authenticate`, {
+      const response = await fetch(`https://telexph-admin.onrender.com/auth/authenticate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

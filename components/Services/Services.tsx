@@ -10,7 +10,7 @@ const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
 // Points directly to the Express backend (same as ListServices.tsx) to avoid
 // Next.js API route proxies that may filter isActive=true by default.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://telexph-admin.onrender.com";
 
 // ─── Icon Map ─────────────────────────────────────────────────────────────────
 

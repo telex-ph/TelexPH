@@ -17,7 +17,7 @@ import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
 import { COLORS, FONTS, getColorWithOpacity } from "@/constant/styles";
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com';
 
 // Hardcoded content data (original)
 const HARDCODED_CONTENT_DATA: Record<string, any> = {

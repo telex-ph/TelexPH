@@ -90,7 +90,7 @@ export default function MiniActivityLogs({
   const fetchRecentLogs = useCallback(async () => {
     try {
       setisloading(true)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
       const response = await fetch(`${apiUrl}/activity-logs?limit=10&order=desc`, {
         method: 'GET',
         credentials: 'include',
@@ -108,7 +108,7 @@ export default function MiniActivityLogs({
 
   const markAllAsRead = useCallback(async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
       await fetch(`${apiUrl}/activity-logs/mark-as-read`, {
         method: 'POST',
         credentials: 'include',

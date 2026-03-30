@@ -135,7 +135,7 @@ export default function AddAdmin() {
       }
       if (selectedImage) payload.profilePicture = selectedImage
 
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api'
       const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         credentials: 'include',

@@ -33,7 +33,7 @@ export default function BlogsPage() {
       try {
         setLoading(true);
         // Sinisiguro nating tama ang URL ng backend mo
-        const response = await fetch("http://localhost:3000/api/blogs");
+        const response = await fetch("https://telexph-admin.onrender.com/api/blogs");
         const data = await response.json();
         
         // I-filter lang ang mga 'published' para sa public view

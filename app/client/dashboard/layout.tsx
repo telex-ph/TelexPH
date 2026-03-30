@@ -57,7 +57,7 @@ type ClientInfo = {
   profilePicture?: string | null
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
 const NAV_GENERAL = [
   { label: 'Dashboard',     href: '/client/dashboard',                  icon: <CalIcon /> },

@@ -89,7 +89,7 @@ export default function ActivityLogs() {
       if (activetab !== 'All') params.append('action', activetab)
       if (filteredmodules.length > 0) params.append('module', filteredmodules[0])
       if (searchquery) params.append('admin', searchquery)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
       const response = await fetch(`${apiUrl}/activity-logs?${params.toString()}`, {
         method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' },
       })
@@ -109,7 +109,7 @@ export default function ActivityLogs() {
 
   const fetchActivityStats = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
       const response = await fetch(`${apiUrl}/activity-logs/stats`, {
         method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' },
       })

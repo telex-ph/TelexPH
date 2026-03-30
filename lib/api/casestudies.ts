@@ -1,5 +1,5 @@
 // lib/api/casestudies.ts
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com';
 
 export async function getAllCaseStudies() {
   const response = await fetch(`${API_BASE_URL}/casestudies`);
