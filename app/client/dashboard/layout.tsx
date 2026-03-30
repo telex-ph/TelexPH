@@ -18,18 +18,10 @@ const NavIcon = ({ children }: { children: React.ReactNode }) => (
 )
 
 // ─── NAV ICONS ────────────────────────────────────────────────────────────────
-const CalIcon       = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
-const BookingIcon   = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
-const SubIcon       = () => <NavIcon><Ico d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" size={13} /></NavIcon>
-const VAServicesIco = () => <NavIcon><Ico d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" d2="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" size={13} /></NavIcon>
-const VAIco         = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /></NavIcon>
-const FeedbackIco   = () => <NavIcon><Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
-const SupportIco    = () => <NavIcon><Ico d="M3 18v-6a9 9 0 0 1 18 0v6" d2="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" size={13} /></NavIcon>
-const SettingsIco   = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
-const BillingIco    = () => <NavIcon><Ico d="M3 10h18M7 15h.01M11 15h2M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" size={13} /></NavIcon>
-const ServicesIco   = () => <NavIcon><Ico d="M4 6h16M4 10h16M4 14h16M4 18h16" size={13} /></NavIcon>
-// ─── MESSAGING ICON (new) ─────────────────────────────────────────────────────
-const MessagingIco  = () => <NavIcon><Ico d="M8 9h8M8 13h6M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
+const CalIcon     = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
+const BookingIcon = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
+const VAIco       = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /></NavIcon>
+const SettingsIco = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
 
 // ─── UTILITY ICONS ────────────────────────────────────────────────────────────
 const ChevronDown  = () => <Ico d="M6 9l6 6 6-6"    size={13} sw={1.5} />
@@ -41,6 +33,8 @@ const BellIco      = () => <Ico d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M1
 const LogoutIco    = () => <Ico d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" size={13} />
 const MenuIco      = () => <Ico d="M3 12h18M3 6h18M3 18h18" size={18} />
 const ProfileIco   = () => <Ico d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} />
+const CheckIco     = () => <Ico d="M20 6L9 17l-5-5" size={12} />
+const TrashIco     = () => <Ico d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" size={12} />
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type ClientInfo = {
@@ -52,52 +46,159 @@ type ClientInfo = {
   profilePicture?: string | null
 }
 
+type Notification = {
+  _id: string
+  title: string
+  message: string
+  type: string
+  isRead: boolean
+  createdAt: string
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
 // ─── NAV DATA ─────────────────────────────────────────────────────────────────
-// General: Dashboard + Appointments + Messaging
 const NAV_GENERAL = [
-  { label: 'Dashboard',    href: '/client/dashboard',                       icon: <CalIcon /> },
-  { label: 'Appointments', href: '/client/dashboard/Appointments',          icon: <BookingIcon /> },
-  { label: 'Messaging',    href: '/client/dashboard/ClientMessaging',       icon: <MessagingIco /> },
+  { label: 'Dashboard',    href: '/client/dashboard',              icon: <CalIcon /> },
+  { label: 'Appointments', href: '/client/dashboard/Appointments', icon: <BookingIcon /> },
 ]
 
-// Services dropdown: Subscriptions + VA Services
-const NAV_SERVICES_DROPDOWN = {
-  label: 'Services',
-  icon: <ServicesIco />,
-  children: [
-    { label: 'Subscriptions', href: '/client/dashboard/Subscription', badge: undefined },
-    { label: 'VA Services',   href: '/client/dashboard/VAservices',   badge: undefined },
-  ],
-}
-
-// Virtual Assistant dropdown: Browse VAs, Shortlisted, Interview Recording, My VAs
 const NAV_VA_DROPDOWN = {
   label: 'Virtual Assistant',
   icon: <VAIco />,
   children: [
-    { label: 'Browse VAs',          href: '/client/dashboard/BrowseVAs',         badge: undefined },
-    { label: 'Shortlisted',         href: '/client/dashboard/Shortlisted',        badge: undefined },
-    { label: 'Interview Recording', href: '/client/dashboard/InterviewRecording', badge: 'REC' },
-    { label: 'My VAs',              href: '/client/dashboard/MyVAs',              badge: undefined },
-  ],
-}
-
-// Billing dropdown: VA Billing
-const NAV_BILLING_DROPDOWN = {
-  label: 'Billing',
-  icon: <BillingIco />,
-  children: [
-    { label: 'VA Billing', href: '/client/dashboard/VAbilling', badge: undefined },
+    { label: 'Messaging',     href: '/client/dashboard/ClientMessaging', badge: undefined },
+    { label: 'Subscriptions', href: '/client/dashboard/Subscription',    badge: undefined },
   ],
 }
 
 const NAV_SUPPORT = [
-  { label: 'Feedback',       href: '/client/dashboard/feedback',        icon: <FeedbackIco /> },
-  { label: 'Help & Support', href: '/client/dashboard/support',         icon: <SupportIco /> },
-  { label: 'Settings',       href: '/client/dashboard/AccountSettings', icon: <SettingsIco /> },
+  { label: 'Settings', href: '/client/dashboard/AccountSettings', icon: <SettingsIco /> },
 ]
+
+// ─── NOTIFICATION BELL ────────────────────────────────────────────────────────
+function NotificationBell({ userId }: { userId: string | undefined }) {
+  const [open, setOpen]                   = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading]             = useState(false)
+  const bellRef                           = useRef<HTMLDivElement>(null)
+  const unreadCount                       = notifications.filter(n => !n.isRead).length
+
+  const fetchNotifications = async () => {
+    if (!userId) return
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/notifications?userId=${userId}&userType=client`, { credentials: 'include' })
+      if (res.ok) setNotifications(await res.json())
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (userId) fetchNotifications()
+  }, [userId])
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const markAsRead = async (id: string) => {
+    try {
+      await fetch(`${API_BASE}/api/notifications/${id}/read`, { method: 'PUT', credentials: 'include' })
+      setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n))
+    } catch (err) {
+      console.error('Failed to mark as read:', err)
+    }
+  }
+
+  const markAllAsRead = async () => {
+    if (!userId) return
+    try {
+      await fetch(`${API_BASE}/api/notifications/read-all?userId=${userId}&userType=client`, { method: 'PUT', credentials: 'include' })
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+    } catch (err) {
+      console.error('Failed to mark all as read:', err)
+    }
+  }
+
+  const deleteNotification = async (id: string) => {
+    try {
+      await fetch(`${API_BASE}/api/notifications/${id}`, { method: 'DELETE', credentials: 'include' })
+      setNotifications(prev => prev.filter(n => n._id !== id))
+    } catch (err) {
+      console.error('Failed to delete notification:', err)
+    }
+  }
+
+  const timeAgo = (date: string) => {
+    const diff = Date.now() - new Date(date).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return 'just now'
+    if (mins < 60) return `${mins}m ago`
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return `${hrs}h ago`
+    return `${Math.floor(hrs / 24)}d ago`
+  }
+
+  return (
+    <div ref={bellRef} style={{ position: 'relative', cursor: 'pointer', color: '#888', display: 'flex' }}>
+      <div onClick={() => { setOpen(!open); if (!open) fetchNotifications() }} style={{ position: 'relative', display: 'flex' }}>
+        <BellIco />
+        {unreadCount > 0 && (
+          <span style={{ position: 'absolute', top: -2, right: -2, minWidth: 7, height: 7, borderRadius: '50%', background: '#800000', border: '1px solid #fff', fontSize: 7, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: unreadCount > 9 ? '0 2px' : 0 }}>
+            {unreadCount > 9 ? '9+' : ''}
+          </span>
+        )}
+      </div>
+
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: 320, background: '#fff', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.10)', border: '1px solid #f0eeee', zIndex: 200, overflow: 'hidden' }}>
+          <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #f5f2f2', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e' }}>
+              Notifications
+              {unreadCount > 0 && (
+                <span style={{ background: '#800000', color: '#fff', borderRadius: 20, fontSize: 10, padding: '1px 6px', marginLeft: 6 }}>{unreadCount}</span>
+              )}
+            </span>
+            {unreadCount > 0 && (
+              <button onClick={markAllAsRead} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: '#800000', fontWeight: 600 }}>Mark all read</button>
+            )}
+          </div>
+
+          <div style={{ maxHeight: 340, overflowY: 'auto' }}>
+            {loading ? (
+              <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: '#aaa' }}>Loading...</div>
+            ) : notifications.length === 0 ? (
+              <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: '#aaa' }}>No notifications yet</div>
+            ) : notifications.map(n => (
+              <div key={n._id} style={{ padding: '10px 16px', borderBottom: '1px solid #faf8f8', background: n.isRead ? 'transparent' : '#fff9f9', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: n.isRead ? 'transparent' : '#800000', marginTop: 5, flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: n.isRead ? 400 : 600, color: '#1a1a2e' }}>{n.title}</div>
+                  <div style={{ fontSize: 11, color: '#aaa', marginTop: 2, lineHeight: 1.4 }}>{n.message}</div>
+                  <div style={{ fontSize: 10, color: '#ccc', marginTop: 4 }}>{timeAgo(n.createdAt)}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                  {!n.isRead && (
+                    <button onClick={() => markAsRead(n._id)} title="Mark as read" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#800000', padding: 3, borderRadius: 6 }}><CheckIco /></button>
+                  )}
+                  <button onClick={() => deleteNotification(n._id)} title="Delete" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 3, borderRadius: 6 }}><TrashIco /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── HEADER ───────────────────────────────────────────────────────────────────
 function Header({
@@ -140,10 +241,7 @@ function Header({
         <SearchIco /><span>Search..</span>
       </div>
 
-      <div style={{ position: 'relative', cursor: 'pointer', color: '#888', display: 'flex' }}>
-        <BellIco />
-        <span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: '#800000', border: '1px solid #fff' }} />
-      </div>
+      <NotificationBell userId={clientInfo?.id} />
 
       <div style={{ position: 'relative' }} ref={menuRef}>
         <div
@@ -255,7 +353,6 @@ function NavDropdown({
         </div>
       )}
 
-      {/* Accordion trigger */}
       <div
         onClick={onToggle}
         style={{
@@ -272,17 +369,12 @@ function NavDropdown({
         </span>
       </div>
 
-      {/* Expanded children with tree lines */}
       {open && (
         <div style={{ position: 'relative', marginLeft: 23, marginTop: 2 }}>
-          {/* Vertical tree line */}
           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 15, width: '1px', background: '#e0dede' }} />
-
           {children.map((child) => (
             <div key={child.href} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              {/* Horizontal branch */}
               <div style={{ position: 'absolute', left: 0, top: 15, width: 12, height: '1px', background: '#e0dede' }} />
-              {/* Dot — filled when active */}
               <div style={{
                 position: 'absolute', left: 12, top: 12,
                 width: 4, height: 4, borderRadius: '50%',
@@ -318,15 +410,12 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
   const pathname = usePathname()
   const router   = useRouter()
 
-  const [collapsed,     setCollapsed]     = useState(false)
-  const [mobileOpen,    setMobileOpen]    = useState(false)
-  const [servicesOpen,  setServicesOpen]  = useState(false)
-  const [vaOpen,        setVaOpen]        = useState(false)
-  const [billingOpen,   setBillingOpen]   = useState(false)
-  const [clientInfo,    setClientInfo]    = useState<ClientInfo | null>(null)
-  const [loggingOut,    setLoggingOut]    = useState(false)
+  const [collapsed,  setCollapsed]  = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [vaOpen,     setVaOpen]     = useState(false)
+  const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
+  const [loggingOut, setLoggingOut] = useState(false)
 
-  // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -389,10 +478,8 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
         }
       `}</style>
 
-      {/* Mobile overlay */}
       <div className={`overlay ${mobileOpen ? 'active' : ''}`} onClick={() => setMobileOpen(false)} />
 
-      {/* ── SIDEBAR ── */}
       <aside
         className={`sidebar ${mobileOpen ? 'open' : ''}`}
         style={{
@@ -424,7 +511,6 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
               </span>
             )}
           </div>
-          {/* Collapse toggle — desktop */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="desktop-only"
@@ -432,7 +518,6 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
           >
             {collapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
-          {/* Close button — mobile */}
           <button
             onClick={() => setMobileOpen(false)}
             className="mobile-only"
@@ -444,25 +529,9 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
         {/* Scrollable nav area */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
-
-          {/* General: Dashboard + Appointments + Messaging */}
           <NavSection label="General" items={NAV_GENERAL} collapsed={collapsed} pathname={pathname} />
-
-          {/* Services dropdown: Subscriptions + VA Services */}
           <NavDropdown
-            sectionLabel="Services"
-            triggerLabel={NAV_SERVICES_DROPDOWN.label}
-            triggerIcon={NAV_SERVICES_DROPDOWN.icon}
-            children={NAV_SERVICES_DROPDOWN.children}
-            collapsed={collapsed}
-            pathname={pathname}
-            open={servicesOpen}
-            onToggle={() => setServicesOpen((v) => !v)}
-          />
-
-          {/* Virtual Assistant dropdown */}
-          <NavDropdown
-            sectionLabel="Virtual Assistant"
+            sectionLabel="VA"
             triggerLabel={NAV_VA_DROPDOWN.label}
             triggerIcon={NAV_VA_DROPDOWN.icon}
             children={NAV_VA_DROPDOWN.children}
@@ -471,26 +540,11 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
             open={vaOpen}
             onToggle={() => setVaOpen((v) => !v)}
           />
-
-          {/* Billing dropdown */}
-          <NavDropdown
-            sectionLabel="Billing"
-            triggerLabel={NAV_BILLING_DROPDOWN.label}
-            triggerIcon={NAV_BILLING_DROPDOWN.icon}
-            children={NAV_BILLING_DROPDOWN.children}
-            collapsed={collapsed}
-            pathname={pathname}
-            open={billingOpen}
-            onToggle={() => setBillingOpen((v) => !v)}
-          />
-
         </div>
 
         {/* Bottom: Support links + profile card */}
         <div style={{ padding: '10px', borderTop: '1px solid #f5f2f2' }}>
           <NavSection label="" items={NAV_SUPPORT} collapsed={collapsed} pathname={pathname} />
-
-          {/* Profile card */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: collapsed ? '8px 0' : '10px 12px',
@@ -507,12 +561,8 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
             {!collapsed && (
               <>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <div style={{ fontSize: 11.5, color: '#1a1a2e', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 500 }}>
-                    {sidebarName}
-                  </div>
-                  <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>
-                    {sidebarEmail}
-                  </div>
+                  <div style={{ fontSize: 11.5, color: '#1a1a2e', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 500 }}>{sidebarName}</div>
+                  <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>{sidebarEmail}</div>
                 </div>
                 <button
                   onClick={handleLogout}
