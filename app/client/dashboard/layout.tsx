@@ -55,7 +55,7 @@ type Notification = {
   createdAt: string
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
 // ─── NAV DATA ─────────────────────────────────────────────────────────────────
 const NAV_GENERAL = [

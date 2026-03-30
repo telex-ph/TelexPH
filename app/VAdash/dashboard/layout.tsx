@@ -43,7 +43,7 @@ type ClientInfo = {
   profilePicture?: string | null
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
 // ─── NAV DATA — Only 3 items ───────────────────────────────────────────────────
 const NAV_ITEMS = [
