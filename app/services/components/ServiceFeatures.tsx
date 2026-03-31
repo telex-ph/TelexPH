@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   Headphones,
   Monitor,
-  TrendingUp,
-  UserCheck,
-  Briefcase,
-  Share2,
-  Layout,
-  Loader2,
-  AlertCircle,
-  PackageSearch,
   Calendar,
   BookOpen,
   Users,
@@ -21,20 +13,29 @@ import {
   Tag,
   FileText,
   Code,
+  Layout,
+  Loader2,
+  AlertCircle,
+  PackageSearch,
+  Share2,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
 
-// API URL - defaults to relative path which will be proxied by Next.js
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const VISIBLE_COUNT = 6;
 
-// Icon mapping based on serviceId
 const ICON_MAP: Record<string, any> = {
   "ai-builder": PackageSearch,
-  "automation": Monitor,
+  automation: Monitor,
   "booking-appointment": Calendar,
   "courses-products": BookOpen,
-  "crm": Users,
-  "csr": Headphones,
+  crm: Users,
+  csr: Headphones,
   "email-marketing": Mail,
   "funnel-builder": Filter,
   "gray-label": Tag,
@@ -44,14 +45,13 @@ const ICON_MAP: Record<string, any> = {
   "web-development": Code,
 };
 
-// Fallback images based on serviceId
 const IMAGE_MAP: Record<string, string> = {
   "ai-builder": "/images/services1.webp",
-  "automation": "/images/services2.webp",
+  automation: "/images/services2.webp",
   "booking-appointment": "/images/services3.webp",
   "courses-products": "/images/services4.webp",
-  "crm": "/images/services5.webp",
-  "csr": "/images/services6.webp",
+  crm: "/images/services5.webp",
+  csr: "/images/services6.webp",
   "email-marketing": "/images/services1.webp",
   "funnel-builder": "/images/services2.webp",
   "gray-label": "/images/services3.webp",
@@ -61,6 +61,15 @@ const IMAGE_MAP: Record<string, string> = {
   "web-development": "/images/services1.webp",
 };
 
+const ACCENT_COLORS = [
+  "#6366f1",
+  "#f59e0b",
+  "#10b981",
+  "#ef4444",
+  "#8b5cf6",
+  "#06b6d4",
+];
+
 interface ServiceType {
   _id: string;
   serviceId: string;
@@ -68,428 +77,629 @@ interface ServiceType {
   description: string;
   icon: any;
   image: string;
-  bgColor: string;
-  textColor: string;
-  isDark: boolean;
+  accentColor: string;
   isActive: boolean;
   coverPhoto?: string | null;
   inactivePhoto?: string | null;
 }
 
-const ServiceCard: React.FC<{
+/* ─── Portrait Card ───────────────────────────────────────────── */
+const PortraitCard: React.FC<{
   service: ServiceType;
   index: number;
-}> = ({ service, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  isActive: boolean;
+  onClick: () => void;
+}> = ({ service, index, isActive, onClick }) => {
   const IconComponent = service.icon;
-
-  // Use native <img> for base64 data URLs and external http/https URLs (e.g. Cloudinary).
-  // next/image requires external hostnames to be whitelisted in next.config.ts —
-  // using <img> avoids that requirement entirely for dynamically-sourced images.
-  const isBase64Image = service.image.startsWith('data:image');
-  const isExternalUrl = service.image.startsWith('http://') || service.image.startsWith('https://');
+  const isExternal =
+    service.image.startsWith("http://") ||
+    service.image.startsWith("https://") ||
+    service.image.startsWith("data:image");
 
   return (
     <div
-      className="group relative rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02] h-full"
-      style={{ backgroundColor: service.bgColor }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+      style={{
+        position: "relative",
+        borderRadius: "20px",
+        overflow: "hidden",
+        cursor: "pointer",
+        flexShrink: 0,
+        width: isActive ? "clamp(200px, 28vw, 300px)" : "clamp(100px, 13vw, 160px)",
+        height: "clamp(340px, 46vw, 500px)",
+        transition: "width 0.55s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s ease",
+        boxShadow: isActive
+          ? `0 32px 72px -12px ${service.accentColor}50, 0 8px 32px rgba(0,0,0,0.18)`
+          : "0 4px 20px rgba(0,0,0,0.12)",
+      }}
     >
+      {/* Background image */}
+      {isExternal ? (
+        <img
+          src={service.image}
+          alt={service.title}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            display: "block",
+            transition: "transform 0.6s ease",
+            transform: isActive ? "scale(1.04)" : "scale(1)",
+          }}
+        />
+      ) : (
+        <Image
+          src={service.image}
+          alt={service.title}
+          fill
+          sizes="(max-width: 768px) 50vw, 28vw"
+          style={{
+            objectFit: "cover",
+            objectPosition: "center top",
+            transition: "transform 0.6s ease",
+            transform: isActive ? "scale(1.04)" : "scale(1)",
+          }}
+        />
+      )}
+
+      {/* Dark gradient overlay */}
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
         style={{
-          background: service.isDark
-            ? "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%)"
-            : "linear-gradient(135deg, rgba(0,0,0,0.02) 0%, transparent 100%)",
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.0) 80%)",
+          zIndex: 2,
         }}
       />
 
-      <div className="relative h-72 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 z-[1]" />
-        {(isBase64Image || isExternalUrl) ? (
-          <img
-            src={service.image}
-            alt={service.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading={index < 2 ? "eager" : "lazy"}
-          />
-        ) : (
-          <Image
-            src={service.image}
-            alt={service.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
-            priority={index < 2}
-          />
-        )}
+      {/* Accent color wash on active */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `linear-gradient(160deg, ${service.accentColor}42 0%, transparent 55%)`,
+          opacity: isActive ? 1 : 0,
+          transition: "opacity 0.5s ease",
+          zIndex: 3,
+        }}
+      />
 
-        <div
-          className="absolute top-6 right-6 z-[2] p-4 rounded-2xl backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
-          style={{
-            backgroundColor: service.isDark
-              ? "rgba(255, 255, 255, 0.15)"
-              : "rgba(0, 0, 0, 0.08)",
-            border: service.isDark
-              ? "1px solid rgba(255, 255, 255, 0.2)"
-              : "1px solid rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <IconComponent
-            className="w-7 h-7"
-            style={{
-              color: service.isDark ? COLORS.white : COLORS.primary,
-            }}
-          />
-        </div>
+      {/* Icon pill — top left */}
+      <div
+        style={{
+          position: "absolute",
+          top: "16px",
+          left: "16px",
+          zIndex: 5,
+          width: "40px",
+          height: "40px",
+          borderRadius: "12px",
+          background: "rgba(255,255,255,0.18)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.3)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <IconComponent size={17} color="#fff" />
       </div>
 
-      <div className="relative p-8 z-[2]">
+      {/* Index number — top right */}
+      <span
+        style={{
+          position: "absolute",
+          top: "18px",
+          right: "16px",
+          zIndex: 5,
+          fontFamily: "'DM Mono', monospace",
+          fontSize: "10px",
+          letterSpacing: "0.12em",
+          color: "rgba(255,255,255,0.55)",
+        }}
+      >
+        {String(index + 1).padStart(2, "0")}
+      </span>
+
+      {/* Bottom content */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 5,
+          padding: "20px 18px",
+        }}
+      >
         <div
-          className="w-16 h-1 rounded-full mb-5 transition-all duration-500 group-hover:w-24"
           style={{
-            backgroundColor: COLORS.primary,
+            width: isActive ? "36px" : "20px",
+            height: "2px",
+            borderRadius: "99px",
+            background: service.accentColor,
+            marginBottom: "10px",
+            transition: "width 0.4s ease",
           }}
         />
-
         <h3
-          className={`${FONT_CLASSES.openSansBold} text-2xl mb-4 transition-colors duration-300`}
-          style={{ color: service.textColor }}
+          style={{
+            fontFamily: "'Clash Display', 'DM Sans', sans-serif",
+            fontWeight: 700,
+            fontSize: isActive ? "15px" : "11px",
+            letterSpacing: "-0.01em",
+            color: "#fff",
+            marginBottom: "4px",
+            lineHeight: 1.25,
+            transition: "font-size 0.4s ease",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+          }}
         >
           {service.title}
         </h3>
-
-        <p
-          className={`${FONT_CLASSES.rubikRegular} text-base leading-relaxed`}
+        <div
           style={{
-            color: service.isDark ? "#d1d5db" : "#4b5563",
+            overflow: "hidden",
+            maxHeight: isActive ? "30px" : "0px",
+            opacity: isActive ? 1 : 0,
+            transition: "max-height 0.5s ease, opacity 0.4s ease",
           }}
         >
-          {service.description}
-        </p>
+          <span
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "11px",
+              color: "rgba(255,255,255,0.68)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            {service.isActive ? "Active Service" : "Coming Soon"}
+          </span>
+        </div>
       </div>
 
+      {/* Active left border accent */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-1 transform origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"
-        style={{ backgroundColor: COLORS.primary }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          bottom: 0,
+          width: "3px",
+          background: service.accentColor,
+          opacity: isActive ? 1 : 0,
+          transition: "opacity 0.4s ease",
+          zIndex: 6,
+          borderTopLeftRadius: "20px",
+          borderBottomLeftRadius: "20px",
+        }}
       />
     </div>
   );
 };
 
-const CarouselPagination: React.FC<{
-  services: ServiceType[];
-  activeIndex: number;
-  scrollTo: (index: number) => void;
-}> = ({ services, activeIndex, scrollTo }) => {
-  return (
-    <div className="flex justify-center mt-8 space-x-3">
-      {services.map((_, index) => (
-        <button
-          key={index}
-          onClick={() => scrollTo(index)}
-          className={`h-2.5 rounded-full transition-all duration-300 ease-out hover:opacity-100 ${
-            index === activeIndex
-              ? "w-8 opacity-100"
-              : "bg-gray-300 w-2.5 opacity-50 hover:opacity-70"
-          }`}
-          style={{
-            backgroundColor: index === activeIndex ? COLORS.primary : undefined,
-          }}
-          aria-label={`Go to service ${index + 1}`}
-        />
-      ))}
-    </div>
-  );
-};
-
-const ServiceCarousel: React.FC<{ services: ServiceType[] }> = ({
-  services,
-}) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const itemWidth =
-        scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
-
-      const newIndex = Math.round(scrollLeft / (itemWidth + 16));
-      if (newIndex !== activeIndex) setActiveIndex(newIndex);
-    }
-  };
-
-  const scrollTo = (index: number) => {
-    if (scrollRef.current) {
-      const itemWidth =
-        scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
-      scrollRef.current.scrollTo({
-        left: index * (itemWidth + 16),
-        behavior: "smooth",
-      });
-      setActiveIndex(index);
-    }
-  };
-
-  useEffect(() => {
-    const currentRef = scrollRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", handleScroll);
-      return () => currentRef.removeEventListener("scroll", handleScroll);
-    }
-  }, [activeIndex]);
+/* ─── Show All Button ─────────────────────────────────────────── */
+const ShowAllButton: React.FC<{
+  showAll: boolean;
+  onClick: () => void;
+  total: number;
+}> = ({ showAll, onClick, total }) => {
+  const [hovered, setHovered] = useState(false);
+  const accent = COLORS.primary || "#6366f1";
 
   return (
-    <>
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="relative flex snap-x snap-mandatory overflow-x-scroll overflow-y-visible space-x-4 px-4 pb-4 scrollbar-hide"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", marginTop: "48px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", maxWidth: "320px" }}>
+        <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, #e2e8f0)" }} />
+        <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#cbd5e1" }} />
+        <div style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, #e2e8f0)" }} />
+      </div>
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "13px 32px",
+          borderRadius: "14px",
+          border: "none",
+          background: hovered ? accent : "#fff",
+          color: hovered ? "#fff" : "#374151",
+          fontFamily: "'DM Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "14px",
+          letterSpacing: "0.01em",
+          cursor: "pointer",
+          transition: "all 0.25s ease",
+          transform: hovered ? "translateY(-1px)" : "translateY(0)",
+          boxShadow: hovered
+            ? `0 12px 28px ${accent}40`
+            : "0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06)",
+        }}
       >
-        {services.map((service, index) => (
-          <div key={service._id} className="flex-shrink-0 w-full snap-start">
-            <ServiceCard service={service} index={index} />
-          </div>
-        ))}
-      </div>
-      <CarouselPagination
-        services={services}
-        activeIndex={activeIndex}
-        scrollTo={scrollTo}
-      />
-    </>
+        <span>{showAll ? "Show Less" : "View All Services"}</span>
+        <div
+          style={{
+            width: "20px",
+            height: "20px",
+            borderRadius: "6px",
+            background: hovered ? "rgba(255,255,255,0.2)" : "#f1f5f9",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {showAll
+            ? <ChevronUp size={13} color={hovered ? "#fff" : "#64748b"} />
+            : <ChevronDown size={13} color={hovered ? "#fff" : "#64748b"} />}
+        </div>
+      </button>
+    </div>
   );
 };
 
+/* ─── Main Component ──────────────────────────────────────────── */
 export default function ServiceFeatures() {
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Helper function to process image source
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+
   const getImageSource = (
     coverPhoto: string | null | undefined,
     inactivePhoto: string | null | undefined,
     isActive: boolean,
     serviceId: string
   ): string => {
-    // Pick which photo to use based on active status
-    const photo = isActive ? coverPhoto : (inactivePhoto ?? coverPhoto);
-
-    console.log(`🔍 Processing image for ${serviceId}:`, {
-      isActive,
-      hasCoverPhoto: !!coverPhoto,
-      hasInactivePhoto: !!inactivePhoto,
-      usingPhoto: isActive ? 'coverPhoto' : 'inactivePhoto (fallback: coverPhoto)',
-      photoLength: photo?.length,
-      photoPreview: photo?.substring(0, 50)
-    });
-
-    // If photo exists and is a valid string
-    if (photo && typeof photo === 'string' && photo.trim()) {
-      const trimmedPhoto = photo.trim();
-      
-      // Check if it's already a data URL
-      if (trimmedPhoto.startsWith('data:image')) {
-        console.log(`✅ Using data URL for ${serviceId}`);
-        return trimmedPhoto;
-      }
-      
-      // Check if it looks like base64 (common base64 characters)
-      if (trimmedPhoto.match(/^[A-Za-z0-9+/]+={0,2}$/) && trimmedPhoto.length > 100) {
-        console.log(`✅ Converting base64 to data URL for ${serviceId}`);
-        return `data:image/jpeg;base64,${trimmedPhoto}`;
-      }
-      
-      // Check if it's a regular URL (http/https)
-      if (trimmedPhoto.startsWith('http://') || trimmedPhoto.startsWith('https://')) {
-        console.log(`✅ Using external URL for ${serviceId}`);
-        return trimmedPhoto;
-      }
-      
-      // Check if it's a relative path
-      if (trimmedPhoto.startsWith('/')) {
-        console.log(`✅ Using relative path for ${serviceId}`);
-        return trimmedPhoto;
-      }
+    const photo = isActive ? coverPhoto : inactivePhoto ?? coverPhoto;
+    if (photo && typeof photo === "string" && photo.trim()) {
+      const p = photo.trim();
+      if (p.startsWith("data:image")) return p;
+      if (p.match(/^[A-Za-z0-9+/]+=*$/) && p.length > 100)
+        return `data:image/jpeg;base64,${p}`;
+      if (p.startsWith("http://") || p.startsWith("https://")) return p;
+      if (p.startsWith("/")) return p;
     }
-    
-    // Fallback to IMAGE_MAP or default
-    const fallbackImage = IMAGE_MAP[serviceId] || "/images/services1.webp";
-    console.log(`⚠️ Using fallback image for ${serviceId}:`, fallbackImage);
-    return fallbackImage;
+    return IMAGE_MAP[serviceId] || "/images/services1.webp";
   };
 
-  // Determine background styling based on index (alternating pattern)
-  const getServiceStyling = (index: number) => {
-    // Pattern: white, dark, dark, white, white, dark
-    const darkPattern = [1, 2, 5]; // indices that should be dark
-    const isDark = darkPattern.includes(index % 6);
-    
-    return {
-      bgColor: isDark ? COLORS.dark : COLORS.white,
-      textColor: isDark ? COLORS.white : COLORS.black,
-      isDark: isDark,
-    };
-  };
-
-  // Fetch services from API
   const fetchServices = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const apiUrl = `${API_BASE_URL}/api/services`;
-      console.log('🔍 Fetching services from:', apiUrl);
-      
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`${API_BASE_URL}/api/services`, {
+        headers: { "Content-Type": "application/json" },
       });
-
-      console.log('📡 Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ API Error:', errorText);
-        throw new Error(`Failed to load services (${response.status})`);
-      }
-      
+      if (!response.ok) throw new Error(`Failed to load services (${response.status})`);
       const data = await response.json();
-      console.log('✅ Received services data:', data);
+      if (!Array.isArray(data)) throw new Error("Invalid response format");
 
-      if (!Array.isArray(data)) {
-        throw new Error('Invalid response format');
-      }
+      const mapped: ServiceType[] = data.map((item: any, index: number) => ({
+        _id: item._id,
+        serviceId: item.serviceId,
+        title: item.name.toUpperCase(),
+        description: item.description,
+        icon: ICON_MAP[item.serviceId] || Layout,
+        image: getImageSource(item.coverPhoto, item.inactivePhoto, item.isActive, item.serviceId),
+        accentColor: ACCENT_COLORS[index % ACCENT_COLORS.length],
+        isActive: item.isActive,
+        coverPhoto: item.coverPhoto,
+        inactivePhoto: item.inactivePhoto,
+      }));
 
-      // Map database fields to component structure
-      const mappedData = data.map((item: any, index: number) => {
-        console.log(`\n📦 Mapping service: ${item.serviceId}`);
-        console.log('Raw item:', JSON.stringify(item, null, 2));
-        
-        const imageSource = getImageSource(item.coverPhoto, item.inactivePhoto, item.isActive, item.serviceId);
-        const styling = getServiceStyling(index);
-        
-        return {
-          _id: item._id,
-          serviceId: item.serviceId,
-          title: item.name.toUpperCase(), // Match original format
-          description: item.description,
-          icon: ICON_MAP[item.serviceId] || Layout,
-          image: imageSource,
-          isActive: item.isActive,
-          coverPhoto: item.coverPhoto,
-          inactivePhoto: item.inactivePhoto,
-          ...styling,
-        };
-      });
-
-      // Sort: active services first, then inactive
-      const sortedData = [...mappedData].sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
-
-      console.log('\n📊 Final mapped services:', sortedData);
-      setServices(sortedData);
+      const sorted = [...mapped].sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
+      setServices(sorted);
     } catch (err: any) {
-      console.error("❌ Error loading services:", err);
       setError(err.message || "Could not load services at this time");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => { fetchServices(); }, []);
+
+  const visibleServices = showAll ? services : services.slice(0, VISIBLE_COUNT);
+  const hasMore = services.length > VISIBLE_COUNT;
+  const activeService = visibleServices[activeIndex] ?? null;
+
+  const prev = useCallback(() => {
+    setActiveIndex((i) => (i === 0 ? visibleServices.length - 1 : i - 1));
+  }, [visibleServices.length]);
+
+  const next = useCallback(() => {
+    setActiveIndex((i) => (i === visibleServices.length - 1 ? 0 : i + 1));
+  }, [visibleServices.length]);
+
   useEffect(() => {
-    fetchServices();
-  }, []);
+    if (activeIndex >= visibleServices.length && visibleServices.length > 0) {
+      setActiveIndex(visibleServices.length - 1);
+    }
+  }, [visibleServices.length]);
+
+  useEffect(() => {
+    if (mobileScrollRef.current) {
+      const card = mobileScrollRef.current.children[activeIndex] as HTMLElement;
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [activeIndex]);
 
   return (
     <section
-      className="py-20 md:py-24 relative overflow-hidden"
-      style={{ backgroundColor: "#f7f7f7" }}
+      className="relative overflow-hidden"
+      style={{
+        background: "linear-gradient(160deg, #f8f9ff 0%, #f0f4ff 50%, #faf8ff 100%)",
+        padding: "96px 0 112px",
+      }}
     >
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-50 rounded-full filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-50 rounded-full filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2" />
+      {/* Blobs */}
+      <div style={{ position: "absolute", top: "-120px", left: "-120px", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, #6366f122 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "-80px", right: "-80px", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, #f59e0b18 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle, #00000008 1px, transparent 1px)", backgroundSize: "32px 32px", pointerEvents: "none" }} />
 
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        <div className="text-center mb-20">
-          <div className="inline-block mb-4">
-            <span
-              className={`${FONT_CLASSES.openSansBold} text-sm uppercase tracking-[0.25em] px-6 py-2 rounded-full inline-block`}
-              style={{
-                color: COLORS.primary,
-              }}
-            >
-              — OUR SERVICES
+      <div className="relative z-10 mx-auto" style={{ maxWidth: "1300px", padding: "0 24px" }}>
+
+        {/* Section header */}
+        <div style={{ marginBottom: "56px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+            <div style={{ width: "36px", height: "2px", background: COLORS.primary || "#6366f1", borderRadius: "99px" }} />
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: COLORS.primary || "#6366f1", fontWeight: 500 }}>
+              Our Services
             </span>
           </div>
-          <h2
-            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-4`}
-            style={{ color: COLORS.black }}
-          >
-            Services Designed to
-            <br />
-            <span style={{ color: COLORS.primary }}>Meet Every Need</span>
-          </h2>
-          <p
-            className={`${FONT_CLASSES.rubikRegular} text-lg text-gray-600 max-w-2xl mx-auto`}
-          >
-            From customer support to technical assistance, we provide
-            comprehensive solutions that drive your business forward
-          </p>
-        </div>
-
-        {loading ? (
-          <div className="flex flex-col justify-center items-center py-20 gap-4">
-            <Loader2 className="w-12 h-12 animate-spin" style={{ color: COLORS.primary }} />
-            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 animate-pulse`}>
-              Loading our services...
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "24px" }}>
+            <h2 style={{ fontFamily: "'Clash Display', 'DM Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4vw, 52px)", letterSpacing: "-0.03em", color: "#0f172a", lineHeight: 1.1, margin: 0 }}>
+              Services Designed to
+              <br />
+              <span style={{ color: COLORS.primary || "#6366f1" }}>Meet Every Need</span>
+            </h2>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "15px", color: "#64748b", lineHeight: 1.75, maxWidth: "380px", margin: 0 }}>
+              From customer support to technical assistance, we provide comprehensive solutions that drive your business forward.
             </p>
           </div>
+        </div>
+
+        {/* States */}
+        {loading ? (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 0", gap: "16px" }}>
+            <Loader2 className="animate-spin" size={40} style={{ color: COLORS.primary || "#6366f1" }} />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#9ca3af", fontSize: "14px" }}>Loading our services…</p>
+          </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-            <p className={`${FONT_CLASSES.openSansBold} text-gray-800 text-xl mb-2`}>
-              Something went wrong
-            </p>
-            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 mb-6`}>
-              {error}
-            </p>
-            <button 
-              onClick={fetchServices}
-              className={`${FONT_CLASSES.openSansBold} px-6 py-3 rounded-full text-white transition-all hover:scale-105`}
-              style={{ backgroundColor: COLORS.primary }}
-            >
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 0", gap: "12px", textAlign: "center" }}>
+            <AlertCircle size={44} color="#ef4444" />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "18px", color: "#111" }}>Something went wrong</p>
+            <p style={{ color: "#6b7280", fontSize: "14px" }}>{error}</p>
+            <button onClick={fetchServices} style={{ marginTop: "8px", padding: "12px 28px", borderRadius: "99px", background: COLORS.primary || "#6366f1", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", border: "none", cursor: "pointer" }}>
               Try Again
             </button>
           </div>
         ) : services.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-            <p className={`${FONT_CLASSES.openSansBold} text-gray-800 text-xl mb-2`}>
-              No services available
-            </p>
-            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500`}>
-              Check back soon for updates
-            </p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 0", gap: "12px", textAlign: "center" }}>
+            <AlertCircle size={44} color="#9ca3af" />
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "18px", color: "#111" }}>No services available</p>
+            <p style={{ color: "#6b7280", fontSize: "14px" }}>Check back soon for updates.</p>
           </div>
         ) : (
           <>
-            <div className="lg:hidden pb-2 overflow-visible">
-              <ServiceCarousel services={services} />
+            {/* ══════════════════════════════════
+                DESKTOP — portrait fan + left panel
+            ══════════════════════════════════ */}
+            <div className="hidden md:flex" style={{ gap: "48px", alignItems: "center" }}>
+
+              {/* Left description panel */}
+              <div style={{ flexShrink: 0, width: "240px" }}>
+                {activeService && (
+                  <div key={activeService._id} style={{ animation: "fadeSlideIn 0.38s ease" }}>
+                    <div
+                      style={{
+                        width: "52px",
+                        height: "52px",
+                        borderRadius: "16px",
+                        background: `${activeService.accentColor}18`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      <activeService.icon size={24} color={activeService.accentColor} />
+                    </div>
+
+                    <div style={{ width: "40px", height: "3px", borderRadius: "99px", background: activeService.accentColor, marginBottom: "16px" }} />
+
+                    <h3 style={{ fontFamily: "'Clash Display', 'DM Sans', sans-serif", fontWeight: 700, fontSize: "22px", letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "14px", lineHeight: 1.2 }}>
+                      {activeService.title}
+                    </h3>
+
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#64748b", lineHeight: 1.8, marginBottom: "28px" }}>
+                      {activeService.description}
+                    </p>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: activeService.accentColor, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                        Learn more
+                      </span>
+                      <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: activeService.accentColor, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <ArrowUpRight size={13} color="#fff" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation arrows */}
+                <div style={{ display: "flex", gap: "10px", marginTop: "40px", alignItems: "center" }}>
+                  <button
+                    onClick={prev}
+                    aria-label="Previous service"
+                    style={{ width: "44px", height: "44px", borderRadius: "50%", border: "1.5px solid #e2e8f0", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.07)", transition: "all 0.2s ease" }}
+                    onMouseEnter={(e) => { const b = e.currentTarget; b.style.background = activeService?.accentColor || "#6366f1"; b.style.borderColor = "transparent"; }}
+                    onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = "#fff"; b.style.borderColor = "#e2e8f0"; }}
+                  >
+                    <ChevronLeft size={18} color="#374151" />
+                  </button>
+                  <button
+                    onClick={next}
+                    aria-label="Next service"
+                    style={{ width: "44px", height: "44px", borderRadius: "50%", border: "1.5px solid #e2e8f0", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.07)", transition: "all 0.2s ease" }}
+                    onMouseEnter={(e) => { const b = e.currentTarget; b.style.background = activeService?.accentColor || "#6366f1"; b.style.borderColor = "transparent"; }}
+                    onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = "#fff"; b.style.borderColor = "#e2e8f0"; }}
+                  >
+                    <ChevronRight size={18} color="#374151" />
+                  </button>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: "#94a3b8", letterSpacing: "0.05em" }}>
+                    {String(activeIndex + 1).padStart(2, "0")} / {String(visibleServices.length).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Portrait card fan */}
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  gap: "12px",
+                  alignItems: "center",
+                  overflow: "hidden",
+                  padding: "20px 0",
+                }}
+              >
+                {visibleServices.map((service, index) => (
+                  <PortraitCard
+                    key={service._id}
+                    service={service}
+                    index={index}
+                    isActive={index === activeIndex}
+                    onClick={() => setActiveIndex(index)}
+                  />
+                ))}
+              </div>
             </div>
 
-            <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-10">
-              {services.map((service, index) => (
-                <ServiceCard key={service._id} service={service} index={index} />
-              ))}
+            {/* ══════════════════════════════════
+                MOBILE — info panel + scroll strip
+            ══════════════════════════════════ */}
+            <div className="md:hidden">
+              {/* Info panel */}
+              {activeService && (
+                <div key={activeService._id} style={{ marginBottom: "28px", padding: "0 4px", animation: "fadeSlideIn 0.38s ease" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "14px", background: `${activeService.accentColor}16`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
+                    <activeService.icon size={22} color={activeService.accentColor} />
+                  </div>
+                  <div style={{ width: "32px", height: "3px", borderRadius: "99px", background: activeService.accentColor, marginBottom: "12px" }} />
+                  <h3 style={{ fontFamily: "'Clash Display', 'DM Sans', sans-serif", fontWeight: 700, fontSize: "20px", letterSpacing: "-0.02em", color: "#0f172a", marginBottom: "10px", lineHeight: 1.25 }}>
+                    {activeService.title}
+                  </h3>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: "#64748b", lineHeight: 1.75 }}>
+                    {activeService.description}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "16px" }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: activeService.accentColor, letterSpacing: "0.04em", textTransform: "uppercase" }}>Learn more</span>
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: activeService.accentColor, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <ArrowUpRight size={12} color="#fff" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Portrait scroll strip */}
+              <div
+                ref={mobileScrollRef}
+                style={{ display: "flex", gap: "10px", overflowX: "auto", scrollSnapType: "x mandatory", paddingBottom: "8px", scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {visibleServices.map((service, index) => (
+                  <div
+                    key={service._id}
+                    onClick={() => setActiveIndex(index)}
+                    style={{
+                      position: "relative",
+                      borderRadius: "18px",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                      scrollSnapAlign: "start",
+                      width: index === activeIndex ? "55vw" : "30vw",
+                      height: "260px",
+                      transition: "width 0.5s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s ease",
+                      boxShadow: index === activeIndex
+                        ? `0 20px 48px -10px ${service.accentColor}45`
+                        : "0 2px 12px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    {service.image.startsWith("http") || service.image.startsWith("data:") ? (
+                      <img src={service.image} alt={service.title} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
+                    ) : (
+                      <Image src={service.image} alt={service.title} fill sizes="55vw" style={{ objectFit: "cover", objectPosition: "center top" }} />
+                    )}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.08) 60%)" }} />
+                    <div style={{ position: "absolute", inset: 0, background: `linear-gradient(160deg, ${service.accentColor}35 0%, transparent 55%)`, opacity: index === activeIndex ? 1 : 0.3, transition: "opacity 0.4s" }} />
+                    <div style={{ position: "absolute", top: "12px", left: "12px", width: "36px", height: "36px", borderRadius: "10px", background: "rgba(255,255,255,0.2)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <service.icon size={15} color="#fff" />
+                    </div>
+                    <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px" }}>
+                      <div style={{ width: index === activeIndex ? "28px" : "16px", height: "2px", borderRadius: "99px", background: service.accentColor, marginBottom: "8px", transition: "width 0.4s" }} />
+                      <p style={{ fontFamily: "'Clash Display', 'DM Sans', sans-serif", fontWeight: 700, fontSize: index === activeIndex ? "13px" : "11px", color: "#fff", lineHeight: 1.2, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", transition: "font-size 0.4s" }}>
+                        {service.title}
+                      </p>
+                    </div>
+                    <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "3px", background: service.accentColor, opacity: index === activeIndex ? 1 : 0, transition: "opacity 0.4s", borderTopLeftRadius: "18px", borderBottomLeftRadius: "18px" }} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile nav */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "20px", padding: "0 4px" }}>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button onClick={prev} aria-label="Previous" style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1.5px solid #e2e8f0", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+                    <ChevronLeft size={16} color="#374151" />
+                  </button>
+                  <button onClick={next} aria-label="Next" style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1.5px solid #e2e8f0", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+                    <ChevronRight size={16} color="#374151" />
+                  </button>
+                </div>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {visibleServices.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveIndex(i)}
+                      style={{ width: i === activeIndex ? "24px" : "7px", height: "7px", borderRadius: "99px", background: i === activeIndex ? (activeService?.accentColor || COLORS.primary || "#6366f1") : "#d1d5db", border: "none", cursor: "pointer", transition: "all 0.3s ease", padding: 0 }}
+                      aria-label={`Go to service ${i + 1}`}
+                    />
+                  ))}
+                </div>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: "#94a3b8" }}>
+                  {String(activeIndex + 1).padStart(2, "0")}/{String(visibleServices.length).padStart(2, "0")}
+                </span>
+              </div>
             </div>
+
+            {/* Show All */}
+            {hasMore && (
+              <ShowAllButton
+                showAll={showAll}
+                onClick={() => { setShowAll((prev) => !prev); setActiveIndex(0); }}
+                total={services.length}
+              />
+            )}
           </>
         )}
       </div>
+
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </section>
   );
 }

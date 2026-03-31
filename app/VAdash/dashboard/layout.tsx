@@ -10,15 +10,17 @@ const Ico = ({ d, d2, size = 16, sw = 1.2 }: { d: string; d2?: string; size?: nu
 )
 
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
-const BG        = '#E7E7E7'
-const NEU_OUT   = '-5px -5px 14px #FFFFFF, 5px 5px 14px #CACAEC'
-const NEU_IN    = 'inset 3px 3px 7px #CACAEC, inset -3px -3px 7px #fff'
+const BG        = '#FFFFFF'
+const SOFT      = '#f5f5f5'
+const BORDER    = 'rgba(0,0,0,0.08)'
+const NEU_OUT   = '0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)'
+const NEU_IN    = 'inset 2px 2px 5px #e0e0e0, inset -2px -2px 5px #ffffff'
 const TEXT_MAIN = '#2a2a2a'
 const TEXT_SUB  = '#888'
 const PRIMARY   = '#800000'
 
 const NavIcon = ({ children, active }: { children: React.ReactNode; active?: boolean }) => (
-  <span style={{ width: 26, height: 26, borderRadius: 7, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: BG, color: active ? PRIMARY : '#666', boxShadow: active ? NEU_IN : NEU_OUT, transition: 'all 0.15s' }}>{children}</span>
+  <span style={{ width: 26, height: 26, borderRadius: 7, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: active ? '#fff0f0' : SOFT, color: active ? PRIMARY : '#666', border: `1.5px solid ${active ? `${PRIMARY}40` : '#e5e5e5'}`, transition: 'all 0.15s' }}>{children}</span>
 )
 
 // ─── NAV ICONS ────────────────────────────────────────────────────────────────
@@ -45,7 +47,7 @@ type ClientInfo = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
-// ─── NAV DATA — Only 3 items ───────────────────────────────────────────────────
+// ─── NAV DATA ─────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
   { label: 'Dashboard',  href: '/VirtualAssistant/dashboard',            icon: (a: boolean) => <DashIco a={a} /> },
   { label: 'Assessment', href: '/VirtualAssistant/dashboard/VAassesment', icon: (a: boolean) => <AssessIco a={a} /> },
@@ -71,19 +73,19 @@ function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void
   const displayEmail = clientInfo?.email ?? ''
 
   return (
-    <header style={{ height: 60, background: BG, borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 14, position: 'sticky', top: 0, zIndex: 100 }}>
+    <header style={{ height: 60, background: BG, borderBottom: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', padding: '0 20px', gap: 14, position: 'sticky', top: 0, zIndex: 100 }}>
       <button className="mobile-only" onClick={onMenuClick} style={{ background: 'none', border: 'none', cursor: 'pointer', color: TEXT_SUB }}><MenuIco /></button>
       <div style={{ flex: 1 }}>
         <div className="desktop-only" style={{ fontSize: 12, color: TEXT_SUB }}>{today}</div>
       </div>
 
       {/* Search box */}
-      <div className="search-box" style={{ display: 'flex', alignItems: 'center', gap: 8, background: BG, borderRadius: 12, padding: '7px 14px', fontSize: 12, color: TEXT_SUB, width: 190, boxShadow: NEU_IN }}>
+      <div className="search-box" style={{ display: 'flex', alignItems: 'center', gap: 8, background: SOFT, borderRadius: 12, padding: '7px 14px', fontSize: 12, color: TEXT_SUB, width: 190, border: '1px solid #e5e5e5' }}>
         <SearchIco /><span>Search...</span>
       </div>
 
       {/* Bell */}
-      <div style={{ width: 36, height: 36, borderRadius: 10, background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: TEXT_SUB, position: 'relative', boxShadow: NEU_OUT }}>
+      <div style={{ width: 36, height: 36, borderRadius: 10, background: SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: TEXT_SUB, position: 'relative', border: '1px solid #e5e5e5' }}>
         <BellIco />
         <span style={{ position: 'absolute', top: 7, right: 8, width: 7, height: 7, borderRadius: '50%', background: PRIMARY, border: `2px solid ${BG}` }} />
       </div>
@@ -97,8 +99,8 @@ function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void
             : avatarLetter}
         </div>
         {showUserMenu && (
-          <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, width: 200, background: BG, borderRadius: 16, boxShadow: '-10px -10px 30px #fff, 10px 10px 30px #CACAEC', overflow: 'hidden', zIndex: 200 }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, width: 200, background: BG, borderRadius: 16, boxShadow: '0 8px 30px rgba(0,0,0,0.12)', border: `1px solid ${BORDER}`, overflow: 'hidden', zIndex: 200 }}>
+            <div style={{ padding: '12px 16px', borderBottom: `1px solid ${BORDER}` }}>
               <div style={{ fontSize: 12, color: TEXT_MAIN, fontWeight: 600 }}>{displayName}</div>
               <div style={{ fontSize: 10, color: TEXT_SUB, marginTop: 2 }}>{displayEmail}</div>
             </div>
@@ -122,7 +124,7 @@ function Header({ onMenuClick, clientInfo, onLogout }: { onMenuClick: () => void
 // ─── NAV ITEM ─────────────────────────────────────────────────────────────────
 function NavItem({ label, href, icon, collapsed, isActive }: { label: string; href: string; icon: (a: boolean) => React.ReactNode; collapsed: boolean; isActive: boolean }) {
   return (
-    <Link href={href} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '8px 6px' : '8px 10px', borderRadius: 12, marginBottom: 3, background: isActive ? BG : 'transparent', boxShadow: isActive ? NEU_IN : 'none', color: isActive ? PRIMARY : TEXT_MAIN, fontWeight: isActive ? 600 : 400, fontSize: 12.5, textDecoration: 'none', justifyContent: collapsed ? 'center' : 'flex-start', transition: 'all 0.15s' }}>
+    <Link href={href} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '8px 6px' : '8px 10px', borderRadius: 12, marginBottom: 3, background: isActive ? '#fff0f0' : 'transparent', border: `1.5px solid ${isActive ? `${PRIMARY}30` : 'transparent'}`, color: isActive ? PRIMARY : TEXT_MAIN, fontWeight: isActive ? 600 : 400, fontSize: 12.5, textDecoration: 'none', justifyContent: collapsed ? 'center' : 'flex-start', transition: 'all 0.15s' }}>
       {icon(isActive)}
       {!collapsed && <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>}
     </Link>
@@ -174,6 +176,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: BG, overflow: 'hidden' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        html, body, #__next, #root { background-color: #ffffff !important; }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; font-weight: 400; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
         a { text-decoration: none; color: inherit; }
@@ -181,7 +184,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
           .desktop-only { display: none !important; }
           .search-box   { display: none !important; }
           .sidebar { position: fixed !important; left: 0 !important; top: 0 !important; width: 240px !important; min-width: 240px !important; height: 100vh !important; transform: translateX(-100%); transition: transform 0.25s ease !important; z-index: 200 !important; }
-          .sidebar.open { transform: translateX(0) !important; box-shadow: 4px 0 30px rgba(0,0,0,0.15) !important; }
+          .sidebar.open { transform: translateX(0) !important; box-shadow: 4px 0 30px rgba(0,0,0,0.10) !important; }
           .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 190; }
           .overlay.active { display: block !important; }
         }
@@ -194,12 +197,12 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
       <div className={`overlay ${mobileOpen ? 'active' : ''}`} onClick={() => setMobileOpen(false)} />
 
       <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}
-        style={{ width: collapsed ? 68 : 248, minWidth: collapsed ? 68 : 248, background: BG, height: '100vh', display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(0,0,0,0.06)', transition: 'all 0.22s ease', zIndex: 150 }}>
+        style={{ width: collapsed ? 68 : 248, minWidth: collapsed ? 68 : 248, background: BG, height: '100vh', display: 'flex', flexDirection: 'column', borderRight: `1px solid ${BORDER}`, transition: 'all 0.22s ease', zIndex: 150 }}>
 
         {/* Logo bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', padding: '0 16px', height: 60, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', padding: '0 16px', height: 60, borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 12, background: BG, boxShadow: `-6px -6px 14px #fff, 6px 6px 14px #CACAEC`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 12, background: SOFT, border: '1px solid #e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
                 <rect x="1" y="1" width="5" height="5" rx="1.5" fill="#800000" />
                 <rect x="8" y="1" width="5" height="5" rx="1.5" fill="#800000" />
@@ -210,11 +213,11 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
             {!collapsed && <span style={{ fontSize: 13, fontWeight: 700, color: TEXT_MAIN, letterSpacing: '0.06em', textTransform: 'uppercase' }}>VA Portal</span>}
           </div>
           <button onClick={() => setCollapsed(!collapsed)} className="desktop-only"
-            style={{ background: BG, border: 'none', borderRadius: 8, cursor: 'pointer', color: TEXT_SUB, width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: NEU_OUT }}>
+            style={{ background: SOFT, border: '1px solid #e5e5e5', borderRadius: 8, cursor: 'pointer', color: TEXT_SUB, width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {collapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
           <button onClick={() => setMobileOpen(false)} className="mobile-only"
-            style={{ background: BG, border: 'none', borderRadius: 8, cursor: 'pointer', color: TEXT_SUB, width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: NEU_OUT }}>
+            style={{ background: SOFT, border: '1px solid #e5e5e5', borderRadius: 8, cursor: 'pointer', color: TEXT_SUB, width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ChevronLeft />
           </button>
         </div>
@@ -224,7 +227,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
           {!collapsed && (
             <div style={{ fontSize: 9.5, color: '#bbb', padding: '0 10px 8px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700 }}>Menu</div>
           )}
-          {collapsed && <div style={{ height: 1, background: 'rgba(0,0,0,0.07)', margin: '0 4px 10px' }} />}
+          {collapsed && <div style={{ height: 1, background: BORDER, margin: '0 4px 10px' }} />}
           {NAV_ITEMS.map(item => (
             <NavItem
               key={item.label}
@@ -238,7 +241,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
         </div>
 
         {/* Bottom: settings + profile */}
-        <div style={{ padding: '10px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+        <div style={{ padding: '10px', borderTop: `1px solid ${BORDER}` }}>
           <NavItem
             label="Settings"
             href="/VirtualAssistant/dashboard/Settings"
@@ -246,7 +249,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
             collapsed={collapsed}
             isActive={pathname === '/VirtualAssistant/dashboard/Settings'}
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '8px 6px' : '10px 12px', borderRadius: 14, background: BG, boxShadow: NEU_OUT, justifyContent: collapsed ? 'center' : 'flex-start', marginTop: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: collapsed ? '8px 6px' : '10px 12px', borderRadius: 14, background: SOFT, border: '1px solid #e5e5e5', justifyContent: collapsed ? 'center' : 'flex-start', marginTop: 8 }}>
             <div style={{ width: 32, height: 32, borderRadius: '50%', background: PRIMARY, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0, overflow: 'hidden', boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.2)' }}>
               {clientInfo?.profilePicture
                 ? <img src={clientInfo.profilePicture} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -270,7 +273,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
-        <main style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>{children}</main>
+        <main style={{ flex: 1, overflowY: 'auto', padding: '20px', background: BG }}>{children}</main>
       </div>
     </div>
   )

@@ -12,7 +12,6 @@ import {
   Clock, 
   Database, 
   CheckCircle2, 
-  ArrowRight, 
   TrendingUp 
 } from "lucide-react";
 
@@ -189,17 +188,9 @@ const UseCaseScenario = () => {
                   <span style={{ color: COLORS.primary }}>Achieved In Minutes.</span>
                 </h3>
                 
-                <p className="text-base text-gray-500 leading-relaxed mb-10 max-w-lg font-normal">
+                <p className="text-base text-gray-500 leading-relaxed max-w-lg font-normal">
                   Our orchestration layer ensures that neither the agent nor the customer experiences friction, leading to a <span className="text-gray-900 font-bold uppercase text-[11px]">superior service delivery model</span>.
                 </p>
-                
-                <button 
-                  className="group flex items-center gap-4 px-10 py-5 rounded-md text-white font-bold uppercase tracking-widest text-[11px] transition-all hover:shadow-2xl active:scale-95 shadow-lg"
-                  style={{ backgroundColor: COLORS.primary }}
-                >
-                  Get Full Case Study
-                  <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-                </button>
               </div>
 
               <div className="flex flex-row lg:flex-col gap-6 w-full lg:w-auto">
