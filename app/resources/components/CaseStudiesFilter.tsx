@@ -16,18 +16,14 @@ import {
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com';
 
-// ✅ NEW: Random Profile Picture Generator
+// ✅ Random Profile Picture Generator
 function generateRandomProfiles(seed: string | number, count: number = 3) {
   const profiles = [];
-  // Convert seed to a consistent number
   const seedNum = typeof seed === 'string' ? seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : seed;
-  
   for (let i = 0; i < count; i++) {
-    // Generate a random number between 1-70 based on seed
     const randomNum = ((seedNum + i * 13) % 70) + 1;
     profiles.push(`https://i.pravatar.cc/150?img=${randomNum}`);
   }
-  
   return profiles;
 }
 
@@ -63,77 +59,12 @@ export default function CaseStudiesFilter() {
     { name: "White Papers" },
   ];
 
-  // Hardcoded resources (keeping all original data)
-  const hardcodedResources = [
-    {
-      id: 1,
-      type: "Case Studies",
-      title: "Horseshoe Ridge",
-      date: "5 days ago",
-      status: "Active",
-      tag: "Technology",
-      description: "An existing vendor-managed approach to inbound transportation became unsustainable for evolving demands.",
-      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 2,
-      type: "Events",
-      title: "Global Supply Chain Summit",
-      date: "Coming Soon",
-      status: "Active",
-      tag: "Logistics",
-      description: "A 3-day virtual event gathering the brightest minds in global logistics and automated freight.",
-      image: "https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 3,
-      type: "Guides",
-      title: "2026 Freight Manual",
-      date: "1 week ago",
-      status: "Completed",
-      tag: "Analytics",
-      description: "Download our comprehensive guide on reducing total landed costs through advanced reporting.",
-      image: "https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 4,
-      type: "Videos",
-      title: "AI Integration Demo",
-      date: "3 days ago",
-      status: "Active",
-      tag: "Technology",
-      description: "Watch how real-time tracking and AI-driven route optimization reduces overhead by 35%.",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 5,
-      type: "Webinars",
-      title: "Scaling Support Teams",
-      date: "Live Tomorrow",
-      status: "Active",
-      tag: "Infrastructure",
-      description: "How to scale support teams from 15 to 300+ agents while maintaining high CSAT scores.",
-      image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      id: 6,
-      type: "White Papers",
-      title: "Market Trends Report",
-      date: "1 month ago",
-      status: "Completed",
-      tag: "Analytics",
-      description: "In-depth analysis of cross-border operations and large-scale infrastructure projects.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-    },
-  ];
-
   // Fetch case studies from API on component mount
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       const apiData = await getAllCaseStudies();
       
-      // Transform API data to match the expected format
       const transformedApiData = apiData.map((item: any) => {
         let description = "";
         
@@ -192,34 +123,30 @@ export default function CaseStudiesFilter() {
     fetchData();
   }, []);
 
-  const allResources = useMemo(() => {
-    return [...apiCaseStudies, ...hardcodedResources];
-  }, [apiCaseStudies]);
-
   const filteredCards = useMemo(() => {
-    let cards = allResources;
+    let cards = apiCaseStudies;
 
     if (activeTab !== "All") {
-      cards = cards.filter((r) => r.type === activeTab);
+      cards = cards.filter((r: any) => r.type === activeTab);
     }
 
     if (searchQuery) {
-      cards = cards.filter((r) =>
+      cards = cards.filter((r: any) =>
         r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     if (statusFilter !== "All Status") {
-      cards = cards.filter((r) => r.status === statusFilter);
+      cards = cards.filter((r: any) => r.status === statusFilter);
     }
 
     if (tagFilter !== "Filter by tag") {
-      cards = cards.filter((r) => r.tag === tagFilter);
+      cards = cards.filter((r: any) => r.tag === tagFilter);
     }
 
     return cards;
-  }, [allResources, activeTab, searchQuery, statusFilter, tagFilter]);
+  }, [apiCaseStudies, activeTab, searchQuery, statusFilter, tagFilter]);
 
   const handleReset = () => {
     setSearchQuery("");
@@ -231,7 +158,7 @@ export default function CaseStudiesFilter() {
     setExpandedCardId(expandedCardId === id ? null : id);
   };
 
-  const formalColor = "#4b5563"; 
+  const formalColor = "#4b5563";
 
   return (
     <section className="w-full">
@@ -305,7 +232,11 @@ export default function CaseStudiesFilter() {
               <HiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
             </div>
 
-            <button onClick={handleReset} className="flex items-center gap-2 text-[14px] font-bold hover:text-black transition-colors px-2 whitespace-nowrap" style={{ fontFamily: FONTS.openSans, color: formalColor }}>
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 text-[14px] font-bold hover:text-black transition-colors px-2 whitespace-nowrap"
+              style={{ fontFamily: FONTS.openSans, color: formalColor }}
+            >
               <div className="border border-gray-300 rounded-full p-0.5"><HiXMark className="w-3.5 h-3.5" /></div>
               Reset filters
             </button>
@@ -326,9 +257,8 @@ export default function CaseStudiesFilter() {
         {!isLoading && (
           <div className={`max-w-7xl mx-auto ${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 justify-items-center" : "flex flex-col gap-6 items-center"}`}>
             {filteredCards.length > 0 ? (
-              filteredCards.map((card) => {
+              filteredCards.map((card: any) => {
                 const isExpanded = expandedCardId === card.id;
-                // ✅ Generate random profiles based on card ID
                 const profilePictures = generateRandomProfiles(card.id, 3);
                 
                 return (
@@ -373,7 +303,6 @@ export default function CaseStudiesFilter() {
                           <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-3">{card.description}</p>
                         </div>
                         <div className="mt-auto pb-6 flex justify-between items-center">
-                          {/* ✅ FIXED: Use generated random profile pictures */}
                           <div className="flex -space-x-1.5">
                             {profilePictures.map((profileUrl, i) => (
                               <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
