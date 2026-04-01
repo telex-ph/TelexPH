@@ -273,7 +273,7 @@ export default function ListBlogs() {
         @media (min-width: 640px)  { .stat-img-card .sic-hint { font-size: 10px; } }
         .sic-dot {
           width: 4px; height: 4px; border-radius: 50%;
-          background: rgba(255,255,255,0.72);
+          background: rgba(255,255,255,0.72); 
           flex-shrink: 0; display: inline-block;
         }
         @media (min-width: 640px) { .sic-dot { width: 5px; height: 5px; } }
