@@ -278,14 +278,15 @@ function HorizontalPhotoMosaic() {
     <div ref={containerRef}
       style={{
         position: "relative", width: "100%", height: CARD_H + 40,
-        overflow: "hidden", perspective: 900, perspectiveOrigin: "25% 100%",
+        overflow: "hidden", perspective: 900, perspectiveOrigin: "50% 100%",
         userSelect: "none", touchAction: "none",
       }}
       onPointerDown={onPointerDown} onPointerMove={onPointerMove}
       onPointerUp={onPointerUp} onPointerLeave={onPointerUp}
     >
+      <div style={{ position:"absolute",left:0,top:0,bottom:0,width:isMobile?40:120,background:"linear-gradient(to right, #f7f7f7 35%, transparent)",zIndex:200,pointerEvents:"none" }} />
       <div style={{ position:"absolute",right:0,top:0,bottom:0,width:isMobile?40:120,background:"linear-gradient(to left, #f7f7f7 35%, transparent)",zIndex:200,pointerEvents:"none" }} />
-      <div style={{ position:"absolute",left:"25%",top:16,transform:"translateX(-50%)",width:0,height:CARD_H }}>
+      <div style={{ position:"absolute",left:"50%",top:16,transform:"translateX(-50%)",width:0,height:CARD_H }}>
         {cards.map(({ idx, dist }) => {
           const name  = ALL_PLATFORMS[idx];
           const photo = PHOTOS[idx % PHOTOS.length];
@@ -617,9 +618,55 @@ function WhyCard({ icon, title, text }: { icon: React.ReactNode; title: string; 
 }
 
 /* ─── Main Component ─────────────────────────────────────────────────────── */
+/* ─── Hero Tab Data ──────────────────────────────────────────────────────── */
+const HERO_TABS = [
+  {
+    id: "platforms",
+    label: "Platforms",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+      </svg>
+    ),
+    stat: "115+",
+    statLabel: "Global Platforms",
+    description: "Connected to the world's leading marketplaces across 24 countries — from Amazon & eBay to regional powerhouses in Europe, Asia, and the Middle East.",
+  },
+  {
+    id: "tools",
+    label: "Tools",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M9.5 2.5L13.5 6.5L6 14H2V10L9.5 2.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M7 5L11 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    stat: "20+",
+    statLabel: "Integrated Tools",
+    description: "Purpose-built and third-party tools for catalog management, listing optimization, price intelligence, and performance analytics — all integrated into our workflow.",
+  },
+  {
+    id: "industries",
+    label: "Industries",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 13V7l6-4 6 4v6H2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M6 13V9h4v4" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+      </svg>
+    ),
+    stat: "12+",
+    statLabel: "Industry Verticals",
+    description: "Deep expertise across electronics, home & garden, fashion, sports, automotive, beauty, toys, and more — tailored strategies for every product vertical.",
+  },
+];
+
 export default function PlatformOverview() {
   const [selectedCountry, setSelectedCountry] = useState("ALL");
   const [dropdownOpen, setDropdownOpen]       = useState(false);
+  const [activeHeroTab, setActiveHeroTab]     = useState("platforms");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const filteredPlatforms = selectedCountry === "ALL"
@@ -683,49 +730,120 @@ export default function PlatformOverview() {
       `}</style>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="bg-[#f7f7f7] overflow-hidden pt-20 sm:pt-32 lg:pt-40 pb-0">
-        <div className="flex flex-col lg:flex-row items-center lg:items-stretch gap-8 lg:gap-0">
-          {/* Left — text content */}
-          <div className="flex flex-col justify-center flex-shrink-0 lg:w-1/2 px-6 lg:pl-12 lg:pr-10 text-left">
-            <p
-              className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4"
-              style={{ color: COLORS.primary, fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold }}
-            >
-              PLATFORM ECOSYSTEM
-            </p>
-            <h1
-              className="anim-up font-black uppercase tracking-[-0.02em] leading-[.95] text-[#282828] mb-5"
-              style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "clamp(32px, 4.5vw, 50px)" }}
-            >
-              Powering Growth Across 115+<br />
-              <em className="not-italic" style={{ color: COLORS.primary, fontStyle: "non-italic" }}>
-               Global E-Commerce Platforms
-              </em>
-            </h1>
-            <p
-              className="anim-up-2 max-w-[480px] mb-7"
-              style={{ fontFamily: FONTS.rubik, fontSize: 15, lineHeight: 1.75, color: getColorWithOpacity("dark", 0.55) }}
-            >
-              Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
-              <strong style={{ color: COLORS.dark, fontWeight: FONT_WEIGHTS.semibold }}>
-               the world’s leading e-commerce ecosystems.
-              </strong>{" "}
-             Operating across 24 countries with over a decade of marketplace expertise.
-            </p>
-            <div
-              className="anim-up-3 text-xs tracking-wide"
-              style={{ color: "#bbb", fontFamily: FONTS.openSans }}
-            >
-              Home&nbsp;›&nbsp;About&nbsp;›&nbsp;
-              <span style={{ color: COLORS.primary }}>Platform Overview</span>
-            </div>
-          </div>
-
-          {/* Right — photo mosaic slider */}
-          <div className="flex-1 min-w-0">
-            <HorizontalPhotoMosaic />
+      <section className="bg-[#f7f7f7] overflow-hidden pt-20 sm:pt-32 lg:pt-50 pb-0">
+        <div className="flex flex-col items-center text-center px-6">
+          <p
+            className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4"
+            style={{ color: COLORS.primary, fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold }}
+          >
+            PLATFORM ECOSYSTEM
+          </p>
+          <h1
+            className="anim-up font-black uppercase tracking-[-0.02em] leading-[.95] text-[#282828] mb-5"
+            style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "clamp(32px, 4.5vw, 50px)" }}
+          >
+            Powering Growth Across 115+<br />
+            <em className="not-italic" style={{ color: COLORS.primary, fontStyle: "non-italic" }}>
+             Global E-Commerce Platforms
+            </em>
+          </h1>
+          <p
+            className="anim-up-2 max-w-[440px] mb-7"
+            style={{ fontFamily: FONTS.rubik, fontSize: 15, lineHeight: 1.75, color: getColorWithOpacity("dark", 0.55) }}
+          >
+            Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
+            <strong style={{ color: COLORS.dark, fontWeight: FONT_WEIGHTS.semibold }}>
+             the world’s leading e-commerce ecosystems.
+            </strong>{" "}
+           Operating across 24 countries with over a decade of marketplace expertise.
+          </p>
+          <div
+            className="anim-up-3 text-xs tracking-wide mb-2"
+            style={{ color: "#bbb", fontFamily: FONTS.openSans }}
+          >
+            Home&nbsp;›&nbsp;About&nbsp;›&nbsp;
+            <span style={{ color: COLORS.primary }}>Platform Overview</span>
           </div>
         </div>
+        {/* ── Hero Tabs ────────────────────────────────────────────────── */}
+        <div className="w-full max-w-[680px] mx-auto px-4 mt-2 mb-0">
+          {/* Tab bar */}
+          <div
+            className="flex items-center justify-center gap-1 p-1 rounded-2xl mx-auto"
+            style={{ background: "rgba(0,0,0,0.06)", display: "inline-flex", width: "auto" }}
+          >
+            {HERO_TABS.map(tab => {
+              const active = activeHeroTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveHeroTab(tab.id)}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap"
+                  style={{
+                    fontFamily: FONTS.openSans,
+                    fontWeight: active ? FONT_WEIGHTS.bold : FONT_WEIGHTS.semibold,
+                    background: active ? "#fff" : "transparent",
+                    color: active ? COLORS.primary : "#666",
+                    boxShadow: active ? "0 2px 8px rgba(0,0,0,0.10)" : "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span style={{ color: active ? COLORS.primary : "#999" }}>{tab.icon}</span>
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tab content panel */}
+          {HERO_TABS.map(tab => {
+            if (tab.id !== activeHeroTab) return null;
+            return (
+              <div
+                key={tab.id}
+                className="flex items-center gap-4 mt-3 mb-4 px-5 py-4 rounded-2xl"
+                style={{
+                  background: "rgba(255,255,255,0.75)",
+                  backdropFilter: "blur(8px)",
+                  border: "1px solid rgba(0,0,0,0.07)",
+                  animation: "fadeIn .25s ease both",
+                }}
+              >
+                <div
+                  className="flex-shrink-0 flex flex-col items-center justify-center rounded-xl px-4 py-3"
+                  style={{ background: COLORS.primary, minWidth: 72 }}
+                >
+                  <span
+                    className="font-black leading-none"
+                    style={{
+                      fontFamily: TYPOGRAPHY.heading.fontFamily,
+                      fontWeight: TYPOGRAPHY.heading.fontWeight,
+                      fontSize: 26,
+                      color: "#fff",
+                    }}
+                  >
+                    {tab.stat}
+                  </span>
+                  <span
+                    className="text-white/80 text-center leading-tight mt-1"
+                    style={{ fontFamily: FONTS.openSans, fontSize: 9, fontWeight: FONT_WEIGHTS.semibold, letterSpacing: "0.06em", textTransform: "uppercase" }}
+                  >
+                    {tab.statLabel}
+                  </span>
+                </div>
+                <p
+                  className="text-left"
+                  style={{ fontFamily: FONTS.rubik, fontSize: 13, color: "#555", lineHeight: 1.65 }}
+                >
+                  {tab.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <HorizontalPhotoMosaic />
       </section>
 
       {/* ── STATS + ABOUT ────────────────────────────────────────────────── */}
