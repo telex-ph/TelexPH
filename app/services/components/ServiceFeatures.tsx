@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import {
   Headphones,
   Monitor,
-  TrendingUp,
-  UserCheck,
-  Briefcase,
-  Share2,
-  Layout,
-  Loader2,
-  AlertCircle,
-  PackageSearch,
   Calendar,
   BookOpen,
   Users,
@@ -21,20 +13,39 @@ import {
   Tag,
   FileText,
   Code,
+  Layout,
+  Loader2,
+  AlertCircle,
+  PackageSearch,
+  Share2,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
+  Clock,
 } from "lucide-react";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
 
-// API URL - defaults to relative path which will be proxied by Next.js
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-// Icon mapping based on serviceId
+/* ─── Maroon theme palette ────────────────────────────────────── */
+const MAROON        = "#7B0D1E";
+const MAROON_MID    = "#9B1D2E";
+const MAROON_LIGHT  = "#C0392B";
+const MAROON_DARK   = "#4A0A12";
+
+/* Font helpers */
+const FONT_HEADING  = "'Poppins', 'Open Sans', sans-serif";
+const FONT_BODY     = "'Open Sans', 'Poppins', sans-serif";
+const FONT_MONO     = "'Poppins', monospace";
+
 const ICON_MAP: Record<string, any> = {
   "ai-builder": PackageSearch,
-  "automation": Monitor,
+  automation: Monitor,
   "booking-appointment": Calendar,
   "courses-products": BookOpen,
-  "crm": Users,
-  "csr": Headphones,
+  crm: Users,
+  csr: Headphones,
   "email-marketing": Mail,
   "funnel-builder": Filter,
   "gray-label": Tag,
@@ -44,14 +55,13 @@ const ICON_MAP: Record<string, any> = {
   "web-development": Code,
 };
 
-// Fallback images based on serviceId
 const IMAGE_MAP: Record<string, string> = {
   "ai-builder": "/images/services1.webp",
-  "automation": "/images/services2.webp",
+  automation: "/images/services2.webp",
   "booking-appointment": "/images/services3.webp",
   "courses-products": "/images/services4.webp",
-  "crm": "/images/services5.webp",
-  "csr": "/images/services6.webp",
+  crm: "/images/services5.webp",
+  csr: "/images/services6.webp",
   "email-marketing": "/images/services1.webp",
   "funnel-builder": "/images/services2.webp",
   "gray-label": "/images/services3.webp",
@@ -61,6 +71,8 @@ const IMAGE_MAP: Record<string, string> = {
   "web-development": "/images/services1.webp",
 };
 
+type FilterMode = "all" | "active" | "coming-soon";
+
 interface ServiceType {
   _id: string;
   serviceId: string;
@@ -68,427 +80,1132 @@ interface ServiceType {
   description: string;
   icon: any;
   image: string;
-  bgColor: string;
-  textColor: string;
-  isDark: boolean;
   isActive: boolean;
   coverPhoto?: string | null;
   inactivePhoto?: string | null;
 }
 
+/* ─── Service Card ────────────────────────────────────────────── */
 const ServiceCard: React.FC<{
   service: ServiceType;
   index: number;
-}> = ({ service, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  onMouseEnterCard: () => void;
+  onMouseLeaveCard: () => void;
+  onSelect: () => void;
+  isSelected: boolean;
+}> = ({ service, index, onMouseEnterCard, onMouseLeaveCard, onSelect, isSelected }) => {
+  const [hovered, setHovered] = useState(false);
   const IconComponent = service.icon;
 
-  // Use native <img> for base64 data URLs and external http/https URLs (e.g. Cloudinary).
-  // next/image requires external hostnames to be whitelisted in next.config.ts —
-  // using <img> avoids that requirement entirely for dynamically-sourced images.
-  const isBase64Image = service.image.startsWith('data:image');
-  const isExternalUrl = service.image.startsWith('http://') || service.image.startsWith('https://');
+  const isExternal =
+    service.image.startsWith("http://") ||
+    service.image.startsWith("https://") ||
+    service.image.startsWith("data:image");
 
   return (
-    <div
-      className="group relative rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02] h-full"
-      style={{ backgroundColor: service.bgColor }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <article
+      className="group relative flex flex-col overflow-hidden cursor-pointer flex-shrink-0"
+      onClick={onSelect}
+      style={{
+        width: "340px",
+        borderRadius: "18px",
+        background: "#fff",
+        boxShadow: isSelected
+          ? "0 8px 28px rgba(161,0,0,0.13)"
+          : hovered
+          ? "0 8px 24px rgba(0,0,0,0.10)"
+          : "0 2px 8px rgba(0,0,0,0.06)",
+        transition: "box-shadow 0.4s ease, transform 0.4s ease",
+        transform: hovered || isSelected ? "translateY(-6px)" : "translateY(0)",
+        border: isSelected
+          ? "2px solid #a1000040"
+          : `1px solid ${hovered ? "rgba(0,0,0,0.12)" : "rgba(0,0,0,0.06)"}`,
+      }}
+      onMouseEnter={() => { setHovered(true); onMouseEnterCard(); }}
+      onMouseLeave={() => { setHovered(false); onMouseLeaveCard(); }}
     >
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
-        style={{
-          background: service.isDark
-            ? "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%)"
-            : "linear-gradient(135deg, rgba(0,0,0,0.02) 0%, transparent 100%)",
-        }}
-      />
+      {/* ── Image block ── */}
+      <div className="relative overflow-hidden" style={{ height: "220px", flexShrink: 0 }}>
+        {/* Always-on dark gradient overlay at bottom */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(180deg,
+              transparent 0%,
+              rgba(0,0,0,0.35) 60%,
+              rgba(0,0,0,0.65) 100%)`,
+            zIndex: 2,
+            transition: "opacity 0.4s ease",
+          }}
+        />
 
-      <div className="relative h-72 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 z-[1]" />
-        {(isBase64Image || isExternalUrl) ? (
+        {/* Hover: subtle dark wash from top */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(160deg, rgba(0,0,0,0.25) 0%, transparent 55%)`,
+            opacity: hovered ? 1 : 0,
+            transition: "opacity 0.4s ease",
+            zIndex: 3,
+          }}
+        />
+        {!service.isActive && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.62)",
+              zIndex: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
+            <Clock size={22} color="#fbbf24" />
+            <span
+              style={{
+                fontFamily: FONT_MONO,
+                fontSize: "11px",
+                letterSpacing: "0.14em",
+                color: "#fbbf24",
+                fontWeight: 600,
+                textTransform: "uppercase",
+              }}
+            >
+              Coming Soon
+            </span>
+          </div>
+        )}
+        {isExternal ? (
           <img
             src={service.image}
             alt={service.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading={index < 2 ? "eager" : "lazy"}
+            className="w-full h-full object-cover"
+            style={{
+              transition: "transform 0.6s ease",
+              transform: hovered ? "scale(1.08)" : "scale(1)",
+            }}
+            loading={index < 3 ? "eager" : "lazy"}
           />
         ) : (
           <Image
             src={service.image}
             alt={service.title}
             fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
-            priority={index < 2}
+            sizes="340px"
+            className="object-cover"
+            style={{
+              transition: "transform 0.6s ease",
+              transform: hovered ? "scale(1.08)" : "scale(1)",
+            }}
+            priority={index < 3}
           />
         )}
-
-        <div
-          className="absolute top-6 right-6 z-[2] p-4 rounded-2xl backdrop-blur-md transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
+        <span
           style={{
-            backgroundColor: service.isDark
-              ? "rgba(255, 255, 255, 0.15)"
-              : "rgba(0, 0, 0, 0.08)",
-            border: service.isDark
-              ? "1px solid rgba(255, 255, 255, 0.2)"
-              : "1px solid rgba(0, 0, 0, 0.1)",
+            position: "absolute",
+            top: "14px",
+            right: "14px",
+            zIndex: 5,
+            fontFamily: FONT_MONO,
+            fontSize: "10px",
+            letterSpacing: "0.1em",
+            color: "#fff",
+            opacity: 0.7,
           }}
         >
-          <IconComponent
-            className="w-7 h-7"
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        {service.isActive && (
+          <div
             style={{
-              color: service.isDark ? COLORS.white : COLORS.primary,
+              position: "absolute",
+              bottom: "14px",
+              left: "14px",
+              zIndex: 5,
+              width: "40px",
+              height: "40px",
+              borderRadius: "12px",
+              background: "rgba(255,255,255,0.18)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.35)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.18)",
+              transition: "transform 0.35s ease",
+              transform: hovered ? "rotate(8deg) scale(1.1)" : "rotate(0) scale(1)",
             }}
-          />
-        </div>
+          >
+            <IconComponent size={17} color="#fff" />
+          </div>
+        )}
       </div>
 
-      <div className="relative p-8 z-[2]">
+      {/* ── Content block ── */}
+      <div style={{ padding: "24px 26px 28px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
         <div
-          className="w-16 h-1 rounded-full mb-5 transition-all duration-500 group-hover:w-24"
           style={{
-            backgroundColor: COLORS.primary,
+            width: hovered ? "52px" : "28px",
+            height: "3px",
+            borderRadius: "99px",
+            background: `linear-gradient(90deg, #a10000 0%, #c0392b 100%)`,
+            marginBottom: "12px",
+            transition: "width 0.4s ease",
           }}
         />
-
         <h3
-          className={`${FONT_CLASSES.openSansBold} text-2xl mb-4 transition-colors duration-300`}
-          style={{ color: service.textColor }}
+          style={{
+            fontFamily: FONT_HEADING,
+            fontWeight: 700,
+            fontSize: "16px",
+            letterSpacing: "-0.01em",
+            color: "#111",
+            marginBottom: "9px",
+            lineHeight: 1.3,
+          }}
         >
           {service.title}
         </h3>
-
         <p
-          className={`${FONT_CLASSES.rubikRegular} text-base leading-relaxed`}
           style={{
-            color: service.isDark ? "#d1d5db" : "#4b5563",
+            fontFamily: FONT_BODY,
+            fontSize: "13.5px",
+            color: "#6b7280",
+            lineHeight: 1.68,
+            flexGrow: 1,
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
           }}
         >
           {service.description}
         </p>
+        <div style={{ marginTop: "18px", display: "flex", alignItems: "center", gap: "6px" }}>
+          <span
+            style={{
+              fontFamily: FONT_BODY,
+              fontWeight: 400,
+              fontSize: "12.5px",
+              color: service.isActive ? "#a10000" : "#9ca3af",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {service.isActive ? "Learn more" : "Coming soon"}
+          </span>
+          {service.isActive && (
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                background: "#a1000018",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "transform 0.3s ease",
+                transform: hovered ? "translate(2px,-2px)" : "translate(0,0)",
+              }}
+            >
+              <ArrowUpRight size={11} color="#a10000" />
+            </div>
+          )}
+        </div>
       </div>
 
       <div
-        className="absolute bottom-0 left-0 right-0 h-1 transform origin-left transition-transform duration-500 scale-x-0 group-hover:scale-x-100"
-        style={{ backgroundColor: COLORS.primary }}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "3px",
+          background: "linear-gradient(90deg, #a10000 0%, #c0392b 100%)",
+          transformOrigin: "left",
+          transform: hovered ? "scaleX(1)" : "scaleX(0)",
+          transition: "transform 0.4s ease",
+          borderBottomLeftRadius: "18px",
+          borderBottomRightRadius: "18px",
+        }}
       />
-    </div>
+    </article>
   );
 };
 
-const CarouselPagination: React.FC<{
-  services: ServiceType[];
-  activeIndex: number;
-  scrollTo: (index: number) => void;
-}> = ({ services, activeIndex, scrollTo }) => {
+/* ─── Filter Button ───────────────────────────────────────────── */
+const FilterButton: React.FC<{
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  count: number;
+  onClick: () => void;
+  accentColor?: string;
+}> = ({ label, icon, active, count, onClick, accentColor = "#a10000" }) => {
+  const [hovered, setHovered] = useState(false);
   return (
-    <div className="flex justify-center mt-8 space-x-3">
-      {services.map((_, index) => (
-        <button
-          key={index}
-          onClick={() => scrollTo(index)}
-          className={`h-2.5 rounded-full transition-all duration-300 ease-out hover:opacity-100 ${
-            index === activeIndex
-              ? "w-8 opacity-100"
-              : "bg-gray-300 w-2.5 opacity-50 hover:opacity-70"
-          }`}
-          style={{
-            backgroundColor: index === activeIndex ? COLORS.primary : undefined,
-          }}
-          aria-label={`Go to service ${index + 1}`}
-        />
-      ))}
-    </div>
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        padding: "8px 16px",
+        borderRadius: "10px",
+        border: active ? "none" : `1px solid ${accentColor}22`,
+        background: active ? accentColor : hovered ? `${accentColor}0d` : "rgba(255,255,255,0.8)",
+        color: active ? "#fff" : hovered ? accentColor : "#64748b",
+        fontFamily: FONT_BODY,
+        fontWeight: 400,
+        fontSize: "12.5px",
+        cursor: "pointer",
+        transition: "all 0.22s ease",
+        boxShadow: active ? `0 6px 16px ${accentColor}33` : hovered ? `0 2px 8px ${accentColor}18` : "none",
+        backdropFilter: "blur(8px)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {icon}
+      <span>{label}</span>
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "18px",
+          height: "18px",
+          padding: "0 4px",
+          borderRadius: "6px",
+          background: active ? "rgba(255,255,255,0.22)" : `${accentColor}14`,
+          fontSize: "10px",
+          fontWeight: 600,
+          color: active ? "#fff" : accentColor,
+          lineHeight: 1,
+        }}
+      >
+        {count}
+      </span>
+    </button>
   );
 };
 
-const ServiceCarousel: React.FC<{ services: ServiceType[] }> = ({
-  services,
-}) => {
+/* ─── Auto-Scrolling Carousel Panel ──────────────────────────── */
+const ServiceCarouselPanel: React.FC<{
+  services: ServiceType[];
+  loading: boolean;
+  error: string | null;
+  onRetry: () => void;
+  onSelectService: (service: ServiceType) => void;
+  selectedService: ServiceType | null;
+}> = ({ services, loading, error, onRetry, onSelectService, selectedService }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const isPausedRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [filterMode, setFilterMode] = useState<FilterMode>("all");
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const itemWidth =
-        scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
+  const CARD_WIDTH = 340;
+  const GAP = 20;
+  const STEP = CARD_WIDTH + GAP;
+  const SPEED = 0.55;
 
-      const newIndex = Math.round(scrollLeft / (itemWidth + 16));
-      if (newIndex !== activeIndex) setActiveIndex(newIndex);
-    }
-  };
+  const filteredServices = services.filter((s) => {
+    if (filterMode === "active") return s.isActive;
+    if (filterMode === "coming-soon") return !s.isActive;
+    return true;
+  });
 
-  const scrollTo = (index: number) => {
-    if (scrollRef.current) {
-      const itemWidth =
-        scrollRef.current.querySelector(":scope > div")?.clientWidth || 1;
-      scrollRef.current.scrollTo({
-        left: index * (itemWidth + 16),
-        behavior: "smooth",
-      });
-      setActiveIndex(index);
-    }
-  };
+  const activeCount = services.filter((s) => s.isActive).length;
+  const comingSoonCount = services.filter((s) => !s.isActive).length;
+  const dotCount = Math.min(filteredServices.length, 12);
+
+  const runScroll = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    const tick = () => {
+      const el = scrollRef.current;
+      if (el && !isPausedRef.current) {
+        el.scrollLeft += SPEED;
+        const halfWidth = el.scrollWidth / 2;
+        if (el.scrollLeft >= halfWidth) el.scrollLeft -= halfWidth;
+        const pos = el.scrollLeft % halfWidth;
+        setActiveIndex(Math.round(pos / STEP));
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }, [STEP]);
 
   useEffect(() => {
-    const currentRef = scrollRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", handleScroll);
-      return () => currentRef.removeEventListener("scroll", handleScroll);
-    }
-  }, [activeIndex]);
+    if (!loading && !error && filteredServices.length > 0) runScroll();
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [loading, error, filteredServices.length, runScroll]);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+    setActiveIndex(0);
+  }, [filterMode]);
+
+  const manualScroll = (dir: "left" | "right") => {
+    if (scrollRef.current)
+      scrollRef.current.scrollBy({ left: dir === "left" ? -STEP * 2 : STEP * 2, behavior: "smooth" });
+  };
+
+  const NavBtn: React.FC<{ dir: "left" | "right" }> = ({ dir }) => {
+    const [h, setH] = useState(false);
+    return (
+      <button
+        onClick={() => manualScroll(dir)}
+        onMouseEnter={() => setH(true)}
+        onMouseLeave={() => setH(false)}
+        style={{
+          width: "38px",
+          height: "38px",
+          borderRadius: "11px",
+          border: `1px solid ${h ? MAROON : "rgba(0,0,0,0.1)"}`,
+          background: h ? MAROON : "rgba(255,255,255,0.88)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          transition: "all 0.22s ease",
+          backdropFilter: "blur(8px)",
+          boxShadow: h ? `0 6px 16px ${MAROON}44` : "0 2px 8px rgba(0,0,0,0.08)",
+          flexShrink: 0,
+        }}
+      >
+        {dir === "left"
+          ? <ChevronLeft size={16} color={h ? "#fff" : "#6b7280"} />
+          : <ChevronRight size={16} color={h ? "#fff" : "#6b7280"} />}
+      </button>
+    );
+  };
 
   return (
-    <>
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="relative flex snap-x snap-mandatory overflow-x-scroll overflow-y-visible space-x-4 px-4 pb-4 scrollbar-hide"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {services.map((service, index) => (
-          <div key={service._id} className="flex-shrink-0 w-full snap-start">
-            <ServiceCard service={service} index={index} />
+    <div style={{ display: "flex", flexDirection: "column", gap: "18px", minWidth: 0 }}>
+      {/* Filter bar */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <FilterButton label="All Services" icon={<Layers size={12} />} active={filterMode === "all"} count={services.length} onClick={() => setFilterMode("all")} accentColor="#a10000" />
+          <FilterButton
+            label="Active"
+            icon={<span style={{ width: "6px", height: "6px", borderRadius: "50%", background: filterMode === "active" ? "#fff" : "#16a34a", display: "inline-block", flexShrink: 0 }} />}
+            active={filterMode === "active"}
+            count={activeCount}
+            onClick={() => setFilterMode("active")}
+            accentColor="#16a34a"
+          />
+          <FilterButton label="Coming Soon" icon={<Clock size={12} />} active={filterMode === "coming-soon"} count={comingSoonCount} onClick={() => setFilterMode("coming-soon")} accentColor="#64748b" />
+        </div>
+        {!loading && !error && filteredServices.length > 0 && (
+          <div style={{ display: "flex", gap: "8px" }}>
+            <NavBtn dir="left" />
+            <NavBtn dir="right" />
           </div>
-        ))}
+        )}
       </div>
-      <CarouselPagination
-        services={services}
-        activeIndex={activeIndex}
-        scrollTo={scrollTo}
-      />
-    </>
+
+      {/* Content states */}
+      {loading ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "380px", flexDirection: "column", gap: "12px" }}>
+          <Loader2 className="animate-spin" size={32} style={{ color: MAROON }} />
+          <p style={{ fontFamily: FONT_BODY, color: "#9ca3af", fontSize: "13px" }}>Loading services…</p>
+        </div>
+      ) : error ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "380px", flexDirection: "column", gap: "12px", textAlign: "center" }}>
+          <AlertCircle size={36} color="#ef4444" />
+          <p style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "16px", color: "#111" }}>Something went wrong</p>
+          <p style={{ fontFamily: FONT_BODY, color: "#6b7280", fontSize: "13px" }}>{error}</p>
+          <button onClick={onRetry} style={{ marginTop: "6px", padding: "10px 24px", borderRadius: "99px", background: MAROON, color: "#fff", fontFamily: FONT_BODY, fontWeight: 600, fontSize: "13px", border: "none", cursor: "pointer" }}>
+            Try Again
+          </button>
+        </div>
+      ) : filteredServices.length === 0 ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "380px", flexDirection: "column", gap: "12px", textAlign: "center" }}>
+          <AlertCircle size={36} color="#9ca3af" />
+          <p style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "16px", color: "#111" }}>No services found</p>
+          <p style={{ fontFamily: FONT_BODY, color: "#6b7280", fontSize: "13px" }}>{filterMode === "coming-soon" ? "No coming-soon services at the moment." : "Check back soon."}</p>
+        </div>
+      ) : (
+        <>
+          <div
+            style={{
+              overflow: "hidden",
+              WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
+              maskImage: "linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
+            }}
+          >
+            <div
+              ref={scrollRef}
+              style={{
+                display: "flex",
+                gap: `${GAP}px`,
+                overflowX: "scroll",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                paddingBottom: "14px",
+                paddingTop: "8px",
+              }}
+            >
+              {filteredServices.map((service, index) => (
+                <ServiceCard key={`a-${service._id}`} service={service} index={index}
+                  onMouseEnterCard={() => { isPausedRef.current = true; }}
+                  onMouseLeaveCard={() => { isPausedRef.current = false; }}
+                  onSelect={() => onSelectService(service)}
+                  isSelected={selectedService?._id === service._id}
+                />
+              ))}
+              {filteredServices.map((service, index) => (
+                <ServiceCard key={`b-${service._id}`} service={service} index={index}
+                  onMouseEnterCard={() => { isPausedRef.current = true; }}
+                  onMouseLeaveCard={() => { isPausedRef.current = false; }}
+                  onSelect={() => onSelectService(service)}
+                  isSelected={selectedService?._id === service._id}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Maroon dots */}
+          <div style={{ display: "flex", justifyContent: "flex-start", gap: "6px" }}>
+            {Array.from({ length: dotCount }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { if (scrollRef.current) scrollRef.current.scrollTo({ left: i * STEP, behavior: "smooth" }); }}
+                style={{
+                  width: i === activeIndex % dotCount ? "28px" : "6px",
+                  height: "6px",
+                  borderRadius: "99px",
+                  background: i === activeIndex % dotCount ? MAROON : "#d1d5db",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  padding: 0,
+                }}
+                aria-label={`Go to service ${i + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
+/* ─── Left CSR Panel ──────────────────────────────────────────── */
+const CSRPanel: React.FC<{ selected: ServiceType | null }> = ({ selected }) => {
+  const [hovered, setHovered] = useState(false);
+
+  const defaultFeatures = [
+    "24/7 inquiry handling",
+    "Issue resolution & escalation",
+    "Client satisfaction tracking",
+    "Omnichannel support",
+  ];
+
+  const IconComponent = selected?.icon ?? Headphones;
+  const titleWords = selected
+    ? selected.title.split(" ")
+    : ["Customer", "Service & Support"];
+  const firstWord = titleWords[0];
+  const restWords = titleWords.slice(1).join(" ");
+  const displayDescription = selected
+    ? selected.description
+    : "Dedicated customer support services to handle inquiries, resolve issues, and improve client satisfaction.";
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        maxWidth: "400px",
+        flexShrink: 0,
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.3s ease",
+      }}
+    >
+      {/* Icon + Title row */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "28px",
+        }}
+      >
+        {/* Icon box */}
+        <div
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "18px",
+            background: `linear-gradient(145deg, #a10000 0%, ${MAROON_MID} 100%)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            border: "2px solid #a1000022",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <IconComponent size={28} color="#fff" />
+        </div>
+
+        {/* Title stacked beside icon */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          <span
+            style={{
+              fontFamily: FONT_HEADING,
+              fontWeight: 700,
+              fontSize: "22px",
+              letterSpacing: "-0.02em",
+              color: "#0f172a",
+              lineHeight: 1.2,
+            }}
+          >
+            {firstWord}
+          </span>
+          {restWords && (
+            <span
+              style={{
+                fontFamily: FONT_HEADING,
+                fontWeight: 700,
+                fontSize: "22px",
+                letterSpacing: "-0.02em",
+                color: "#a10000",
+                lineHeight: 1.2,
+              }}
+            >
+              {restWords}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Accent line */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginBottom: "20px",
+        }}
+      >
+        <div style={{ width: "40px", height: "3px", borderRadius: "99px", background: "linear-gradient(90deg, #a10000, #c0392b)" }} />
+        <div style={{ width: "10px", height: "3px", borderRadius: "99px", background: "#a1000050" }} />
+        <div style={{ width: "5px", height: "3px", borderRadius: "99px", background: "#a1000028" }} />
+      </div>
+
+      <p
+        style={{
+          fontFamily: FONT_BODY,
+          fontSize: "15px",
+          fontWeight: 400,
+          color: "#64748b",
+          lineHeight: 1.75,
+          margin: "0 0 28px 0",
+          maxWidth: "370px",
+          transition: "all 0.3s ease",
+        }}
+      >
+        {displayDescription}
+      </p>
+
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: "0 0 36px 0",
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+        }}
+      >
+        {defaultFeatures.map((f, i) => (
+          <li
+            key={i}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontFamily: FONT_BODY,
+              fontSize: "13.5px",
+              color: "#0f172a",
+              fontWeight: 500,
+            }}
+          >
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "6px",
+                background: "#a1000014",
+                border: "1px solid #a1000025",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M1.5 5L3.8 7.5L8.5 2.5" stroke="#a10000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            {f}
+          </li>
+        ))}
+      </ul>
+
+      <button
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "14px 28px",
+          borderRadius: "14px",
+          border: "none",
+          background: hovered
+            ? `linear-gradient(135deg, ${MAROON_DARK} 0%, #a10000 100%)`
+            : `linear-gradient(135deg, #a10000 0%, ${MAROON_LIGHT} 100%)`,
+          color: "#fff",
+          fontFamily: FONT_HEADING,
+          fontWeight: 700,
+          fontSize: "14px",
+          cursor: "pointer",
+          transition: "all 0.28s ease",
+          transform: hovered ? "translateY(-2px)" : "translateY(0)",
+          boxShadow: hovered ? "0 8px 20px rgba(161,0,0,0.28)" : "0 4px 12px rgba(161,0,0,0.18)",
+          width: "fit-content",
+        }}
+      >
+        <span>Learn More</span>
+        <div
+          style={{
+            width: "22px",
+            height: "22px",
+            borderRadius: "7px",
+            background: "rgba(255,255,255,0.22)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "transform 0.28s ease",
+            transform: hovered ? "translate(2px,-2px)" : "translate(0,0)",
+          }}
+        >
+          <ArrowUpRight size={13} color="#fff" />
+        </div>
+      </button>
+
+      <div style={{ position: "absolute", bottom: "-24px", right: "-24px", width: "110px", height: "110px", borderRadius: "32px", border: "2px solid #a1000012", zIndex: 0, transform: "rotate(15deg)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "4px", right: "4px", width: "66px", height: "66px", borderRadius: "20px", border: "2px solid #a1000008", zIndex: 0, transform: "rotate(32deg)", pointerEvents: "none" }} />
+    </div>
+  );
+};
+
+/* ─── Main Component ──────────────────────────────────────────── */
 export default function ServiceFeatures() {
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
 
-  // Helper function to process image source
   const getImageSource = (
     coverPhoto: string | null | undefined,
     inactivePhoto: string | null | undefined,
     isActive: boolean,
     serviceId: string
   ): string => {
-    // Pick which photo to use based on active status
-    const photo = isActive ? coverPhoto : (inactivePhoto ?? coverPhoto);
-
-    console.log(`🔍 Processing image for ${serviceId}:`, {
-      isActive,
-      hasCoverPhoto: !!coverPhoto,
-      hasInactivePhoto: !!inactivePhoto,
-      usingPhoto: isActive ? 'coverPhoto' : 'inactivePhoto (fallback: coverPhoto)',
-      photoLength: photo?.length,
-      photoPreview: photo?.substring(0, 50)
-    });
-
-    // If photo exists and is a valid string
-    if (photo && typeof photo === 'string' && photo.trim()) {
-      const trimmedPhoto = photo.trim();
-      
-      // Check if it's already a data URL
-      if (trimmedPhoto.startsWith('data:image')) {
-        console.log(`✅ Using data URL for ${serviceId}`);
-        return trimmedPhoto;
-      }
-      
-      // Check if it looks like base64 (common base64 characters)
-      if (trimmedPhoto.match(/^[A-Za-z0-9+/]+={0,2}$/) && trimmedPhoto.length > 100) {
-        console.log(`✅ Converting base64 to data URL for ${serviceId}`);
-        return `data:image/jpeg;base64,${trimmedPhoto}`;
-      }
-      
-      // Check if it's a regular URL (http/https)
-      if (trimmedPhoto.startsWith('http://') || trimmedPhoto.startsWith('https://')) {
-        console.log(`✅ Using external URL for ${serviceId}`);
-        return trimmedPhoto;
-      }
-      
-      // Check if it's a relative path
-      if (trimmedPhoto.startsWith('/')) {
-        console.log(`✅ Using relative path for ${serviceId}`);
-        return trimmedPhoto;
-      }
+    const photo = isActive ? coverPhoto : inactivePhoto ?? coverPhoto;
+    if (photo && typeof photo === "string" && photo.trim()) {
+      const p = photo.trim();
+      if (p.startsWith("data:image")) return p;
+      if (p.match(/^[A-Za-z0-9+/]+=*$/) && p.length > 100) return `data:image/jpeg;base64,${p}`;
+      if (p.startsWith("http://") || p.startsWith("https://")) return p;
+      if (p.startsWith("/")) return p;
     }
-    
-    // Fallback to IMAGE_MAP or default
-    const fallbackImage = IMAGE_MAP[serviceId] || "/images/services1.webp";
-    console.log(`⚠️ Using fallback image for ${serviceId}:`, fallbackImage);
-    return fallbackImage;
+    return IMAGE_MAP[serviceId] || "/images/services1.webp";
   };
 
-  // Determine background styling based on index (alternating pattern)
-  const getServiceStyling = (index: number) => {
-    // Pattern: white, dark, dark, white, white, dark
-    const darkPattern = [1, 2, 5]; // indices that should be dark
-    const isDark = darkPattern.includes(index % 6);
-    
-    return {
-      bgColor: isDark ? COLORS.dark : COLORS.white,
-      textColor: isDark ? COLORS.white : COLORS.black,
-      isDark: isDark,
-    };
-  };
-
-  // Fetch services from API
   const fetchServices = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const apiUrl = `${API_BASE_URL}/api/services`;
-      console.log('🔍 Fetching services from:', apiUrl);
-      
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`${API_BASE_URL}/api/services`, {
+        headers: { "Content-Type": "application/json" },
       });
-
-      console.log('📡 Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ API Error:', errorText);
-        throw new Error(`Failed to load services (${response.status})`);
-      }
-      
+      if (!response.ok) throw new Error(`Failed to load services (${response.status})`);
       const data = await response.json();
-      console.log('✅ Received services data:', data);
+      if (!Array.isArray(data)) throw new Error("Invalid response format");
 
-      if (!Array.isArray(data)) {
-        throw new Error('Invalid response format');
-      }
+      const mapped: ServiceType[] = data.map((item: any) => ({
+        _id: item._id,
+        serviceId: item.serviceId,
+        title: item.name.toUpperCase(),
+        description: item.description,
+        icon: ICON_MAP[item.serviceId] || Layout,
+        image: getImageSource(item.coverPhoto, item.inactivePhoto, item.isActive, item.serviceId),
+        isActive: item.isActive,
+        coverPhoto: item.coverPhoto,
+        inactivePhoto: item.inactivePhoto,
+      }));
 
-      // Map database fields to component structure
-      const mappedData = data.map((item: any, index: number) => {
-        console.log(`\n📦 Mapping service: ${item.serviceId}`);
-        console.log('Raw item:', JSON.stringify(item, null, 2));
-        
-        const imageSource = getImageSource(item.coverPhoto, item.inactivePhoto, item.isActive, item.serviceId);
-        const styling = getServiceStyling(index);
-        
-        return {
-          _id: item._id,
-          serviceId: item.serviceId,
-          title: item.name.toUpperCase(), // Match original format
-          description: item.description,
-          icon: ICON_MAP[item.serviceId] || Layout,
-          image: imageSource,
-          isActive: item.isActive,
-          coverPhoto: item.coverPhoto,
-          inactivePhoto: item.inactivePhoto,
-          ...styling,
-        };
-      });
-
-      // Sort: active services first, then inactive
-      const sortedData = [...mappedData].sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
-
-      console.log('\n📊 Final mapped services:', sortedData);
-      setServices(sortedData);
+      const sorted = [...mapped].sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
+      setServices(sorted);
     } catch (err: any) {
-      console.error("❌ Error loading services:", err);
       setError(err.message || "Could not load services at this time");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
+  useEffect(() => { fetchServices(); }, []);
 
   return (
     <section
-      className="py-20 md:py-24 relative overflow-hidden"
-      style={{ backgroundColor: "#f7f7f7" }}
+      className="relative overflow-hidden"
+      style={{ padding: "96px 0 112px" }}
     >
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-50 rounded-full filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-50 rounded-full filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2" />
+      {/* ══════════════════════════════════════════════════════════
+          BACKGROUND — Pure white base with gray geometric shapes
+          ══════════════════════════════════════════════════════════ */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
 
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        <div className="text-center mb-20">
-          <div className="inline-block mb-4">
+        {/* 1. Pure white base */}
+        <div style={{ position: "absolute", inset: 0, background: "#ffffff" }} />
+
+        {/* 2. Very subtle gray gradient tint — top-left & bottom-right */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `
+              radial-gradient(ellipse 60% 50% at 0% 0%, #f3f4f6 0%, transparent 65%),
+              radial-gradient(ellipse 55% 50% at 100% 100%, #f1f2f4 0%, transparent 60%)
+            `,
+          }}
+        />
+
+        {/* 3. SVG Gray Geometric shapes */}
+        <svg
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+          viewBox="0 0 1440 900"
+        >
+          <defs>
+            {/* Gray gradient fills */}
+            <linearGradient id="grayFill1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#d1d5db" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#e5e7eb" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="grayFill2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#9ca3af" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#d1d5db" stopOpacity="0.06" />
+            </linearGradient>
+            <linearGradient id="grayFill3" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#e5e7eb" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="#f3f4f6" stopOpacity="0.08" />
+            </linearGradient>
+            <linearGradient id="grayStroke1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#9ca3af" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#d1d5db" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="grayStroke2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#6b7280" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#9ca3af" stopOpacity="0.05" />
+            </linearGradient>
+
+            <filter id="grayBlur">
+              <feGaussianBlur stdDeviation="3" />
+            </filter>
+            <filter id="grayBlurSm">
+              <feGaussianBlur stdDeviation="1" />
+            </filter>
+          </defs>
+
+          {/* ── Large filled background shapes ── */}
+
+          {/* Top-left large rotated rounded square */}
+          <rect
+            x="-140" y="-140" width="500" height="500"
+            rx="90"
+            fill="url(#grayFill1)"
+            transform="rotate(22, 110, 110)"
+            filter="url(#grayBlur)"
+          />
+
+          {/* Top-right large circle */}
+          <circle cx="1390" cy="-80" r="300" fill="url(#grayFill2)" filter="url(#grayBlur)" />
+
+          {/* Bottom-left circle */}
+          <circle cx="-50" cy="970" r="240" fill="url(#grayFill3)" filter="url(#grayBlur)" />
+
+          {/* Bottom-right rotated rounded rect */}
+          <rect
+            x="1080" y="680" width="460" height="460"
+            rx="100"
+            fill="url(#grayFill1)"
+            transform="rotate(-16, 1310, 910)"
+            filter="url(#grayBlur)"
+          />
+
+          {/* Top-center ellipse */}
+          <ellipse cx="720" cy="-60" rx="340" ry="190" fill="url(#grayFill2)" filter="url(#grayBlur)" />
+
+          {/* ── Medium accent shapes ── */}
+
+          {/* Mid-left rotated square (diamond) */}
+          <rect
+            x="70" y="370" width="130" height="130"
+            rx="20"
+            fill="url(#grayFill1)"
+            transform="rotate(45, 135, 435)"
+            filter="url(#grayBlurSm)"
+          />
+
+          {/* Upper-right rounded rect */}
+          <rect
+            x="910" y="50" width="210" height="210"
+            rx="44"
+            fill="url(#grayFill3)"
+            transform="rotate(12, 1015, 155)"
+            filter="url(#grayBlurSm)"
+          />
+
+          {/* Lower-center diamond */}
+          <rect
+            x="550" y="730" width="110" height="110"
+            rx="14"
+            fill="url(#grayFill2)"
+            transform="rotate(45, 605, 785)"
+            filter="url(#grayBlurSm)"
+          />
+
+          {/* Extra: mid-right small rounded square */}
+          <rect
+            x="1340" y="430" width="90" height="90"
+            rx="18"
+            fill="url(#grayFill1)"
+            transform="rotate(-25, 1385, 475)"
+            filter="url(#grayBlurSm)"
+          />
+
+          {/* ── Stroke-only concentric rings ── */}
+
+          {/* Top-right rings */}
+          <circle cx="1310" cy="130" r="190" fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5" />
+          <circle cx="1310" cy="130" r="245" fill="none" stroke="url(#grayStroke2)" strokeWidth="1" strokeDasharray="7 13" />
+          <circle cx="1310" cy="130" r="300" fill="none" stroke="#e5e7eb" strokeOpacity="0.6" strokeWidth="0.8" strokeDasharray="4 18" />
+
+          {/* Bottom-left rings */}
+          <circle cx="130" cy="790" r="160" fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5" />
+          <circle cx="130" cy="790" r="210" fill="none" stroke="url(#grayStroke2)" strokeWidth="1" strokeDasharray="6 14" />
+          <circle cx="130" cy="790" r="265" fill="none" stroke="#e5e7eb" strokeOpacity="0.5" strokeWidth="0.8" strokeDasharray="3 18" />
+
+          {/* Center large decorative ring */}
+          <circle cx="720" cy="450" r="380" fill="none" stroke="#e5e7eb" strokeOpacity="0.8" strokeWidth="1" strokeDasharray="5 22" />
+          <circle cx="720" cy="450" r="460" fill="none" stroke="#f3f4f6" strokeOpacity="0.9" strokeWidth="0.7" strokeDasharray="3 26" />
+
+          {/* ── Stroke-only floating squares ── */}
+
+          {/* Top-left */}
+          <rect x="55" y="55" width="110" height="110" rx="20"
+            fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5"
+            transform="rotate(18, 110, 110)" />
+
+          {/* Right-mid */}
+          <rect x="1260" y="370" width="85" height="85" rx="16"
+            fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5"
+            transform="rotate(-28, 1302, 412)" />
+
+          {/* Bottom-center */}
+          <rect x="655" y="795" width="65" height="65" rx="11"
+            fill="none" stroke="url(#grayStroke2)" strokeWidth="1.2"
+            transform="rotate(45, 687, 827)" />
+
+          {/* Top-center-right small */}
+          <rect x="860" y="30" width="50" height="50" rx="10"
+            fill="none" stroke="#d1d5db" strokeOpacity="0.7" strokeWidth="1"
+            transform="rotate(30, 885, 55)" />
+
+          {/* ── Dot grid clusters ── */}
+
+          {/* Top-right cluster */}
+          {Array.from({ length: 6 }).map((_, row) =>
+            Array.from({ length: 6 }).map((_, col) => (
+              <circle
+                key={`dot-tr-${row}-${col}`}
+                cx={1080 + col * 24}
+                cy={70 + row * 24}
+                r="2.2"
+                fill="#9ca3af"
+                fillOpacity={Math.max(0.04, 0.18 - row * 0.022 - col * 0.01)}
+              />
+            ))
+          )}
+
+          {/* Bottom-left cluster */}
+          {Array.from({ length: 6 }).map((_, row) =>
+            Array.from({ length: 6 }).map((_, col) => (
+              <circle
+                key={`dot-bl-${row}-${col}`}
+                cx={210 + col * 24}
+                cy={740 + row * 24}
+                r="2.2"
+                fill="#9ca3af"
+                fillOpacity={Math.max(0.03, 0.15 - row * 0.018 - col * 0.01)}
+              />
+            ))
+          )}
+
+          {/* Center-right small cluster */}
+          {Array.from({ length: 4 }).map((_, row) =>
+            Array.from({ length: 4 }).map((_, col) => (
+              <circle
+                key={`dot-cr-${row}-${col}`}
+                cx={1200 + col * 20}
+                cy={460 + row * 20}
+                r="1.8"
+                fill="#d1d5db"
+                fillOpacity={Math.max(0.04, 0.14 - row * 0.02)}
+              />
+            ))
+          )}
+
+          {/* ── Thin accent lines ── */}
+          <line x1="0" y1="0" x2="380" y2="280" stroke="#e5e7eb" strokeOpacity="0.9" strokeWidth="1" />
+          <line x1="1440" y1="0" x2="1060" y2="320" stroke="#e5e7eb" strokeOpacity="0.9" strokeWidth="1" />
+          <line x1="0" y1="900" x2="360" y2="600" stroke="#e5e7eb" strokeOpacity="0.8" strokeWidth="1" />
+          <line x1="1440" y1="900" x2="1080" y2="580" stroke="#e5e7eb" strokeOpacity="0.8" strokeWidth="1" />
+
+          {/* ── Small triangles ── */}
+          <polygon points="1390,210 1425,270 1355,270"
+            fill="none" stroke="#d1d5db" strokeOpacity="0.6" strokeWidth="1.2" />
+          <polygon points="75,710 55,750 95,750"
+            fill="none" stroke="#d1d5db" strokeOpacity="0.5" strokeWidth="1" />
+          <polygon points="700,44 720,14 740,44"
+            fill="none" stroke="#d1d5db" strokeOpacity="0.5" strokeWidth="1" />
+          <polygon points="400,820 418,854 382,854"
+            fill="none" stroke="#e5e7eb" strokeOpacity="0.7" strokeWidth="1" />
+        </svg>
+
+        {/* 4. Fine dot-grid texture */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "radial-gradient(circle, #d1d5db 1px, transparent 1px)",
+            backgroundSize: "36px 36px",
+            opacity: 0.25,
+          }}
+        />
+
+        {/* 5. Edge vignette to keep content readable */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `
+              linear-gradient(to right, rgba(255,255,255,0.7) 0%, transparent 8%, transparent 92%, rgba(255,255,255,0.7) 100%),
+              linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 10%, transparent 90%, rgba(255,255,255,0.6) 100%)
+            `,
+          }}
+        />
+      </div>
+      {/* ══ End Background ══ */}
+
+      {/* ── Content ── */}
+      <div className="relative z-10 mx-auto px-6 lg:px-8" style={{ maxWidth: "1360px" }}>
+
+        {/* Section Header */}
+        <div style={{ marginBottom: "64px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+            <div style={{ width: "36px", height: "2px", background: "#a10000", borderRadius: "99px" }} />
             <span
-              className={`${FONT_CLASSES.openSansBold} text-sm uppercase tracking-[0.25em] px-6 py-2 rounded-full inline-block`}
               style={{
-                color: COLORS.primary,
+                fontFamily: FONT_MONO,
+                fontSize: "11px",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#a10000",
+                fontWeight: 600,
               }}
             >
-              — OUR SERVICES
+              Our Services
             </span>
           </div>
-          <h2
-            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-4`}
-            style={{ color: COLORS.black }}
-          >
-            Services Designed to
-            <br />
-            <span style={{ color: COLORS.primary }}>Meet Every Need</span>
-          </h2>
-          <p
-            className={`${FONT_CLASSES.rubikRegular} text-lg text-gray-600 max-w-2xl mx-auto`}
-          >
-            From customer support to technical assistance, we provide
-            comprehensive solutions that drive your business forward
-          </p>
+
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "24px" }}>
+            <h2
+              style={{
+                fontFamily: FONT_HEADING,
+                fontWeight: 700,
+                fontSize: "clamp(32px, 4vw, 52px)",
+                letterSpacing: "-0.03em",
+                color: "#0f172a",
+                lineHeight: 1.1,
+                margin: 0,
+              }}
+            >
+              Services Designed to
+              <br />
+              <span style={{ color: "#a10000" }}>Meet Every Need</span>
+            </h2>
+
+            <p
+              style={{
+                fontFamily: FONT_BODY,
+                fontSize: "15px",
+                fontWeight: 400,
+                color: "#64748b",
+                lineHeight: 1.75,
+                maxWidth: "400px",
+                margin: 0,
+              }}
+            >
+              From customer support to technical assistance, we provide comprehensive
+              solutions that drive your business forward.
+            </p>
+          </div>
         </div>
 
-        {loading ? (
-          <div className="flex flex-col justify-center items-center py-20 gap-4">
-            <Loader2 className="w-12 h-12 animate-spin" style={{ color: COLORS.primary }} />
-            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 animate-pulse`}>
-              Loading our services...
-            </p>
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-            <p className={`${FONT_CLASSES.openSansBold} text-gray-800 text-xl mb-2`}>
-              Something went wrong
-            </p>
-            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500 mb-6`}>
-              {error}
-            </p>
-            <button 
-              onClick={fetchServices}
-              className={`${FONT_CLASSES.openSansBold} px-6 py-3 rounded-full text-white transition-all hover:scale-105`}
-              style={{ backgroundColor: COLORS.primary }}
-            >
-              Try Again
-            </button>
-          </div>
-        ) : services.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-            <p className={`${FONT_CLASSES.openSansBold} text-gray-800 text-xl mb-2`}>
-              No services available
-            </p>
-            <p className={`${FONT_CLASSES.rubikRegular} text-gray-500`}>
-              Check back soon for updates
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="lg:hidden pb-2 overflow-visible">
-              <ServiceCarousel services={services} />
-            </div>
+        {/* Two-column layout */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "56px", flexWrap: "wrap" }}>
+          {/* Left: CSR Panel — updates on card click */}
+          <CSRPanel selected={selectedService} />
 
-            <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-10">
-              {services.map((service, index) => (
-                <ServiceCard key={service._id} service={service} index={index} />
-              ))}
-            </div>
-          </>
-        )}
+          {/* Vertical divider */}
+          <div
+            className="hidden lg:block"
+            style={{
+              width: "1px",
+              alignSelf: "stretch",
+              flexShrink: 0,
+              background: "linear-gradient(to bottom, transparent, #a1000022 20%, #a1000022 80%, transparent)",
+            }}
+          />
+
+          {/* Right: Carousel */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <ServiceCarouselPanel
+              services={services}
+              loading={loading}
+              error={error}
+              onRetry={fetchServices}
+              onSelectService={setSelectedService}
+              selectedService={selectedService}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

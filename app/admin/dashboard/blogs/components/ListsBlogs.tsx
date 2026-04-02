@@ -36,7 +36,7 @@ export default function ListBlogs() {
   const [selectedsubcategory, setselectedsubcategory] = useState<string>('All')
   const { isdarkmode } = useDarkMode()
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api';
 
   const categories = {
     'Main Service Categories': ['Customer Experience (CX)', 'Back Office Solutions', 'Virtual Assistance', 'Sales & Lead Generation'],
@@ -273,7 +273,7 @@ export default function ListBlogs() {
         @media (min-width: 640px)  { .stat-img-card .sic-hint { font-size: 10px; } }
         .sic-dot {
           width: 4px; height: 4px; border-radius: 50%;
-          background: rgba(255,255,255,0.72);
+          background: rgba(255,255,255,0.72); 
           flex-shrink: 0; display: inline-block;
         }
         @media (min-width: 640px) { .sic-dot { width: 5px; height: 5px; } }

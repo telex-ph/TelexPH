@@ -56,7 +56,7 @@ export default function RecentTransactions() {
       try {
         setLoading(true)
         const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
-        const res = await fetch('http://localhost:3000/api/appointments/upcoming', {
+        const res = await fetch('https://telexph-admin.onrender.com/api/appointments/upcoming', {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           credentials: 'include',
         })

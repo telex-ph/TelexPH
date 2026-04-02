@@ -1,149 +1,409 @@
 "use client";
 
-import React from "react";
-import { COLORS, FONT_CLASSES } from "@/constant/styles";
-import { AlertCircle, ZapOff, Layers, ShieldAlert, ArrowRight } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronRight, ArrowUpRight } from "lucide-react";
+
+const T = {
+  primary:      "#a10000",
+  primaryDark:  "#7a0000",
+  white:        "#ffffff",
+  offwhite:     "#f7f5f2",
+  borderLight:  "#e4e4e7",
+  textDark:     "#0a0a0a",
+  textMuted:    "rgba(0,0,0,0.35)",
+  textBody:     "rgba(0,0,0,0.60)",
+  textHint:     "rgba(0,0,0,0.30)",
+  whiteAlpha75: "rgba(255,255,255,0.75)",
+  whiteAlpha40: "rgba(255,255,255,0.40)",
+  whiteAlpha10: "rgba(255,255,255,0.10)",
+  whiteAlpha08: "rgba(255,255,255,0.08)",
+  pinkLight:    "#ffc5c5",
+  pinkMid:      "#e88888",
+};
+
+const F = {
+  heading: "'Open Sans', sans-serif",
+  sans:    "'Open Sans', sans-serif",
+  body:    "'Rubik', sans-serif",
+};
+const FW = { bold: 700, semibold: 600, medium: 500, normal: 400 };
+
+const IMGS = {
+  exterior:      "_DSC9564-Edit.jpg",
+  mainFloor:     "_DSC9626.jpg",
+  mainFloorWide: "_DSC9632.jpg",
+  techTeam:      "_DSC9635.jpg",
+  agents:        "_DSC9637.jpg",
+  dualMonitor:   "_DSC9639.jpg",
+  server:        "_DSC9649.jpg",
+  admin:         "_DSC9654.jpg",
+  studioDesk:    "_DSC9659.jpg",
+  studioGear:    "_DSC9660.jpg",
+  hallway:       "_DSC9664.jpg",
+  conference:    "_DSC9667.jpg",
+  meeting1:      "_DSC9669.jpg",
+  meeting2:      "_DSC9671.jpg",
+} as const;
+
+type ImgKey = keyof typeof IMGS;
+
+const challenges: {
+  index: string;
+  tag: string;
+  title: string;
+  sub: string;
+  body: string;
+  imgKey: ImgKey;
+  stat: string;
+  statLabel: string;
+}[] = [
+  {
+    index:     "01",
+    tag:       "Communication",
+    title:     "Fragmented Channels",
+    sub:       "The multi-touchpoint trap",
+    body:      "Customer inquiries arrive through dozens of disconnected touchpoints — phone, email, live chat, and social — with no unified view. Agents spend more time context-switching than solving problems, leading to longer handle times, duplicate responses, and frustrated customers who feel unheard.",
+    imgKey:    "agents",
+    stat:      "3.2×",
+    statLabel: "longer avg. handle time without a unified inbox",
+  },
+  {
+    index:     "02",
+    tag:       "Workforce",
+    title:     "Agent Burnout & Attrition",
+    sub:       "The invisible cost of repetition",
+    body:      "Repetitive, high-volume interactions with no intelligent support layer leaves agents overwhelmed and disengaged. Without AI-assisted workflows or smart knowledge bases, burnout accelerates — driving turnover that costs thousands per replacement hire and erodes institutional knowledge.",
+    imgKey:    "mainFloor",
+    stat:      "40%",
+    statLabel: "of contact center costs tied to agent turnover",
+  },
+  {
+    index:     "03",
+    tag:       "Quality",
+    title:     "Inconsistent Service Quality",
+    sub:       "The human variance problem",
+    body:      "Without standardized processes and real-time supervisor oversight, service quality varies dramatically between agents, shifts, and regions. A single poor interaction can undo months of brand-building — and in an era of social media, that experience is rarely kept private.",
+    imgKey:    "dualMonitor",
+    stat:      "67%",
+    statLabel: "of customers leave after just one bad experience",
+  },
+  {
+    index:     "04",
+    tag:       "Infrastructure",
+    title:     "Escalating Operational Costs",
+    sub:       "Scaling without efficiency",
+    body:      "Scaling support to meet demand traditionally meant scaling headcount linearly. Without automation, intelligent routing, and self-service deflection, contact centers hemorrhage budget — especially during peak seasons — with no sustainable path to efficiency without compromising experience.",
+    imgKey:    "server",
+    stat:      "60%",
+    statLabel: "of support costs reducible through smart automation",
+  },
+];
 
 const UseCaseChallenges = () => {
-  const MAROON = "#800000";
-
-  const challenges = [
-    { 
-      title: "Attrition & Agent Burnout", 
-      desc: "Repetitive tasks and high-pressure quotas lead to disengagement and high turnover rates across the floor.",
-      impact: "Increases recruitment and training costs by up to 30% annually.",
-      risk: "Operational Instability",
-      img: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400&auto=format&fit=crop",
-      icon: ZapOff 
-    },
-    { 
-      title: "Fragmented Data Systems", 
-      desc: "Agents navigate multiple disconnected platforms, leading to inconsistent answers and prolonged wait times.",
-      impact: "Directly causes customer frustration and significantly slows down Average Handle Time (AHT).",
-      risk: "Data Inaccuracy",
-      img: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=400&auto=format&fit=crop",
-      icon: Layers 
-    },
-    { 
-      title: "Operational Scalability", 
-      desc: "Traditional setups struggle with sudden spikes in volume. Scaling human staff is slow and capital-intensive.",
-      impact: "Leads to missed Service Level Agreements (SLAs) and potential loss of high-value contracts.",
-      risk: "Contractual Penalties",
-      img: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=400&auto=format&fit=crop",
-      icon: AlertCircle 
-    },
-    { 
-      title: "Quality Monitoring Gaps", 
-      desc: "Manual monitoring covers less than 2% of interactions, leaving massive blind spots in compliance and performance.",
-      impact: "Hidden compliance risks and missed opportunities for targeted agent coaching.",
-      risk: "Regulatory Failure",
-      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400&auto=format&fit=crop",
-      icon: ShieldAlert 
-    }
-  ];
+  const [active, setActive] = useState<number>(0);
+  const current = challenges[active];
 
   return (
-    <section className="py-24 bg-white relative border-t border-gray-50">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        <div className="mb-20">
-          <div className="flex flex-col items-start">
-            <div className="inline-block mb-4">
-              <span
-                className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block`}
-                style={{ color: MAROON }}
-              >
-                — Challenges Identification
-              </span>
-            </div>
-            
-            <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none`}
-              style={{ color: COLORS.black }}
-            >
-              The Friction
-              <br />
-              <span style={{ color: MAROON }}>Points.</span>
-            </h2>
+    <section style={{ backgroundColor: T.offwhite, position: "relative", overflow: "hidden" }}>
 
-            <p
-              className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed`}
-            >
-              Identifying critical bottlenecks that compromise your BPO efficiency and reputation through deep operational analysis.
-            </p>
+      <div style={{ width: "100%", height: "3px", background: `linear-gradient(90deg, ${T.primary} 0%, ${T.primaryDark} 100%)` }} />
+
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 clamp(20px,5vw,64px)" }}>
+
+        {/* SECTION HEADER */}
+        <div style={{
+          paddingTop: "72px", paddingBottom: "56px",
+          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+          flexWrap: "wrap", gap: "24px",
+          borderBottom: `1px solid ${T.borderLight}`,
+        }}>
+          <div>
+            <span style={{
+              fontFamily: F.sans, fontWeight: FW.bold,
+              fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.25em",
+              color: T.primary, display: "block", marginBottom: "14px",
+            }}>
+              — Industry Challenges
+            </span>
+            <h2 style={{
+              fontFamily: F.heading, fontWeight: FW.bold,
+              fontSize: "clamp(1.875rem, 4vw, 2.25rem)",
+              color: T.textDark, letterSpacing: "-0.025em", lineHeight: 1.15, margin: 0,
+            }}>
+              The Obstacles We Solve Daily.
+            </h2>
           </div>
+          <p style={{
+            fontFamily: F.body, fontWeight: FW.normal,
+            fontSize: "1rem", color: T.textBody,
+            lineHeight: "1.85", maxWidth: "400px", margin: 0,
+          }}>
+            Modern customer service is riddled with structural pain points. We identify
+            them with precision — and engineer solutions that transform friction into{" "}
+            <strong style={{ fontWeight: FW.semibold, color: T.textDark }}>seamless experiences.</strong>
+          </p>
         </div>
 
-        <div className="border-t border-gray-100">
+        {/* TAB NAV */}
+        <div style={{
+          display: "flex",
+          borderBottom: `1px solid ${T.borderLight}`,
+          overflowX: "auto",
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+        }}
+          className="no-scrollbar"
+        >
           {challenges.map((c, i) => (
-            <div key={i} className="group grid lg:grid-cols-12 gap-8 py-12 border-b border-gray-100 items-center transition-all duration-500 hover:bg-gray-50/50 px-4">
-              
-              <div className="lg:col-span-3 flex items-center gap-6">
-                <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-xl shadow-lg border-2 border-white bg-gray-100">
-                  <img 
-                    src={c.img} 
-                    alt={c.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                  />
-                </div>
-
-                <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 group-hover:bg-[#800000] transition-all duration-300">
-                  <c.icon 
-                    size={22} 
-                    strokeWidth={2} 
-                    className="text-[#800000] group-hover:text-white transition-colors duration-300"
-                  />
-                </div>
-              </div>
-
-              <div className="lg:col-span-4">
-                <h4 className={`${FONT_CLASSES.openSansBold} text-gray-900 uppercase tracking-tight mb-2 group-hover:text-[#800000] transition-colors font-bold`}>
-                  {c.title}
-                </h4>
-                <p className="text-base text-gray-600 leading-relaxed font-normal">
-                  {c.desc}
-                </p>
-              </div>
-
-              <div className="lg:col-span-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-4 h-px" style={{ backgroundColor: MAROON }}></span>
-                  <span className="uppercase tracking-[0.2em] text-[9px] text-gray-400 font-bold">Business Impact</span>
-                </div>
-                <p className="text-gray-700 text-base font-normal italic leading-relaxed">
-                  "{c.impact}"
-                </p>
-              </div>
-
-              <div className="lg:col-span-2 flex flex-col items-end text-right">
-                <span className="text-[9px] text-gray-400 uppercase tracking-widest mb-3 font-bold">Severity Risk</span>
-                <div 
-                  className="px-4 py-2 rounded-lg border" 
-                  style={{ backgroundColor: `${MAROON}08`, borderColor: `${MAROON}15` }}
-                >
-                  <p 
-                    className="uppercase tracking-tighter text-sm whitespace-nowrap font-medium"
-                    style={{ color: MAROON }}
-                  >
-                    {c.risk}
-                  </p>
-                </div>
-                <div className="mt-4 w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#800000] group-hover:text-white transition-all duration-300 text-gray-300">
-                  <ArrowRight size={16} />
-                </div>
-              </div>
-
-            </div>
+            <button key={i} onClick={() => setActive(i)} style={{
+              fontFamily: F.sans,
+              fontWeight: active === i ? FW.medium : FW.normal,
+              fontSize: "14px",
+              letterSpacing: "0.04em",
+              color: active === i ? T.primary : T.textMuted,
+              background: "none", border: "none",
+              borderBottom: active === i ? `2px solid ${T.primary}` : "2px solid transparent",
+              padding: "18px 24px", cursor: "pointer",
+              transition: "color 0.2s, border-color 0.2s",
+              whiteSpace: "nowrap", marginBottom: "-1px",
+            }}>
+              <span style={{
+                fontFamily: F.sans, fontWeight: FW.medium,
+                fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
+                color: active === i ? T.primary : T.textHint,
+                marginRight: "8px",
+              }}>
+                {c.index}
+              </span>
+              {c.tag}
+            </button>
           ))}
         </div>
 
-        <div className="mt-10 flex justify-end">
-            <p className="text-gray-300 text-[10px] uppercase tracking-[0.3em] font-bold">
-              Operational Audit Report 2026
-            </p>
+        {/* MAIN SPLIT LAYOUT */}
+        <div key={active} style={{
+          display: "grid", gridTemplateColumns: "1fr 1fr",
+          minHeight: "560px", animation: "challengeFadeIn 0.45s ease",
+        }}>
+
+          {/* Image panel */}
+          <div style={{ position: "relative", overflow: "hidden", borderRight: `1px solid ${T.borderLight}` }}>
+            <img
+              src={IMGS[current.imgKey]}
+              alt={current.tag}
+              style={{
+                width: "100%", height: "100%",
+                objectFit: "cover", objectPosition: "center", display: "block",
+                transition: "transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94)",
+              }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
+            />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 55%, transparent 100%)" }} />
+
+            <div style={{ position: "absolute", bottom: "32px", left: "32px", right: "32px" }}>
+              <div style={{ display: "inline-block", backgroundColor: T.primary, padding: "4px 12px", borderRadius: "3px", marginBottom: "10px" }}>
+                <span style={{ fontFamily: F.sans, fontWeight: FW.bold, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: T.white }}>
+                  By the numbers
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: "14px" }}>
+                <span style={{ fontFamily: F.heading, fontWeight: FW.bold, fontSize: "clamp(2.6rem,5vw,3.8rem)", color: T.white, lineHeight: 1, letterSpacing: "-0.03em" }}>
+                  {current.stat}
+                </span>
+                <span style={{ fontFamily: F.body, fontWeight: FW.normal, fontSize: "12px", color: T.whiteAlpha75, lineHeight: "1.5", maxWidth: "200px", paddingBottom: "6px" }}>
+                  {current.statLabel}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ position: "absolute", top: "20px", right: "20px", fontFamily: F.heading, fontWeight: FW.bold, fontSize: "88px", color: T.whiteAlpha08, lineHeight: 1, letterSpacing: "-0.05em", userSelect: "none" }}>
+              {current.index}
+            </div>
+          </div>
+
+          {/* Text panel */}
+          <div style={{ padding: "56px clamp(28px,4vw,56px)", display: "flex", flexDirection: "column", justifyContent: "space-between", backgroundColor: T.white }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+                <span style={{ fontFamily: F.sans, fontWeight: FW.medium, fontSize: "14px", color: T.primary }}>
+                  {current.tag}
+                </span>
+                <span style={{ flex: 1, height: "1px", backgroundColor: "#f4f4f5" }} />
+                <span style={{ fontFamily: F.sans, fontWeight: FW.medium, fontSize: "14px", color: T.textHint }}>
+                  {current.index}
+                </span>
+              </div>
+
+              <h3 style={{
+                fontFamily: F.heading, fontWeight: FW.bold,
+                fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
+                color: T.textDark, letterSpacing: "-0.025em",
+                lineHeight: 1.2, marginBottom: "8px",
+              }}>
+                {current.title}
+              </h3>
+
+              <p style={{
+                fontFamily: F.sans, fontWeight: FW.medium,
+                fontSize: "10px", letterSpacing: "0.18em",
+                textTransform: "uppercase", color: T.textMuted,
+                marginBottom: "20px",
+              }}>
+                {current.sub}
+              </p>
+
+              <div style={{ height: "2px", width: "2rem", backgroundColor: T.primary, marginBottom: "24px" }} />
+
+              <p style={{
+                fontFamily: F.body, fontWeight: FW.normal,
+                fontSize: "1rem", color: T.textBody,
+                lineHeight: "1.85", textAlign: "justify",
+              }}>
+                {current.body}
+              </p>
+            </div>
+
+            {/* Nav row */}
+            <div style={{
+              marginTop: "40px", paddingTop: "24px",
+              borderTop: `1px solid ${T.borderLight}`,
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                {challenges.map((_, i) => (
+                  <button key={i} onClick={() => setActive(i)} style={{
+                    width: active === i ? "28px" : "8px", height: "8px",
+                    borderRadius: "9999px",
+                    backgroundColor: active === i ? T.primary : T.borderLight,
+                    border: "none", cursor: "pointer", padding: 0,
+                    transition: "width 0.3s ease, background-color 0.3s",
+                  }} />
+                ))}
+              </div>
+
+              <button
+                onClick={() => setActive((p) => (p + 1) % challenges.length)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "8px",
+                  padding: "12px 24px",
+                  backgroundColor: T.primary, color: T.white,
+                  border: "none", borderRadius: "0",
+                  cursor: "pointer",
+                  fontFamily: F.sans, fontWeight: FW.medium,
+                  fontSize: "14px",
+                  boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
+                  transition: "opacity 0.2s, transform 0.15s",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+                onMouseDown={(e)  => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.96)"; }}
+                onMouseUp={(e)    => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
+              >
+                Next Challenge <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* THUMBNAIL STRIP */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", borderTop: `1px solid ${T.borderLight}` }}>
+          {challenges.map((c, i) => (
+            <button key={i} onClick={() => setActive(i)} style={{
+              position: "relative", height: "140px", overflow: "hidden",
+              border: "none", borderRight: i < 3 ? `1px solid ${T.borderLight}` : "none",
+              cursor: "pointer", padding: 0, background: "none",
+            }}>
+              <img
+                src={IMGS[c.imgKey]}
+                alt={c.tag}
+                style={{
+                  width: "100%", height: "100%",
+                  objectFit: "cover", objectPosition: "center",
+                  transition: "transform 0.5s ease",
+                  filter: active === i ? "none" : "grayscale(60%) brightness(0.72)",
+                }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.06)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
+              />
+              <div style={{
+                position: "absolute", inset: 0,
+                background: active === i
+                  ? "linear-gradient(to top, rgba(161,0,0,0.55) 0%, transparent 60%)"
+                  : "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)",
+                transition: "background 0.3s",
+              }} />
+              {active === i && (
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", backgroundColor: T.primary }} />
+              )}
+              <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px", textAlign: "left" }}>
+                <span style={{
+                  display: "block", fontFamily: F.sans, fontWeight: FW.medium,
+                  fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
+                  color: active === i ? T.pinkLight : T.whiteAlpha40, marginBottom: "3px",
+                }}>
+                  {c.index}
+                </span>
+                <span style={{
+                  fontFamily: F.sans, fontWeight: FW.medium,
+                  fontSize: "14px", color: T.white, lineHeight: 1.3,
+                }}>
+                  {c.tag}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* FOOTER CTA */}
+        <div style={{
+          paddingTop: "48px", paddingBottom: "72px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          flexWrap: "wrap", gap: "20px",
+        }}>
+          <p style={{
+            fontFamily: F.body, fontWeight: FW.normal,
+            fontSize: "1rem", color: T.textBody,
+            lineHeight: "1.85", maxWidth: "540px", margin: 0,
+          }}>
+            Every challenge above has a documented resolution. See how Telex Philippines
+            has turned these obstacles into{" "}
+            <strong style={{ fontWeight: FW.semibold, color: T.textDark }}>measurable outcomes</strong>
+            {" "}for clients across industries.
+          </p>
+
+          <a href="/resources" style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            padding: "12px 24px",
+            backgroundColor: T.primary, color: T.white,
+            textDecoration: "none",
+            fontFamily: F.sans, fontWeight: FW.medium,
+            fontSize: "14px",
+            borderRadius: "0",
+            boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
+            transition: "opacity 0.2s", whiteSpace: "nowrap",
+          }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.85")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
+          >
+            View Case Studies <ArrowUpRight size={14} />
+          </a>
         </div>
 
       </div>
+
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        @keyframes challengeFadeIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+          .challenges-split  { grid-template-columns: 1fr !important; }
+          .challenges-thumbs { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </section>
   );
 };

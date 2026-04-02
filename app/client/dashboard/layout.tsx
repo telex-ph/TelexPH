@@ -18,15 +18,15 @@ const NavIcon = ({ children }: { children: React.ReactNode }) => (
 )
 
 // ─── NAV ICONS ────────────────────────────────────────────────────────────────
-const CalIcon      = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
-const BookingIcon  = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
-const VAIco        = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /></NavIcon>
-const FeedbackIco  = () => <NavIcon><Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
-const SupportIco   = () => <NavIcon><Ico d="M3 18v-6a9 9 0 0 1 18 0v6" d2="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" size={13} /></NavIcon>
-const SettingsIco  = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
-const ServicesIco  = () => <NavIcon><Ico d="M4 6h16M4 10h16M4 14h16M4 18h16" size={13} /></NavIcon>
-const MessagingIco = () => <NavIcon><Ico d="M8 9h8M8 13h6M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
-const MyVAsIco     = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" size={13} /></NavIcon>
+const CalIcon       = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
+const BookingIcon   = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
+const VAIco         = () => <NavIcon><Ico d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" d2="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} /></NavIcon>
+const FeedbackIco   = () => <NavIcon><Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
+const SupportIco    = () => <NavIcon><Ico d="M3 18v-6a9 9 0 0 1 18 0v6" d2="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" size={13} /></NavIcon>
+const SettingsIco   = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
+const BillingIco    = () => <NavIcon><Ico d="M3 10h18M7 15h.01M11 15h2M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" size={13} /></NavIcon>
+const ServicesIco   = () => <NavIcon><Ico d="M4 6h16M4 10h16M4 14h16M4 18h16" size={13} /></NavIcon>
+const MessagingIco  = () => <NavIcon><Ico d="M8 9h8M8 13h6M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
 
 // ─── UTILITY ICONS ────────────────────────────────────────────────────────────
 const ChevronDown  = () => <Ico d="M6 9l6 6 6-6"    size={13} sw={1.5} />
@@ -60,7 +60,7 @@ type Notification = {
   createdAt: string
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
 // ─── NAV DATA ─────────────────────────────────────────────────────────────────
 const NAV_GENERAL = [
@@ -74,6 +74,7 @@ const NAV_SERVICES_DROPDOWN = {
   icon: <ServicesIco />,
   children: [
     { label: 'Subscriptions', href: '/client/dashboard/Subscription', badge: undefined },
+    { label: 'VA Services',   href: '/client/dashboard/VAservices',   badge: undefined },
   ],
 }
 
@@ -81,14 +82,23 @@ const NAV_VA_DROPDOWN = {
   label: 'Virtual Assistant',
   icon: <VAIco />,
   children: [
-    { label: 'My VAs', href: '/client/dashboard/MyVAs', badge: undefined },
+    { label: 'Browse VAs',          href: '/client/dashboard/BrowseVAs',         badge: undefined },
+    { label: 'Shortlisted',         href: '/client/dashboard/Shortlisted',        badge: undefined },
+    { label: 'Interview Recording', href: '/client/dashboard/InterviewRecording', badge: 'REC' },
+    { label: 'My VAs',              href: '/client/dashboard/MyVAs',              badge: undefined },
+  ],
+}
+
+const NAV_BILLING_DROPDOWN = {
+  label: 'Billing',
+  icon: <BillingIco />,
+  children: [
+    { label: 'VA Billing', href: '/client/dashboard/VAbilling', badge: undefined },
   ],
 }
 
 const NAV_SUPPORT = [
-  { label: 'Feedback',       href: '/client/dashboard/feedback',        icon: <FeedbackIco /> },
-  { label: 'Help & Support', href: '/client/dashboard/support',         icon: <SupportIco /> },
-  { label: 'Settings',       href: '/client/dashboard/AccountSettings', icon: <SettingsIco /> },
+  { label: 'Settings', href: '/client/dashboard/AccountSettings', icon: <SettingsIco /> },
 ]
 
 // ─── NOTIFICATION BELL ────────────────────────────────────────────────────────
@@ -175,7 +185,6 @@ function NotificationBell({ userId }: { userId: string | undefined }) {
 
       {open && (
         <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: 320, background: '#fff', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.10)', border: '1px solid #f0eeee', zIndex: 200, overflow: 'hidden' }}>
-          {/* Header */}
           <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #f5f2f2', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e' }}>
               Notifications
@@ -188,7 +197,6 @@ function NotificationBell({ userId }: { userId: string | undefined }) {
             )}
           </div>
 
-          {/* List */}
           <div style={{ maxHeight: 340, overflowY: 'auto' }}>
             {loading ? (
               <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12, color: '#aaa' }}>Loading...</div>
@@ -258,7 +266,6 @@ function Header({
         <SearchIco /><span>Search..</span>
       </div>
 
-      {/* Notification Bell */}
       <NotificationBell userId={clientInfo?.id} />
 
       <div style={{ position: 'relative' }} ref={menuRef}>
@@ -428,12 +435,13 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
   const pathname = usePathname()
   const router   = useRouter()
 
-  const [collapsed,    setCollapsed]    = useState(false)
-  const [mobileOpen,   setMobileOpen]   = useState(false)
-  const [servicesOpen, setServicesOpen] = useState(false)
-  const [vaOpen,       setVaOpen]       = useState(false)
-  const [clientInfo,   setClientInfo]   = useState<ClientInfo | null>(null)
-  const [loggingOut,   setLoggingOut]   = useState(false)
+  const [collapsed,     setCollapsed]     = useState(false)
+  const [mobileOpen,    setMobileOpen]    = useState(false)
+  const [servicesOpen,  setServicesOpen]  = useState(false)
+  const [vaOpen,        setVaOpen]        = useState(false)
+  const [billingOpen,   setBillingOpen]   = useState(false)
+  const [clientInfo,    setClientInfo]    = useState<ClientInfo | null>(null)
+  const [loggingOut,    setLoggingOut]    = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -560,7 +568,6 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
             open={servicesOpen}
             onToggle={() => setServicesOpen((v) => !v)}
           />
-
           <NavDropdown
             sectionLabel="Virtual Assistant"
             triggerLabel={NAV_VA_DROPDOWN.label}

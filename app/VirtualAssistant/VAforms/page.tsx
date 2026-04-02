@@ -90,7 +90,7 @@ interface ServiceGroup {
 const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "Client Services",
-    icon: "🤝",
+    icon: "◈",
     services: [
       "Customer Service Representative",
       "Technical Support Representative",
@@ -98,7 +98,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
   },
   {
     category: "Web & Design",
-    icon: "🎨",
+    icon: "◉",
     services: [
       "Web Development",
       "Social Media Management",
@@ -107,7 +107,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
   },
   {
     category: "Funnels & Systems",
-    icon: "⚙️",
+    icon: "◎",
     services: [
       "Funnel Builder",
       "Website Builder",
@@ -119,7 +119,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
   },
   {
     category: "Automation & AI",
-    icon: "🤖",
+    icon: "◆",
     services: [
       "AI Builder (Chatbots / AI Systems)",
       "Automation Builder (Advanced Workflows)",
@@ -127,7 +127,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
   },
   {
     category: "Marketing & CRM",
-    icon: "📣",
+    icon: "◇",
     services: [
       "Email Marketing Management",
       "CRM System Setup & Management",
@@ -135,7 +135,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
   },
   {
     category: "Platform Services",
-    icon: "🏷️",
+    icon: "◼",
     services: [
       "Gray-Label Platform",
       "White-Label Platform",
@@ -144,420 +144,443 @@ const SERVICE_GROUPS: ServiceGroup[] = [
 ];
 
 const STEPS: StepDef[] = [
-  { id: 1, label: "Personal", icon: "personal" },
-  { id: 2, label: "Services", icon: "services" },
-  { id: 3, label: "Resume",   icon: "resume" },
-  { id: 4, label: "Review",   icon: "review" },
+  { id: 1, label: "Personal",  icon: "01" },
+  { id: 2, label: "Services",  icon: "02" },
+  { id: 3, label: "Resume",    icon: "03" },
+  { id: 4, label: "Review",    icon: "04" },
 ];
 
 // ─────────────────────────────────────────────
-// STEP ICONS (SVG)
-// ─────────────────────────────────────────────
-const StepIcon: React.FC<{ name: string; color?: string }> = ({ name, color = "currentColor" }) => {
-  const s = { width: 20, height: 20, stroke: color, fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  if (name === "personal") return (
-    <svg viewBox="0 0 24 24" {...s}>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
-  );
-  if (name === "services") return (
-    <svg viewBox="0 0 24 24" {...s}>
-      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-    </svg>
-  );
-  if (name === "resume") return (
-    <svg viewBox="0 0 24 24" {...s}>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="8" y1="13" x2="16" y2="13" />
-      <line x1="8" y1="17" x2="16" y2="17" />
-      <line x1="8" y1="9" x2="10" y2="9" />
-    </svg>
-  );
-  if (name === "review") return (
-    <svg viewBox="0 0 24 24" {...s}>
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-  return null;
-};
-
-// ─────────────────────────────────────────────
-// CSS
+// CSS — Neumorphic inner-shadow inputs
 // ─────────────────────────────────────────────
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #ECF0F3;
-  --sd:      #c8d0d8;
-  --sl:      #ffffff;
-  --neu-out:    6px 6px 14px #c8d0d8, -6px -6px 14px #ffffff;
-  --neu-out-sm: 3px 3px 8px  #c8d0d8, -3px -3px 8px  #ffffff;
-  --neu-in:     inset 4px 4px 10px #c8d0d8, inset -4px -4px 10px #ffffff;
-  --neu-in-sm:  inset 2px 2px 6px  #c8d0d8, inset -2px -2px 6px  #ffffff;
+  --maroon:        #800000;
+  --maroon-lt:     #9a1a1a;
+  --maroon-dk:     #5c0000;
+  --maroon-mid:    #6b0000;
+  --maroon-dim:    rgba(128,0,0,.08);
+  --maroon-dim2:   rgba(128,0,0,.15);
+  --maroon-dim3:   rgba(128,0,0,.04);
+  --maroon-glow:   rgba(128,0,0,.22);
 
-  --text:    #1a1d2e;
-  --text2:   rgba(26,29,46,0.65);
-  --text3:   rgba(26,29,46,0.38);
+  --white:         #ffffff;
+  --off-white:     #fdfcfc;
+  --surface:       #f8f5f5;
+  --surface-2:     #f2eeee;
+  --border:        rgba(128,0,0,.12);
+  --border-lt:     rgba(128,0,0,.07);
 
-  --accent:  #8B0000;
-  --success: #3db87a;
-  --error:   #e05c6e;
+  --text:          #1c0808;
+  --text-muted:    rgba(28,8,8,.52);
+  --text-faint:    rgba(28,8,8,.32);
 
-  --r:       16px;
-  --r-sm:    10px;
-  --r-lg:    22px;
-  --tr:      all .2s ease;
+  --sidebar-bg:    linear-gradient(160deg, #6b0000 0%, #4a0000 60%, #3a0000 100%);
+  --sidebar-solid: #5c0000;
 
-  --fs-body:  14px;
-  --fs-label: 11px;
-  --fs-small: 12px;
-  --fs-head:  15px;
-  --fs-sub:   13px;
+  --white-dim:     rgba(255,255,255,.7);
+  --white-faint:   rgba(255,255,255,.4);
+  --white-wire:    rgba(255,255,255,.1);
+  --white-subtle:  rgba(255,255,255,.06);
+
+  --danger:        #c0392b;
+  --ok:            #27ae60;
+
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --tr: all .2s cubic-bezier(.4,0,.2,1);
+  --tr-slow: all .35s cubic-bezier(.4,0,.2,1);
+  --sh-maroon: 0 0 0 3px rgba(128,0,0,.15);
+  --sh-card: 0 2px 4px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.08);
+  --sh-card-hover: 0 4px 8px rgba(0,0,0,.08), 0 16px 40px rgba(0,0,0,.14), 0 2px 4px rgba(0,0,0,.06);
+  --sh-btn: 0 4px 16px rgba(128,0,0,.3), 0 1px 3px rgba(128,0,0,.2);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+
+  /* ── Clean classic inputs ── */
+  --neu-radius: 8px;
 }
 
 html { scroll-behavior: smooth; }
+
 body {
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg);
+  font-family: var(--font);
+  background: var(--off-white);
   color: var(--text);
   min-height: 100vh;
-  font-size: var(--fs-body);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ── LAYOUT ── */
-.va-root { background: var(--bg); min-height: 100vh; }
-.va-outer { display: flex; min-height: 100vh; width: 100%; }
+.va-root { background: var(--off-white); min-height: 100vh; }
+.va-outer { display: flex; width: 100%; min-height: 100vh; align-items: flex-start; }
 
+/* ── LEFT PANEL ── */
 .va-left {
   width: 380px; flex-shrink: 0;
-  padding: 40px 28px 60px 32px;
+  background: var(--sidebar-solid);
+  background-image: var(--sidebar-bg);
+  padding: 48px 32px 64px 36px;
   display: flex; flex-direction: column;
   position: sticky; top: 0; height: 100vh; overflow-y: auto;
-  background: linear-gradient(145deg, #8B0000 0%, #5a0000 35%, #1a0000 65%, #000000 100%);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,.25) transparent;
+  scrollbar-width: thin; scrollbar-color: var(--white-wire) transparent;
+  border-right: 1px solid rgba(0,0,0,.18);
+  box-shadow: 4px 0 32px rgba(0,0,0,.18);
+}
+.va-left::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 110% 10%, rgba(255,160,160,.1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at -10% 80%, rgba(0,0,0,.25) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,.03)'/%3E%3C/svg%3E");
 }
 .va-left::-webkit-scrollbar { width: 3px; }
-.va-left::-webkit-scrollbar-track { background: transparent; border-radius: 99px; }
-.va-left::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 99px; }
-.va-left::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.55); }
+.va-left::-webkit-scrollbar-track { background: transparent; }
+.va-left::-webkit-scrollbar-thumb { background: var(--white-wire); border-radius: 99px; }
 
-.va-left-logo {
-  width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
-  background: #ffffff;
+.va-logo-row {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 40px;
+  position: relative; z-index: 1;
+}
+.va-logo-mark {
+  width: 50px; height: 50px; flex-shrink: 0;
+  background: var(--white);
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.45rem;
+  font-family: var(--font); font-size: 17px; font-weight: 800;
+  color: var(--maroon); letter-spacing: -1.5px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25), 0 1px 3px rgba(0,0,0,.15);
 }
-.va-left-title {
-  font-size: 18px; font-weight: 800; color: #ffffff;
-  line-height: 1.3; margin-bottom: 0;
+.va-brand-col { display: flex; flex-direction: column; gap: 3px; }
+.va-brand {
+  font-size: 14px; font-weight: 700;
+  color: var(--white); letter-spacing: -.3px; line-height: 1;
 }
-.va-left-sub {
-  font-size: 13px; font-weight: 400; color: rgba(255,255,255,.72);
-  line-height: 1.7; margin-bottom: 28px;
+.va-brand-sub {
+  font-size: 9.5px; font-weight: 600;
+  color: rgba(255,255,255,.45); letter-spacing: 2px; text-transform: uppercase;
 }
-.va-left-section { margin-bottom: 22px; }
-.va-left-section-title {
-  font-size: 10px; font-weight: 700; color: rgba(255,255,255,.45);
-  text-transform: uppercase; letter-spacing: 1.6px;
-  margin-bottom: 10px; padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,.12);
+
+.va-hero { position: relative; z-index: 1; margin-bottom: 36px; }
+.va-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: 9.5px; font-weight: 700; color: #ffcece;
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.1);
 }
-.va-step-list { display: flex; flex-direction: column; gap: 8px; }
+.va-tag-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #ff7070;
+  box-shadow: 0 0 8px rgba(255,112,112,.9), 0 0 16px rgba(255,112,112,.4);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px rgba(255,112,112,.9); }
+  50% { opacity: .7; transform: scale(.75); box-shadow: 0 0 4px rgba(255,112,112,.5); }
+}
+.va-headline {
+  font-size: 29px; font-weight: 800; line-height: 1.22;
+  color: var(--white); margin-bottom: 14px; letter-spacing: -.7px;
+}
+.va-headline em { color: #ffb0b0; font-style: normal; }
+.va-subtext {
+  font-size: 13px; font-weight: 400; color: rgba(255,255,255,.65); line-height: 1.85;
+}
+
+.va-divline {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.05) 60%, transparent 100%);
+  margin: 28px 0;
+  position: relative; z-index: 1;
+}
+
+.va-section-label {
+  font-size: 9px; font-weight: 800; color: rgba(255,176,176,.7);
+  text-transform: uppercase; letter-spacing: 3px;
+  margin-bottom: 14px;
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 8px;
+}
+.va-section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.1) 0%, transparent 100%);
+}
+
+.va-step-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 32px; position: relative; z-index: 1; }
 .va-step-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 14px; border-radius: 10px;
-  background: rgba(0,0,0,.18);
-  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.07);
+  transition: background .2s;
 }
+.va-step-row:hover { background: rgba(255,255,255,.09); }
 .va-step-num {
-  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-  background: #ffffff;
+  width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800; color: #8B0000;
+  font-size: 11px; font-weight: 800; color: var(--white); margin-top: 1px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
 }
-.va-step-info { flex: 1; min-width: 0; }
-.va-step-info strong { display: block; font-size: 13px; font-weight: 400; color: #ffffff; }
-.va-step-info span   { font-size: 11px; color: rgba(255,255,255,.6); font-weight: 300; margin-top: 1px; display: block; }
+.va-step-info strong { display: block; font-size: 12.5px; font-weight: 700; color: var(--white); letter-spacing: -.1px; }
+.va-step-info span { font-size: 11px; font-weight: 400; color: rgba(255,255,255,.45); margin-top: 2px; display: block; }
 
-.va-benefit-list { display: flex; flex-direction: column; gap: 8px; }
+.va-benefit-list { display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 1; }
 .va-benefit-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 14px; border-radius: 10px;
-  background: rgba(0,0,0,.18);
-  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.07);
+  transition: background .2s;
 }
-.va-benefit-icon { font-size: 1.15rem; flex-shrink: 0; }
-.va-benefit-text strong { display: block; font-size: 13px; font-weight: 400; color: #ffffff; }
-.va-benefit-text span   { font-size: 11px; color: rgba(255,255,255,.6); font-weight: 300; line-height: 1.5; display: block; margin-top: 1px; }
-
-.va-contact-box {
-  background: rgba(0,0,0,.22);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 10px; padding: 12px 14px;
-  display: flex; flex-direction: column; gap: 8px;
+.va-benefit-row:hover { background: rgba(255,255,255,.09); }
+.va-benefit-icon {
+  font-size: 13px; flex-shrink: 0; color: #ffb0b0; margin-top: 1px;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.08);
+  border-radius: 7px; border: 1px solid rgba(255,255,255,.1);
 }
-.va-contact-row { display: flex; align-items: center; gap: 9px; }
-.va-contact-row span:first-child { font-size: .88rem; flex-shrink: 0; }
-.va-contact-row span:last-child  { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.8); }
+.va-benefit-text strong { display: block; font-size: 12.5px; font-weight: 700; color: var(--white); letter-spacing: -.1px; }
+.va-benefit-text span { font-size: 11px; font-weight: 400; color: rgba(255,255,255,.5); line-height: 1.6; display: block; margin-top: 2px; }
 
-.va-divider {
-  width: 1px; flex-shrink: 0;
-  background: linear-gradient(to bottom, transparent 0%, #3a0000 10%, #1a0000 90%, transparent 100%);
-}
-
+/* ── RIGHT ── */
 .va-right {
   flex: 1; min-width: 0;
-  padding: 48px 56px 80px 48px;
-  overflow-y: auto;
+  background: var(--off-white);
+  padding: 0 48px;
   position: relative;
+  display: flex; justify-content: center;
+}
+.va-right::before {
+  content: '';
+  position: fixed; top: 0; right: 0;
+  width: 50vw; height: 300px;
+  background: radial-gradient(ellipse at top right, rgba(128,0,0,.04) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
 }
 
-/* ── BACK ICON BUTTON (fixed top-right, always visible) ── */
+/* ── BACK ICON ── */
 .back-home-icon {
-  position: fixed;
-  top: 20px;
-  right: 28px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: var(--bg);
-  box-shadow: var(--neu-out-sm);
-  border: none;
+  position: fixed; top: 22px; right: 28px;
+  width: 40px; height: 40px;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--tr);
-  z-index: 9999;
-  color: var(--text2);
-  text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--tr); z-index: 9999;
+  color: var(--maroon); text-decoration: none;
+  box-shadow: var(--sh-card);
 }
 .back-home-icon:hover {
-  box-shadow: var(--neu-out);
-  color: var(--accent);
-  transform: translateX(-2px);
-}
-.back-home-icon:active {
-  box-shadow: var(--neu-in-sm);
-  transform: translateX(0);
+  background: var(--maroon); color: var(--white); border-color: var(--maroon);
+  box-shadow: var(--sh-btn);
+  transform: translateY(-1px);
 }
 .back-home-icon svg {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  width: 16px; height: 16px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 
-.va-wrap { width: 100%; }
+.va-wrap { width: 100%; max-width: 860px; position: relative; z-index: 1; padding: 52px 0 100px; }
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 36px; }
+.page-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10.5px; font-weight: 700; color: var(--maroon);
+  text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 10px;
+}
+.page-eyebrow::before {
+  content: '';
+  display: inline-block; width: 16px; height: 2px;
+  background: var(--maroon); border-radius: 2px; opacity: .5;
+}
+.page-title {
+  font-size: 32px; font-weight: 800; line-height: 1.15;
+  color: var(--text); margin-bottom: 8px; letter-spacing: -.6px;
+}
+.page-desc { font-size: 14px; font-weight: 400; color: var(--text-muted); line-height: 1.7; }
+
+/* ── PROGRESS BAR ── */
+.progress-track {
+  height: 3px; background: var(--surface-2); border-radius: 99px; margin-bottom: 28px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--maroon-dk), var(--maroon-lt));
+  border-radius: 99px; transition: width .5s cubic-bezier(.4,0,.2,1);
+}
 
 /* ── STEPPER ── */
 .stepper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 52px;
-  width: 100%;
+  display: flex; align-items: center; margin-bottom: 44px;
 }
-.step-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  position: relative;
-}
+.step-item { display: flex; align-items: center; gap: 10px; }
 .step-bubble {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: var(--bg);
-  box-shadow: var(--neu-out);
+  width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--white);
   display: flex; align-items: center; justify-content: center;
-  transition: var(--tr);
-  position: relative; z-index: 1;
-  color: var(--text3);
+  font-size: 12px; font-weight: 700;
+  color: var(--text-faint); transition: var(--tr);
+  box-shadow: var(--sh-card);
 }
-.step-item.active .step-bubble { box-shadow: var(--neu-in); color: var(--accent); }
-.step-item.done   .step-bubble { box-shadow: var(--neu-in-sm); color: var(--success); }
-.step-connector {
-  width: 160px; flex-shrink: 0; height: 1.5px;
-  background: var(--sd); opacity: .45;
-  border-radius: 2px;
-  transition: var(--tr);
+.step-item.active .step-bubble {
+  background: var(--maroon); border-color: var(--maroon);
+  color: var(--white); box-shadow: var(--sh-btn);
+  transform: scale(1.05);
 }
-.step-connector.done { background: var(--accent); opacity: .35; }
+.step-item.done .step-bubble {
+  background: var(--maroon-dim2); border-color: var(--maroon);
+  color: var(--maroon);
+}
 .step-lbl {
-  font-size: var(--fs-label);
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: .6px;
-  margin-top: 9px;
-  text-align: center;
-  white-space: nowrap;
-  transition: var(--tr);
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  font-size: 11px; font-weight: 600; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 1px;
+  transition: var(--tr); white-space: nowrap;
 }
-.step-item.active .step-lbl { color: var(--accent); }
-.step-item.done   .step-lbl { color: var(--success); }
-
-/* ── CARD ── */
-.card {
-  background: var(--bg);
-  border-radius: var(--r-lg);
-  box-shadow: var(--neu-out);
-  margin-bottom: 22px;
-  overflow: hidden;
+.step-item.active .step-lbl { color: var(--maroon); font-weight: 700; }
+.step-item.done   .step-lbl { color: var(--maroon-lt); }
+.step-connector {
+  flex: 1; height: 2px;
+  background: var(--border-lt);
+  margin: 0 10px; transition: var(--tr); min-width: 20px;
+  border-radius: 2px; overflow: hidden; position: relative;
 }
-.card-head {
-  padding: 18px 24px;
-  display: flex; align-items: center; gap: 14px;
-  border-bottom: 1px solid rgba(200,208,216,.6);
+.step-connector.done {
+  background: linear-gradient(90deg, var(--maroon), rgba(128,0,0,.3));
 }
-.card-icon {
-  width: 44px; height: 44px; flex-shrink: 0;
-  border-radius: var(--r-sm);
-  background: var(--bg);
-  box-shadow: var(--neu-out-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-}
-.card-head h2 {
-  font-size: var(--fs-head);
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.3;
-}
-.card-head p {
-  font-size: var(--fs-small);
-  font-weight: 400;
-  color: var(--text2);
-  margin-top: 2px;
-}
-.card-badge {
-  margin-left: auto; flex-shrink: 0;
-  background: var(--bg); box-shadow: var(--neu-in-sm);
-  border-radius: 20px; padding: 5px 14px;
-  font-size: var(--fs-label);
-  font-weight: 600;
-  color: var(--text2);
-  letter-spacing: .4px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.card-body { padding: 26px 24px; }
-
-/* ── NOTICE ── */
-.notice {
-  background: var(--bg); box-shadow: var(--neu-in-sm);
-  border-radius: var(--r-sm); border-left: 3px solid var(--accent);
-  padding: 12px 16px;
-  font-size: var(--fs-small);
-  font-weight: 500;
-  line-height: 1.7; color: var(--text2); margin-bottom: 22px;
-}
-.notice b    { color: var(--error); font-weight: 700; }
-.notice-warn { border-left-color: var(--error); }
 
 /* ── SECTION LABEL ── */
 .sec-lbl {
-  font-size: var(--fs-label);
-  font-weight: 700;
-  color: var(--text2);
-  text-transform: uppercase; letter-spacing: 1px;
-  margin: 24px 0 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(200,208,216,.7);
+  font-size: 9.5px; font-weight: 700; color: var(--maroon);
+  text-transform: uppercase; letter-spacing: 2.5px;
+  margin: 30px 0 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
 }
+.sec-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border-lt); }
 .sec-lbl:first-child { margin-top: 0; }
 
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px; overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.1), 0 2px 4px rgba(0,0,0,.06), 0 24px 64px rgba(0,0,0,.07);
+  transition: var(--tr-slow);
+  width: 100%;
+}
+.card:hover {
+  box-shadow: 0 6px 10px rgba(0,0,0,.06), 0 20px 48px rgba(0,0,0,.13), 0 4px 8px rgba(0,0,0,.06), 0 32px 80px rgba(0,0,0,.09);
+  transform: translateY(-1px);
+}
+.card-head {
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  background: linear-gradient(135deg, var(--maroon-dk) 0%, var(--maroon) 60%, var(--maroon-lt) 100%);
+  position: relative; overflow: hidden;
+}
+.card-head::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 130px; height: 130px; border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.card-head::after {
+  content: '';
+  position: absolute; bottom: -30px; right: 80px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,.03);
+}
+.card-icon {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: var(--white);
+  position: relative; z-index: 1;
+}
+.card-head-text { position: relative; z-index: 1; }
+.card-head-text h2 {
+  font-size: 17px; font-weight: 700; color: var(--white); line-height: 1.2; letter-spacing: -.2px;
+}
+.card-head-text p { font-size: 12px; font-weight: 400; color: rgba(255,255,255,.6); margin-top: 3px; }
+.card-badge {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 10px; font-weight: 700; color: var(--white);
+  letter-spacing: 1px; text-transform: uppercase; white-space: nowrap;
+  position: relative; z-index: 1;
+}
+.card-body { padding: 28px; width: 100%; background: #f0f0f0; }
+
+/* ── NOTICE ── */
+.notice {
+  background: var(--maroon-dim3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--maroon);
+  border-radius: var(--radius-xs);
+  padding: 13px 16px;
+  font-size: 12.5px; font-weight: 400;
+  line-height: 1.75; color: var(--text-muted); margin-bottom: 24px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.notice-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.notice b { color: var(--maroon); font-weight: 700; }
+.notice-warn { border-left-color: var(--danger); background: rgba(192,57,43,.04); }
+.notice-brand { border-left-color: var(--maroon); background: var(--maroon-dim3); }
+
 /* ── GRIDS ── */
-.grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px 20px; }
-.grid-1 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px 22px; }
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: 18px; }
 .col-2  { grid-column: span 2; }
 .col-3  { grid-column: span 3; }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 1100px) {
-  .va-left { width: 300px; padding: 32px 20px 48px 24px; }
-  .va-right { padding: 40px 36px 80px 36px; }
-}
-
-@media (max-width: 960px) {
-  .va-outer { flex-direction: column; }
-  .va-left  { width: 100%; height: auto; position: static; padding: 28px 24px 24px; }
-  .va-divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--sd) 15%, var(--sd) 85%, transparent); }
-  .va-right { padding: 32px 32px 80px; }
-  .va-left-sub { margin-bottom: 18px; }
-  .va-left-section { margin-bottom: 16px; }
-  .stepper { margin-bottom: 48px; }
-  .step-connector { width: 80px; }
-}
-
-@media (max-width: 720px) {
-  .va-right { padding: 24px 20px 80px; }
-  .grid-3 { grid-template-columns: 1fr 1fr; }
-  .col-3  { grid-column: span 2; }
-  .svc-grid { grid-template-columns: 1fr 1fr !important; }
-  .step-connector { width: 56px; }
-}
-
-@media (max-width: 560px) {
-  .va-right { padding: 20px 14px 80px; }
-  .va-left  { padding: 18px 14px 20px; }
-  .card-body { padding: 16px 14px; }
-  .card-head { padding: 14px 16px; gap: 10px; }
-  .card-badge { display: none; }
-  .grid, .grid-3 { grid-template-columns: 1fr; }
-  .col-2, .col-3 { grid-column: span 1; }
-  .svc-grid { grid-template-columns: 1fr !important; }
-  .step-connector { width: 36px; }
-  .step-bubble { width: 42px; height: 42px; }
-  .step-lbl { font-size: 9px; letter-spacing: .3px; }
-  .form-nav { gap: 10px; }
-  .btn { padding: 11px 22px; font-size: 13px; }
-  .btn-submit { padding: 11px 28px; }
-  .rev-tbl td { padding: 9px 14px; font-size: 12px; }
-  .rev-tbl td:first-child { width: 38%; }
-  .radio-row { gap: 7px; }
-  .radio-chip { padding: 9px 12px; font-size: 13px; }
-  .back-home-icon { top: 12px; right: 12px; width: 36px; height: 36px; }
-  .success-wrap { padding: 36px 18px; }
-  .success-wrap h2 { font-size: 18px; }
-}
-
-@media (max-width: 380px) {
-  .va-right { padding: 16px 10px 80px; }
-  .stepper { margin-bottom: 44px; }
-  .step-connector { width: 24px; }
-  .step-bubble { width: 38px; height: 38px; }
-}
-
 /* ── FIELD ── */
-.field { display: flex; flex-direction: column; gap: 7px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
 .field > label {
-  font-size: var(--fs-label);
-  font-weight: 700;
-  color: var(--text);
-  text-transform: uppercase; letter-spacing: .5px;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1.2px;
 }
-.req  { color: var(--error); margin-left: 2px; }
-.opt  { font-weight: 500; color: var(--text3); text-transform: none; font-size: var(--fs-label); letter-spacing: 0; margin-left: 4px; }
-.hint { font-size: var(--fs-small); font-weight: 400; color: var(--text3); font-style: italic; }
-.err-msg { font-size: var(--fs-small); color: var(--error); font-weight: 600; min-height: 16px; }
+.req  { color: var(--maroon); margin-left: 2px; }
+.opt  { font-weight: 500; color: var(--text-faint); text-transform: none; font-size: 10.5px; letter-spacing: 0; margin-left: 4px; }
+.hint { font-size: 11px; font-weight: 400; color: var(--text-faint); }
+.err-msg { font-size: 11px; color: var(--danger); font-weight: 600; min-height: 15px; display: flex; align-items: center; gap: 4px; }
 
-/* ── INPUTS ── */
+/* ─────────────────────────────────────
+   NEUMORPHIC INPUTS — inner shadow style
+   matching reference: blur 30px, X/Y 18px,
+   opacity 100%, color #D1D9E6
+───────────────────────────────────── */
+/* ─────────────────────────────────────
+   NEUMORPHIC INPUTS — two inner shadows
+   White: blur 50, X/Y -30, opacity 70%, #FFFFFF
+   Dark:  blur 50, X/Y  30, opacity 16%, #0D2750
+───────────────────────────────────── */
 input[type=text],
 input[type=email],
 input[type=tel],
@@ -565,312 +588,370 @@ input[type=date],
 input[type=url],
 select,
 textarea {
-  width: 100%; padding: 11px 15px;
-  border: none; border-radius: var(--r-sm);
-  font-family: 'Poppins', sans-serif;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--text);
-  background: var(--bg);
-  outline: none; box-shadow: var(--neu-in);
-  transition: box-shadow .2s ease;
+  width: 100%;
+  padding: 11px 14px;
+  border: none;
+  border-radius: 14px;
+  background: #E5E5E5 !important;
+  background-color: #E5E5E5 !important;
+  font-family: var(--font);
+  font-size: 13.5px; font-weight: 400;
+  color: #1c0808 !important;
+  outline: none;
+  transition: box-shadow .2s ease, background .15s;
   -webkit-appearance: none; appearance: none;
+  color-scheme: light !important;
+
+  /* Two inner shadows from reference */
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.16);
 }
-input:focus, select:focus, textarea:focus {
-  box-shadow: var(--neu-in), 0 0 0 2px rgba(139,0,0,.2);
+
+input:focus,
+select:focus,
+textarea:focus {
+  background: #E0E0E0 !important;
+  background-color: #E0E0E0 !important;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.22),
+    0 0 0 2.5px rgba(128,0,0,.35);
 }
-input::placeholder, textarea::placeholder {
-  color: var(--text3);
-  font-weight: 400;
+
+input:hover:not(:focus),
+select:hover:not(:focus),
+textarea:hover:not(:focus) {
+  background: #E2E2E2 !important;
+  background-color: #E2E2E2 !important;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.20);
 }
-input.err, select.err, textarea.err {
-  box-shadow: var(--neu-in), 0 0 0 2px rgba(224,92,110,.22);
+
+/* Autofill override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+select:-webkit-autofill,
+textarea:-webkit-autofill {
+  -webkit-box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.16),
+    0 0 0 1000px #E5E5E5 inset !important;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.16),
+    0 0 0 1000px #E5E5E5 inset !important;
+  -webkit-text-fill-color: #1c0808 !important;
+  background-color: #E5E5E5 !important;
+  color-scheme: light !important;
 }
-textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+
+select option {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #1c0808 !important;
+}
+
+input::placeholder, textarea::placeholder { color: var(--text-faint); font-weight: 300; }
+
+/* Error state — keep inner shadow, add red tint */
+/* Error state */
+input.err,
+select.err,
+textarea.err {
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.16),
+    0 0 0 2.5px rgba(192,57,43,.4) !important;
+}
+
+textarea {
+  resize: vertical; min-height: 100px; line-height: 1.7;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.16);
+}
+textarea:focus {
+  background: #E0E0E0 !important;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.22),
+    0 0 0 2.5px rgba(128,0,0,.35);
+}
+
+/* Custom select arrow */
 select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a1d2e' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-opacity='.35'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23800000' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
   padding-right: 36px; cursor: pointer;
 }
 
-/* ── SERVICE GRID ── */
-.svc-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+/* Date picker icon */
+input[type=date]::-webkit-calendar-picker-indicator {
+  filter: invert(.1) sepia(1) hue-rotate(320deg) saturate(6);
+  cursor: pointer; opacity: .45;
 }
-@media (max-width: 700px) { .svc-grid { grid-template-columns: 1fr 1fr; } }
+input[type=date]::-webkit-calendar-picker-indicator:hover { opacity: .9; }
+
+/* ── SERVICE GRID ── */
+.svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
 .svc-group {
-  background: var(--bg);
-  border-radius: var(--r);
-  box-shadow: var(--neu-out-sm);
-  overflow: hidden;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden; transition: var(--tr);
 }
+.svc-group:hover { border-color: rgba(128,0,0,.22); box-shadow: var(--sh-card-hover); }
 .svc-group-head {
-  padding: 12px 14px;
+  padding: 11px 14px;
   display: flex; align-items: center; gap: 9px;
-  border-bottom: 1px solid rgba(200,208,216,.6);
+  background: linear-gradient(135deg, var(--maroon-dk) 0%, var(--maroon) 100%);
 }
-.svc-group-icon { font-size: 1rem; flex-shrink: 0; }
-.svc-group-name {
-  font-size: var(--fs-small);
-  font-weight: 700;
-  color: var(--text);
-  flex: 1; min-width: 0;
-}
+.svc-group-icon { font-size: .75rem; flex-shrink: 0; color: #ffb0b0; }
+.svc-group-name { font-size: 11px; font-weight: 700; color: var(--white); flex: 1; min-width: 0; letter-spacing: -.1px; }
 .svc-count {
-  flex-shrink: 0;
-  background: var(--bg); box-shadow: var(--neu-in-sm);
-  border-radius: 20px; padding: 2px 9px;
-  font-size: var(--fs-label);
-  font-weight: 700; color: var(--accent);
+  flex-shrink: 0; background: rgba(255,255,255,.2);
+  border-radius: 10px; padding: 2px 9px;
+  font-size: 10px; font-weight: 700; color: var(--white);
 }
-.svc-list { padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.svc-list { padding: 8px; display: flex; flex-direction: column; gap: 2px; }
 .svc-chip {
   display: flex; align-items: flex-start; gap: 9px;
-  padding: 9px 10px; border-radius: var(--r-sm);
-  cursor: pointer; transition: var(--tr); user-select: none;
+  padding: 8px 10px; border-radius: var(--radius-xs);
+  cursor: pointer; transition: background .15s; user-select: none;
+  border: 1px solid transparent;
 }
-.svc-chip:hover { background: rgba(139,0,0,.05); }
-.svc-chip.sel   { background: var(--bg); box-shadow: var(--neu-in-sm); }
-.svc-chip input {
-  width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px;
-  accent-color: var(--accent); cursor: pointer;
-  box-shadow: none; padding: 0; background: none; border: none;
+.svc-chip:hover { background: var(--maroon-dim3); border-color: var(--border); }
+.svc-chip.sel   { background: var(--maroon-dim); border-color: rgba(128,0,0,.2); }
+
+/* Checkbox inside svc-chip — keep native look, not neumorphic */
+.svc-chip input[type=checkbox] {
+  width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px;
+  accent-color: var(--maroon); cursor: pointer;
+  box-shadow: none !important;
+  padding: 0; background: none !important;
+  border: none !important; border-radius: 0 !important;
 }
+
 .svc-chip-label {
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--text);
+  font-size: 12px; font-weight: 400; color: var(--text-muted);
   line-height: 1.45; transition: color .15s;
 }
-.svc-chip.sel .svc-chip-label { color: var(--accent); font-weight: 600; }
+.svc-chip.sel .svc-chip-label { color: var(--maroon); font-weight: 600; }
 
 /* ── SELECTED PILLS ── */
 .sel-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .sel-pill {
   display: inline-flex; align-items: center; gap: 7px;
-  padding: 6px 13px;
-  background: var(--bg); box-shadow: var(--neu-out-sm);
-  border-radius: 20px;
-  font-size: var(--fs-small);
-  font-weight: 600; color: var(--accent);
+  padding: 5px 12px; border-radius: 20px;
+  background: var(--maroon-dim); border: 1px solid rgba(128,0,0,.2);
+  font-size: 11.5px; font-weight: 600; color: var(--maroon);
+  transition: var(--tr);
 }
+.sel-pill:hover { background: var(--maroon-dim2); }
 .sel-pill button {
-  background: none; border: none; color: var(--text3);
-  cursor: pointer; font-size: .8rem; padding: 0; line-height: 1; transition: color .15s;
+  background: none; border: none; color: var(--maroon);
+  cursor: pointer; font-size: .65rem; padding: 0; line-height: 1; opacity: .5; transition: opacity .15s;
 }
-.sel-pill button:hover { color: var(--error); }
-
-/* ── RADIO CHIPS ── */
-.radio-row { display: flex; flex-wrap: wrap; gap: 9px; }
-.radio-chip {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 15px; border-radius: var(--r-sm);
-  background: var(--bg); box-shadow: var(--neu-out-sm);
-  cursor: pointer;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--text);
-  transition: var(--tr); user-select: none;
-}
-.radio-chip:hover { box-shadow: var(--neu-out); }
-.radio-chip.sel   { box-shadow: var(--neu-in-sm); color: var(--accent); font-weight: 600; }
-.radio-chip input {
-  width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer;
-  box-shadow: none; padding: 0; background: none; border: none;
-}
-
-/* ── CHECK ROW ── */
-.check-row {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 14px 16px; border-radius: var(--r-sm);
-  background: var(--bg); box-shadow: var(--neu-out-sm);
-  cursor: pointer; transition: var(--tr); user-select: none;
-}
-.check-row:hover { box-shadow: var(--neu-out); }
-.check-row.sel   { box-shadow: var(--neu-in-sm); }
-.check-row input {
-  width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;
-  accent-color: var(--accent); cursor: pointer;
-  box-shadow: none; padding: 0; background: none; border: none;
-}
-.check-row-text {
-  font-size: var(--fs-body);
-  font-weight: 500;
-  color: var(--text);
-  line-height: 1.6;
-}
+.sel-pill button:hover { opacity: 1; }
 
 /* ── UPLOAD ── */
 .upload-zone {
-  background: var(--bg); box-shadow: var(--neu-in);
-  border-radius: var(--r); padding: 30px 20px;
-  text-align: center; cursor: pointer; transition: var(--tr);
+  background: #E5E5E5;
+  border: none;
+  border-radius: 14px;
+  padding: 40px 28px;
+  text-align: center; cursor: pointer;
+  transition: box-shadow .2s, background .15s;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.16);
 }
-.upload-zone:hover  { box-shadow: var(--neu-in), 0 0 0 2px rgba(139,0,0,.15); }
-.upload-zone.filled { box-shadow: var(--neu-in), 0 0 0 2px rgba(139,0,0,.25); }
-.upload-icon  { font-size: 1.9rem; margin-bottom: 8px; }
-.upload-title {
-  font-size: var(--fs-body);
-  font-weight: 600; color: var(--text);
+.upload-zone:hover {
+  background: #E0E0E0;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.20);
 }
-.upload-sub {
-  font-size: var(--fs-small);
-  font-weight: 400; color: var(--text3); margin-top: 4px;
+.upload-zone.filled {
+  background: #E0E0E0;
+  box-shadow:
+    inset -30px -30px 50px rgba(255,255,255,.70),
+    inset  30px  30px 50px rgba(13,39,80,.20),
+    0 0 0 2.5px rgba(128,0,0,.25);
 }
+.upload-icon  { font-size: 28px; margin-bottom: 12px; display: block; }
+.upload-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.upload-sub   { font-size: 11.5px; font-weight: 400; color: var(--text-faint); margin-top: 5px; }
 .file-tag {
   display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 12px; padding: 6px 14px;
-  background: var(--bg); box-shadow: var(--neu-out-sm);
-  border-radius: 20px;
-  font-size: var(--fs-small);
-  font-weight: 600; color: var(--accent);
+  margin-top: 14px; padding: 7px 16px; border-radius: 20px;
+  background: var(--maroon-dim); border: 1px solid rgba(128,0,0,.2);
+  font-size: 12px; font-weight: 600; color: var(--maroon);
 }
 .file-tag button {
-  background: none; border: none; color: var(--text3);
-  cursor: pointer; font-size: .82rem; padding: 0; line-height: 1; transition: color .15s;
+  background: none; border: none; color: var(--maroon);
+  cursor: pointer; font-size: .7rem; padding: 0; line-height: 1; opacity: .5; transition: opacity .15s;
 }
-.file-tag button:hover { color: var(--error); }
-.doc-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.doc-pill {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px;
-  background: var(--bg); box-shadow: var(--neu-out-sm);
-  border-radius: var(--r-sm);
-  font-size: var(--fs-small);
-  font-weight: 500; color: var(--text);
-}
-.doc-pill button {
-  background: none; border: none; color: var(--error);
-  cursor: pointer; font-size: .82rem; padding: 0; line-height: 1;
-}
-
-/* ── REFERENCE ── */
-.ref-card {
-  background: var(--bg); box-shadow: var(--neu-out-sm);
-  border-radius: var(--r); overflow: hidden; margin-bottom: 14px;
-}
-.ref-head {
-  padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid rgba(200,208,216,.6);
-}
-.ref-title {
-  font-size: var(--fs-body);
-  font-weight: 700; color: var(--text);
-}
-.ref-remove {
-  background: var(--bg); box-shadow: var(--neu-out-sm); border: none;
-  border-radius: 20px; color: var(--error);
-  font-size: var(--fs-small);
-  font-weight: 600; cursor: pointer;
-  padding: 5px 13px; font-family: 'Poppins', sans-serif; transition: var(--tr);
-}
-.ref-remove:hover { box-shadow: var(--neu-in-sm); }
-.ref-body { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
-@media (max-width: 500px) { .ref-body { grid-template-columns: 1fr; } }
-
-.add-ref {
-  width: 100%; padding: 12px; border: none;
-  border-radius: var(--r); background: var(--bg); box-shadow: var(--neu-out-sm);
-  font-family: 'Poppins', sans-serif;
-  font-size: var(--fs-body);
-  font-weight: 600;
-  color: var(--text2); cursor: pointer; transition: var(--tr);
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.add-ref:hover  { box-shadow: var(--neu-out); color: var(--accent); }
-.add-ref:active { box-shadow: var(--neu-in-sm); }
+.file-tag button:hover { opacity: 1; }
 
 /* ── REVIEW ── */
-.rev-wrap { display: flex; flex-direction: column; gap: 14px; }
-.rev-block { background: var(--bg); box-shadow: var(--neu-out-sm); border-radius: var(--r); overflow: hidden; }
+.rev-wrap { display: flex; flex-direction: column; gap: 12px; }
+.rev-block {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;
+  transition: var(--tr);
+}
+.rev-block:hover { box-shadow: var(--sh-card-hover); }
 .rev-block-head {
-  padding: 12px 18px; display: flex; align-items: center; gap: 10px;
-  border-bottom: 1px solid rgba(200,208,216,.6);
+  padding: 13px 22px; display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--maroon-dk) 0%, var(--maroon) 100%);
 }
-.rev-block-head span:first-child { font-size: .95rem; }
-.rev-block-head span:last-child {
-  font-size: var(--fs-body);
-  font-weight: 700; color: var(--text);
-}
+.rev-block-head span:first-child { font-size: .75rem; color: #ffb0b0; }
+.rev-block-head span:last-child { font-size: 13px; font-weight: 700; color: var(--white); letter-spacing: -.1px; }
 table.rev-tbl { width: 100%; border-collapse: collapse; }
-table.rev-tbl td {
-  padding: 10px 18px;
-  font-size: var(--fs-body);
-  border-bottom: 1px solid rgba(200,208,216,.5);
-}
+table.rev-tbl td { padding: 11px 22px; font-size: 13px; border-bottom: 1px solid var(--border-lt); }
 table.rev-tbl tr:last-child td { border-bottom: none; }
 table.rev-tbl td:first-child {
-  width: 33%;
-  font-size: var(--fs-label);
-  font-weight: 700;
-  color: var(--text2); text-transform: uppercase; letter-spacing: .5px;
+  width: 32%; font-size: 10.5px; font-weight: 700;
+  color: var(--text-faint); text-transform: uppercase; letter-spacing: .8px;
 }
 table.rev-tbl td:last-child { color: var(--text); font-weight: 500; }
 
 /* ── NAV ── */
 .form-nav {
   display: flex; justify-content: space-between; align-items: center;
-  margin-top: 28px; padding-top: 22px;
-  border-top: 1px solid rgba(200,208,216,.7);
+  margin-top: 28px; padding-top: 24px;
+  border-top: 1px solid var(--border-lt);
 }
 .btn {
-  padding: 12px 30px; font-family: 'Poppins', sans-serif;
-  font-size: var(--fs-body);
-  font-weight: 600; border: none;
-  border-radius: 50px; cursor: pointer; transition: var(--tr);
-  background: var(--bg);
+  padding: 12px 28px; font-family: var(--font);
+  font-size: 13px; font-weight: 700; border: none;
+  cursor: pointer; transition: var(--tr);
+  letter-spacing: .3px;
+  border-radius: var(--radius-sm);
+  display: inline-flex; align-items: center; gap: 8px;
 }
-.btn-ghost { box-shadow: var(--neu-out); color: var(--text2); }
-.btn-ghost:hover  { box-shadow: var(--neu-out-sm); }
-.btn-ghost:active { box-shadow: var(--neu-in-sm); }
-.btn-next { box-shadow: var(--neu-out); color: var(--accent); font-weight: 700; }
-.btn-next:hover  { box-shadow: var(--neu-out-sm); }
-.btn-next:active { box-shadow: var(--neu-in-sm); }
+.btn-ghost {
+  background: var(--white); border: 1.5px solid var(--border); color: var(--text-muted);
+}
+.btn-ghost:hover {
+  border-color: var(--maroon); color: var(--maroon); background: var(--maroon-dim3);
+  transform: translateX(-2px);
+}
+.btn-next {
+  background: var(--maroon); color: var(--white);
+  box-shadow: var(--sh-btn);
+}
+.btn-next:hover  {
+  background: var(--maroon-lt);
+  box-shadow: 0 6px 22px rgba(128,0,0,.38);
+  transform: translateY(-1px);
+}
+.btn-next:active { opacity: .9; transform: translateY(0); }
 .btn-submit {
-  background: linear-gradient(135deg, var(--success), #2aab74);
-  box-shadow: 4px 4px 12px rgba(61,184,122,.28), -2px -2px 8px rgba(255,255,255,.8);
-  color: #fff; padding: 12px 38px; font-weight: 700;
+  background: linear-gradient(135deg, var(--maroon-dk) 0%, var(--maroon-lt) 100%);
+  color: var(--white);
+  padding: 13px 36px;
+  box-shadow: var(--sh-btn);
 }
-.btn-submit:hover  { box-shadow: 2px 2px 8px rgba(61,184,122,.38), -1px -1px 5px rgba(255,255,255,.9); transform: translateY(-1px); }
-.btn-submit:active { transform: translateY(0); }
+.btn-submit:hover  {
+  background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-lt) 100%);
+  box-shadow: 0 6px 22px rgba(128,0,0,.38);
+  transform: translateY(-1px);
+}
+.btn-submit:active { opacity: .9; transform: translateY(0); }
+.btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 
 /* ── SUCCESS ── */
 .success-wrap {
-  background: var(--bg); border-radius: var(--r-lg);
-  box-shadow: var(--neu-out); text-align: center; padding: 56px 32px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  text-align: center; padding: 64px 48px;
+  max-width: 520px;
+  box-shadow: var(--sh-card-hover);
+  position: relative; overflow: hidden;
 }
-.success-ring {
-  width: 86px; height: 86px; border-radius: 50%;
-  background: var(--bg); box-shadow: var(--neu-out);
+.success-wrap::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--maroon-dk), var(--maroon-lt));
+}
+.success-mark {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--maroon-dk), var(--maroon-lt));
   display: flex; align-items: center; justify-content: center;
-  font-size: 2.1rem; margin: 0 auto 22px;
+  font-size: 32px; color: var(--white);
+  margin: 0 auto 24px;
+  box-shadow: 0 8px 28px rgba(128,0,0,.32);
 }
 .success-wrap h2 {
-  font-size: 22px;
-  font-weight: 800; color: var(--text); margin-bottom: 10px;
+  font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 12px; letter-spacing: -.4px;
 }
-.success-wrap p {
-  font-size: var(--fs-body);
-  font-weight: 400; color: var(--text2); line-height: 1.7;
-  max-width: 400px; margin: 0 auto 6px;
-}
+.success-wrap p { font-size: 13.5px; font-weight: 400; color: var(--text-muted); line-height: 1.8; max-width: 370px; margin: 0 auto 6px; }
 .confirm-code {
-  display: inline-block; background: var(--bg); box-shadow: var(--neu-in);
-  border-radius: var(--r-sm); padding: 11px 28px; margin: 14px auto;
-  font-family: monospace; font-size: 18px;
-  font-weight: 800; color: var(--accent); letter-spacing: 3px;
+  display: inline-block;
+  background: var(--maroon-dim); border: 1.5px solid rgba(128,0,0,.2);
+  border-radius: var(--radius-sm);
+  padding: 12px 32px; margin: 18px auto;
+  font-family: 'Courier New', monospace; font-size: 17px; font-weight: 700;
+  color: var(--maroon); letter-spacing: 5px;
 }
 
-.divider { border: none; height: 1px; background: rgba(200,208,216,.7); margin: 22px 0; }
+.divider { border: none; height: 1px; background: var(--border-lt); margin: 24px 0; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .page-enter { animation: fadeUp .3s cubic-bezier(.16,1,.3,1); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .va-left { width: 320px; padding: 36px 24px 52px 28px; }
+  .va-right { padding: 0 32px; }
+}
+@media (max-width: 960px) {
+  .va-outer { flex-direction: column; }
+  .va-left  { width: 100%; height: auto; position: static; padding: 28px 24px 24px; }
+  .va-right { padding: 0 24px; justify-content: flex-start; }
+  .va-wrap  { padding: 36px 0 80px; }
+  .stepper { margin-bottom: 36px; }
+  .step-connector { min-width: 14px; }
+  .va-headline { font-size: 26px; }
+}
+@media (max-width: 720px) {
+  .va-right { padding: 0 16px; }
+  .va-wrap  { padding: 24px 0 80px; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .col-3  { grid-column: span 2; }
+  .svc-grid { grid-template-columns: 1fr 1fr !important; }
+  .step-lbl { display: none; }
+  .step-connector { min-width: 8px; }
+}
+@media (max-width: 560px) {
+  .va-right { padding: 0 10px; }
+  .va-wrap  { padding: 18px 0 80px; }
+  .va-left  { padding: 20px 16px; }
+  .card-body { padding: 20px 16px; }
+  .card-head { padding: 16px 18px; }
+  .card-badge { display: none; }
+  .grid, .grid-3 { grid-template-columns: 1fr; }
+  .col-2, .col-3 { grid-column: span 1; }
+  .svc-grid { grid-template-columns: 1fr !important; }
+  .step-bubble { width: 34px; height: 34px; font-size: 11px; }
+  .btn { padding: 11px 20px; font-size: 12px; }
+  .btn-submit { padding: 11px 26px; }
+  .rev-tbl td { padding: 9px 14px; font-size: 12px; }
+  .back-home-icon { top: 12px; right: 12px; width: 36px; height: 36px; }
+  .success-wrap { padding: 40px 20px; }
+  .page-title { font-size: 26px; }
+}
 `;
 
 // ─────────────────────────────────────────────
@@ -882,13 +963,8 @@ const randCode = (): string => "VA-" + Math.random().toString(36).toUpperCase().
 // SHARED COMPONENTS
 // ─────────────────────────────────────────────
 interface FieldProps {
-  label: string;
-  required?: boolean;
-  optional?: boolean;
-  hint?: string;
-  error?: string;
-  children: React.ReactNode;
-  className?: string;
+  label: string; required?: boolean; optional?: boolean;
+  hint?: string; error?: string; children: React.ReactNode; className?: string;
 }
 const Field: React.FC<FieldProps> = ({ label, required, optional, hint, error, children, className }) => (
   <div className={`field${className ? " " + className : ""}`}>
@@ -899,32 +975,22 @@ const Field: React.FC<FieldProps> = ({ label, required, optional, hint, error, c
     </label>
     {children}
     {hint && <span className="hint">{hint}</span>}
-    <span className="err-msg">{error ?? ""}</span>
+    <span className="err-msg">{error ? <>⚠ {error}</> : ""}</span>
   </div>
 );
 
 interface InpProps {
-  value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  type?: string;
-  maxLength?: number;
-  hasError?: boolean;
+  value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string; type?: string; maxLength?: number; hasError?: boolean;
 }
 const Inp: React.FC<InpProps> = ({ value, onChange, placeholder, type = "text", maxLength, hasError }) => (
-  <input
-    type={type} value={value} onChange={onChange}
-    placeholder={placeholder} maxLength={maxLength}
-    className={hasError ? "err" : ""}
-  />
+  <input type={type} value={value} onChange={onChange}
+    placeholder={placeholder} maxLength={maxLength} className={hasError ? "err" : ""} />
 );
 
 interface SelProps {
-  value: string;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-  options: string[];
-  placeholder?: string;
-  hasError?: boolean;
+  value: string; onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  options: string[]; placeholder?: string; hasError?: boolean;
 }
 const Sel: React.FC<SelProps> = ({ value, onChange, options, placeholder = "Select…", hasError }) => (
   <select value={value} onChange={onChange} className={hasError ? "err" : ""}>
@@ -937,25 +1003,23 @@ const Sel: React.FC<SelProps> = ({ value, onChange, options, placeholder = "Sele
 // FILE UPLOADS
 // ─────────────────────────────────────────────
 interface SingleUploadProps {
-  file: UploadedFile | null;
-  onAdd: (f: File) => void;
-  onRemove: () => void;
+  file: UploadedFile | null; onAdd: (f: File) => void; onRemove: () => void;
 }
 const SingleUpload: React.FC<SingleUploadProps> = ({ file, onAdd, onRemove }) => {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div>
       <div className={`upload-zone${file ? " filled" : ""}`} onClick={() => ref.current?.click()}>
-        <div className="upload-icon">{file ? "📎" : "📤"}</div>
+        <span className="upload-icon">{file ? "📎" : "📄"}</span>
         {file
-          ? <><p className="upload-title">{file.file.name}</p><p className="upload-sub">Click to replace</p></>
+          ? <><p className="upload-title">{file.file.name}</p><p className="upload-sub">Click to replace file</p></>
           : <><p className="upload-title">Click to browse or drag & drop</p><p className="upload-sub">PDF, DOC, DOCX — max 10 MB</p></>
         }
       </div>
       {file && (
         <div style={{ textAlign: "center" }}>
           <span className="file-tag">
-            📎 {file.file.name}
+            ✓ {file.file.name}
             <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }}>✕</button>
           </span>
         </div>
@@ -972,8 +1036,7 @@ const SingleUpload: React.FC<SingleUploadProps> = ({ file, onAdd, onRemove }) =>
 const INITIAL: FormData = {
   personal: {
     firstName: "", lastName: "", middleName: "", email: "", phone: "",
-    address: "", city: "", state: "", zip: "", country: "",
-    dob: "", gender: "",
+    address: "", city: "", state: "", zip: "", country: "", dob: "", gender: "",
   },
   service: {
     services: [], experienceLevel: "", availability: "",
@@ -987,20 +1050,23 @@ const INITIAL: FormData = {
 // ─────────────────────────────────────────────
 interface P1Props {
   data: PersonalInfo; errors: FormErrors;
-  set: (k: keyof PersonalInfo, v: string) => void;
-  clrErr: (k: string) => void;
+  set: (k: keyof PersonalInfo, v: string) => void; clrErr: (k: string) => void;
 }
 const Page1: React.FC<P1Props> = ({ data, errors, set, clrErr }) => (
   <div className="page-enter">
     <div className="card">
       <div className="card-head">
-        <div className="card-icon">👤</div>
-        <div><h2>Personal Information</h2><p>Tell us a bit about yourself</p></div>
+        <div className="card-icon">I</div>
+        <div className="card-head-text">
+          <h2>Personal Information</h2>
+          <p>Tell us a bit about yourself</p>
+        </div>
         <span className="card-badge">Step 1 of 4</span>
       </div>
       <div className="card-body">
-        <div className="notice">
-          Fields marked <b>*</b> are required. Your information is kept confidential.
+        <div className="notice notice-brand">
+          <span className="notice-icon">ℹ</span>
+          <span>Fields marked <b>*</b> are required. Your information is kept strictly confidential.</span>
         </div>
 
         <p className="sec-lbl">Full Name</p>
@@ -1028,10 +1094,7 @@ const Page1: React.FC<P1Props> = ({ data, errors, set, clrErr }) => (
           <Field label="Phone / WhatsApp" required error={errors.phone}
             hint="Numbers, +, spaces only (e.g. +63 917 000 0000)">
             <Inp type="tel" value={data.phone} hasError={!!errors.phone} placeholder="+63 917 000 0000" maxLength={20}
-              onChange={(e) => {
-                const v = e.target.value.replace(/[^\d\s+\-()]/g, "");
-                set("phone", v); clrErr("phone");
-              }} />
+              onChange={(e) => { const v = e.target.value.replace(/[^\d\s+\-()]/g, ""); set("phone", v); clrErr("phone"); }} />
           </Field>
         </div>
 
@@ -1051,10 +1114,7 @@ const Page1: React.FC<P1Props> = ({ data, errors, set, clrErr }) => (
           </Field>
           <Field label="ZIP / Postal Code" required error={errors.zip}>
             <Inp value={data.zip} hasError={!!errors.zip} placeholder="1200" maxLength={10}
-              onChange={(e) => {
-                const v = e.target.value.replace(/[^\d\-\s]/g, "");
-                set("zip", v); clrErr("zip");
-              }} />
+              onChange={(e) => { const v = e.target.value.replace(/[^\d\-\s]/g, ""); set("zip", v); clrErr("zip"); }} />
           </Field>
           <Field label="Country" required error={errors.country}>
             <Sel value={data.country} hasError={!!errors.country}
@@ -1066,14 +1126,11 @@ const Page1: React.FC<P1Props> = ({ data, errors, set, clrErr }) => (
         <p className="sec-lbl">Personal Details</p>
         <div className="grid">
           <Field label="Date of Birth" required error={errors.dob}>
-            <input
-              type="date"
-              value={data.dob}
+            <input type="date" value={data.dob}
               min="1924-01-01"
               max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]}
               className={errors.dob ? "err" : ""}
-              onChange={(e) => { set("dob", e.target.value); clrErr("dob"); }}
-            />
+              onChange={(e) => { set("dob", e.target.value); clrErr("dob"); }} />
           </Field>
           <Field label="Gender" optional>
             <Sel value={data.gender} onChange={(e) => set("gender", e.target.value)}
@@ -1090,30 +1147,32 @@ const Page1: React.FC<P1Props> = ({ data, errors, set, clrErr }) => (
 // ─────────────────────────────────────────────
 interface P2Props {
   data: ServiceSelection; errors: FormErrors;
-  set: (k: keyof ServiceSelection, v: string | string[]) => void;
-  clrErr: (k: string) => void;
+  set: (k: keyof ServiceSelection, v: string | string[]) => void; clrErr: (k: string) => void;
 }
 const Page2: React.FC<P2Props> = ({ data, errors, set, clrErr }) => {
   const toggle = (svc: string): void => {
     const next = data.services.includes(svc)
       ? data.services.filter((s) => s !== svc)
       : [...data.services, svc];
-    set("services", next);
-    clrErr("services");
+    set("services", next); clrErr("services");
   };
 
   return (
     <div className="page-enter">
       <div className="card">
         <div className="card-head">
-          <div className="card-icon">🛠️</div>
-          <div><h2>Services You're Applying For</h2><p>Select all VA services you can offer</p></div>
+          <div className="card-icon">II</div>
+          <div className="card-head-text">
+            <h2>Services You're Applying For</h2>
+            <p>Select all VA services you can offer</p>
+          </div>
           <span className="card-badge">Step 2 of 4</span>
         </div>
         <div className="card-body">
           {errors.services && (
             <div className="notice notice-warn" style={{ marginBottom: 16 }}>
-              <b>Please select at least one service</b> before continuing.
+              <span className="notice-icon">⚠</span>
+              <span><b>Please select at least one service</b> before continuing.</span>
             </div>
           )}
 
@@ -1143,7 +1202,7 @@ const Page2: React.FC<P2Props> = ({ data, errors, set, clrErr }) => {
 
           {data.services.length > 0 && (
             <>
-              <p className="sec-lbl" style={{ marginTop: 22 }}>Selected ({data.services.length})</p>
+              <p className="sec-lbl" style={{ marginTop: 24 }}>Selected ({data.services.length})</p>
               <div className="sel-pills">
                 {data.services.map((s) => (
                   <span key={s} className="sel-pill">
@@ -1192,44 +1251,44 @@ const Page2: React.FC<P2Props> = ({ data, errors, set, clrErr }) => {
 // ─────────────────────────────────────────────
 interface P3Props {
   data: ResumeStep; errors: FormErrors;
-  setResume: (f: File | null) => void;
-  setCoverLetter: (v: string) => void;
-  clrErr: (k: string) => void;
+  setResume: (f: File | null) => void; setCoverLetter: (v: string) => void; clrErr: (k: string) => void;
 }
 const Page3: React.FC<P3Props> = ({ data, errors, setResume, setCoverLetter, clrErr }) => (
   <div className="page-enter">
     <div className="card">
       <div className="card-head">
-        <div className="card-icon">📄</div>
-        <div><h2>Resume / CV</h2><p>Upload your resume and write a cover letter</p></div>
+        <div className="card-icon">III</div>
+        <div className="card-head-text">
+          <h2>Resume / CV</h2>
+          <p>Upload your resume and write a cover letter</p>
+        </div>
         <span className="card-badge">Step 3 of 4</span>
       </div>
       <div className="card-body">
-        <div className="notice">
-          Upload your most recent resume or CV. <b style={{ color: "var(--accent)" }}>PDF format is preferred.</b> Max: 10 MB.
+        <div className="notice notice-brand">
+          <span className="notice-icon">ℹ</span>
+          <span>Upload your most recent resume or CV. <b>PDF format is preferred.</b> Max file size: 10 MB.</span>
         </div>
-        <p className="sec-lbl">Resume or CV <span style={{ color: "var(--error)" }}>*</span></p>
+        <p className="sec-lbl">Resume or CV <span style={{ color: "var(--maroon)" }}>*</span></p>
         <SingleUpload
           file={data.resume}
           onAdd={(f) => { setResume(f); clrErr("resume"); }}
           onRemove={() => setResume(null)}
         />
-        {errors.resume && <p className="err-msg" style={{ marginTop: 6 }}>{errors.resume}</p>}
+        {errors.resume && <p className="err-msg" style={{ marginTop: 8 }}>⚠ {errors.resume}</p>}
 
         <hr className="divider" />
         <p className="sec-lbl">Cover Letter <span className="opt">(optional)</span></p>
         <textarea
           value={data.coverLetter}
-          onChange={(e) => {
-            if (e.target.value.length <= 1500) setCoverLetter(e.target.value);
-          }}
+          onChange={(e) => { if (e.target.value.length <= 1500) setCoverLetter(e.target.value); }}
           placeholder="Introduce yourself — share your experience, your strengths as a Virtual Assistant, and why you're a great fit..."
-          style={{ minHeight: 170 }}
+          style={{ minHeight: 190 }}
           maxLength={1500}
         />
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8 }}>
           <p className="hint">Tip: Mention the specific services you selected and tools you use.</p>
-          <p className="hint" style={{ flexShrink: 0, marginLeft: 8 }}>
+          <p className="hint" style={{ flexShrink: 0, marginLeft: 8, color: data.coverLetter.length > 1400 ? "var(--danger)" : undefined }}>
             {data.coverLetter.length} / 1500
           </p>
         </div>
@@ -1248,7 +1307,7 @@ const Page4: React.FC<P4Props> = ({ formData: d }) => {
 
   const blocks: RevBlock[] = [
     {
-      icon: "👤", title: "Personal Information",
+      icon: "◈", title: "Personal Information",
       rows: [
         { label: "Name", value: [d.personal.firstName, d.personal.middleName, d.personal.lastName].filter(Boolean).join(" ") || "—" },
         { label: "Email", value: d.personal.email || "—" },
@@ -1258,7 +1317,7 @@ const Page4: React.FC<P4Props> = ({ formData: d }) => {
       ],
     },
     {
-      icon: "🛠️", title: "Services Applied For",
+      icon: "◎", title: "Services Applied For",
       rows: [
         { label: "Services", value: d.service.services.length > 0 ? d.service.services.join(", ") : "—" },
         { label: "Experience", value: d.service.experienceLevel || "—" },
@@ -1269,7 +1328,7 @@ const Page4: React.FC<P4Props> = ({ formData: d }) => {
       ],
     },
     {
-      icon: "📄", title: "Resume & Cover Letter",
+      icon: "◇", title: "Resume & Cover Letter",
       rows: [
         { label: "Resume", value: d.resume.resume ? `✓ ${d.resume.resume.file.name}` : "Not uploaded" },
         { label: "Cover Letter", value: d.resume.coverLetter ? d.resume.coverLetter.slice(0, 100) + (d.resume.coverLetter.length > 100 ? "…" : "") : "Not provided" },
@@ -1281,13 +1340,17 @@ const Page4: React.FC<P4Props> = ({ formData: d }) => {
     <div className="page-enter">
       <div className="card">
         <div className="card-head">
-          <div className="card-icon">✅</div>
-          <div><h2>Review Your Application</h2><p>Confirm everything looks good before submitting</p></div>
+          <div className="card-icon">IV</div>
+          <div className="card-head-text">
+            <h2>Review Your Application</h2>
+            <p>Confirm everything looks good before submitting</p>
+          </div>
           <span className="card-badge">Step 4 of 4</span>
         </div>
         <div className="card-body">
-          <div className="notice" style={{ marginBottom: 20 }}>
-            Please review carefully. Use <b style={{ color: "var(--accent)" }}>Back</b> to make corrections.
+          <div className="notice notice-brand" style={{ marginBottom: 24 }}>
+            <span className="notice-icon">👁</span>
+            <span>Please review carefully. Use <b>Back</b> to make corrections before submitting.</span>
           </div>
           <div className="rev-wrap">
             {blocks.map((b) => (
@@ -1299,10 +1362,7 @@ const Page4: React.FC<P4Props> = ({ formData: d }) => {
                 <table className="rev-tbl">
                   <tbody>
                     {b.rows.map((r) => (
-                      <tr key={r.label}>
-                        <td>{r.label}</td>
-                        <td>{r.value}</td>
-                      </tr>
+                      <tr key={r.label}><td>{r.label}</td><td>{r.value}</td></tr>
                     ))}
                   </tbody>
                 </table>
@@ -1316,19 +1376,13 @@ const Page4: React.FC<P4Props> = ({ formData: d }) => {
 };
 
 // ─────────────────────────────────────────────
-// BACK HOME ICON SVG
+// BACK HOME ICON
 // ─────────────────────────────────────────────
 const BackHomeIcon: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <button
-    type="button"
-    className="back-home-icon"
-    onClick={onClick}
-    title="Back to Homepage"
-    aria-label="Back to Homepage"
-  >
+  <button type="button" className="back-home-icon" onClick={onClick}
+    title="Back to Homepage" aria-label="Back to Homepage">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M19 12H5" />
-      <path d="M12 19l-7-7 7-7" />
+      <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
     </svg>
   </button>
 );
@@ -1344,11 +1398,10 @@ const VAJobApplicationForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(INITIAL);
 
   useEffect(() => {
-    const id = "va-light-neu-v3";
+    const id = "va-plus-jakarta-modern-v3";
     if (!document.getElementById(id)) {
       const tag = document.createElement("style");
-      tag.id = id;
-      tag.textContent = CSS;
+      tag.id = id; tag.textContent = CSS;
       document.head.appendChild(tag);
     }
   }, []);
@@ -1381,40 +1434,19 @@ const VAJobApplicationForm: React.FC = () => {
     const d = formData;
 
     if (pg === 1) {
-      if (!d.personal.firstName.trim())
-        errs.firstName = "First name is required.";
-      else if (d.personal.firstName.trim().length < 2)
-        errs.firstName = "Must be at least 2 characters.";
-
-      if (!d.personal.lastName.trim())
-        errs.lastName = "Last name is required.";
-      else if (d.personal.lastName.trim().length < 2)
-        errs.lastName = "Must be at least 2 characters.";
-
-      if (!d.personal.email.trim())
-        errs.email = "Email address is required.";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.personal.email.trim()))
-        errs.email = "Enter a valid email address.";
-
-      if (!d.personal.phone.trim())
-        errs.phone = "Phone number is required.";
-      else if (d.personal.phone.replace(/\D/g, "").length < 7)
-        errs.phone = "Enter a valid phone number.";
-
-      if (!d.personal.address.trim())
-        errs.address = "Street address is required.";
-
-      if (!d.personal.city.trim())
-        errs.city = "City is required.";
-
-      if (!d.personal.zip.trim())
-        errs.zip = "ZIP / Postal code is required.";
-      else if (d.personal.zip.trim().length < 3)
-        errs.zip = "Enter a valid ZIP / postal code.";
-
-      if (!d.personal.country)
-        errs.country = "Please select your country.";
-
+      if (!d.personal.firstName.trim()) errs.firstName = "First name is required.";
+      else if (d.personal.firstName.trim().length < 2) errs.firstName = "Must be at least 2 characters.";
+      if (!d.personal.lastName.trim()) errs.lastName = "Last name is required.";
+      else if (d.personal.lastName.trim().length < 2) errs.lastName = "Must be at least 2 characters.";
+      if (!d.personal.email.trim()) errs.email = "Email address is required.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.personal.email.trim())) errs.email = "Enter a valid email address.";
+      if (!d.personal.phone.trim()) errs.phone = "Phone number is required.";
+      else if (d.personal.phone.replace(/\D/g, "").length < 7) errs.phone = "Enter a valid phone number.";
+      if (!d.personal.address.trim()) errs.address = "Street address is required.";
+      if (!d.personal.city.trim()) errs.city = "City is required.";
+      if (!d.personal.zip.trim()) errs.zip = "ZIP / Postal code is required.";
+      else if (d.personal.zip.trim().length < 3) errs.zip = "Enter a valid ZIP / postal code.";
+      if (!d.personal.country) errs.country = "Please select your country.";
       if (!d.personal.dob) {
         errs.dob = "Date of birth is required.";
       } else {
@@ -1422,33 +1454,23 @@ const VAJobApplicationForm: React.FC = () => {
         const today = new Date();
         const age = today.getFullYear() - dob.getFullYear() -
           (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
-        if (isNaN(dob.getTime()))
-          errs.dob = "Enter a valid date.";
-        else if (age < 18)
-          errs.dob = "You must be at least 18 years old.";
-        else if (age > 70)
-          errs.dob = "Please enter a valid date of birth.";
+        if (isNaN(dob.getTime())) errs.dob = "Enter a valid date.";
+        else if (age < 18) errs.dob = "You must be at least 18 years old.";
+        else if (age > 70) errs.dob = "Please enter a valid date of birth.";
       }
     }
 
     if (pg === 2) {
-      if (d.service.services.length === 0)
-        errs.services = "Please select at least one service.";
-      if (!d.service.experienceLevel)
-        errs.experienceLevel = "Please select your experience level.";
-      if (!d.service.availability)
-        errs.availability = "Please select your availability.";
-      if (!d.service.timezone)
-        errs.timezone = "Please select your timezone.";
-      if (!d.service.rate.trim())
-        errs.rate = "Please enter your expected rate.";
-      else if (d.service.rate.trim().length < 2)
-        errs.rate = "Enter a valid rate (e.g. $5/hr, $800/mo).";
+      if (d.service.services.length === 0) errs.services = "Please select at least one service.";
+      if (!d.service.experienceLevel) errs.experienceLevel = "Please select your experience level.";
+      if (!d.service.availability) errs.availability = "Please select your availability.";
+      if (!d.service.timezone) errs.timezone = "Please select your timezone.";
+      if (!d.service.rate.trim()) errs.rate = "Please enter your expected rate.";
+      else if (d.service.rate.trim().length < 2) errs.rate = "Enter a valid rate (e.g. $5/hr, $800/mo).";
     }
 
     if (pg === 3) {
-      if (!d.resume.resume)
-        errs.resume = "Please upload your resume or CV before continuing.";
+      if (!d.resume.resume) errs.resume = "Please upload your resume or CV before continuing.";
     }
 
     setErrors(errs);
@@ -1464,16 +1486,14 @@ const VAJobApplicationForm: React.FC = () => {
     setPage((p) => (p - 1) as Step);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
 
   const submit = async (): Promise<void> => {
-    setIsSubmitting(true);
-    setSubmitError("");
+    setIsSubmitting(true); setSubmitError("");
     try {
       const payload = new FormData();
-
-      // Personal info
       payload.append("firstName",  formData.personal.firstName);
       payload.append("lastName",   formData.personal.lastName);
       payload.append("middleName", formData.personal.middleName);
@@ -1486,22 +1506,14 @@ const VAJobApplicationForm: React.FC = () => {
       payload.append("country",    formData.personal.country);
       payload.append("dob",        formData.personal.dob);
       payload.append("gender",     formData.personal.gender);
-
-      // Service info
       payload.append("services",         JSON.stringify(formData.service.services));
       payload.append("experienceLevel",  formData.service.experienceLevel);
       payload.append("availability",     formData.service.availability);
       payload.append("timezone",         formData.service.timezone);
       payload.append("rate",             formData.service.rate);
       payload.append("startDate",        formData.service.startDate);
-
-      // Cover letter
       payload.append("coverLetter", formData.resume.coverLetter);
-
-      // Resume file
-      if (formData.resume.resume?.file) {
-        payload.append("resume", formData.resume.resume.file);
-      }
+      if (formData.resume.resume?.file) payload.append("resume", formData.resume.resume.file);
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/applicants`,
@@ -1530,60 +1542,68 @@ const VAJobApplicationForm: React.FC = () => {
     return "";
   };
 
+  const progressPct = ((page - 1) / (STEPS.length - 1)) * 100;
+
   const LeftPanel: React.FC = () => (
     <div className="va-left">
-      <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "12px" }}>
-        <div className="va-left-logo">
-          <span style={{ fontSize: "1.6rem" }}>⚡</span>
+      <div className="va-logo-row">
+        <div className="va-logo-mark">VA</div>
+        <div className="va-brand-col">
+          <div className="va-brand">Virtual Assistant</div>
+          <div className="va-brand-sub">Application Portal</div>
         </div>
-        <div className="va-left-title">Want to Apply as a Virtual Assistant?</div>
-      </div>
-      <div className="va-left-sub">
-        Turn your skills into a career. Work with global clients, earn in USD, and build the life you want — all from home.
       </div>
 
-      {/* WHO WE'RE LOOKING FOR */}
-      <div className="va-left-section">
-        <div className="va-left-section-title">Who We're Looking For</div>
-        <div className="va-benefit-list">
-          {[
-            { icon: "💻", title: "Tech-Savvy Individuals", desc: "Comfortable with online tools & platforms" },
-            { icon: "🗣️", title: "Strong Communicators", desc: "Clear written & verbal English skills" },
-            { icon: "⏰", title: "Reliable & Self-Managed", desc: "Can work independently and meet deadlines" },
-            { icon: "🌱", title: "Eager to Learn", desc: "Open to training and upskilling" },
-          ].map((b) => (
-            <div key={b.title} className="va-benefit-row">
-              <span className="va-benefit-icon">{b.icon}</span>
-              <div className="va-benefit-text">
-                <strong>{b.title}</strong>
-                <span>{b.desc}</span>
-              </div>
+      <div className="va-hero">
+        <div className="va-tag">
+          <span className="va-tag-dot" />
+          Now Hiring
+        </div>
+        <h1 className="va-headline">
+          Want to be part<br />of <em>our team?</em>
+        </h1>
+        <p className="va-subtext">
+          Work with global clients, earn in USD, and grow your skills — all on your own terms.
+        </p>
+      </div>
+
+      <div className="va-divline" />
+
+      <div className="va-section-label">Who We're Looking For</div>
+      <div className="va-benefit-list" style={{ marginBottom: 28 }}>
+        {[
+          { icon: "◈", title: "Tech-Savvy Individuals", desc: "Comfortable with online tools & platforms" },
+          { icon: "◉", title: "Strong Communicators", desc: "Clear written & verbal English skills" },
+          { icon: "◎", title: "Reliable & Self-Managed", desc: "Can work independently and meet deadlines" },
+          { icon: "◆", title: "Eager to Learn", desc: "Open to training and upskilling" },
+        ].map((b) => (
+          <div key={b.title} className="va-benefit-row">
+            <span className="va-benefit-icon">{b.icon}</span>
+            <div className="va-benefit-text">
+              <strong>{b.title}</strong>
+              <span>{b.desc}</span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
-      {/* HOW IT WORKS */}
-      <div className="va-left-section">
-        <div className="va-left-section-title">How It Works</div>
-        <div className="va-step-list">
-          {[
-            { n: "1", label: "Fill Out This Form", desc: "Takes about 5–10 minutes" },
-            { n: "2", label: "We Review Your Profile", desc: "Within 3–5 business days" },
-            { n: "3", label: "Interview & Skills Check", desc: "Short online interview" },
-            { n: "4", label: "Get Onboarded", desc: "Start working with your first client" },
-          ].map((s) => (
-            <div key={s.n} className="va-step-row">
-              <div className="va-step-num">{s.n}</div>
-              <div className="va-step-info">
-                <strong>{s.label}</strong>
-                <span>{s.desc}</span>
-              </div>
+      <div className="va-section-label">How It Works</div>
+      <div className="va-step-list">
+        {[
+          { n: "1", label: "Fill Out This Form", desc: "Takes about 5–10 minutes" },
+          { n: "2", label: "We Review Your Profile", desc: "Within 3–5 business days" },
+          { n: "3", label: "Interview & Skills Check", desc: "Short online interview" },
+          { n: "4", label: "Get Onboarded", desc: "Start working with your first client" },
+        ].map((s) => (
+          <div key={s.n} className="va-step-row">
+            <div className="va-step-num">{s.n}</div>
+            <div className="va-step-info">
+              <strong>{s.label}</strong>
+              <span>{s.desc}</span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
-
     </div>
   );
 
@@ -1592,25 +1612,22 @@ const VAJobApplicationForm: React.FC = () => {
       <div className="va-root">
         <div className="va-outer">
           <LeftPanel />
-          <div className="va-divider" />
           <div className="va-right" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {/* Back to Homepage icon — top-right corner */}
             <BackHomeIcon onClick={() => (window.location.href = "/")} />
-
-            <div className="success-wrap" style={{ maxWidth: 460 }}>
-              <div className="success-ring">🎉</div>
-              <h2>Application Submitted!</h2>
-              <p>Your Virtual Assistant application has been successfully received.</p>
+            <div className="success-wrap page-enter">
+              <div className="success-mark">✓</div>
+              <h2>Application Received!</h2>
+              <p>Your Virtual Assistant application has been successfully submitted.</p>
               <div className="confirm-code">{confirmCode}</div>
               <p>
                 We'll reach out to{" "}
-                <strong style={{ color: "var(--accent)" }}>{formData.personal.email}</strong>{" "}
+                <strong style={{ color: "var(--maroon)" }}>{formData.personal.email}</strong>{" "}
                 within 3–5 business days.
               </p>
-              <p style={{ marginTop: 10, fontSize: "12px", color: "var(--text3)" }}>
-                Thank you for applying!
+              <p style={{ marginTop: 10, fontSize: "12px", color: "var(--text-faint)" }}>
+                Save your reference code above for your records.
               </p>
-              <button type="button" className="btn btn-next" style={{ marginTop: 26 }}
+              <button type="button" className="btn btn-next" style={{ marginTop: 28 }}
                 onClick={() => { setSubmitted(false); setFormData(INITIAL); setPage(1); setErrors({}); }}>
                 Submit Another Application
               </button>
@@ -1624,17 +1641,33 @@ const VAJobApplicationForm: React.FC = () => {
   return (
     <div className="va-root">
       <div className="va-outer">
-        {/* LEFT PANEL */}
         <LeftPanel />
-
-        {/* DIVIDER */}
-        <div className="va-divider" />
-
-        {/* RIGHT — FORM */}
         <div className="va-right">
-          {/* Back to Homepage icon — always visible, fixed top-right */}
           <BackHomeIcon onClick={() => (window.location.href = "/")} />
           <div className="va-wrap">
+
+            {/* PAGE HEADER */}
+            <div className="page-header">
+              <p className="page-eyebrow">Virtual Assistant Application</p>
+              <h1 className="page-title">
+                {page === 1 && "Your Identity"}
+                {page === 2 && "Your Skills"}
+                {page === 3 && "Your Documents"}
+                {page === 4 && "Final Review"}
+              </h1>
+              <p className="page-desc">
+                {page === 1 && "We need a few personal details to get started."}
+                {page === 2 && "Tell us what services you offer and your work preferences."}
+                {page === 3 && "Share your resume and a brief introduction."}
+                {page === 4 && "Take a moment to review everything before submitting."}
+              </p>
+            </div>
+
+            {/* PROGRESS BAR */}
+            <div className="progress-track">
+              <div className="progress-fill" style={{ width: `${progressPct}%` }} />
+            </div>
+
             {/* STEPPER */}
             <div className="stepper">
               {STEPS.map((s, i) => {
@@ -1644,13 +1677,7 @@ const VAJobApplicationForm: React.FC = () => {
                   <React.Fragment key={s.id}>
                     <div className={`step-item${st ? " " + st : ""}`}>
                       <div className="step-bubble">
-                        {st === "done" ? (
-                          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        ) : (
-                          <StepIcon name={s.icon} />
-                        )}
+                        {st === "done" ? "✓" : s.icon}
                       </div>
                       <span className="step-lbl">{s.label}</span>
                     </div>
@@ -1676,16 +1703,13 @@ const VAJobApplicationForm: React.FC = () => {
               {page === 4 && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
                   {submitError && (
-                    <span style={{ fontSize: "12px", color: "var(--error)", fontWeight: 600 }}>
+                    <span style={{ fontSize: "12px", color: "var(--danger)", fontWeight: 600 }}>
                       ⚠ {submitError}
                     </span>
                   )}
                   <button
-                    type="button"
-                    className="btn btn-submit"
-                    onClick={submit}
+                    type="button" className="btn btn-submit" onClick={submit}
                     disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
                   >
                     {isSubmitting ? "Submitting…" : "✔ Submit Application"}
                   </button>

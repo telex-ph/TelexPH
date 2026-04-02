@@ -6,7 +6,7 @@ import { useDarkMode } from '../../layout'
 
 // ── API BASE ──────────────────────────────────────────────────────────────────
 // Points directly to the Express backend to avoid Next.js intercepting /api/* routes.
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
 interface Service {
   _id: string

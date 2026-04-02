@@ -48,7 +48,7 @@ interface Appointment {
 
 type TabKey = 'all' | 'confirmed' | 'showed' | 'cancelled' | 'noshow'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
 
 // ─── STATUS CONFIG — maroon-only palette ─────────────────────────────────────
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; dot: string }> = {

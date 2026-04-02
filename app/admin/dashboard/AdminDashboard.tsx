@@ -91,7 +91,7 @@ export default function adminpage() {
         setstatsloading(true)
         seterror(null)
         const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
-        const response = await fetch('http://localhost:3000/api/dashboard/stats/casestudies-summary', {
+        const response = await fetch('https://telexph-admin.onrender.com/api/dashboard/stats/casestudies-summary', {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -118,7 +118,7 @@ export default function adminpage() {
         setloading(true)
         const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
         const response = await fetch(
-          `http://localhost:3000/api/dashboard/engagement-metrics?resourceType=${resourceFilter}`,
+          `https://telexph-admin.onrender.com/api/dashboard/engagement-metrics?resourceType=${resourceFilter}`,
           {
             method: 'GET',
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },

@@ -3,14 +3,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Layout, Loader2, AlertCircle, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight, Layout, Loader2, AlertCircle } from "lucide-react";
 
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
-// Points directly to the Express backend (same as ListServices.tsx) to avoid
-// Next.js API route proxies that may filter isActive=true by default.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://telexph-admin.onrender.com";
+const CARDS_VISIBLE = 3;
+const GAP = 24;
+const SLIDE_DURATION = 520;
+const AUTO_INTERVAL = 3800;
 
 // ─── Icon Map ─────────────────────────────────────────────────────────────────
 
@@ -46,20 +48,20 @@ const IMAGE_MAP: Record<string, string> = {
   "web-development": "/images/services1.webp",
 };
 
-const SERVICE_META: Record<string, { detail1: string; detail2: string; detail3: string; blurb: string }> = {
-  "ai-builder":              { detail1: "AI Powered",    detail2: "Custom Models",  detail3: "Fast Setup",     blurb: "Build intelligent AI-powered tools tailored to your business with zero technical experience required." },
-  "automation":              { detail1: "Workflow",       detail2: "No-Code",        detail3: "24/7 Active",    blurb: "Automate repetitive tasks and workflows so your team can focus on what truly matters." },
-  "booking-appointment":     { detail1: "Scheduling",    detail2: "Reminders",      detail3: "Multi-Channel",  blurb: "Let clients book appointments seamlessly with automated reminders and calendar sync." },
-  "courses-products":        { detail1: "E-Learning",    detail2: "Payments",       detail3: "Certificates",   blurb: "Create and sell online courses or digital products with built-in payment processing." },
-  "crm":                     { detail1: "Contacts",      detail2: "Pipelines",      detail3: "Analytics",      blurb: "Manage leads, track deals, and grow relationships with a powerful CRM system." },
-  "csr":                     { detail1: "Support",       detail2: "Ticketing",      detail3: "Live Chat",      blurb: "Deliver exceptional customer service with ticketing, live chat, and support automation." },
-  "email-marketing":         { detail1: "Campaigns",     detail2: "Automation",     detail3: "A/B Testing",    blurb: "Launch targeted email campaigns that convert, with smart automation and analytics." },
-  "funnel-builder":          { detail1: "Landing Pages", detail2: "Lead Gen",       detail3: "Conversions",    blurb: "Design high-converting sales funnels and landing pages to grow your customer base." },
-  "gray-label":              { detail1: "White Label",   detail2: "Branding",       detail3: "Resell Ready",   blurb: "Offer our platform under your own brand and expand your service portfolio effortlessly." },
-  "social-media-management": { detail1: "Scheduling",    detail2: "Analytics",      detail3: "Multi-Platform", blurb: "Plan, schedule, and analyze your social media presence across all major platforms." },
-  "survey-forms":            { detail1: "Forms",         detail2: "Responses",      detail3: "Reports",        blurb: "Collect valuable feedback and data with custom forms, surveys, and detailed reports." },
-  "tech-support":            { detail1: "24/7 Help",     detail2: "Remote Fix",     detail3: "Fast Response",  blurb: "Get reliable technical support whenever you need it — fast, remote, and always available." },
-  "web-development":         { detail1: "Custom Dev",    detail2: "Responsive",     detail3: "SEO Ready",      blurb: "Launch beautiful, fast, and SEO-optimized websites built to represent your brand perfectly." },
+const SERVICE_META: Record<string, { tag: string; detail1: string; detail2: string; detail3: string; blurb: string }> = {
+  "ai-builder":              { tag: "AI",          detail1: "AI Powered",    detail2: "Custom Models",  detail3: "Fast Setup",     blurb: "Build intelligent AI-powered tools tailored to your business with zero technical experience required." },
+  "automation":              { tag: "Automation",   detail1: "Workflow",       detail2: "No-Code",        detail3: "24/7 Active",    blurb: "Automate repetitive tasks and workflows so your team can focus on what truly matters." },
+  "booking-appointment":     { tag: "Scheduling",   detail1: "Scheduling",    detail2: "Reminders",      detail3: "Multi-Channel",  blurb: "Let clients book appointments seamlessly with automated reminders and calendar sync." },
+  "courses-products":        { tag: "E-Learning",   detail1: "E-Learning",    detail2: "Payments",       detail3: "Certificates",   blurb: "Create and sell online courses or digital products with built-in payment processing." },
+  "crm":                     { tag: "CRM",          detail1: "Contacts",      detail2: "Pipelines",      detail3: "Analytics",      blurb: "Manage leads, track deals, and grow relationships with a powerful CRM system." },
+  "csr":                     { tag: "Support",      detail1: "Support",       detail2: "Ticketing",      detail3: "Live Chat",      blurb: "Deliver exceptional customer service with ticketing, live chat, and support automation." },
+  "email-marketing":         { tag: "Marketing",    detail1: "Campaigns",     detail2: "Automation",     detail3: "A/B Testing",    blurb: "Launch targeted email campaigns that convert, with smart automation and analytics." },
+  "funnel-builder":          { tag: "Funnels",      detail1: "Landing Pages", detail2: "Lead Gen",       detail3: "Conversions",    blurb: "Design high-converting sales funnels and landing pages to grow your customer base." },
+  "gray-label":              { tag: "White Label",  detail1: "White Label",   detail2: "Branding",       detail3: "Resell Ready",   blurb: "Offer our platform under your own brand and expand your service portfolio effortlessly." },
+  "social-media-management": { tag: "Social",       detail1: "Scheduling",    detail2: "Analytics",      detail3: "Multi-Platform", blurb: "Plan, schedule, and analyze your social media presence across all major platforms." },
+  "survey-forms":            { tag: "Forms",        detail1: "Forms",         detail2: "Responses",      detail3: "Reports",        blurb: "Collect valuable feedback and data with custom forms, surveys, and detailed reports." },
+  "tech-support":            { tag: "Support",      detail1: "24/7 Help",     detail2: "Remote Fix",     detail3: "Fast Response",  blurb: "Get reliable technical support whenever you need it — fast, remote, and always available." },
+  "web-development":         { tag: "Development",  detail1: "Custom Dev",    detail2: "Responsive",     detail3: "SEO Ready",      blurb: "Launch beautiful, fast, and SEO-optimized websites built to represent your brand perfectly." },
 };
 
 interface ServiceType {
@@ -77,33 +79,43 @@ interface ServiceType {
 
 const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: number }) => {
   const shouldPrioritize = index < 4;
-  // Use native <img> for base64 data URLs and external http/https URLs (e.g. Cloudinary).
-  // next/image requires external hostnames to be whitelisted in next.config.ts —
-  // using <img> avoids that requirement entirely for dynamically-sourced images.
   const useNativeImg =
     service.imageSrc.startsWith("data:image") ||
     service.imageSrc.startsWith("http://") ||
     service.imageSrc.startsWith("https://");
+
   const meta = SERVICE_META[service.serviceId] || {
+    tag: "Service",
     detail1: "Feature 1", detail2: "Feature 2", detail3: "Feature 3",
     blurb: service.description || "Explore this service to learn how it can help your business grow.",
   };
 
   return (
     <div
-      className="group w-full rounded-2xl bg-white overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white"
       style={{
-        boxShadow: "0 2px 20px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05)",
         fontFamily: "'Open Sans', sans-serif",
+        border: "1px solid #f0f0f0",
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 12px 40px rgba(0,0,0,0.12)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(-5px)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 1px 6px rgba(0,0,0,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
       }}
     >
       {/* Image */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/10" }}>
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "4/3" }}>
         {useNativeImg ? (
           <img
             src={service.imageSrc}
             alt={service.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ transition: "transform 0.5s ease" }}
             loading={shouldPrioritize ? "eager" : "lazy"}
           />
         ) : (
@@ -111,78 +123,123 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
             src={service.imageSrc}
             alt={service.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
             priority={shouldPrioritize}
             loading={shouldPrioritize ? "eager" : "lazy"}
             sizes="(max-width: 768px) 90vw, 33vw"
           />
         )}
+
+        {/* Category pill */}
+        <div
+          style={{
+            position: "absolute", top: 12, left: 12,
+            background: "rgba(255,255,255,0.93)",
+            borderRadius: "999px",
+            padding: "3px 11px",
+            fontSize: "10px",
+            fontWeight: 600,
+            color: DARK_RED,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            fontFamily: "'Poppins', sans-serif",
+          }}
+        >
+          {meta.tag}
+        </div>
+
+        {/* Save button */}
         <button
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-sm transition-all hover:scale-110 hover:bg-white"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full"
+          style={{ background: "rgba(255,255,255,0.93)", transition: "transform 0.2s" }}
           aria-label="Save service"
           onClick={(e) => e.preventDefault()}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.15)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
       </div>
 
       {/* Body */}
-      <div className="px-5 pt-4 pb-5">
-
-        {/* Title — Poppins 500 */}
-        <h3
-          className="text-gray-900 leading-snug line-clamp-1 mb-1"
-          style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: "15px" }}
-        >
-          {service.title}
-        </h3>
-
-        {/* Location — Open Sans 400 */}
-        <div className="flex items-center gap-1 mb-2">
-          <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
-          <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "#9ca3af" }}>
-            Remote · Digital Service
-          </span>
+      <div className="flex flex-col flex-1 p-5">
+        {/* Icon + title */}
+        <div className="flex items-start gap-3 mb-3">
+          <div
+            className="flex-shrink-0 flex items-center justify-center rounded-xl"
+            style={{ width: 38, height: 38, background: "#fff5f5", border: "1px solid #fde0e0" }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={DARK_RED} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              {service.icon}
+            </svg>
+          </div>
+          <h3
+            className="flex-1 leading-snug line-clamp-2"
+            style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "14px", color: "#111827", marginTop: 3 }}
+          >
+            {service.title}
+          </h3>
         </div>
 
-        {/* Description — Open Sans 400 */}
+        {/* Description */}
         <p
-          className="text-gray-500 mb-3 leading-relaxed line-clamp-2"
-          style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: "12px" }}
+          className="line-clamp-2 flex-1 mb-4"
+          style={{ fontSize: "12px", color: "#6b7280", lineHeight: 1.65 }}
         >
           {meta.blurb}
         </p>
 
-        {/* Meta row — Open Sans 400 */}
-        <div className="flex items-center gap-1.5 mb-4 flex-wrap">
-          <svg className="w-3 h-3 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {service.icon}
-          </svg>
-          <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "#6b7280" }}>{meta.detail1}</span>
-          <span style={{ color: "#d1d5db", fontSize: "11px" }}>·</span>
-          <svg className="w-3 h-3 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "#6b7280" }}>{meta.detail2}</span>
-          <span style={{ color: "#d1d5db", fontSize: "11px" }}>·</span>
-          <svg className="w-3 h-3 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-          </svg>
-          <span style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "#6b7280" }}>{meta.detail3}</span>
+        {/* Feature chips */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {[meta.detail1, meta.detail2, meta.detail3].map((chip) => (
+            <span
+              key={chip}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: "3px 9px",
+                borderRadius: "999px",
+                background: "#f9fafb",
+                border: "1px solid #e5e7eb",
+                fontSize: "10px",
+                fontWeight: 500,
+                color: "#374151",
+                fontFamily: "'Poppins', sans-serif",
+              }}
+            >
+              {chip}
+            </span>
+          ))}
         </div>
 
-        <div className="w-full h-px bg-gray-100 mb-4" />
+        <div style={{ height: 1, background: "#f3f4f6", marginBottom: 14 }} />
 
-        {/* Learn More — Poppins 400 */}
-        <div className="flex justify-end">
+        {/* Footer */}
+        <div className="flex items-center justify-between">
+          <span style={{ fontSize: "11px", color: "#9ca3af" }}>Remote · Digital</span>
           <Link
             href="/services"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white transition-all hover:opacity-90 active:scale-95 shadow-sm"
-            style={{ backgroundColor: "#1a1a1a", fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "13px" }}
+            className="flex items-center gap-1.5 rounded-xl text-white"
+            style={{
+              backgroundColor: DARK_RED,
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 500,
+              fontSize: "12px",
+              padding: "7px 14px",
+              transition: "background-color 0.2s, transform 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = HOVER_DARK_RED;
+              (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.04)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = DARK_RED;
+              (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
+            }}
           >
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight width={13} height={13} />
             Learn More
           </Link>
         </div>
@@ -204,33 +261,139 @@ const ViewAllServicesButton: React.FC<{ isLargeScreenHeader?: boolean }> = ({ is
       >
         <ArrowUpRight className={`rotate-[15deg] ${isLargeScreenHeader ? "w-6 h-6" : "w-5 h-5"}`} />
       </button>
-      <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: "16px", color: "#111827" }}
-        className="transition-colors group-hover:text-gray-600">
+      <span
+        style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: "16px", color: "#111827" }}
+        className="transition-colors group-hover:text-gray-600"
+      >
         View All Services
       </span>
     </Link>
   </div>
 );
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// ─── Pixel-accurate Track Slider ──────────────────────────────────────────────
 
-const CARDS_PER_PAGE = 3;
-const AUTO_INTERVAL = 4000;
+interface TrackSliderProps {
+  extended: ServiceType[];
+  index: number;
+  animated: boolean;
+}
+
+function TrackSlider({ extended, index, animated }: TrackSliderProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [cardWidth, setCardWidth] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) return;
+      const w = containerRef.current.offsetWidth;
+      setCardWidth((w - GAP * (CARDS_VISIBLE - 1)) / CARDS_VISIBLE);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!trackRef.current || cardWidth === 0) return;
+    const tx = -(index * (cardWidth + GAP));
+    trackRef.current.style.transition = animated
+      ? `transform ${SLIDE_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`
+      : "none";
+    trackRef.current.style.transform = `translateX(${tx}px)`;
+  }, [index, animated, cardWidth]);
+
+  return (
+    <div ref={containerRef} style={{ width: "100%", overflow: "hidden" }}>
+      <div ref={trackRef} style={{ display: "flex", gap: `${GAP}px`, willChange: "transform" }}>
+        {extended.map((service, i) => (
+          <div
+            key={`${service._id}-${i}`}
+            style={{
+              flexShrink: 0,
+              width: cardWidth > 0 ? `${cardWidth}px` : `calc((100% - ${GAP * (CARDS_VISIBLE - 1)}px) / ${CARDS_VISIBLE})`,
+            }}
+          >
+            <ServiceCard service={service} index={i} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
 
 function ServicesGrid() {
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const autoRef = useRef<NodeJS.Timeout | null>(null);
+
+  // index into the extended list; starts at CARDS_VISIBLE (first real card)
+  const [index, setIndex] = useState(CARDS_VISIBLE);
+  const [animated, setAnimated] = useState(true);
+  const [busy, setBusy] = useState(false);
   const isHovering = useRef(false);
+  const autoRef = useRef<NodeJS.Timeout | null>(null);
+
+  const totalPages = Math.ceil(services.length / CARDS_VISIBLE);
+  const activePage = services.length > 0
+    ? Math.floor(((index - CARDS_VISIBLE) % services.length) / CARDS_VISIBLE)
+    : 0;
+
+  // extended list = last N clones + originals + first N clones
+  const extended = services.length > 0
+    ? [...services.slice(-CARDS_VISIBLE), ...services, ...services.slice(0, CARDS_VISIBLE)]
+    : [];
+
+  const slideTo = useCallback((newIndex: number, withAnim = true) => {
+    if (busy) return;
+    setAnimated(withAnim);
+    setBusy(withAnim);
+    setIndex(newIndex);
+
+    if (withAnim) {
+      setTimeout(() => {
+        setBusy(false);
+        setIndex((prev) => {
+          const real = services.length;
+          if (prev >= CARDS_VISIBLE + real) return prev - real;
+          if (prev < CARDS_VISIBLE) return prev + real;
+          return prev;
+        });
+        setAnimated(false);
+        requestAnimationFrame(() => setAnimated(true));
+      }, SLIDE_DURATION + 20);
+    }
+  }, [busy, services.length]);
+
+  const advance = useCallback(() => {
+    if (!isHovering.current) slideTo(index + CARDS_VISIBLE);
+  }, [index, slideTo]);
+
+  const resetAuto = useCallback(() => {
+    if (autoRef.current) clearInterval(autoRef.current);
+    if (services.length > CARDS_VISIBLE) {
+      autoRef.current = setInterval(advance, AUTO_INTERVAL);
+    }
+  }, [advance, services.length]);
+
+  useEffect(() => {
+    resetAuto();
+    return () => { if (autoRef.current) clearInterval(autoRef.current); };
+  }, [resetAuto]);
+
+  const goToPage = useCallback((page: number) => {
+    slideTo(CARDS_VISIBLE + page * CARDS_VISIBLE);
+    resetAuto();
+  }, [slideTo, resetAuto]);
 
   const getImageSource = (item: any): string => {
-    // Use inactivePhoto when service is inactive, coverPhoto when active
     const photo = item.isActive
       ? (item.coverPhoto ?? item.inactivePhoto)
       : (item.inactivePhoto ?? item.coverPhoto);
-
     if (photo && typeof photo === "string" && photo.trim()) {
       const t = photo.trim();
       if (t.startsWith("data:image")) return t;
@@ -252,22 +415,25 @@ function ServicesGrid() {
       if (!response.ok) throw new Error(`Failed to load services (${response.status})`);
       const data = await response.json();
       if (!Array.isArray(data)) throw new Error("Invalid response format");
-      setServices(data.map((item: any) => ({
-        _id: item._id,
-        serviceId: item.serviceId,
-        title: item.name,
-        description: item.description,
-        imageSrc: getImageSource(item),
-        coverPhoto: item.coverPhoto,
-        isHighlight: item.serviceId === "tech-support",
-        icon: ICON_MAP[item.serviceId] || <Layout className="w-full h-full" />,
-      })).sort((a: any, b: any) => {
-        // Active services first, inactive last
-        const aActive = data.find((d: any) => d._id === a._id)?.isActive ?? false;
-        const bActive = data.find((d: any) => d._id === b._id)?.isActive ?? false;
-        if (aActive === bActive) return 0;
-        return aActive ? -1 : 1;
-      }));
+      setServices(
+        data
+          .map((item: any) => ({
+            _id: item._id,
+            serviceId: item.serviceId,
+            title: item.name,
+            description: item.description,
+            imageSrc: getImageSource(item),
+            coverPhoto: item.coverPhoto,
+            isHighlight: item.serviceId === "tech-support",
+            icon: ICON_MAP[item.serviceId] || <Layout className="w-full h-full" />,
+          }))
+          .sort((a: any, b: any) => {
+            const aActive = data.find((d: any) => d._id === a._id)?.isActive ?? false;
+            const bActive = data.find((d: any) => d._id === b._id)?.isActive ?? false;
+            if (aActive === bActive) return 0;
+            return aActive ? -1 : 1;
+          })
+      );
     } catch (err: any) {
       setError(err.message || "Could not load services at this time");
     } finally {
@@ -277,35 +443,15 @@ function ServicesGrid() {
 
   useEffect(() => { fetchServices(); }, []);
 
-  // Total pages: each page shows CARDS_PER_PAGE new cards
-  const totalPages = Math.ceil(services.length / CARDS_PER_PAGE);
-
-  const goTo = useCallback((page: number) => {
-    setCurrentPage(Math.max(0, Math.min(page, totalPages - 1)));
-  }, [totalPages]);
-
-  const startAuto = useCallback(() => {
-    if (autoRef.current) clearInterval(autoRef.current);
-    autoRef.current = setInterval(() => {
-      if (!isHovering.current) setCurrentPage((p) => (p + 1 >= totalPages ? 0 : p + 1));
-    }, AUTO_INTERVAL);
-  }, [totalPages]);
-
-  useEffect(() => {
-    if (services.length > CARDS_PER_PAGE) startAuto();
-    return () => { if (autoRef.current) clearInterval(autoRef.current); };
-  }, [services.length, startAuto]);
-
   return (
     <>
-      {/* Load Poppins + Open Sans from Google Fonts */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Open+Sans:wght@400&display=swap');
+        .sv-dot { border-radius: 999px; height: 7px; cursor: pointer; border: none; transition: width 0.3s ease, background-color 0.3s ease; padding: 0; }
       `}</style>
 
       <div id="services" className="bg-white py-16">
         <div className={DEFAULT_MAX_WIDTH_CLASS}>
-          {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-14">
             <div>
               <p
@@ -338,10 +484,13 @@ function ServicesGrid() {
             <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: "18px" }} className="text-gray-800 mb-1">Something went wrong</p>
             <p style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 400, fontSize: "13px" }} className="text-gray-500 mb-6">{error}</p>
-            <button onClick={fetchServices} className="px-6 py-2 text-white rounded-full transition-all"
+            <button
+              onClick={fetchServices}
+              className="px-6 py-2 text-white rounded-full"
               style={{ backgroundColor: DARK_RED, fontFamily: "'Poppins', sans-serif", fontWeight: 400 }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = HOVER_DARK_RED)}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = DARK_RED)}>
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = DARK_RED)}
+            >
               Try Again
             </button>
           </div>
@@ -354,64 +503,10 @@ function ServicesGrid() {
         ) : (
           <div className={DEFAULT_MAX_WIDTH_CLASS}>
             <div
-              className="relative px-8"
               onMouseEnter={() => { isHovering.current = true; }}
               onMouseLeave={() => { isHovering.current = false; }}
             >
-              {/* Left Arrow */}
-              {totalPages > 1 && (
-                <button
-                  onClick={() => { goTo(currentPage - 1); startAuto(); }}
-                  disabled={currentPage === 0}
-                  className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  style={{ backgroundColor: currentPage === 0 ? "#e5e7eb" : DARK_RED, color: currentPage === 0 ? "#9ca3af" : "#ffffff" }}
-                  aria-label="Previous services"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-              )}
-
-              {/* Right Arrow */}
-              {totalPages > 1 && (
-                <button
-                  onClick={() => { goTo(currentPage + 1); startAuto(); }}
-                  disabled={currentPage >= totalPages - 1}
-                  className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  style={{ backgroundColor: currentPage >= totalPages - 1 ? "#e5e7eb" : DARK_RED, color: currentPage >= totalPages - 1 ? "#9ca3af" : "#ffffff" }}
-                  aria-label="Next services"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
-
-              {/* Sliding track */}
-              <div className="overflow-hidden">
-                <div
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{
-                    width: `${totalPages * 100}%`,
-                    transform: `translateX(-${(currentPage / totalPages) * 100}%)`,
-                  }}
-                >
-                  {Array.from({ length: totalPages }).map((_, pageIdx) => (
-                    <div
-                      key={pageIdx}
-                      className="grid grid-cols-3 gap-5"
-                      style={{ width: `${100 / totalPages}%`, flexShrink: 0 }}
-                    >
-                      {services
-                        .slice(pageIdx * CARDS_PER_PAGE, pageIdx * CARDS_PER_PAGE + CARDS_PER_PAGE)
-                        .map((service, idx) => (
-                          <ServiceCard
-                            key={service._id}
-                            service={service}
-                            index={pageIdx * CARDS_PER_PAGE + idx}
-                          />
-                        ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <TrackSlider extended={extended} index={index} animated={animated} />
             </div>
 
             {totalPages > 1 && (
@@ -419,10 +514,13 @@ function ServicesGrid() {
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => { goTo(i); startAuto(); }}
-                    className="rounded-full h-[7px] transition-all duration-300"
-                    style={{ width: i === currentPage ? "26px" : "7px", backgroundColor: i === currentPage ? DARK_RED : "#d1d5db" }}
-                    aria-label={`Go to slide ${i + 1}`}
+                    className="sv-dot"
+                    style={{
+                      width: i === activePage ? "26px" : "7px",
+                      backgroundColor: i === activePage ? DARK_RED : "#d1d5db",
+                    }}
+                    onClick={() => goToPage(i)}
+                    aria-label={`Go to slide group ${i + 1}`}
                   />
                 ))}
               </div>
