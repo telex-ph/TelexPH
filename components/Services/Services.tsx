@@ -240,7 +240,7 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
             }}
           >
             <ArrowUpRight width={13} height={13} />
-            Learn More
+            Get a Free Audit
           </Link>
         </div>
       </div>
