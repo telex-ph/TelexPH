@@ -2,11 +2,20 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  
+
   typescript: {
     ignoreBuildErrors: false,
   },
-  
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://telexph-admin.onrender.com/api/:path*',
+      },
+    ];
+  },
+
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -27,13 +36,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'recharts'],
   },
-  
+
   compress: true,
 };
 
-export default nextConfig;
+export default nextConfig;  

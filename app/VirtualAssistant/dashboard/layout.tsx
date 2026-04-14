@@ -27,6 +27,7 @@ const SHADOW_LG = '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)'
 const DashIco      = ({ a }: { a?: boolean }) => <Ico d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" d2="M9 22V12h6v10" size={15} sw={a ? 2 : 1.5} />
 const AssessIco    = ({ a }: { a?: boolean }) => <Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4" size={15} sw={a ? 2 : 1.5} />
 const MessagingIco = ({ a }: { a?: boolean }) => <Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={15} sw={a ? 2 : 1.5} />
+const SubscriptionsIco = ({ a }: { a?: boolean }) => <Ico d="M4 4h16v4H4V4zm0 6h16v10H4V10zm2 2v6h12v-6H6z" size={15} sw={a ? 2 : 1.5} />
 const SettingsIco  = ({ a }: { a?: boolean }) => <Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={15} sw={a ? 2 : 1.5} />
 
 const ChevronLeft  = () => <Ico d="M15 18l-6-6 6-6" size={14} sw={2} />
@@ -63,6 +64,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard',  href: '/VirtualAssistant/dashboard',             icon: (a: boolean) => <DashIco a={a} /> },
   { label: 'Assessment', href: '/VirtualAssistant/dashboard/VAassesment', icon: (a: boolean) => <AssessIco a={a} /> },
   { label: 'Messaging',  href: '/VirtualAssistant/dashboard/VAmessaging', icon: (a: boolean) => <MessagingIco a={a} /> },
+  { label: 'Subscriptions', href: '/VirtualAssistant/dashboard/Subscription', icon: (a: boolean) => <SubscriptionsIco a={a} /> },
 ]
 
 // ─── NOTIFICATION BELL ────────────────────────────────────────────────────────

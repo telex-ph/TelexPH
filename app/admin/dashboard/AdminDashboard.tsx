@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   AreaChart,
   Area,
@@ -11,6 +12,8 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useDarkMode } from './layout'
+
+import api from '@/lib/api/axios'
 
 // Type definitions for analytics data
 interface DailyView {
@@ -60,6 +63,8 @@ const STAT_CARD_COLORS = [
 ]
 
 export default function adminpage() {
+  const pathname = usePathname()
+  const isPageViewsAnalyticsRoute = pathname === '/admin/dashboard/page-views'
   const { isdarkmode } = useDarkMode()
   const [selecteddate, setselecteddate] = useState('2026-01-28')
   const [engagementdata, setengagementdata] = useState<EngagementData[]>([
@@ -90,20 +95,12 @@ export default function adminpage() {
       try {
         setstatsloading(true)
         seterror(null)
-        const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
-        const response = await fetch('https://telexph-admin.onrender.com/api/dashboard/stats/casestudies-summary', {
-          method: 'GET',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          credentials: 'include',
-        })
-        if (!response.ok) {
-          const errorText = await response.text()
-          throw new Error(`Failed to fetch case study stats: ${response.status} - ${errorText}`)
+        const response = await api.get('/dashboard/stats/casestudies-summary')
+        setcasestudystats(response.data)
+      } catch (error: any) {
+        if (error.response?.status !== 401) {
+          seterror(error.response?.data?.message || error.message || 'Unknown error')
         }
-        const data = await response.json()
-        setcasestudystats(data)
-      } catch (error) {
-        seterror(error instanceof Error ? error.message : 'Unknown error')
       } finally {
         setstatsloading(false)
       }
@@ -116,19 +113,9 @@ export default function adminpage() {
     const fetchEngagementMetrics = async () => {
       try {
         setloading(true)
-        const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
-        const response = await fetch(
-          `https://telexph-admin.onrender.com/api/dashboard/engagement-metrics?resourceType=${resourceFilter}`,
-          {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-            credentials: 'include',
-          }
-        )
-        if (!response.ok) throw new Error(`Failed to fetch engagement metrics: ${response.status}`)
-        const data = await response.json()
-        setengagementdata(data)
-      } catch (error) {
+        const response = await api.get(`/dashboard/engagement-metrics?resourceType=${resourceFilter}`)
+        setengagementdata(response.data)
+      } catch (error: any) {
         // Keep default data if fetch fails
       } finally {
         setloading(false)
@@ -450,13 +437,15 @@ export default function adminpage() {
                 className={`tracking-tight transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}
                 style={{ fontSize: 15, fontWeight: 500, margin: 0 }}
               >
-                Dashboard overview
+                {isPageViewsAnalyticsRoute ? 'Page views analytics' : 'Dashboard overview'}
               </h2>
               <p
                 className={`mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
                 style={{ fontSize: 11, fontWeight: 400, margin: '4px 0 0' }}
               >
-                Realtime case study analytics
+                {isPageViewsAnalyticsRoute
+                  ? 'Case study views, engagement, and traffic metrics'
+                  : 'Key metrics and performance at a glance'}
               </p>
             </div>
             {/* Hide date picker on tiny phones to save space */}

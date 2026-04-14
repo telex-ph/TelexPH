@@ -1664,7 +1664,7 @@ export default function ListServices() {
       })
       if (response.status === 401) {
         alert('Session expired.')
-        router.push('/login')
+        router.push('/admin/login')
         return
       }
       if (!response.ok) throw new Error('Failed to toggle')

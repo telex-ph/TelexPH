@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import ReCAPTCHA from "react-google-recaptcha";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
+import { getApiBaseUrl } from "@/lib/api-base";
+import { getOrCreateVisitorSessionId, setVisitorEmail } from "@/lib/page-view-session";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -62,6 +64,23 @@ const ContactForm = () => {
       });
 
       if (response.ok) {
+        setVisitorEmail(formData.email);
+        const sessionId = getOrCreateVisitorSessionId();
+        if (sessionId) {
+          fetch(`${getApiBaseUrl()}/page-views/track`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              path: typeof window !== "undefined" ? window.location.pathname : "/contact",
+              referrer: typeof document !== "undefined" ? document.referrer || "" : "",
+              sessionId,
+              kind: "page",
+              email: formData.email,
+            }),
+            credentials: "omit",
+            keepalive: true,
+          }).catch(() => {});
+        }
         setStatus(
           "✅ Your message has been sent successfully! We will contact you shortly."
         );

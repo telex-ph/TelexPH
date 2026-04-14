@@ -2,8 +2,17 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
- 
+import { useRouter, useSearchParams } from 'next/navigation'
+import { getAdminAuthenticateUrl } from '@/lib/api-base'
+
+function safeRedirectTarget(raw: string | null): string {
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/admin/dashboard'
+  if (raw.startsWith('/admin/login') || raw.startsWith('/admin/register')) {
+    return '/admin/dashboard'
+  }
+  return raw
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -11,6 +20,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     setMounted(true)
@@ -22,7 +32,7 @@ export default function LoginPage() {
     setIsLoading(true)
  
     try {
-      const response = await fetch(`https://telexph-admin.onrender.com/auth/authenticate`, {
+      const response = await fetch(getAdminAuthenticateUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,8 +50,8 @@ export default function LoginPage() {
         throw new Error(data.error || 'Authentication failed')
       }
  
-      // REDIRECTION FIX: Dahil ang path ay /app/admin/dashboard
-      router.push('/admin/dashboard') 
+      const next = safeRedirectTarget(searchParams.get('redirect'))
+      router.push(next)
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during login')

@@ -4,6 +4,7 @@ import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
 import LoadingProvider from "@/components/ProgressProvider/ProgressProvider";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
 import ExitIntentPopup from "./exit-intent/components/ExitIntentPopup";
+import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTracker";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -94,6 +95,7 @@ export default function RootLayout({
         className="font-rubik antialiased bg-white text-black"
         suppressHydrationWarning={true} // This line suppresses the hydration mismatch warning
       >
+        <SitePageViewTracker />
         {children}
         <div id="modal-root" />
       </body>
