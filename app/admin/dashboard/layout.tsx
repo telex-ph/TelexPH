@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import Logout from './settings/components/logout'
 import SettingsMenu from './settings/components/SettingsMenu'
 import MiniActivityLogs from './MiniActivityLogs'
+import api from '@/lib/api/axios'
 
 const DarkModeContext = createContext<{
   isdarkmode: boolean
@@ -74,7 +75,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setisdarkmode(newMode)
     localStorage.setItem('theme', newMode ? 'dark' : 'light')
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/theme`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      await fetch(`${apiUrl}/users/theme`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -98,26 +100,23 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const fetchUserData = async () => {
       try {
         setIsLoadingUser(true)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        if (response.status === 401) {
-          setAuthError(true)
-          router.push('/admin/login')
-          return
-        }
-        if (!response.ok) throw new Error('Failed to fetch user data')
-        const data = await response.json()
+        // Add timeout to prevent hanging
+        const response = await Promise.race([
+          api.get('/users/me'),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Request timeout')), 8000)
+          )
+        ]) as { data: UserData }
+        const data = response.data
         setUserData(data)
         if (data.darkMode !== undefined) {
           setisdarkmode(data.darkMode)
           localStorage.setItem('theme', data.darkMode ? 'dark' : 'light')
         }
         setAuthError(false)
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching user data:', error)
+        // Immediate redirect on any error to prevent hanging
         setAuthError(true)
         router.push('/admin/login')
       } finally {
@@ -130,15 +129,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/activity-logs/unread-count`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setunreadcount(data.unreadCount || 0)
-        }
+        const response = await api.get('/activity-logs/unread-count')
+        setunreadcount(response.data.unreadCount || 0)
       } catch (error) {
         console.error('Error fetching unread count:', error)
       }
@@ -195,7 +187,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className={`flex h-[100dvh] items-center justify-center ${isdarkmode ? 'bg-[#0f0f0f]' : 'bg-[#f8f9fa]'}`}>
         <div className="text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#800000] border-r-transparent"></div>
-          <p className="mt-4 text-gray-500" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '11px' }}>Loading...</p>
+          <p className="mt-4 text-gray-500" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '11px' }}>Authenticating...</p>
+          <p className="mt-2 text-gray-400" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '10px' }}>Please wait</p>
         </div>
       </div>
     )
@@ -218,6 +211,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       name: 'Dashboard',
       path: '/admin/dashboard',
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>
+    },
+    {
+      name: 'Page Views',
+      path: '/admin/dashboard/page-views',
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
     },
     {
       name: 'Blogs',
@@ -285,6 +283,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   const SidebarContent = ({ iscollapsed }: { iscollapsed: boolean }) => (
     <>
+
       {/* Logo section */}
       <div className="pt-6 sm:pt-8 px-4 sm:px-6 pb-3 transition-all duration-300">
 
@@ -425,21 +424,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           return (
             <>
               <div className="space-y-1">{navigationitems.map(renderItem)}</div>
-              {vaNavigationItems.length > 0 && (
-                <>
-                  <div className={`pt-4 pb-1 transition-all duration-300 ${iscollapsed ? 'px-0' : 'px-3 sm:px-4'}`}>
-                    {(!iscollapsed || ismobilemenuopen) && (
-                      <div
-                        className={`transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
-                        style={{ ...poppins, fontSize: '9px' }}
-                      >
-                        Virtual Assistant
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-1">{vaNavigationItems.map(renderItem)}</div>
-                </>
-              )}
             </>
           )
         })()}

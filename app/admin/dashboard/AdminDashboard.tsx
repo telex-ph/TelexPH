@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useDarkMode } from './layout'
+import api from '@/lib/api/axios'
 
 // Type definitions for analytics data
 interface DailyView {
@@ -90,18 +91,8 @@ export default function adminpage() {
       try {
         setstatsloading(true)
         seterror(null)
-        const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
-        const response = await fetch('https://telexph-admin.onrender.com/api/dashboard/stats/casestudies-summary', {
-          method: 'GET',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          credentials: 'include',
-        })
-        if (!response.ok) {
-          const errorText = await response.text()
-          throw new Error(`Failed to fetch case study stats: ${response.status} - ${errorText}`)
-        }
-        const data = await response.json()
-        setcasestudystats(data)
+        const response = await api.get('/dashboard/stats/casestudies-summary')
+        setcasestudystats(response.data)
       } catch (error) {
         seterror(error instanceof Error ? error.message : 'Unknown error')
       } finally {
@@ -116,18 +107,10 @@ export default function adminpage() {
     const fetchEngagementMetrics = async () => {
       try {
         setloading(true)
-        const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
-        const response = await fetch(
-          `https://telexph-admin.onrender.com/api/dashboard/engagement-metrics?resourceType=${resourceFilter}`,
-          {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-            credentials: 'include',
-          }
+        const response = await api.get(
+          `/dashboard/engagement-metrics?resourceType=${resourceFilter}`
         )
-        if (!response.ok) throw new Error(`Failed to fetch engagement metrics: ${response.status}`)
-        const data = await response.json()
-        setengagementdata(data)
+        setengagementdata(response.data)
       } catch (error) {
         // Keep default data if fetch fails
       } finally {

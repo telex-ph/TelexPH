@@ -6,7 +6,7 @@ export default function AdminLayout({
   children: ReactNode
 }) {
   return (
-    <section className="min-h-screen bg-white font-rubik antialiased text-black">
+    <section className="min-h-screen bg-white font-poppins antialiased text-black">
       {children}
     </section>
   )

@@ -81,7 +81,7 @@ const Partners: React.FC<PartnersProps> = ({
                           </h3>
                         )}
 
-                        <p className="font-rubik text-gray-600 text-[10px] md:text-sm lg:text-base leading-snug md:leading-relaxed relative z-10">
+                        <p className="font-poppins text-gray-600 text-[10px] md:text-sm lg:text-base leading-snug md:leading-relaxed relative z-10">
                           {feature.description}
                         </p>
                       </div>

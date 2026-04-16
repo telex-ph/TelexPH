@@ -1,5 +1,5 @@
 import React from "react";
-import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { Poppins, Open_Sans } from "next/font/google";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -15,24 +15,18 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-rubik",
-  display: "swap",
-});
 
 const FooterCTA = () => {
   return (
     <div
-      className={`relative z-20 ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+      className={`relative z-20 ${poppins.variable} ${openSans.variable}`}
     >
       <div className="w-full bg-[#a10000] text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.3)] rounded-lg h-40 sm:h-48 overflow-hidden relative flex items-center px-4 sm:px-6 md:px-8 lg:px-12">
         <div className="z-10 flex-1 max-w-lg">
           <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-poppins-black mb-1 sm:mb-2">
             Ready to Scale Smarter?
           </h2>
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-rubik">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-poppins">
             Partner with Telex Philippines and discover smarter outsourcing
             solutions for your business.
           </p>

@@ -5,12 +5,12 @@ import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'ax
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   withCredentials: true, // IMPORTANT: Para ma-send ang cookies
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 seconds
+  timeout: 10000, // 10 seconds
 });
 
 // Request interceptor with proper types

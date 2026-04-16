@@ -10,7 +10,7 @@ const GHLChatWidget = () => {
 
   useEffect(() => {
     if (!WIDGET_ID) {
-      console.error("GHL Widget ID is missing. Check your .env.local file.");
+      // Widget ID is not configured, silently skip loading
       return;
     }
 

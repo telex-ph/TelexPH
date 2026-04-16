@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import TopBar from "./TopBar";
 import { navLinks } from "@/constant/constant";
-import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { Poppins, Open_Sans } from "next/font/google";
 import { HiBars3BottomRight, HiChevronRight } from "react-icons/hi2";
 
 const poppins = Poppins({
@@ -20,13 +20,6 @@ const openSans = Open_Sans({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-open-sans",
-  display: "swap",
-});
-
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-rubik",
   display: "swap",
 });
 
@@ -162,7 +155,7 @@ const Nav = ({ openNav }: Props) => {
   };
 
   return (
-    <nav className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable} ${rubik.variable}`}>
+    <nav className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable}`}>
       <TopBar />
       <div className={`relative bg-white transition-all duration-300 ${navBg ? "shadow-md" : ""}`}>
         <div className="relative h-[80px] flex items-stretch">

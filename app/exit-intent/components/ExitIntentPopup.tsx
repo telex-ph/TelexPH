@@ -163,7 +163,7 @@ const ExitIntentPopup = () => {
                   className="text-base md:text-lg mb-6 md:mb-8 leading-relaxed"
                   style={{ 
                     color: getColorWithOpacity('dark', 0.8),
-                    fontFamily: 'var(--font-rubik, sans-serif)'
+                    fontFamily: 'var(--font-poppins, sans-serif)'
                   }}
                 >
                   Unlock world-class BPO solutions that optimize operations,
@@ -217,7 +217,7 @@ const ExitIntentPopup = () => {
                   className="mt-6 md:mt-8 flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm justify-center md:justify-start"
                   style={{ 
                     color: getColorWithOpacity('dark', 0.6),
-                    fontFamily: 'var(--font-rubik, sans-serif)'
+                    fontFamily: 'var(--font-poppins, sans-serif)'
                   }}
                 >
                   <div className="flex items-center gap-2">

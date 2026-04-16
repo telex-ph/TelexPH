@@ -42,7 +42,7 @@ body {
   }
 
   body {
-    font-family: var(--font-rubik), sans-serif;
+    font-family: var(--font-poppins), sans-serif;
     font-weight: 400;
     background-color: var(--color-background);
     color: var(--color-text-primary);
@@ -63,10 +63,6 @@ body {
     font-weight: 700;
   }
 
-  .font-rubik-regular {
-    font-family: var(--font-rubik), sans-serif;
-    font-weight: 400;
-  }
 }
 
 /* -----------------------------------------------------------
