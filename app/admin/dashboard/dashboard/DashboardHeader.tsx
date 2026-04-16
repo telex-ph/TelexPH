@@ -44,7 +44,7 @@ export default function DashboardHeader({ selecteddate, onDateChange }: Dashboar
             fontFamily: "'Poppins', sans-serif",
           }}
         >
-          Realtime case study analytics
+          Key metrics and performance at a glance
         </p>
       </div>
 

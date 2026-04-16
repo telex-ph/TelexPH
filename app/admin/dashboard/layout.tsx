@@ -131,8 +131,22 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       try {
         const response = await api.get('/activity-logs/unread-count')
         setunreadcount(response.data.unreadCount || 0)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/activity-logs/unread-count`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setunreadcount(data.unreadCount || 0)
+        } else if (response.status === 404) {
+          // Endpoint doesn't exist, silently set to 0 and don't retry
+          setunreadcount(0)
+        }
       } catch (error) {
+        // Silently handle network errors - set unread count to 0
         console.error('Error fetching unread count:', error)
+        setunreadcount(0)
       }
     }
     fetchUnreadCount()
@@ -216,6 +230,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       name: 'Page Views',
       path: '/admin/dashboard/page-views',
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      name: 'Page views analytics',
+      path: '/admin/dashboard/page-views',
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16v-5"/><path d="M17 16V6"/></svg>,
     },
     {
       name: 'Blogs',
@@ -270,14 +287,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     ]
   }
 
-  const userManagementMenuItem = {
-    name: 'User Management',
-    path: '/admin/dashboard/user-management',
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><line x1="19" x2="19" y1="8" y2="14" /><line x1="22" x2="16" y1="11" y2="11" /></svg>,
-  }
-
   const navigationitems = userData.role === 1 ? [...baseNavigationItems, adminsMenuItem] : baseNavigationItems
-  const vaNavigationItems = userData.role === 1 ? [userManagementMenuItem] : []
 
   const poppins: React.CSSProperties = { fontFamily: "'Poppins', sans-serif", fontWeight: 400 }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   AreaChart,
   Area,
@@ -11,6 +12,8 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useDarkMode } from './layout'
+import api from '@/lib/api/axios'
+
 import api from '@/lib/api/axios'
 
 // Type definitions for analytics data
@@ -61,6 +64,8 @@ const STAT_CARD_COLORS = [
 ]
 
 export default function adminpage() {
+  const pathname = usePathname()
+  const isPageViewsAnalyticsRoute = pathname === '/admin/dashboard/page-views'
   const { isdarkmode } = useDarkMode()
   const [selecteddate, setselecteddate] = useState('2026-01-28')
   const [engagementdata, setengagementdata] = useState<EngagementData[]>([
@@ -95,6 +100,10 @@ export default function adminpage() {
         setcasestudystats(response.data)
       } catch (error) {
         seterror(error instanceof Error ? error.message : 'Unknown error')
+      } catch (error: any) {
+        if (error.response?.status !== 401) {
+          seterror(error.response?.data?.message || error.message || 'Unknown error')
+        }
       } finally {
         setstatsloading(false)
       }
@@ -112,6 +121,9 @@ export default function adminpage() {
         )
         setengagementdata(response.data)
       } catch (error) {
+        const response = await api.get(`/dashboard/engagement-metrics?resourceType=${resourceFilter}`)
+        setengagementdata(response.data)
+      } catch (error: any) {
         // Keep default data if fetch fails
       } finally {
         setloading(false)
@@ -433,13 +445,15 @@ export default function adminpage() {
                 className={`tracking-tight transition-colors ${isdarkmode ? 'text-white' : 'text-gray-800'}`}
                 style={{ fontSize: 15, fontWeight: 500, margin: 0 }}
               >
-                Dashboard overview
+                {isPageViewsAnalyticsRoute ? 'Page views analytics' : 'Dashboard overview'}
               </h2>
               <p
                 className={`mt-1 transition-colors ${isdarkmode ? 'text-gray-500' : 'text-gray-400'}`}
                 style={{ fontSize: 11, fontWeight: 400, margin: '4px 0 0' }}
               >
-                Realtime case study analytics
+                {isPageViewsAnalyticsRoute
+                  ? 'Case study views, engagement, and traffic metrics'
+                  : 'Key metrics and performance at a glance'}
               </p>
             </div>
             {/* Hide date picker on tiny phones to save space */}

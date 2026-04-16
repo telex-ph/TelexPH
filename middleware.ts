@@ -23,28 +23,26 @@ export function middleware(request: NextRequest) {
     path.startsWith(protectedPath)
   );
   
-  // Public paths that should redirect to admin if already logged in
-  const authPaths = ['/login', '/register'];
-  const isAuthPath = authPaths.some(authPath => path.startsWith(authPath));
-  
-  // SCENARIO 1: Trying to access protected route WITHOUT token
-  // → Redirect to login
+  // Admin auth pages (must run before protected /admin check — /admin/login also starts with /admin)
+  const authPaths = ['/admin/login', '/admin/register'];
+  const isAuthPath = authPaths.some((authPath) => path.startsWith(authPath));
+
+  if (isAuthPath) {
+    if (accessToken) {
+      console.log(`✅ Already authenticated, redirecting from ${path} to /admin/dashboard`);
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Protected route without token → admin login (exclude auth URLs above)
   if (isProtectedPath && !accessToken) {
-    const loginUrl = new URL('/login', request.url);
-    // Save the original URL para after login, ma-redirect doon
+    const loginUrl = new URL('/admin/login', request.url);
     loginUrl.searchParams.set('redirect', path);
-    console.log(`🔒 Blocked access to ${path} - No token, redirecting to login`);
+    console.log(`🔒 Blocked access to ${path} - No token, redirecting to /admin/login`);
     return NextResponse.redirect(loginUrl);
   }
-  
-  // SCENARIO 2: Already logged in but trying to access login/register
-  // → Redirect to admin dashboard
-  if (isAuthPath && accessToken) {
-    console.log(`✅ Already authenticated, redirecting from ${path} to /admin/dashboard`);
-    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-  }
-  
-  // SCENARIO 3: Valid request, allow to proceed
+
   return NextResponse.next();
 }
 
@@ -52,14 +50,9 @@ export function middleware(request: NextRequest) {
 // Importante: Define exactly which paths ang mag-trigger ng middleware
 export const config = {
   matcher: [
-    // Protected admin routes
     '/admin/dashboard/:path*',
-    
-    // Auth routes (login, register)
-    '/login',
-    '/register',
-    
-    // Add other protected routes kung meron
+    '/admin/login',
+    '/admin/register',
     '/dashboard/:path*',
-  ]
+  ],
 };

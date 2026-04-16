@@ -1,17 +1,107 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
+import { Barlow_Condensed, Rubik, Open_Sans, Poppins } from "next/font/google";
 
-/* ─── Types ─────────────────────────────────────────────────────────────── */
-type Tab = "platforms" | "tools" | "industries";
-interface Platform { name: string; country: string; image: string; }
-interface IndustryAccount { abbr: string; name: string; desc: string; tag: string; avatarClass?: string; }
-interface IndustryPanel {
-  key: string; label: string; count: string; backdropLetters: string;
-  eyebrow: string; title: string; body: string; accounts: IndustryAccount[];
-}
+// ✅ Font setup
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
 
-/* ─── Data ───────────────────────────────────────────────────────────────── */
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-rubik",
+  display: "swap",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-open-sans",
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+const FONT_VARS = `${barlowCondensed.variable} ${rubik.variable} ${openSans.variable} ${poppins.variable}`;
+
+const F = {
+  barlow: barlowCondensed.className,
+  rubik:  rubik.className,
+  openSans: openSans.className,
+};
+
+/* ─────────────────────────────────────────────
+   MINIMAL CSS — only things Tailwind can't do:
+   animations, scrollbar hiding, mosaic-card
+   class used by vanilla JS, pseudo-elements,
+   and scroll-anim transitions.
+───────────────────────────────────────────── */
+const MINIMAL_CSS = `
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .anim-up   { animation: slideUp .7s cubic-bezier(.4,0,.2,1) both; }
+  .anim-up-2 { animation: slideUp .7s .15s cubic-bezier(.4,0,.2,1) both; }
+  .anim-up-3 { animation: slideUp .7s .3s cubic-bezier(.4,0,.2,1) both; }
+  .dd-fade   { animation: fadeIn .15s ease both; }
+
+  .txt-fade { transition: opacity 0.45s ease, transform 0.45s ease; }
+  .txt-enter { opacity: 0 !important; transform: translateY(14px) !important; }
+  .txt-visible { opacity: 1; transform: translateY(0); }
+
+  .scroll-anim   { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .scroll-anim.in-view { opacity: 1; transform: translateY(0); }
+  .scroll-anim-2 { opacity: 0; transform: translateY(20px); transition: opacity 0.6s 0.12s ease, transform 0.6s 0.12s ease; }
+  .scroll-anim-2.in-view { opacity: 1; transform: translateY(0); }
+  .scroll-anim-3 { opacity: 0; transform: translateY(20px); transition: opacity 0.6s 0.24s ease, transform 0.6s 0.24s ease; }
+  .scroll-anim-3.in-view { opacity: 1; transform: translateY(0); }
+
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Mosaic cards — built by vanilla JS, need these classes */
+  .mosaic-card { position: absolute; width: 130px; height: 200px; border-radius: 14px; overflow: hidden; cursor: grab; will-change: transform; background: #fff; border: 1px solid #ebebeb; }
+  @media (min-width: 640px) { .mosaic-card { width: 200px; height: 200px; } }
+  .mosaic-card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
+  .mosaic-card-label { position: absolute; bottom: 0; left: 0; right: 0; height: 28%; display: flex; align-items: center; padding: 0 10px; background: #fff; border-top: 1px solid #ebebeb; }
+  .mosaic-card-label span { color: #1a1a1a; font-family: var(--font-open-sans), sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.04em; line-height: 1.3; pointer-events: none; }
+
+  /* tl-steps pseudo line */
+  .tl-steps { position: relative; }
+  .tl-steps::before { content: ''; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 1px; background: rgba(0,0,0,0.08); }
+
+  /* ind-dcard left accent */
+  .ind-dcard { position: relative; overflow: hidden; }
+  .ind-dcard::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #a10000; opacity: 0; transition: opacity 0.2s; }
+  .ind-dcard:hover::before { opacity: 1; }
+
+  /* show-more expanded chevron */
+  .show-more-btn svg { transition: transform 0.3s; }
+  .show-more-btn.expanded svg { transform: rotate(180deg); }
+`;
+
+/* ─────────────────────────────────────────────
+   DATA  (unchanged)
+───────────────────────────────────────────── */
 const PHOTOS = [
   "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=360&fit=crop&crop=face",
   "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=360&fit=crop&crop=face",
@@ -26,1309 +116,1946 @@ const PHOTOS = [
 ];
 
 const COUNTRIES = ["ALL","NL","FR","ES","BG","CH","DE","HU","IT","BE","AE","SI","SK","HR","SA","JP","TR","DK","UA","GR","US","UK","AU","IE","CZ"];
-const countryNames: Record<string,string> = {
-  ALL:"All Regions",NL:"Netherlands",FR:"France",ES:"Spain",BG:"Bulgaria",
-  CH:"Switzerland",DE:"Germany",HU:"Hungary",IT:"Italy",BE:"Belgium",
-  AE:"UAE / Middle East",SI:"Slovenia",SK:"Slovakia",HR:"Croatia",
-  SA:"Saudi Arabia",JP:"Japan",TR:"Turkey",DK:"Denmark",UA:"Ukraine",
-  GR:"Greece",US:"United States",UK:"United Kingdom",AU:"Australia",
-  IE:"Ireland",CZ:"Czech Republic",
+
+const countryNames: Record<string, string> = {
+  ALL:"All Regions", NL:"Netherlands", FR:"France", ES:"Spain", BG:"Bulgaria",
+  CH:"Switzerland", DE:"Germany", HU:"Hungary", IT:"Italy", BE:"Belgium",
+  AE:"UAE / Middle East", SI:"Slovenia", SK:"Slovakia", HR:"Croatia",
+  SA:"Saudi Arabia", JP:"Japan", TR:"Turkey", DK:"Denmark", UA:"Ukraine",
+  GR:"Greece", US:"United States", UK:"United Kingdom", AU:"Australia",
+  IE:"Ireland", CZ:"Czech Republic",
 };
+
+const countryFlag: Record<string, string> = {
+  NL:"nl", FR:"fr", ES:"es", BG:"bg", CH:"ch", DE:"de",
+  HU:"hu", IT:"it", BE:"be", AE:"ae", SI:"si", SK:"sk",
+  HR:"hr", SA:"sa", JP:"jp", TR:"tr", DK:"dk", UA:"ua",
+  GR:"gr", US:"us", UK:"gb", AU:"au", IE:"ie", CZ:"cz",
+};
+
+interface Platform { name: string; country: string; image: string; }
 
 const platforms: Platform[] = [
-  {name:"Carrefour",country:"ES",image:"/images/Platform/Carrefour.png"},
-  {name:"Conforama",country:"FR",image:"/images/Platform/Conforama.png"},
-  {name:"Brico Depot",country:"ES",image:"/images/Platform/Brico.png"},
-  {name:"Pccomp",country:"SK",image:"https://picsum.photos/id/1043/600/400"},
-  {name:"Planeta Huerto",country:"ES",image:"https://picsum.photos/id/1047/600/400"},
-  {name:"Sprinter",country:"ES",image:"https://picsum.photos/id/1050/600/400"},
-  {name:"Tiendanimal",country:"ES",image:"https://picsum.photos/id/1053/600/400"},
-  {name:"KIABI",country:"FR",image:"https://picsum.photos/id/106/600/400"},
-  {name:"MANOMANO",country:"FR",image:"https://picsum.photos/id/1060/600/400"},
-  {name:"MIRAVIA",country:"ES",image:"https://picsum.photos/id/1062/600/400"},
-  {name:"Leroy Merlin",country:"FR",image:"https://picsum.photos/id/133/600/400"},
-  {name:"CDON",country:"DK",image:"https://picsum.photos/id/1068/600/400"},
-  {name:"FYNDIQ",country:"DK",image:"https://picsum.photos/id/1069/600/400"},
-  {name:"Altex",country:"BG",image:"https://picsum.photos/id/1071/600/400"},
-  {name:"CEL",country:"BG",image:"https://picsum.photos/id/1072/600/400"},
-  {name:"Okazii",country:"BG",image:"https://picsum.photos/id/1073/600/400"},
-  {name:"Public",country:"GR",image:"https://picsum.photos/id/1074/600/400"},
-  {name:"Vivre",country:"BG",image:"https://picsum.photos/id/1075/600/400"},
-  {name:"Worten",country:"ES",image:"https://picsum.photos/id/1076/600/400"},
-  {name:"ClubeFashion",country:"ES",image:"https://picsum.photos/id/1077/600/400"},
-  {name:"Sport Zone",country:"ES",image:"https://picsum.photos/id/1078/600/400"},
-  {name:"KuantoKusta",country:"ES",image:"https://picsum.photos/id/1079/600/400"},
-  {name:"Decathlon",country:"FR",image:"https://picsum.photos/id/1080/600/400"},
-  {name:"Brico",country:"BE",image:"https://picsum.photos/id/1081/600/400"},
-  {name:"Inno",country:"BE",image:"https://picsum.photos/id/1082/600/400"},
-  {name:"FNAC",country:"BE",image:"https://picsum.photos/id/1083/600/400"},
-  {name:"Hubo",country:"BE",image:"https://picsum.photos/id/1084/600/400"},
-  {name:"KAUFLAND",country:"DE",image:"https://picsum.photos/id/1085/600/400"},
-  {name:"OTTO",country:"DE",image:"https://picsum.photos/id/1086/600/400"},
-  {name:"Check 24",country:"DE",image:"https://picsum.photos/id/1087/600/400"},
-  {name:"Newegg",country:"US",image:"/images/Platform/Newegg.png"},
-  {name:"eBay",country:"US",image:"https://picsum.photos/id/292/600/400"},
-  {name:"Houzz",country:"US",image:"https://picsum.photos/id/1090/600/400"},
-  {name:"Kroger",country:"US",image:"https://picsum.photos/id/1091/600/400"},
-  {name:"Macys",country:"US",image:"https://picsum.photos/id/1092/600/400"},
-  {name:"SEARS",country:"US",image:"https://picsum.photos/id/1093/600/400"},
-  {name:"Overstock",country:"US",image:"https://picsum.photos/id/1094/600/400"},
-  {name:"RetailCloud",country:"US",image:"https://picsum.photos/id/1095/600/400"},
-  {name:"Temu",country:"US",image:"https://picsum.photos/id/1096/600/400"},
-  {name:"WALMART",country:"US",image:"https://picsum.photos/id/251/600/400"},
-  {name:"Shein",country:"US",image:"https://picsum.photos/id/1098/600/400"},
-  {name:"WISH",country:"US",image:"https://picsum.photos/id/1099/600/400"},
-  {name:"BUNNINGS",country:"AU",image:"https://picsum.photos/id/10/600/400"},
-  {name:"Catch of the Day",country:"AU",image:"https://picsum.photos/id/11/600/400"},
-  {name:"Barbequesgalore",country:"AU",image:"https://picsum.photos/id/12/600/400"},
-  {name:"Harvey Norman",country:"AU",image:"https://picsum.photos/id/870/600/400"},
-  {name:"OZSALE",country:"AU",image:"https://picsum.photos/id/14/600/400"},
-  {name:"Conrad",country:"DE",image:"https://picsum.photos/id/15/600/400"},
-  {name:"Metro",country:"DE",image:"https://picsum.photos/id/16/600/400"},
-  {name:"MediaMarkt",country:"DE",image:"https://picsum.photos/id/411/600/400"},
-  {name:"HOOD",country:"DE",image:"https://picsum.photos/id/18/600/400"},
-  {name:"YATEGO",country:"DE",image:"https://picsum.photos/id/19/600/400"},
-  {name:"PRAXIS",country:"NL",image:"https://picsum.photos/id/20/600/400"},
-  {name:"Brico Bravo",country:"BE",image:"https://picsum.photos/id/21/600/400"},
-  {name:"Eprice",country:"IT",image:"https://picsum.photos/id/22/600/400"},
-  {name:"IBS",country:"IT",image:"https://picsum.photos/id/23/600/400"},
-  {name:"Fruugo",country:"UK",image:"https://picsum.photos/id/24/600/400"},
-  {name:"OBI",country:"DE",image:"https://picsum.photos/id/25/600/400"},
-  {name:"AUCHAN",country:"FR",image:"https://picsum.photos/id/26/600/400"},
-  {name:"Boulanger",country:"FR",image:"https://picsum.photos/id/27/600/400"},
-  {name:"bricomarche",country:"FR",image:"https://picsum.photos/id/28/600/400"},
-  {name:"Castorama",country:"FR",image:"https://picsum.photos/id/29/600/400"},
-  {name:"Truffaut",country:"FR",image:"https://picsum.photos/id/30/600/400"},
-  {name:"ELeclerc",country:"FR",image:"https://picsum.photos/id/31/600/400"},
-  {name:"laposte",country:"FR",image:"https://picsum.photos/id/32/600/400"},
-  {name:"Darty",country:"FR",image:"https://picsum.photos/id/33/600/400"},
-  {name:"Cdiscount",country:"FR",image:"https://picsum.photos/id/34/600/400"},
-  {name:"RAKUTEN",country:"JP",image:"https://picsum.photos/id/1018/600/400"},
-  {name:"Rue de Commerce",country:"FR",image:"https://picsum.photos/id/36/600/400"},
-  {name:"ShowroomPrive",country:"FR",image:"https://picsum.photos/id/37/600/400"},
-  {name:"ubaldi",country:"FR",image:"https://picsum.photos/id/38/600/400"},
-  {name:"Zooplus",country:"DE",image:"https://picsum.photos/id/39/600/400"},
-  {name:"GammVert",country:"FR",image:"https://picsum.photos/id/40/600/400"},
-  {name:"Jardiland",country:"FR",image:"https://picsum.photos/id/41/600/400"},
-  {name:"MyDeal",country:"AU",image:"https://picsum.photos/id/42/600/400"},
-  {name:"KOGAN",country:"AU",image:"https://picsum.photos/id/43/600/400"},
-  {name:"LASOO",country:"AU",image:"https://picsum.photos/id/44/600/400"},
-  {name:"emag",country:"BG",image:"https://picsum.photos/id/45/600/400"},
-  {name:"Pepita",country:"HU",image:"https://picsum.photos/id/46/600/400"},
-  {name:"Homecentre",country:"AE",image:"https://picsum.photos/id/47/600/400"},
-  {name:"Sharaf",country:"AE",image:"https://picsum.photos/id/48/600/400"},
-  {name:"BestBuy",country:"US",image:"https://picsum.photos/id/49/600/400"},
-  {name:"Walmart",country:"US",image:"https://picsum.photos/id/50/600/400"},
-  {name:"B&Q",country:"UK",image:"https://picsum.photos/id/51/600/400"},
-  {name:"Robert Dyas",country:"UK",image:"https://picsum.photos/id/52/600/400"},
-  {name:"ONBUY",country:"UK",image:"https://picsum.photos/id/53/600/400"},
-  {name:"Trendyol",country:"TR",image:"https://picsum.photos/id/488/600/400"},
-  {name:"Noon",country:"AE",image:"https://picsum.photos/id/669/600/400"},
-  {name:"Bol.com",country:"NL",image:"https://picsum.photos/id/367/600/400"},
-  {name:"Leenbakker",country:"NL",image:"https://picsum.photos/id/57/600/400"},
-  {name:"Beslist",country:"NL",image:"https://picsum.photos/id/58/600/400"},
-  {name:"Home24",country:"DE",image:"https://picsum.photos/id/59/600/400"},
-  {name:"Voelkner",country:"DE",image:"https://picsum.photos/id/60/600/400"},
-  {name:"Wayfair",country:"US",image:"https://picsum.photos/id/61/600/400"},
-  {name:"XXXLutz",country:"DE",image:"https://picsum.photos/id/62/600/400"},
-  {name:"Fressnapf",country:"DE",image:"https://picsum.photos/id/63/600/400"},
-  {name:"Poco",country:"DE",image:"https://picsum.photos/id/64/600/400"},
-  {name:"Vente Unique",country:"FR",image:"https://picsum.photos/id/65/600/400"},
-  {name:"GALAXUS",country:"CH",image:"https://picsum.photos/id/66/600/400"},
-  {name:"manor",country:"CH",image:"https://picsum.photos/id/67/600/400"},
-  {name:"RICARDO",country:"CH",image:"https://picsum.photos/id/68/600/400"},
-  {name:"ALLEGRO",country:"CZ",image:"https://picsum.photos/id/69/600/400"},
-  {name:"BRW",country:"IE",image:"https://picsum.photos/id/70/600/400"},
-  {name:"Home & You",country:"CZ",image:"https://picsum.photos/id/71/600/400"},
-  {name:"Empik",country:"CZ",image:"https://picsum.photos/id/72/600/400"},
-  {name:"Morele",country:"CZ",image:"https://picsum.photos/id/73/600/400"},
-  {name:"MALL",country:"CZ",image:"https://picsum.photos/id/74/600/400"},
-  {name:"BigBang",country:"SI",image:"https://picsum.photos/id/75/600/400"},
-  {name:"Mimovrste",country:"SI",image:"https://picsum.photos/id/76/600/400"},
-  {name:"Mall",country:"SK",image:"https://picsum.photos/id/77/600/400"},
-  {name:"KAUP24",country:"HR",image:"https://picsum.photos/id/78/600/400"},
-  {name:"PIGU",country:"UA",image:"https://picsum.photos/id/79/600/400"},
-  {name:"220",country:"UA",image:"https://picsum.photos/id/80/600/400"},
-  {name:"Amazon",country:"US",image:"https://picsum.photos/id/201/600/400"},
-  {name:"Webshop",country:"NL",image:"https://picsum.photos/id/82/600/400"},
+  { name: "Carrefour",        country: "ES", image: "/images/Platform Logos/Carrefour.png" },
+  { name: "Conforama",        country: "FR", image: "/images/Platform Logos/conforama.png" },
+  { name: "Brico Depot",      country: "ES", image: "/images/Platform Logos/brico depot.png" },
+  { name: "Pccomp",           country: "SK", image: "/images/Platform Logos/pc.png" },
+  { name: "Planeta Huerto",   country: "ES", image: "/images/Platform Logos/mano.png" },
+  { name: "Sprinter",         country: "ES", image: "/images/Platform Logos/sprinter.png" },
+  { name: "Tiendanimal",      country: "ES", image: "/images/Platform Logos/tiendanimal.png" },
+  { name: "KIABI",            country: "FR", image: "/images/Platform Logos/kiabi.png" },
+  { name: "MANOMANO",         country: "FR", image: "/images/Platform Logos/mano.png" },
+  { name: "MIRAVIA",          country: "ES", image: "/images/Platform Logos/miravia.png" },
+  { name: "Leroy Merlin",     country: "FR", image: "/images/Platform Logos/leroy.png" },
+  { name: "CDON",             country: "DK", image: "/images/Platform Logos/cdon.png" },
+  { name: "FYNDIQ",           country: "DK", image: "/images/Platform Logos/fyndiq.png" },
+  { name: "Altex",            country: "BG", image: "/images/Platform Logos/altex.png" },
+  { name: "CEL",              country: "BG", image: "/images/Platform Logos/cel.png" },
+  { name: "Okazii",           country: "BG", image: "/images/Platform Logos/okazii.png" },
+  { name: "Public",           country: "GR", image: "/images/Platform Logos/public.png" },
+  { name: "Vivre",            country: "BG", image: "/images/Platform Logos/vivre.png" },
+  { name: "Worten",           country: "ES", image: "/images/Platform Logos/worten.png" },
+  { name: "ClubeFashion",     country: "ES", image: "/images/Platform Logos/club.png" },
+  { name: "Sport Zone",       country: "ES", image: "/images/Platform Logos/sportzone.png" },
+  { name: "KuantoKusta",      country: "ES", image: "/images/Platform Logos/kuanto.png" },
+  { name: "Decathlon",        country: "FR", image: "/images/Platform Logos/decathlon.png" },
+  { name: "Brico",            country: "BE", image: "/images/Platform Logos/brico.png" },
+  { name: "Inno",             country: "BE", image: "/images/Platform Logos/inno.png" },
+  { name: "FNAC",             country: "BE", image: "/images/Platform Logos/fnac.png" },
+  { name: "Hubo",             country: "BE", image: "/images/Platform Logos/hubo.png" },
+  { name: "KAUFLAND",         country: "DE", image: "/images/Platform Logos/kaufland.png" },
+  { name: "OTTO",             country: "DE", image: "/images/Platform Logos/otto.png" },
+  { name: "Check 24",         country: "DE", image: "/images/Platform Logos/check24.png" },
+  { name: "Newegg",           country: "US", image: "/images/Platform Logos/newegg.png" },
+  { name: "eBay",             country: "US", image: "/images/Platform Logos/ebay.png" },
+  { name: "Houzz",            country: "US", image: "/images/Platform Logos/houzz.png" },
+  { name: "Kroger",           country: "US", image: "/images/Platform Logos/kroger.png" },
+  { name: "Macys",            country: "US", image: "/images/Platform Logos/macys.png" },
+  { name: "SEARS",            country: "US", image: "/images/Platform Logos/sears.png" },
+  { name: "Overstock",        country: "US", image: "/images/Platform Logos/overstock.png" },
+  { name: "RetailCloud",      country: "US", image: "/images/Platform Logos/retailcloud.png" },
+  { name: "Temu",             country: "US", image: "/images/Platform Logos/temu.png" },
+  { name: "WALMART",          country: "US", image: "/images/Platform Logos/walmart.png" },
+  { name: "Shein",            country: "US", image: "/images/Platform Logos/shein.png" },
+  { name: "WISH",             country: "US", image: "/images/Platform Logos/wish.png" },
+  { name: "BUNNINGS",         country: "AU", image: "/images/Platform Logos/bunnings.png" },
+  { name: "Catch of the Day", country: "AU", image: "/images/Platform Logos/catch.png" },
+  { name: "Barbequesgalore",  country: "AU", image: "/images/Platform Logos/galore.png" },
+  { name: "Harvey Norman",    country: "AU", image: "/images/Platform Logos/harveynorman.png" },
+  { name: "OZSALE",           country: "AU", image: "/images/Platform Logos/oz.png" },
+  { name: "Conrad",           country: "DE", image: "/images/Platform Logos/conrad.png" },
+  { name: "Metro",            country: "DE", image: "/images/Platform Logos/metro.png" },
+  { name: "MediaMarkt",       country: "DE", image: "/images/Platform Logos/media.png" },
+  { name: "HOOD",             country: "DE", image: "/images/Platform Logos/hood.png" },
+  { name: "YATEGO",           country: "DE", image: "/images/Platform Logos/yatego.png" },
+  { name: "PRAXIS",           country: "NL", image: "/images/Platform Logos/praxis.png" },
+  { name: "Brico Bravo",      country: "BE", image: "/images/Platform Logos/brico bravo.png" },
+  { name: "Eprice",           country: "IT", image: "/images/Platform Logos/eprice.png" },
+  { name: "IBS",              country: "IT", image: "/images/Platform Logos/ibs.png" },
+  { name: "Fruugo",           country: "UK", image: "/images/Platform Logos/fruuggo.png" },
+  { name: "OBI",              country: "DE", image: "/images/Platform Logos/obi.png" },
+  { name: "AUCHAN",           country: "FR", image: "/images/Platform Logos/auchan.png" },
+  { name: "Boulanger",        country: "FR", image: "/images/Platform Logos/boulanger.png" },
+  { name: "bricomarche",      country: "FR", image: "/images/Platform Logos/brico marche.png" },
+  { name: "Castorama",        country: "FR", image: "/images/Platform Logos/castorama.png" },
+  { name: "Truffaut",         country: "FR", image: "/images/Platform Logos/truffaut.png" },
+  { name: "ELeclerc",         country: "FR", image: "/images/Platform Logos/elerc.png" },
+  { name: "laposte",          country: "FR", image: "/images/Platform Logos/laposte.png" },
+  { name: "Darty",            country: "FR", image: "/images/Platform Logos/darty.png" },
+  { name: "Cdiscount",        country: "FR", image: "/images/Platform Logos/cdiscount.png" },
+  { name: "RAKUTEN",          country: "JP", image: "/images/Platform Logos/rakuten.png" },
+  { name: "Rue de Commerce",  country: "FR", image: "/images/Platform Logos/rueducommerce.png" },
+  { name: "ShowroomPrive",    country: "FR", image: "/images/Platform Logos/showroom.png" },
+  { name: "ubaldi",           country: "FR", image: "/images/Platform Logos/ubaldi.png" },
+  { name: "Zooplus",          country: "DE", image: "/images/Platform Logos/zooplus.png" },
+  { name: "GammVert",         country: "FR", image: "/images/Platform Logos/gammvert.png" },
+  { name: "Jardiland",        country: "FR", image: "/images/Platform Logos/jardiland.png" },
+  { name: "MyDeal",           country: "AU", image: "/images/Platform Logos/mydeal.png" },
+  { name: "KOGAN",            country: "AU", image: "/images/Platform Logos/kogan.png" },
+  { name: "LASOO",            country: "AU", image: "/images/Platform Logos/laso.png" },
+  { name: "emag",             country: "BG", image: "/images/Platform Logos/emag.png" },
+  { name: "Pepita",           country: "HU", image: "/images/Platform Logos/pepita.png" },
+  { name: "Homecentre",       country: "AE", image: "/images/Platform Logos/homecentre.png" },
+  { name: "Sharaf",           country: "AE", image: "/images/Platform Logos/sharaf.png" },
+  { name: "BestBuy",          country: "US", image: "/images/Platform Logos/bestbuy.png" },
+  { name: "Walmart",          country: "US", image: "/images/Platform Logos/walmart.png" },
+  { name: "B&Q",              country: "UK", image: "/images/Platform Logos/b&q.png" },
+  { name: "Robert Dyas",      country: "UK", image: "/images/Platform Logos/robertdyas.png" },
+  { name: "ONBUY",            country: "UK", image: "/images/Platform Logos/onbuy.png" },
+  { name: "Trendyol",         country: "TR", image: "/images/Platform Logos/trendyol.png" },
+  { name: "Noon",             country: "AE", image: "/images/Platform Logos/noon.png" },
+  { name: "Bol.com",          country: "NL", image: "/images/Platform Logos/bol.png" },
+  { name: "Leenbakker",       country: "NL", image: "/images/Platform Logos/leen.png" },
+  { name: "Beslist",          country: "NL", image: "/images/Platform Logos/beslist.png" },
+  { name: "Home24",           country: "DE", image: "/images/Platform Logos/home24.png" },
+  { name: "Voelkner",         country: "DE", image: "/images/Platform Logos/voelkner.png" },
+  { name: "Wayfair",          country: "US", image: "/images/Platform Logos/wayfair.png" },
+  { name: "XXXLutz",          country: "DE", image: "/images/Platform Logos/lutz.png" },
+  { name: "Fressnapf",        country: "DE", image: "/images/Platform Logos/fressnapf.png" },
+  { name: "Poco",             country: "DE", image: "/images/Platform Logos/poco.png" },
+  { name: "Vente Unique",     country: "FR", image: "/images/Platform Logos/mimov.png" },
+  { name: "GALAXUS",          country: "CH", image: "/images/Platform Logos/galaxus.png" },
+  { name: "manor",            country: "CH", image: "/images/Platform Logos/manor.png" },
+  { name: "RICARDO",          country: "CH", image: "/images/Platform Logos/ricardo.png" },
+  { name: "ALLEGRO",          country: "CZ", image: "/images/Platform Logos/allegro.png" },
+  { name: "BRW",              country: "IE", image: "/images/Platform Logos/brw.png" },
+  { name: "Home & You",       country: "CZ", image: "/images/Platform Logos/home&you.png" },
+  { name: "Empik",            country: "CZ", image: "/images/Platform Logos/empik.png" },
+  { name: "Morele",           country: "CZ", image: "/images/Platform Logos/morele.png" },
+  { name: "MALL",             country: "CZ", image: "/images/Platform Logos/mall.png" },
+  { name: "BigBang",          country: "SI", image: "/images/Platform Logos/bigbang.png" },
+  { name: "Mimovrste",        country: "SI", image: "/images/Platform Logos/mimov.png" },
+  { name: "Mall",             country: "SK", image: "/images/Platform Logos/mall.png" },
+  { name: "KAUP24",           country: "HR", image: "/images/Platform Logos/kaup.png" },
+  { name: "PIGU",             country: "UA", image: "/images/Platform Logos/pigu.png" },
+  { name: "220",              country: "UA", image: "/images/Platform Logos/220.png" },
+  { name: "Amazon",           country: "US", image: "/images/Platform Logos/amazon.png" },
+  { name: "Webshop",          country: "NL", image: "/images/Platform Logos/webshop.png" },
 ];
 
-const platformDescriptions: Record<string,string> = {
-  "ALL":"We have partnered with and managed listings across 115+ leading e-commerce platforms worldwide — from global giants to regional powerhouses spanning 24 countries.",
-  "Carrefour":"One of the world's largest retail chains, Carrefour operates in 30+ countries.",
-  "Decathlon":"The world's largest sporting goods retailer, present in 60+ countries.",
-  "Leroy Merlin":"Europe's #1 home improvement retailer, operating across 13 countries.",
-  "Amazon":"The world's largest e-commerce platform.",
-  "Walmart":"America's largest retailer and a growing e-commerce force.",
-  "eBay":"A global marketplace connecting millions of buyers and sellers.",
-  "Bol.com":"The Netherlands' #1 online retailer.",
-  "MediaMarkt":"Europe's leading consumer electronics retailer.",
-  "Trendyol":"Turkey's largest e-commerce platform.",
-  "Noon":"The Middle East's homegrown e-commerce giant.",
-  "Harvey Norman":"Australia's leading electrical and bedding retailer.",
-  "RAKUTEN":"Japan's largest e-commerce marketplace.",
+const ALL_PLATFORMS = platforms.map(p => p.name).slice().sort((a, b) => a.localeCompare(b));
+
+const PLATFORM_LOGO_MAP: Record<string, string> = Object.fromEntries(
+  platforms.map(p => [p.name, p.image])
+);
+
+const platformDescriptions: Record<string, string> = {
+  "ALL": "We have partnered with and managed listings across 115+ leading e-commerce platforms worldwide — from global giants to regional powerhouses spanning 24 countries. Our team delivers seamless catalog operations, product listings, and marketplace integrations at scale.",
+  "Carrefour": "One of the world's largest retail chains, Carrefour operates in 30+ countries. We manage product listings and catalog operations across their Spanish marketplace, driving visibility for thousands of SKUs in one of Europe's most competitive retail environments.",
+  "Conforama": "A leading European home furnishings and appliances retailer with strong presence in France and beyond. We handle end-to-end product catalog management, ensuring accurate listings and optimized content across their digital storefront.",
+  "Brico Depot": "Spain's go-to destination for DIY, home improvement, and construction materials. We support their marketplace with structured product data, listing optimization, and category-level catalog management.",
+  "Pccomp": "A Slovak online retailer specializing in computer hardware, peripherals, and accessories. We manage their product catalog with technical precision — ensuring accurate specs, compatibility data, and up-to-date listings across a fast-moving tech inventory.",
+  "Planeta Huerto": "Spain's leading online store for organic food, natural cosmetics, and eco-friendly products. We manage their catalog with a focus on ingredient accuracy, sustainability certifications, and health-conscious product presentation.",
+  "Sprinter": "One of Spain's top sports and outdoor retailers. We manage Sprinter's product listings across footwear, apparel, and sporting goods — maintaining catalog accuracy and brand-compliant content at scale.",
+  "Tiendanimal": "Spain's largest pet supply marketplace. We handle product listings for food, accessories, and healthcare items — ensuring accurate pet-specific attributes, brand guidelines, and optimized content for pet owners.",
+  "KIABI": "A French family fashion brand beloved for accessible, trend-forward clothing. We manage KIABI's product listings with a focus on detailed sizing, imagery, and description quality to enhance the customer shopping experience.",
+  "MANOMANO": "Europe's leading DIY and home improvement marketplace with millions of products. We manage catalog operations on ManoMano's French platform, handling complex product attributes, compatibility data, and structured listing workflows.",
+  "MIRAVIA": "A fast-growing Spanish lifestyle marketplace backed by Alibaba Group. We support Miravia with product onboarding, content localization, and catalog management tailored to their curated multi-brand shopping experience.",
+  "Leroy Merlin": "Europe's #1 home improvement retailer, operating across 13 countries. Our team manages complex, spec-heavy catalog data for Leroy Merlin's French platform — from tools and flooring to garden and décor.",
+  "CDON": "Scandinavia's largest online marketplace, serving millions of shoppers in Denmark, Sweden, Norway, and Finland. We manage product listings on CDON with Nordic market expertise and localized content strategies.",
+  "FYNDIQ": "A popular Danish discount marketplace known for great deals and a wide product range. We handle catalog setup, listing optimization, and product data management to maximize visibility on this value-focused platform.",
+  "Altex": "Bulgaria's top consumer electronics and appliances retailer. We manage Altex product listings with technically accurate specs, localized Bulgarian content, and consistent catalog quality across their digital storefront.",
+  "CEL": "A leading Bulgarian electronics marketplace trusted by local consumers. We support CEL with structured product data, accurate technical attributes, and catalog management aligned with their platform standards.",
+  "Okazii": "Bulgaria's most popular online classifieds and marketplace platform. We manage product listings on Okazii with localized content, competitive positioning, and catalog compliance for the Bulgarian market.",
+  "Public": "Greece's go-to destination for tech, electronics, and entertainment products. We manage Public's product catalog with accurate specs, Greek-language content, and structured data to meet their high listing standards.",
+  "Vivre": "A premium Bulgarian online marketplace focused on home décor, furniture, and lifestyle products. We manage Vivre listings with attention to design details, product storytelling, and category-specific catalog requirements.",
+  "Worten": "A leading Portuguese and Spanish consumer electronics retailer. We handle Worten's catalog operations with technically precise product data, brand-compliant listings, and optimized content for Iberian shoppers.",
+  "ClubeFashion": "A Spanish fashion and lifestyle marketplace offering curated brands and seasonal collections. We manage product listings with accurate sizing, styling attributes, and brand-consistent content across their digital storefront.",
+  "Sport Zone": "A major Iberian sporting goods retailer with strong presence in Spain and Portugal. We support Sport Zone with structured product catalog management, attribute accuracy, and optimized listings across their sports categories.",
+  "KuantoKusta": "Spain's leading price comparison and shopping platform. We manage product data feeds and catalog submissions to maximize visibility and accuracy across KuantoKusta's aggregator-driven marketplace.",
+  "Decathlon": "The world's largest sporting goods retailer, present in 60+ countries. We partner with Decathlon to maintain accurate, high-quality product listings across their French marketplace, covering thousands of sports categories.",
+  "Brico": "Belgium's trusted DIY and home improvement retailer. We handle Brico's product catalog with structured data for tools, materials, and garden products — ensuring listing accuracy and compliance with their platform guidelines.",
+  "Inno": "A Belgian department store and online retailer offering fashion, home, and lifestyle products. We manage product listings with attention to brand presentation, accurate attributes, and consistent catalog quality.",
+  "FNAC": "A leading French-Belgian cultural and electronics retailer. We manage FNAC's product listings across books, tech, and entertainment — ensuring spec-accurate data, clear product descriptions, and compliance with their strict content standards.",
+  "Hubo": "Belgium's largest DIY retail chain. We support Hubo with structured catalog management for hardware, tools, and construction materials — maintaining listing accuracy and data consistency across their digital platform.",
+  "KAUFLAND": "A major German hypermarket chain expanding aggressively in e-commerce. We manage Kaufland marketplace listings with precise product data, German-language content, and compliance with their multi-category platform standards.",
+  "OTTO": "Germany's second-largest online retailer with a broad product range. We manage OTTO marketplace listings with structured catalog data, brand-compliant content, and German-language optimization for this highly competitive platform.",
+  "Check 24": "Germany's leading price comparison and online marketplace platform. We handle product data submissions and catalog management for Check24, maximizing product visibility across their high-traffic comparison engine.",
+  "Newegg": "A US-based tech marketplace specializing in electronics, computer hardware, and gaming gear. We manage Newegg product listings with technical precision — accurate specs, compatibility data, and structured catalog management.",
+  "eBay": "A global marketplace connecting millions of buyers and sellers. We manage eBay product listings for clients across multiple categories, ensuring accurate item specifics, competitive positioning, and optimized content.",
+  "Houzz": "The world's leading home renovation and design platform. We manage Houzz product listings for home décor and furnishing brands — focusing on design-forward imagery, detailed specs, and room-based merchandising content.",
+  "Kroger": "America's largest supermarket chain and a growing digital commerce platform. We manage Kroger marketplace listings with accurate product data, compliance with grocery listing standards, and optimized content for online shoppers.",
+  "Macys": "An iconic American department store with a powerful digital marketplace. We manage Macy's product listings across fashion, home, and beauty — maintaining brand standards, detailed attributes, and high-quality catalog content.",
+  "SEARS": "A long-standing US retail marketplace with broad product categories. We support Sears marketplace sellers with catalog setup, listing optimization, and product data management to maintain visibility and compliance.",
+  "Overstock": "A US-based online retailer known for home furnishings and discounted goods. We manage Overstock product listings with detailed furniture specs, lifestyle imagery descriptions, and catalog compliance to maximize sales potential.",
+  "RetailCloud": "A US-based retail technology and marketplace platform. We handle catalog integration, product data management, and listing optimization to support sellers operating on RetailCloud's commerce infrastructure.",
+  "Temu": "One of the fastest-growing global e-commerce platforms with massive reach across US and international markets. We manage Temu product listings with competitive pricing data, accurate attributes, and high-volume catalog operations.",
+  "WALMART": "America's largest retailer and a growing e-commerce force. We support Walmart marketplace sellers with catalog setup, listing quality audits, and content optimization to maximize product discoverability.",
+  "Shein": "A global fast-fashion powerhouse with unmatched scale and speed. We manage product listings on Shein with trend-accurate descriptions, size-specific attributes, and catalog management tailored to their high-velocity fashion model.",
+  "WISH": "A mobile-first global discount marketplace popular in the US and Europe. We manage Wish product listings with value-focused content, accurate attributes, and catalog management designed for their price-driven consumer base.",
+  "BUNNINGS": "Australia and New Zealand's leading home improvement and hardware retailer. We support Bunnings with structured catalog data, product spec management, and listing compliance across their expansive digital product range.",
+  "Catch of the Day": "Australia's popular marketplace offering deals across electronics, fashion, and homewares. We manage Catch listings with accurate product data, promotional content, and catalog compliance for the Australian online shopper.",
+  "Barbequesgalore": "Australia's specialty retailer for BBQ grills, outdoor cooking, and accessories. We manage detailed product listings including grill specs, fuel types, and accessory compatibility — supporting Australia's passionate BBQ culture.",
+  "Harvey Norman": "Australia's leading electrical, computer, furniture, and bedding retailer. We support Harvey Norman's Australian marketplace with optimized product listings, accurate specifications, and quality catalog management.",
+  "OZSALE": "Australia's leading members-only online shopping club offering exclusive brand deals. We manage product listings on OzSale with event-based catalog management and time-sensitive promotional content.",
+  "Conrad": "A leading European electronics and technology retailer operating in Germany and across Europe. We manage Conrad's product catalog with high-precision technical data, accurate specs, and structured listings for complex electronics categories.",
+  "Metro": "A leading German wholesale and B2B retail platform. We manage Metro product listings with business-oriented content, bulk-purchase attributes, and accurate product data tailored to their professional buyer audience.",
+  "MediaMarkt": "Europe's leading consumer electronics retailer. We support MediaMarkt's German marketplace with highly technical product data, spec-accurate listings, and structured catalog management for complex electronics categories.",
+  "HOOD": "A German online marketplace with a wide range of products. We manage Hood.de listings with accurate product data, German-language content, and catalog compliance to support sellers across this established marketplace.",
+  "YATEGO": "A German online shopping portal aggregating products from thousands of sellers. We manage product submissions and catalog data for Yatego, ensuring listing accuracy and visibility across their comparison-driven platform.",
+  "PRAXIS": "The Netherlands' leading home improvement and DIY retailer. We manage Praxis product listings with structured catalog data for tools, materials, and garden products — optimized for Dutch consumers.",
+  "Brico Bravo": "A Belgian DIY and home improvement marketplace. We handle catalog management for Brico Bravo with structured product data, accurate attributes, and listing compliance for their home improvement shoppers.",
+  "Eprice": "Italy's established consumer electronics online retailer. We manage Eprice product listings with technical accuracy, Italian-language optimization, and structured catalog data for competitive electronics categories.",
+  "IBS": "An Italian online marketplace specializing in books, music, games, and digital media. We manage IBS product listings with precise metadata, ISBN data, and content quality standards for their culturally rich catalog.",
+  "Fruugo": "A global cross-border marketplace operating in 42+ countries including the UK. We manage Fruugo listings with multi-language content, currency-adjusted pricing data, and catalog compliance for international shoppers.",
+  "OBI": "A leading European DIY and home improvement retailer with a strong German presence. We manage OBI product listings with detailed construction and gardening specs — ensuring catalog accuracy across their extensive product range.",
+  "AUCHAN": "A major French hypermarket and e-commerce retailer operating across Europe. We manage Auchan product listings with structured catalog data, French-language content, and compliance with their multi-category platform standards.",
+  "Boulanger": "A leading French electronics and home appliance retailer. We support Boulanger with spec-accurate product listings, structured technical data, and catalog management for a wide range of consumer electronics.",
+  "bricomarche": "A major French DIY and garden retailer. We handle Bricomarché product catalog operations with structured data for hardware, outdoor, and construction categories — tailored for French home improvement shoppers.",
+  "Castorama": "France's popular DIY and home improvement chain. We manage Castorama product listings with detailed attribute data, brand-compliant content, and structured catalog management across their renovation and home décor categories.",
+  "Truffaut": "France's leading garden and outdoor living retailer. We manage Truffaut product listings with specialized garden, plant, and outdoor living data — ensuring accurate botanical and product specs for French gardening enthusiasts.",
+  "ELeclerc": "One of France's largest supermarket and hypermarket chains. We manage E.Leclerc marketplace listings with accurate product data, competitive content, and catalog compliance across their broad consumer goods categories.",
+  "laposte": "France's national postal service with an expanding e-commerce marketplace. We handle La Poste platform listings with structured catalog data, accurate product information, and optimized content for French online shoppers.",
+  "Darty": "A leading French consumer electronics and appliances retailer. We manage Darty product listings with technical precision, French-language content, and structured catalog data for home electronics and white goods.",
+  "Cdiscount": "France's second-largest e-commerce platform, known for competitive pricing and wide product range. We manage Cdiscount product listings with structured data, promotional content, and catalog optimization for French consumers.",
+  "RAKUTEN": "Japan's largest e-commerce marketplace and one of the world's most visited retail platforms. We manage Rakuten product listings with Japanese market expertise, accurate catalog data, and culturally relevant product content.",
+  "Rue de Commerce": "A French online marketplace offering electronics, home goods, and accessories. We manage Rue du Commerce listings with accurate product attributes, French-language content, and catalog compliance for their digital storefront.",
+  "ShowroomPrive": "A leading French members-only fashion and lifestyle marketplace. We manage ShowroomPrivé product listings with brand-focused content, exclusive event-based catalog management, and fashion-specific attribute accuracy.",
+  "ubaldi": "A French online retailer specializing in household appliances and electronics. We manage Ubaldi product listings with precise technical specs, installation data, and structured catalog management for appliance categories.",
+  "Zooplus": "Europe's largest online pet supply retailer, operating in 30 countries including Germany. We manage Zooplus product listings with pet-specific attributes, brand compliance, and catalog data for food, accessories, and healthcare products.",
+  "GammVert": "France's leading garden and outdoor products retailer. We manage GammVert product listings with detailed botanical data, seasonal catalog updates, and accurate garden product specs for French consumers.",
+  "Jardiland": "A popular French garden center and outdoor living chain. We manage Jardiland product listings with plant care data, outdoor furniture specs, and seasonal catalog management for their garden-focused audience.",
+  "MyDeal": "An Australian lifestyle and home products marketplace. We manage MyDeal listings with structured product data, competitive content, and catalog management across furniture, home essentials, and lifestyle categories.",
+  "KOGAN": "Australia's leading pure-play online retailer. We manage Kogan product listings with accurate specs, competitive pricing content, and catalog operations across a wide range of electronics, appliances, and lifestyle products.",
+  "LASOO": "Australia's largest online catalogue and deals aggregator. We manage product data submissions and catalog management for Lasoo, ensuring accurate product information and visibility across their comparison-driven platform.",
+  "emag": "Bulgaria's largest e-commerce platform, offering a wide range of electronics, appliances, and household goods. We manage eMAG listings with Bulgarian-language content, accurate technical data, and structured catalog management.",
+  "Pepita": "Hungary's established online marketplace with a broad consumer product range. We handle Pepita product listings with Hungarian-language content, structured catalog data, and compliance with their platform requirements.",
+  "Homecentre": "A leading Middle Eastern home furnishings and lifestyle retailer. We manage Home Centre listings with region-specific product content, Arabic and English attributes, and catalog compliance for the UAE market.",
+  "Sharaf": "A major UAE consumer electronics and home appliances retailer. We manage Sharaf DG product listings with technical precision, Arabic-English bilingual content, and catalog management for the Middle Eastern consumer.",
+  "BestBuy": "America's largest consumer electronics retailer. We support BestBuy marketplace listings with spec-accurate product data, keyword-optimized descriptions, and structured catalog management across tech, appliances, and entertainment.",
+  "Walmart": "America's largest retailer and a growing e-commerce force. We support Walmart marketplace sellers with catalog setup, listing quality audits, and content optimization to maximize product discoverability.",
+  "B&Q": "The UK's largest home improvement and garden retailer. We manage B&Q product listings with structured DIY and garden product data, accurate technical specs, and catalog compliance for British home improvers.",
+  "Robert Dyas": "A UK household goods and DIY retailer with a strong online presence. We manage Robert Dyas product listings with accurate product descriptions, organized category data, and catalog management for their British shoppers.",
+  "ONBUY": "A fast-growing UK marketplace offering competitive pricing across a wide product range. We manage OnBuy product listings with structured catalog data, competitive content, and listing compliance for UK consumers.",
+  "Trendyol": "Turkey's largest e-commerce platform with rapid regional expansion. We manage product catalogs on Trendyol with localized content strategies tailored to Turkish consumer preferences and marketplace requirements.",
+  "Noon": "The Middle East's homegrown e-commerce giant, serving the UAE, Saudi Arabia, and Egypt. We manage Noon marketplace listings with Arabic and English content, driving visibility across one of the fastest-growing digital retail markets.",
+  "Bol.com": "The Netherlands' #1 online retailer, trusted by millions of Dutch and Belgian shoppers. We manage product listings on Bol.com with a focus on localized content, Dutch-language optimization, and catalog compliance.",
+  "Leenbakker": "A popular Dutch online furniture and home décor retailer. We manage Leenbakker product listings with interior design-focused content, accurate dimensions, and structured catalog data for Dutch home shoppers.",
+  "Beslist": "The Netherlands' leading product comparison and shopping platform. We manage product data feeds and catalog submissions for Beslist, ensuring accurate listings and maximum visibility across their aggregator marketplace.",
+  "Home24": "A leading European online furniture and home décor marketplace operating in Germany. We manage Home24 product listings with detailed furniture specs, style attributes, and localized content for German and European consumers.",
+  "Voelkner": "A German online electronics and technology retailer. We handle Voelkner product listings with technical accuracy, structured spec data, and catalog management for their electronics-focused customer base.",
+  "Wayfair": "The world's largest online home furnishings and décor retailer. We manage Wayfair product listings with detailed interior specs, lifestyle-focused content, and catalog compliance for their enormous global customer base.",
+  "XXXLutz": "One of Europe's largest furniture and home furnishings retailers, based in Germany. We manage XXXLutz product listings with precise dimension data, material specs, and catalog management for their wide furniture range.",
+  "Fressnapf": "Europe's largest pet supply chain, headquartered in Germany. We manage Fressnapf product listings with pet-specific attributes, brand-compliant content, and structured catalog data across food, health, and accessory categories.",
+  "Poco": "A German discount furniture and home goods retailer. We manage Poco product listings with accurate dimension data, material attributes, and structured catalog management for their value-focused home furnishing range.",
+  "Vente Unique": "A French online furniture and home décor marketplace. We manage Vente-unique product listings with interior design specs, lifestyle descriptions, and catalog compliance for French home shoppers.",
+  "GALAXUS": "Switzerland's largest online retailer, offering a vast range of electronics, home, and lifestyle products. We manage Galaxus product listings with multilingual content, Swiss-market accuracy, and structured catalog data.",
+  "manor": "Switzerland's leading department store chain with a strong online presence. We manage Manor product listings across fashion, home, and beauty categories — with Swiss-specific content and catalog management.",
+  "RICARDO": "Switzerland's top online marketplace for new and used goods. We manage Ricardo product listings with accurate descriptions, condition data, and catalog management tailored to the Swiss consumer marketplace.",
+  "ALLEGRO": "Central Europe's largest e-commerce platform, dominant in Poland and expanding across the Czech Republic. We manage Allegro product listings with localized content, Polish-language optimization, and structured catalog compliance.",
+  "BRW": "An Irish furniture and home accessories retailer. We manage BRW product listings with furniture-specific attributes, accurate dimensions, and catalog management for the Irish online home goods market.",
+  "Home & You": "A lifestyle and home accessories brand operating in the Czech Republic and broader Central Europe. We manage their product listings with creative home décor content, accurate attributes, and catalog compliance.",
+  "Empik": "Poland's leading cultural and lifestyle marketplace, offering books, music, electronics, and more. We manage Empik product listings with rich product metadata, Polish-language descriptions, and structured catalog data.",
+  "Morele": "A major Polish online electronics and tech retailer. We manage Morele product listings with technical precision, Polish-language content, and structured catalog management for competitive electronics categories.",
+  "MALL": "A leading Czech and Slovak online marketplace. We manage Mall.cz product listings with localized content for Czech and Slovak consumers, structured catalog data, and compliance with their multi-category platform standards.",
+  "BigBang": "Slovenia's leading consumer electronics and home appliances retailer. We manage BigBang product listings with technical accuracy, Slovenian-language content, and structured catalog management for local consumers.",
+  "Mimovrste": "Slovenia's most visited online store for electronics, home goods, and outdoor products. We manage Mimovrste product listings with precise Slovenian-language content, accurate specs, and structured catalog data.",
+  "Mall": "A leading Slovak and Czech online marketplace. We manage Mall.sk product listings with structured catalog data, localized Slovak-language content, and compliance with their multi-category platform standards.",
+  "KAUP24": "A Croatian online marketplace for home, garden, and DIY products. We manage Kaup24 product listings with Croatian-language content, structured attribute data, and catalog compliance for the local market.",
+  "PIGU": "Ukraine's established online marketplace with a broad consumer product range. We manage Pigu listings with Ukrainian-language content, structured catalog data, and compliance tailored to Eastern European market needs.",
+  "220": "A Ukrainian consumer electronics and appliances retailer. We manage 220.ua product listings with technical precision, Ukrainian-language descriptions, and structured catalog management for their electronics-focused audience.",
+  "Amazon": "The world's largest e-commerce platform. We manage Amazon marketplace listings with best-practice content, keyword-optimized descriptions, and compliance with Amazon's strict catalog guidelines across multiple categories.",
+  "Webshop": "A Dutch e-commerce platform for online retail. We manage product listings with structured data, localized Dutch content, and catalog compliance tailored to the Netherlands' competitive online retail market.",
 };
 
-const industryPanels: IndustryPanel[] = [
-  {key:"all",label:"All Industries",count:"22+",backdropLetters:"AL",eyebrow:"🌐 All Industries",title:"Full Industry Portfolio",body:"We partner with brands across 10 distinct verticals spanning kitchen, electronics, fashion, healthcare, logistics, and more.",accounts:[]},
-  {key:"kitchen",label:"Kitchen",count:"3",backdropLetters:"KI",eyebrow:"🍳 Kitchen Industry",title:"Cookware & Kitchen Brands",body:"Our kitchen vertical brings together brands built on home cooking, kitchen hardware, and BBQ culture.",accounts:[
-    {abbr:"AK",name:"Akicon",desc:"Kitchen and bath fixtures, faucets, and accessories for modern homes.",tag:"Kitchen"},
-    {abbr:"AI",name:"Airmsen",desc:"Innovative kitchen appliances and cooking tools built for everyday use.",tag:"Kitchen"},
-    {abbr:"MB",name:"Mr.BBQ",desc:"BBQ grills, accessories, and outdoor cooking essentials.",tag:"Kitchen"},
-  ]},
-  {key:"electronics",label:"Electronics",count:"4",backdropLetters:"EL",eyebrow:"⚡ Electronics",title:"Consumer Tech & Smart Devices",body:"We manage electronics brands spanning charging solutions, smart lighting, e-cigarettes, and home security cameras.",accounts:[
-    {abbr:"BU",name:"BaseUs",desc:"Powerbanks, chargers, and cables engineered for fast, reliable charging.",tag:"Electronics",avatarClass:"dark"},
-    {abbr:"GK",name:"Geekvape",desc:"Advanced electronic cigarette devices and vaping accessories.",tag:"Electronics",avatarClass:"gray"},
-    {abbr:"GV",name:"GOVEE",desc:"Smart outdoor and ambient lighting solutions powered by app control.",tag:"Electronics",avatarClass:"dark"},
-    {abbr:"EZ",name:"Ezviz",desc:"Home security cameras and smart surveillance systems.",tag:"Electronics",avatarClass:"gray"},
-  ]},
-  {key:"fashion",label:"Fashion Retail",count:"2",backdropLetters:"FA",eyebrow:"👗 Fashion Retail",title:"Fashion & Apparel Brands",body:"Fashion brands that trust us to manage their digital presence across leading marketplaces worldwide.",accounts:[
-    {abbr:"AZ",name:"Azazie",desc:"Premium bridal gowns, bridesmaid dresses, and event-ready fashion.",tag:"Fashion"},
-    {abbr:"BL",name:"Baleaf",desc:"Performance athleisure and activewear designed for workouts and yoga.",tag:"Fashion",avatarClass:"gray"},
-  ]},
-  {key:"home",label:"Home & Ergo",count:"2",backdropLetters:"HO",eyebrow:"🪑 Home & Ergo",title:"Ergonomic & Home Products",body:"Ergonomic furniture and home wellness brands that support comfortable modern living.",accounts:[
-    {abbr:"FX",name:"Flexispot",desc:"Standing desks, ergonomic chairs, and height-adjustable workstations.",tag:"Home & Ergo"},
-    {abbr:"BE",name:"BESTOi",desc:"Ergonomic home accessories and wellness products.",tag:"Home & Ergo",avatarClass:"gray"},
-  ]},
-  {key:"medical",label:"Medical",count:"2",backdropLetters:"ME",eyebrow:"🏥 Medical",title:"Healthcare & Medical Devices",body:"Medical and healthcare brands from clinical imaging systems to consumer wellness devices.",accounts:[
-    {abbr:"MN",name:"Mindray",desc:"Medical imaging systems, patient monitoring, and diagnostic equipment.",tag:"Medical",avatarClass:"teal"},
-    {abbr:"CS",name:"Coslus",desc:"Consumer healthcare devices including oral care and personal wellness.",tag:"Medical",avatarClass:"teal"},
-  ]},
-  {key:"automotive",label:"Automotive",count:"2",backdropLetters:"AU",eyebrow:"🚗 Automotive",title:"Automotive Parts & Accessories",body:"Automotive brands covering OEM parts, child safety seats, and vehicle accessories.",accounts:[
-    {abbr:"FP",name:"Fridayparts",desc:"OEM and aftermarket replacement parts for heavy machinery.",tag:"Automotive",avatarClass:"dark"},
-    {abbr:"DN",name:"Diono",desc:"Child car seats, boosters, and automotive travel accessories.",tag:"Automotive",avatarClass:"gray"},
-  ]},
-  {key:"travel",label:"Travel & Gov't",count:"2",backdropLetters:"TR",eyebrow:"✈️ Travel & Gov't",title:"Travel & Government Services",body:"Travel and government service brands including visa processing and online air booking.",accounts:[
-    {abbr:"CG",name:"CGI-Visa",desc:"Visa application services, government travel documentation.",tag:"Gov't",avatarClass:"blue"},
-    {abbr:"JT",name:"Jettzy",desc:"Online air travel booking platform with competitive fares.",tag:"Travel",avatarClass:"blue"},
-  ]},
-  {key:"logistics",label:"Logistics",count:"1",backdropLetters:"LO",eyebrow:"📦 Logistics",title:"Logistics & Supply Chain",body:"End-to-end logistics management and live shipment tracking for e-commerce brands.",accounts:[
-    {abbr:"GF",name:"GOFO",desc:"End-to-end logistics management and delivery solutions.",tag:"Logistics",avatarClass:"amber"},
-  ]},
-  {key:"software",label:"Software",count:"1",backdropLetters:"SO",eyebrow:"💻 Software",title:"Consumer & Business Software",body:"Software brands covering PC optimization, security tools, and professional productivity.",accounts:[
-    {abbr:"AV",name:"Avanquest",desc:"Consumer and professional software including PC optimization and security.",tag:"Software",avatarClass:"dark"},
-  ]},
-  {key:"specialty",label:"Specialty",count:"6",backdropLetters:"SP",eyebrow:"⭐ Specialty",title:"Specialty & Niche Verticals",body:"Niche brands spanning thermal printers, coolers, micromobility, eyewear, hospitality, and audio.",accounts:[
-    {abbr:"JD",name:"Jadens",desc:"Thermal label printers and shipping supplies for warehouses.",tag:"Specialty",avatarClass:"dark"},
-    {abbr:"CO",name:"Cooler",desc:"Portable coolers and ice retention products for outdoor use.",tag:"Specialty",avatarClass:"gray"},
-    {abbr:"3K",name:"3KM Ario",desc:"Micromobility and personal transport tech solutions.",tag:"Specialty",avatarClass:"dark"},
-    {abbr:"NM",name:"Next Marvel",desc:"Eyewear accessories including lens kits and cases.",tag:"Specialty",avatarClass:"dark"},
-    {abbr:"GN",name:"GNG",desc:"Hotel booking and hospitality solutions for travelers.",tag:"Specialty",avatarClass:"blue"},
-    {abbr:"MO",name:"MasterOnly",desc:"Professional studio speakers and audio accessories.",tag:"Specialty",avatarClass:"rose"},
-  ]},
-];
+const industryData: Record<string, { eyebrow: string; title: string; body: string; backdrop: string; count: number; label: string }> = {
+  kitchen:     { eyebrow: '🍳 Kitchen Industry',       title: 'Cookware & Kitchen Brands',    body: 'Our kitchen vertical brings together brands that have built strong reputations in home cooking, kitchen hardware, and BBQ culture. From premium faucet systems and modern appliances to outdoor grilling setups, we help these brands reach buyers across leading e-commerce platforms at scale.', backdrop: 'KI', count: 3,  label: 'KITCHEN' },
+  electronics: { eyebrow: 'Electronics & Accessories', title: 'Tech & Consumer Electronics',   body: 'We manage a growing roster of consumer electronics brands spanning smart home lighting, security cameras, high-performance powerbanks, and vaping devices. Each brand requires precise catalog management and marketplace integrations across multiple platforms and regions.', backdrop: 'EL', count: 4,  label: 'ELECTRONICS' },
+  fashion:     { eyebrow: 'Fashion Retail',             title: 'Apparel & Style Brands',        body: 'Our fashion portfolio covers the full spectrum — from elegant bridal gowns to high-performance athleisure. These brands operate in competitive, trend-driven marketplaces where product presentation, sizing accuracy, and fast catalog updates are mission-critical for conversion.', backdrop: 'FA', count: 2,  label: 'FASHION RETAIL' },
+  home:        { eyebrow: 'Home & Ergonomics',          title: 'Workspace & Home Solutions',    body: 'We support brands building the future of home and office comfort. Ergonomic standing desks, adjustable chairs, and wellness accessories require meticulous product listing accuracy and cross-platform coordination to serve both B2B and B2C buyers effectively.', backdrop: 'HO', count: 2,  label: 'HOME & ERGO' },
+  medical:     { eyebrow: 'Medical & Healthcare',       title: 'Healthcare & Medical Devices',  body: 'Healthcare is one of our most compliance-sensitive verticals. We manage listings for brands producing patient monitoring systems, consumer health devices, and oral care products — ensuring catalog accuracy, regulatory alignment, and seamless marketplace operations.', backdrop: 'ME', count: 2,  label: 'MEDICAL' },
+  automotive:  { eyebrow: 'Automotive',                 title: 'Auto Parts & Accessories',      body: 'The automotive vertical demands deep product knowledge and precise fitment data. We manage accounts for OEM replacement parts suppliers and child vehicle safety brands, ensuring accurate compatibility listings and high discoverability on major e-commerce platforms.', backdrop: 'AU', count: 2,  label: 'AUTOMOTIVE' },
+  travel:      { eyebrow: 'Travel & Government',        title: "Travel & Gov't Services",       body: "This vertical bridges public services and digital travel commerce. We support visa processing platforms and online flight booking services — managing their digital presence, account operations, and platform integrations to streamline global traveler experiences.", backdrop: 'TR', count: 2,  label: "TRAVEL & GOV'T" },
+  logistics:   { eyebrow: 'Logistics',                  title: 'Tracking & Delivery',           body: 'Logistics technology is the backbone of modern e-commerce. We partner with platforms that offer real-time shipment tracking and end-to-end delivery management — helping them maintain accurate product listings and operational visibility across multiple channels.', backdrop: 'LO', count: 1,  label: 'LOGISTICS' },
+  software:    { eyebrow: 'Software',                   title: 'Digital Software Products',     body: 'Consumer and professional software brands face unique listing challenges — from license types to version management. We handle catalog operations for software publishers, ensuring clear product differentiation, accurate descriptions, and compliant marketplace presence.', backdrop: 'SW', count: 1,  label: 'SOFTWARE' },
+  specialty:   { eyebrow: 'Specialty Verticals',        title: 'Niche & Specialty Brands',      body: 'Our specialty portfolio spans a rich diversity of niches — from thermal label printers and portable coolers to micromobility scooters, eyewear accessories, studio audio equipment, and curated hospitality booking. Each brand gets a tailored marketplace strategy built for its unique audience.', backdrop: 'SP', count: 6,  label: 'SPECIALTY' },
+};
 
-const toolCards = [
-  {abbr:"Cx",cat:"security",name:"Citrix",catLabel:"Security",desc:"Secure virtual desktop infrastructure for remote operations.",color:"red",img:""},
-  {abbr:"Zd",cat:"comms",name:"Zendesk",catLabel:"Communication",desc:"Customer support ticketing and communication management.",color:"dark",img:""},
-  {abbr:"Ok",cat:"security",name:"Okta",catLabel:"Security",desc:"Identity and access management for secure team authentication.",color:"light",img:""},
-  {abbr:"Jr",cat:"pm",name:"Jira",catLabel:"Project Mgmt",desc:"Agile project tracking and sprint management for ops teams.",color:"pink",img:""},
-  {abbr:"Sf",cat:"catalog",name:"Salsify",catLabel:"Catalog",desc:"Product experience management (PXM) for content syndication.",color:"dark",img:""},
-  {abbr:"Lk",cat:"analytics",name:"Looker",catLabel:"Analytics & BI",desc:"Business intelligence and data visualization for reporting.",color:"red",img:""},
-  {abbr:"Sl",cat:"comms",name:"Slack",catLabel:"Communication",desc:"Channel-based team communication and instant messaging.",color:"light",img:""},
-  {abbr:"Tm",cat:"comms",name:"Teams",catLabel:"Communication",desc:"Real-time messaging and video collaboration across departments.",color:"dark",img:""},
-  {abbr:"Cv",cat:"security",name:"CATO VPN",catLabel:"Security",desc:"Cloud-native network security and secure access edge.",color:"pink",img:""},
-  {abbr:"Sp",cat:"security",name:"Sailpoint",catLabel:"Security",desc:"Identity governance and access control for enterprise security.",color:"red",img:""},
-  {abbr:"Xl",cat:"catalog",name:"Excel",catLabel:"Catalog",desc:"Spreadsheet-based catalog tracking and data workflows.",color:"light",img:""},
-  {abbr:"Bb",cat:"catalog",name:"Babel",catLabel:"Catalog",desc:"Translation and localization for multilingual catalog content.",color:"pink",img:""},
-  {abbr:"Br",cat:"comms",name:"Bria",catLabel:"Communication",desc:"VoIP communication tool for client-facing and internal calls.",color:"dark",img:""},
-  {abbr:"Nx",cat:"infra",name:"Nexus",catLabel:"Infrastructure",desc:"Repository manager for artifact storage and build pipelines.",color:"red",img:""},
-  {abbr:"Pp",cat:"pm",name:"People Plaza",catLabel:"Project Mgmt",desc:"HR and workforce management system for team operations.",color:"light",img:""},
-  {abbr:"Ol",cat:"comms",name:"Outlook",catLabel:"Communication",desc:"Enterprise email and calendar coordination across global teams.",color:"pink",img:""},
-  {abbr:"Od",cat:"infra",name:"OneDrive",catLabel:"Infrastructure",desc:"Cloud file storage and document sharing across global teams.",color:"dark",img:""},
-  {abbr:"Pt",cat:"catalog",name:"Powerpoint",catLabel:"Catalog",desc:"Presentation and client reporting tool for business reviews.",color:"light",img:""},
-  {abbr:"Wd",cat:"catalog",name:"Word",catLabel:"Catalog",desc:"Document creation and SOP documentation for operations teams.",color:"red",img:""},
-];
+/* ─────────────────────────────────────────────
+   MOSAIC HOOK (platforms hero)
+───────────────────────────────────────────── */
+function usePlatformsMosaic(stageRef: React.RefObject<HTMLDivElement>, wrapRef: React.RefObject<HTMLDivElement>) {
+  useEffect(() => {
+    const stage = stageRef.current;
+    const wrap  = wrapRef.current;
+    if (!stage || !wrap) return;
 
-const toolPillCats = [
-  {key:"all",label:"All"},{key:"security",label:"Security"},{key:"comms",label:"Communication"},
-  {key:"catalog",label:"Catalog"},{key:"analytics",label:"Analytics & BI"},
-  {key:"pm",label:"Project Mgmt"},{key:"infra",label:"Infrastructure"},
-];
+    const isMobile = window.innerWidth < 640;
+    const CARD_W = isMobile ? 130 : 200;
+    const CARD_H = isMobile ? 86  : 200;
+    const STEP   = CARD_W + (isMobile ? 10 : 16);
+    const COUNT  = ALL_PLATFORMS.length;
+    const AUTO_SPEED = 0.010;
+    const VISIBLE = isMobile ? 3 : 7;
 
-const verticalRows = [
-  {num:"01",name:"Kitchen",desc:"Cookware, appliances, and kitchen accessories built for modern households.",chips:["Akicon","Airmsen","Mr.BBQ"],img:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop"},
-  {num:"02",name:"Electronics",desc:"Smart devices, cameras, lighting, and consumer tech products.",chips:["BaseUs","Geekvape","GOVEE","Ezviz"],img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop"},
-  {num:"03",name:"Fashion Retail",desc:"Bridal, athleisure, and event-ready apparel across global marketplaces.",chips:["Azazie","Baleaf"],img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop"},
-  {num:"04",name:"Home & Ergo",desc:"Ergonomic furniture, standing desks, and home wellness products.",chips:["Flexispot","BESTOi"],img:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop"},
-  {num:"05",name:"Medical",desc:"Clinical imaging, patient monitoring, and consumer healthcare devices.",chips:["Mindray","Coslus"],img:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop"},
-  {num:"06",name:"Automotive",desc:"OEM parts, child safety seats, and automotive travel accessories.",chips:["Fridayparts","Diono"],img:"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&h=400&fit=crop"},
-  {num:"07",name:"Travel & Gov't",desc:"Travel documentation and government service solutions for global citizens.",chips:["CGI-Visa","Jettzy"],img:"https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&h=400&fit=crop"},
-  {num:"08",name:"Logistics",desc:"End-to-end logistics management and live shipment tracking platforms.",chips:["GOFO"],img:"https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=600&h=400&fit=crop"},
-  {num:"09",name:"Software",desc:"Consumer and professional software including PC optimization and security tools.",chips:["Avanquest"],img:"https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop"},
-  {num:"10",name:"Specialty Verticals",desc:"Niche markets spanning eyewear, coolers, micromobility, audio, and hospitality.",chips:["Jadens","Cooler","3KM Ario","Next Marvel","GNG","MasterOnly"],img:"https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&h=400&fit=crop"},
-];
+    stage.style.height = CARD_H + "px";
 
-const dirCards = [
-  {abbr:"AK",name:"Akicon",industry:"Kitchen and Bath Industry",ind:"kitchen",badge:"commerce",badgeLabel:"Kitchen"},
-  {abbr:"AV",name:"Avanquest",industry:"Software Development",ind:"software",badge:"tech",badgeLabel:"Software",ac:"dark"},
-  {abbr:"EZ",name:"Ezviz",industry:"Security Home Cameras",ind:"electronics",badge:"tech",badgeLabel:"Electronics",ac:"gray"},
-  {abbr:"MN",name:"Mindray",industry:"Medical Imaging Needs",ind:"medical",badge:"health",badgeLabel:"Medical",ac:"teal"},
-  {abbr:"JD",name:"Jadens",industry:"Thermal Label Printers",ind:"specialty",badge:"retail",badgeLabel:"Specialty",ac:"dark"},
-  {abbr:"FX",name:"Flexispot",industry:"Ergonomic Furniture & Home",ind:"home",badge:"commerce",badgeLabel:"Home & Ergo"},
-  {abbr:"BU",name:"BaseUs",industry:"Powerbanks, Chargers & Cables",ind:"electronics",badge:"tech",badgeLabel:"Electronics",ac:"dark"},
-  {abbr:"BE",name:"BESTOi",industry:"Home Ergonomics",ind:"home",badge:"commerce",badgeLabel:"Home & Ergo",ac:"gray"},
-  {abbr:"GF",name:"GOFO",industry:"Logistics, Tracking & Deliveries",ind:"logistics",badge:"logistic",badgeLabel:"Logistics",ac:"amber"},
-  {abbr:"GV",name:"GOVEE",industry:"Outdoor Lights",ind:"electronics",badge:"tech",badgeLabel:"Electronics",ac:"dark"},
-  {abbr:"GK",name:"Geekvape",industry:"Electronic E-Cigarettes",ind:"electronics",badge:"tech",badgeLabel:"Electronics",ac:"gray"},
-  {abbr:"CG",name:"CGI-Visa",industry:"Govt Services / Travel Docs",ind:"travel",badge:"travel",badgeLabel:"Travel & Gov't",ac:"blue"},
-  {abbr:"AZ",name:"Azazie",industry:"Fashion Retail",ind:"fashion",badge:"retail",badgeLabel:"Fashion"},
-  {abbr:"3K",name:"3KM Ario",industry:"Micromobility / Transport Tech",ind:"specialty",badge:"retail",badgeLabel:"Specialty",ac:"dark"},
-  {abbr:"BL",name:"Baleaf",industry:"Fashion Retail",ind:"fashion",badge:"retail",badgeLabel:"Fashion",ac:"gray"},
-  {abbr:"NM",name:"Next Marvel",industry:"Eyewear Accessories",ind:"specialty",badge:"retail",badgeLabel:"Specialty",ac:"dark"},
-  {abbr:"CO",name:"Cooler",industry:"Portable Coolers",ind:"specialty",badge:"retail",badgeLabel:"Specialty",ac:"gray"},
-  {abbr:"GN",name:"GNG",industry:"Hotel and Booking",ind:"specialty",badge:"travel",badgeLabel:"Specialty",ac:"blue"},
-  {abbr:"CS",name:"Coslus",industry:"Healthcare and Medical Devices",ind:"medical",badge:"health",badgeLabel:"Medical",ac:"teal"},
-  {abbr:"FP",name:"Fridayparts",industry:"Automotive",ind:"automotive",badge:"commerce",badgeLabel:"Automotive",ac:"dark"},
-  {abbr:"AI",name:"Airmsen",industry:"Kitchen Industry",ind:"kitchen",badge:"commerce",badgeLabel:"Kitchen"},
-  {abbr:"DN",name:"Diono",industry:"Carseats Accessories",ind:"automotive",badge:"commerce",badgeLabel:"Automotive",ac:"gray"},
-  {abbr:"MB",name:"Mr.BBQ",industry:"Kitchen Industry",ind:"kitchen",badge:"commerce",badgeLabel:"Kitchen"},
-  {abbr:"MO",name:"MasterOnly",industry:"Studio & Speaker Accessories",ind:"specialty",badge:"retail",badgeLabel:"Specialty",ac:"rose"},
-  {abbr:"JT",name:"Jettzy",industry:"Travel Air Booking",ind:"travel",badge:"travel",badgeLabel:"Travel & Gov't",ac:"blue"},
-];
+    let offset = 0, vel = 0, dragging = false;
+    let dragStartX = 0, dragStartOff = 0, lastX = 0;
+    let autoActive = true;
+    let rafId: number;
 
-/* ─── Helpers ────────────────────────────────────────────────────────────── */
-function makeSVGLogo(name: string, bg: string, fg: string): string {
-  const abbr = name.replace(/[^A-Z0-9]/gi,"").slice(0,3).toUpperCase();
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-    <rect width="200" height="200" fill="${bg}"/>
-    <text x="100" y="95" font-family="Arial Black,sans-serif" font-size="52" font-weight="900" fill="${fg}" text-anchor="middle" dominant-baseline="middle">${abbr}</text>
-    <text x="100" y="148" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="${fg}" opacity="0.7" text-anchor="middle">${name}</text>
-  </svg>`;
-  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    function getCardStyle(dist: number) {
+      const absDist = Math.abs(dist);
+      const scale   = Math.max(0.60, 1 - absDist * 0.06);
+      const tx      = dist * STEP;
+      const ty      = absDist * absDist * 5;
+      const zIndex  = Math.round(100 - absDist * 10);
+      const opacity = Math.max(0.20, 1 - absDist * 0.14);
+      return { scale, tx, ty, zIndex, opacity };
+    }
+
+    const pool: { div: HTMLDivElement; img: HTMLImageElement; span: HTMLSpanElement }[] = [];
+    for (let i = 0; i < (VISIBLE * 2 + 1); i++) {
+      const div = document.createElement("div");
+      div.className = "mosaic-card";
+      div.style.width  = CARD_W + "px";
+      div.style.height = CARD_H + "px";
+      const img = document.createElement("img") as HTMLImageElement;
+      img.draggable = false;
+      img.loading   = "eager";
+      const lbl = document.createElement("div");
+      lbl.className = "mosaic-card-label";
+      const span = document.createElement("span");
+      lbl.appendChild(span);
+      div.appendChild(img); div.appendChild(lbl);
+      stage.appendChild(div);
+      pool.push({ div, img, span });
+    }
+
+    function render() {
+      const centerIdx = Math.round(offset);
+      pool.forEach((el, poolIdx) => {
+        const d = poolIdx - VISIBLE;
+        const idx = ((centerIdx + d) % COUNT + COUNT) % COUNT;
+        const frac = offset - centerIdx;
+        const dist = d - frac;
+        const absDist = Math.abs(dist);
+        if (absDist > VISIBLE + 0.5) { el.div.style.display = "none"; return; }
+        el.div.style.display = "";
+        const { scale, tx, ty, zIndex, opacity } = getCardStyle(dist);
+        el.div.style.transform = `translateX(${tx}px) translateY(${ty}px) scale(${scale})`;
+        el.div.style.zIndex    = String(zIndex);
+        el.div.style.opacity   = String(opacity);
+        const platformName = ALL_PLATFORMS[idx];
+        const newSrc = PLATFORM_LOGO_MAP[platformName] ?? PLATFORM_LOGO_MAP["_fallback"];
+        if (el.img.src !== newSrc) {
+          el.img.src = newSrc;
+          el.img.style.objectFit = "contain";
+          el.img.style.padding = "6px";
+          el.img.style.background = "#fff";
+          el.img.style.width = "100%";
+          el.img.style.height = "72%";
+        }
+        el.img.alt       = ALL_PLATFORMS[idx];
+        el.span.textContent = ALL_PLATFORMS[idx];
+      });
+    }
+
+    let lastTime = 0;
+    function animate(ts: number) {
+      const dt = lastTime === 0 ? 16 : Math.min(ts - lastTime, 32);
+      lastTime = ts;
+      if (!dragging) {
+        if (autoActive) {
+          offset += AUTO_SPEED * (dt / 16);
+        } else {
+          vel *= 0.94;
+          offset += vel;
+          if (Math.abs(vel) < 0.001) autoActive = true;
+        }
+        offset = ((offset % COUNT) + COUNT) % COUNT;
+      }
+      render();
+      rafId = requestAnimationFrame(animate);
+    }
+    rafId = requestAnimationFrame(animate);
+
+    const onDown = (e: PointerEvent) => {
+      dragging = true; autoActive = false; vel = 0;
+      dragStartX = e.clientX; dragStartOff = offset; lastX = e.clientX;
+      wrap.setPointerCapture(e.pointerId);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      const dx = e.clientX - dragStartX;
+      vel = (lastX - e.clientX) / STEP;
+      lastX = e.clientX;
+      offset = ((dragStartOff + dx / STEP * -1) % COUNT + COUNT) % COUNT;
+    };
+    const onUp = () => { dragging = false; };
+
+    wrap.addEventListener("pointerdown", onDown);
+    wrap.addEventListener("pointermove", onMove);
+    wrap.addEventListener("pointerup",    onUp);
+    wrap.addEventListener("pointerleave", onUp);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      wrap.removeEventListener("pointerdown", onDown);
+      wrap.removeEventListener("pointermove", onMove);
+      wrap.removeEventListener("pointerup",    onUp);
+      wrap.removeEventListener("pointerleave", onUp);
+      stage.innerHTML = "";
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }
 
-const thmBatch1 = [
-  {name:"Citrix",bg:"#1e3a5f",fg:"#ffffff"},{name:"Zendesk",bg:"#03363d",fg:"#ffffff"},
-  {name:"Okta",bg:"#007dc1",fg:"#ffffff"},{name:"Jira",bg:"#0052cc",fg:"#ffffff"},
-  {name:"Salsify",bg:"#6e40c9",fg:"#ffffff"},{name:"Looker",bg:"#4285f4",fg:"#ffffff"},
-  {name:"Slack",bg:"#4a154b",fg:"#ffffff"},{name:"Salesforce",bg:"#00a1e0",fg:"#ffffff"},
-  {name:"Excel",bg:"#217346",fg:"#ffffff"},{name:"Teams",bg:"#6264a7",fg:"#ffffff"},
-].map(t=>({...t,src:makeSVGLogo(t.name,t.bg,t.fg)}));
+/* ─────────────────────────────────────────────
+   SVG MOSAIC HOOK (tools / industries hero)
+───────────────────────────────────────────── */
+interface MosaicItem { name: string; bg: string; fg: string; src: string; }
 
-const thmBatch2 = [
-  {name:"Mirakl",bg:"#12233a",fg:"#ffffff"},{name:"Amazon",bg:"#ff9900",fg:"#111111"},
-  {name:"Walmart",bg:"#0071ce",fg:"#ffffff"},{name:"eBay",bg:"#e53238",fg:"#ffffff"},
-  {name:"Kaufland",bg:"#e20015",fg:"#ffffff"},{name:"OTTO",bg:"#cc0000",fg:"#ffffff"},
-  {name:"Cdiscount",bg:"#1a1a6e",fg:"#ffffff"},{name:"Shopify",bg:"#96bf48",fg:"#ffffff"},
-  {name:"Zalando",bg:"#ff6900",fg:"#ffffff"},{name:"Temu",bg:"#ff6600",fg:"#ffffff"},
-].map(t=>({...t,src:makeSVGLogo(t.name,t.bg,t.fg)}));
+function useSVGMosaic(containerId: string, items: MosaicItem[]) {
+  useEffect(() => {
+    const container = document.getElementById(containerId);
+    if (!container || items.length < 5) return;
 
-const thmPositions = [
-  {left:"4%",top:"0%",width:"52%",height:"55%"},
-  {left:"58%",top:"0%",width:"40%",height:"44%"},
-  {left:"4%",top:"57%",width:"38%",height:"44%"},
-  {left:"44%",top:"50%",width:"24%",height:"32%"},
-  {left:"70%",top:"57%",width:"28%",height:"40%"},
-];
+    const positions = [
+      { left: '4%',  top: '0%',   width: '52%', height: '55%' },
+      { left: '58%', top: '0%',   width: '40%', height: '44%' },
+      { left: '4%',  top: '57%',  width: '38%', height: '44%' },
+      { left: '44%', top: '50%',  width: '24%', height: '32%' },
+      { left: '70%', top: '57%',  width: '28%', height: '40%' },
+    ];
+    const TRANSITION_MS = 600;
+    const CYCLE_MS = 2400;
 
-const countryFlag: Record<string,string> = {
-  NL:"nl",FR:"fr",ES:"es",BG:"bg",CH:"ch",DE:"de",HU:"hu",IT:"it",BE:"be",AE:"ae",
-  SI:"si",SK:"sk",HR:"hr",SA:"sa",JP:"jp",TR:"tr",DK:"dk",UA:"ua",GR:"gr",
-  US:"us",UK:"gb",AU:"au",IE:"ie",CZ:"cz",
-};
+    container.innerHTML = '';
+    container.style.position = 'relative';
 
-/* ─── Sub-components ─────────────────────────────────────────────────────── */
-function TabNav({active,onSwitch,align="center"}:{active:Tab;onSwitch:(t:Tab)=>void;align?:"center"|"left"}) {
-  const tabs: {key:Tab;label:string}[] = [{key:"platforms",label:"Platforms"},{key:"tools",label:"Tools"},{key:"industries",label:"Industries"}];
+    const slotItemIdx = [0, 1, 2, 3, 4];
+    let nextItemIdx = 5 % items.length;
+
+    function setCardContent(card: HTMLDivElement, item: MosaicItem) {
+      card.style.background = '#fff';
+      const img = card.querySelector('img') as HTMLImageElement;
+      const lbl = card.querySelector('[data-label]') as HTMLDivElement;
+      if (img) { img.src = item.src; img.alt = item.name; }
+      if (lbl) lbl.textContent = item.name;
+    }
+
+    function createCard(item: MosaicItem, posIdx: number): HTMLDivElement {
+      const pos = positions[posIdx];
+      const el = document.createElement('div') as HTMLDivElement;
+      Object.assign(el.style, {
+        position: 'absolute', left: pos.left, top: pos.top,
+        width: pos.width, height: pos.height,
+        borderRadius: '18px', overflow: 'hidden', background: '#fff',
+        transition: `left ${TRANSITION_MS}ms cubic-bezier(0.4,0,0.2,1), top ${TRANSITION_MS}ms cubic-bezier(0.4,0,0.2,1), width ${TRANSITION_MS}ms cubic-bezier(0.4,0,0.2,1), height ${TRANSITION_MS}ms cubic-bezier(0.4,0,0.2,1)`,
+        zIndex: '1',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '5px 5px 16px rgba(0,0,0,0.10), 2px 2px 5px rgba(0,0,0,0.06)',
+      });
+      const img = document.createElement('img');
+      img.src = item.src; img.alt = item.name;
+      Object.assign(img.style, {
+        width: '85%', height: '85%', objectFit: 'contain',
+        display: 'block', pointerEvents: 'none',
+      });
+      el.appendChild(img);
+      const label = document.createElement('div');
+      label.setAttribute('data-label', '1');
+      Object.assign(label.style, {
+        position: 'absolute', bottom: '0', left: '0', right: '0',
+        height: '28%', display: 'flex', alignItems: 'center',
+        padding: '0 12px',
+        background: '#fff',
+        borderTop: '1px solid #ebebeb',
+        color: '#1a1a1a', fontSize: '11px', fontWeight: '700',
+        letterSpacing: '0.06em', textTransform: 'uppercase',
+      });
+      label.textContent = item.name;
+      el.appendChild(label);
+      (el as any)._slot = posIdx;
+      return el;
+    }
+
+    function applyPosition(card: HTMLDivElement, posIdx: number) {
+      const pos = positions[posIdx];
+      card.style.left = pos.left; card.style.top = pos.top;
+      card.style.width = pos.width; card.style.height = pos.height;
+      card.style.zIndex = posIdx === 0 ? '3' : '1';
+      (card as any)._slot = posIdx;
+    }
+
+    const cards: HTMLDivElement[] = [];
+    for (let i = 0; i < 5; i++) {
+      const card = createCard(items[i], i);
+      container.appendChild(card);
+      cards.push(card);
+    }
+
+    let intervalId: ReturnType<typeof setInterval>;
+    const rotateTick = () => {
+      const cardGoingToFront = cards.find(c => (c as any)._slot === 4)!;
+      const newItem = items[nextItemIdx];
+      setCardContent(cardGoingToFront, newItem);
+      nextItemIdx = (nextItemIdx + 1) % items.length;
+      requestAnimationFrame(() => {
+        cards.forEach(c => { applyPosition(c, ((c as any)._slot + 1) % 5); });
+      });
+    };
+
+    setTimeout(() => { intervalId = setInterval(rotateTick, CYCLE_MS); }, 800);
+
+    return () => { clearInterval(intervalId); container.innerHTML = ''; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerId]);
+}
+
+
+/* ─────────────────────────────────────────────
+   SCROLL ANIMATION HOOK
+───────────────────────────────────────────── */
+function useScrollAnims() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".scroll-anim, .scroll-anim-2, .scroll-anim-3");
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in-view"); }),
+      { threshold: 0.15 }
+    );
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  });
+}
+
+/* ─────────────────────────────────────────────
+   PLATFORM SLIDER COMPONENT  (infinite circular)
+───────────────────────────────────────────── */
+function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selectedCountry: string }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const trackRef   = useRef<HTMLDivElement>(null);
+  const autoRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef     = useRef<number>(0);
+  const nameRef    = useRef<HTMLHeadingElement>(null);
+  const descRef    = useRef<HTMLParagraphElement>(null);
+  const badgeRef   = useRef<HTMLSpanElement>(null);
+  const activeRef  = useRef(0); // mirrors activeIdx without closure stale issues
+
+  const STRIDE = 340;
+  const count  = items.length;
+
+  // looped = [clone-of-last,  item0, item1, …, itemN-1,  clone-of-first]
+  // looped index of real item i  →  i + 1
+  // scrollLeft of looped index k →  k * STRIDE
+  const looped = count > 0 ? [items[count - 1], ...items, items[0]] : [];
+
+  // Update left-panel text imperatively (no state, no re-render)
+  const updatePanel = useCallback((realIdx: number) => {
+    const p = items[realIdx];
+    if (!p) return;
+    if (nameRef.current) {
+      nameRef.current.classList.add("txt-enter");
+      setTimeout(() => { if (nameRef.current) { nameRef.current.textContent = p.name; nameRef.current.classList.remove("txt-enter"); } }, 10);
+    }
+    if (descRef.current) {
+      descRef.current.classList.add("txt-enter");
+      setTimeout(() => { if (descRef.current) { descRef.current.textContent = platformDescriptions[p.name] ?? platformDescriptions["ALL"]; descRef.current.classList.remove("txt-enter"); } }, 50);
+    }
+    if (badgeRef.current) badgeRef.current.textContent = p.country ?? "";
+  }, [items]);
+
+  // Animate scrollLeft from current to target, then call onDone
+  const animateTo = useCallback((targetScroll: number, onDone?: () => void) => {
+    const track = trackRef.current;
+    if (!track) return;
+    cancelAnimationFrame(rafRef.current);
+    const start = track.scrollLeft;
+    const dist  = targetScroll - start;
+    if (Math.abs(dist) < 1) { onDone?.(); return; }
+    const dur = 420, t0 = performance.now();
+    function ease(t: number) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+    function step(now: number) {
+      const pct = Math.min((now - t0) / dur, 1);
+      if (track) track.scrollLeft = start + dist * ease(pct);
+      if (pct < 1) { rafRef.current = requestAnimationFrame(step); }
+      else { onDone?.(); }
+    }
+    rafRef.current = requestAnimationFrame(step);
+  }, []);
+
+  // Navigate to a real index with animation. Handles infinite wrap transparently.
+  const goTo = useCallback((realIdx: number) => {
+    if (count === 0) return;
+    const wrapped = ((realIdx % count) + count) % count;
+    const loopedTarget = wrapped + 1; // looped index of real item
+    activeRef.current = wrapped;
+    setActiveIdx(wrapped);
+    updatePanel(wrapped);
+
+    animateTo(loopedTarget * STRIDE, () => {
+      const track = trackRef.current;
+      if (!track) return;
+      // We just landed on a real item — nothing to do.
+      // But if we landed on the clone-of-first (loopedTarget === count+1),
+      // or clone-of-last (loopedTarget === 0), teleport silently.
+      // This shouldn't happen here since we always go to wrapped+1 (1..count),
+      // but guard anyway.
+    });
+  }, [count, animateTo, updatePanel]);
+
+  // Navigate to a looped index — used for the "wrap-around" transition
+  // Scrolls to clone, then instantly jumps to the real equivalent
+  const goToLooped = useCallback((loopedIdx: number, thenRealIdx: number) => {
+    if (count === 0) return;
+    activeRef.current = thenRealIdx;
+    setActiveIdx(thenRealIdx);
+    updatePanel(thenRealIdx);
+
+    animateTo(loopedIdx * STRIDE, () => {
+      // Animation finished on the clone → silently jump to the real counterpart
+      const track = trackRef.current;
+      if (track) track.scrollLeft = (thenRealIdx + 1) * STRIDE;
+    });
+  }, [count, animateTo, updatePanel]);
+
+  // Decide which animation to use: normal vs wrap-around clone
+  const navigate = useCallback((from: number, to: number) => {
+    if (count === 0) return;
+    const wrappedTo = ((to % count) + count) % count;
+
+    // Going forward past last → animate to clone-of-first, then jump to real first
+    if (from === count - 1 && wrappedTo === 0) {
+      goToLooped(count + 1, 0);
+    }
+    // Going backward past first → animate to clone-of-last, then jump to real last
+    else if (from === 0 && wrappedTo === count - 1) {
+      goToLooped(0, count - 1);
+    }
+    else {
+      goTo(wrappedTo);
+    }
+  }, [count, goTo, goToLooped]);
+
+  const scheduleAuto = useCallback((realIdx: number) => {
+    if (autoRef.current) clearTimeout(autoRef.current);
+    autoRef.current = setTimeout(() => {
+      const next = (realIdx + 1) % Math.max(count, 1);
+      navigate(realIdx, next);
+      scheduleAuto(next);
+    }, 3500);
+  }, [count, navigate]);
+
+  // Init
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || count === 0) return;
+    activeRef.current = 0;
+    setActiveIdx(0);
+    track.scrollLeft = STRIDE; // looped[1] = items[0]
+    scheduleAuto(0);
+    return () => {
+      if (autoRef.current) clearTimeout(autoRef.current);
+      cancelAnimationFrame(rafRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
+
+  // Drag
+  const dragRef    = useRef<{ startX: number; startScroll: number; dragging: boolean }>({ startX: 0, startScroll: 0, dragging: false });
+  const isDragging = useRef(false);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    const track = trackRef.current;
+    if (!track) return;
+    if (autoRef.current) clearTimeout(autoRef.current);
+    cancelAnimationFrame(rafRef.current);
+    isDragging.current = false;
+    dragRef.current = { startX: e.clientX, startScroll: track.scrollLeft, dragging: true };
+    track.setPointerCapture(e.pointerId);
+    track.style.cursor = "grabbing";
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const track = trackRef.current;
+    if (!track || !dragRef.current.dragging) return;
+    const dx = e.clientX - dragRef.current.startX;
+    if (Math.abs(dx) > 4) isDragging.current = true;
+    track.scrollLeft = dragRef.current.startScroll - dx;
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    const track = trackRef.current;
+    if (!track || !dragRef.current.dragging) return;
+    dragRef.current.dragging = false;
+    track.style.cursor = "";
+    let nearest = Math.round(track.scrollLeft / STRIDE);
+    nearest = Math.max(0, Math.min(nearest, looped.length - 1));
+    // Resolve looped index to real index
+    let destReal: number;
+    if (nearest === 0) destReal = count - 1;
+    else if (nearest === count + 1) destReal = 0;
+    else destReal = nearest - 1;
+    navigate(activeRef.current, destReal);
+    scheduleAuto(destReal);
+  }, [looped.length, count, navigate, scheduleAuto]);
+
+  if (count === 0) {
+    return <p className="text-center py-20 text-gray-400 font-[family-name:var(--font-rubik)]">No platforms found for this country.</p>;
+  }
+
   return (
-    <nav className={`flex items-center gap-1 mb-10 ${align==="center"?"justify-center":"justify-start"} max-sm:justify-center`}>
-      {tabs.map(t=>(
-        <button key={t.key} onClick={()=>onSwitch(t.key)}
-          className={`px-4 py-1.5 text-[13px] font-semibold tracking-[0.02em] rounded-md transition-all duration-200 whitespace-nowrap border-none cursor-pointer
-            ${active===t.key?"bg-[rgba(40,40,40,0.08)] text-[#282828]":"text-[#9ca3af] hover:text-[#374151] hover:bg-[rgba(0,0,0,0.04)]"}`}
-          style={{background:"none",fontFamily:"sans-serif"}}>
-          {t.label}
-        </button>
+    <div className="grid grid-cols-1 gap-7 mt-6" style={{ gridTemplateColumns: "300px 1fr" }}>
+      {/* Left panel */}
+      <div className="flex flex-col gap-4">
+        <h2
+          ref={nameRef}
+          className="txt-fade txt-visible font-[family-name:var(--font-open-sans)] font-black uppercase leading-none text-[#282828]"
+          style={{ fontSize: "clamp(24px,2.5vw,36px)", letterSpacing: "-0.02em" }}
+        >{items[0]?.name ?? "Featured Platforms"}</h2>
+        <p
+          ref={descRef}
+          className="txt-fade txt-visible font-[family-name:var(--font-rubik)] text-[13px] leading-[1.75] text-[#555]"
+          style={{ transitionDelay: ".05s" }}
+        >{platformDescriptions[items[0]?.name] ?? platformDescriptions["ALL"]}</p>
+        <div className="txt-fade txt-visible flex items-center gap-3" style={{ transitionDelay: ".1s" }}>
+          <span
+            ref={badgeRef}
+            className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[2px] uppercase bg-[#a10000] text-white px-3.5 py-1 rounded-full"
+          >{items[0]?.country ?? ""}</span>
+          <span className="font-[family-name:var(--font-open-sans)] text-[11px] text-[#888] tracking-[0.04em]">Marketplace Partner</span>
+        </div>
+      </div>
+      {/* Slider */}
+      <div className="relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none" style={{ background: "linear-gradient(to left, rgba(255,255,255,0.95), transparent)" }} />
+        <div
+          ref={trackRef}
+          className="no-scrollbar flex gap-5 overflow-x-auto py-5 pl-1 select-none"
+          style={{ scrollBehavior: "auto", cursor: "grab", touchAction: "pan-x" }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
+          {looped.map((p, i) => {
+            let realI: number;
+            if (i === 0) realI = count - 1;
+            else if (i === count + 1) realI = 0;
+            else realI = i - 1;
+            // Only the real slot (not clones) gets the active highlight
+            const isClone  = i === 0 || i === count + 1;
+            const isActive = !isClone && realI === activeIdx;
+            return (
+              <div
+                key={p.name + "-" + i}
+                className="flex-shrink-0 rounded-[20px] overflow-hidden relative transition-all duration-300"
+                style={{
+                  width: 320, height: 320,
+                  transform: isActive ? "scale(1)" : "scale(0.92)",
+                  opacity:   isActive ? 1 : 0.65,
+                  cursor: "pointer",
+                  boxShadow: isActive
+                    ? "6px 6px 18px rgba(0,0,0,0.13), 2px 2px 6px rgba(0,0,0,0.07)"
+                    : "3px 3px 10px rgba(0,0,0,0.08), 1px 1px 4px rgba(0,0,0,0.05)",
+                }}
+                onClick={() => {
+                  if (!isDragging.current) {
+                    navigate(activeRef.current, realI);
+                    scheduleAuto(realI);
+                  }
+                }}
+              >
+                {/* Country badge — top-right corner */}
+                <div
+                  className="absolute top-3 right-3 z-10 font-[family-name:var(--font-open-sans)] font-black text-[11px] tracking-[2px] uppercase px-2.5 py-1 rounded-lg"
+                  style={{
+                    color: "#a10000",
+                    background: "rgba(161,0,0,0.08)",
+                    backdropFilter: "blur(6px)",
+                    WebkitBackdropFilter: "blur(6px)",
+                    border: "1px solid rgba(161,0,0,0.15)",
+                  }}
+                >{p.country}</div>
+                <div className="w-full bg-white flex items-center justify-center p-5" style={{ height: "72%" }}>
+                  <img src={p.image} alt={p.name} draggable={false} className="w-full h-full object-contain pointer-events-none block" />
+                </div>
+                <div
+                  className="absolute bottom-0 left-0 right-0 bg-white border-t border-[#ebebeb]"
+                  style={{ height: "28%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 18px" }}
+                >
+                  <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[24px] uppercase tracking-[0.03em] leading-none mb-1" style={{ color: "#1a1a1a" }}>{p.name}</div>
+                  <p className="font-[family-name:var(--font-rubik)] text-[13px]" style={{ color: "#555" }}>Marketplace Partner</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SHOW-MORE BUTTON
+───────────────────────────────────────────── */
+function ShowMoreBtn({ onClick, expanded }: { onClick: () => void; expanded: boolean }) {
+  return (
+    <button
+      className={`show-more-btn inline-flex items-center gap-2 px-8 py-3 rounded-xl border-[1.5px] border-gray-300 bg-white font-[family-name:var(--font-open-sans)] text-[12px] font-bold tracking-[0.07em] uppercase text-gray-500 cursor-pointer transition-all hover:border-[#a10000] hover:text-[#a10000]${expanded ? " expanded" : ""}`}
+      onClick={onClick}
+    >
+      {expanded ? "Show Less" : "Show More"}
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </button>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   TAB NAV (shared)
+───────────────────────────────────────────── */
+function TabNav({ active, onTabSwitch }: { active: string; onTabSwitch: (t: string) => void }) {
+  const tabs = [
+    { key: "platforms",  label: "Platforms" },
+    { key: "tools",      label: "Tools" },
+    { key: "industries", label: "Industries" },
+  ];
+  return (
+    <nav className="flex items-center gap-1 mb-5 anim-up">
+      {tabs.map(t => (
+        <button
+          key={t.key}
+          onClick={() => onTabSwitch(t.key)}
+          className={`relative px-4 py-1.5 font-[family-name:var(--font-open-sans)] text-[13px] font-semibold tracking-[0.02em] cursor-pointer rounded-md transition-all duration-200 whitespace-nowrap border-none
+            ${active === t.key
+              ? "text-[#282828] bg-black/[0.08]"
+              : "text-gray-400 bg-transparent hover:text-gray-700 hover:bg-black/[0.04]"
+            }`}
+        >{t.label}</button>
       ))}
     </nav>
   );
 }
 
-function HeroMosaic({id,batches}:{id:string;batches:[typeof thmBatch1,typeof thmBatch2]}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const posIdxRef = useRef([0,1,2,3,4]);
-  const itemIdxRef = useRef([0,1,2,3,4]);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
-  const batchRef = useRef(batches[0]);
-  const timerRef = useRef<ReturnType<typeof setInterval>|null>(null);
-
-  useEffect(()=>{
-    const container = containerRef.current;
-    if(!container) return;
-    container.innerHTML="";
-    const batch = batchRef.current;
-    const cards: HTMLDivElement[] = [];
-    for(let i=0;i<5;i++){
-      const pos=thmPositions[i], item=batch[i];
-      const el=document.createElement("div");
-      Object.assign(el.style,{
-        position:"absolute",left:pos.left,top:pos.top,width:pos.width,height:pos.height,
-        borderRadius:"16px",overflow:"hidden",background:item.bg,
-        boxShadow:"0 8px 28px rgba(0,0,0,0.18)",
-        transition:"left 700ms cubic-bezier(0.4,0,0.2,1),top 700ms cubic-bezier(0.4,0,0.2,1),width 700ms cubic-bezier(0.4,0,0.2,1),height 700ms cubic-bezier(0.4,0,0.2,1),opacity 700ms ease",
-        zIndex:i===0?"3":"1",
-      });
-      const img=document.createElement("img");
-      img.src=item.src; img.alt=item.name;
-      Object.assign(img.style,{width:"100%",height:"100%",objectFit:"cover",display:"block",pointerEvents:"none"});
-      el.appendChild(img);
-      container.appendChild(el);
-      cards.push(el);
-      (el as any)._posIdx=i;
-    }
-    cardsRef.current=cards;
-    itemIdxRef.current=[0,1,2,3,4];
-
-    timerRef.current=setInterval(()=>{
-      const byPos: Record<number,HTMLDivElement>={};
-      cards.forEach(c=>{byPos[(c as any)._posIdx]=c;});
-      requestAnimationFrame(()=>{
-        cards.forEach(c=>{
-          const next=((c as any)._posIdx+1)%5;
-          const p=thmPositions[next];
-          c.style.left=p.left; c.style.top=p.top; c.style.width=p.width; c.style.height=p.height;
-          c.style.zIndex=next===0?"3":"1";
-          (c as any)._posIdx=next;
-        });
-      });
-      const maxIdx=Math.max(...itemIdxRef.current);
-      const nextItemIdx=(maxIdx+1)%batchRef.current.length;
-      const cardGoingToBig=byPos[4];
-      if(cardGoingToBig){
-        const nextItem=batchRef.current[nextItemIdx];
-        const img=cardGoingToBig.querySelector("img") as HTMLImageElement;
-        if(img){img.src=nextItem.src; img.alt=nextItem.name;}
-        cardGoingToBig.style.background=nextItem.bg;
-        const cidx=cards.indexOf(cardGoingToBig);
-        if(cidx>=0) itemIdxRef.current[cidx]=nextItemIdx;
-      }
-    },2000);
-
-    return ()=>{ if(timerRef.current) clearInterval(timerRef.current); };
-  },[]);
-
-  return (
-    <div ref={containerRef} id={id} className="relative w-full h-full" style={{minHeight:"inherit"}} />
-  );
-}
-
-function MosaicSlider() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const allPlatforms = platforms.map(p=>p.name);
-  const COUNT = allPlatforms.length;
-
-  useEffect(()=>{
-    const wrap=wrapRef.current, stage=stageRef.current;
-    if(!wrap||!stage) return;
-    const isMobile=window.innerWidth<640;
-    const CARD_W=isMobile?130:200, CARD_H=isMobile?86:130;
-    const STEP=CARD_W+(isMobile?10:16);
-    const VISIBLE=isMobile?3:7;
-    const AUTO_SPEED=0.010;
-    stage.style.height=CARD_H+"px";
-
-    let offset=0,vel=0,dragging=false,dragStartX=0,dragStartOff=0,lastX=0,autoActive=true;
-    let rafId:number;
-
-    function getStyle(dist:number){
-      const abs=Math.abs(dist);
-      return{
-        scale:Math.max(0.60,1-abs*0.06),
-        tx:dist*STEP, ty:abs*abs*5,
-        zIndex:Math.round(100-abs*10),
-        opacity:Math.max(0.20,1-abs*0.14),
-      };
-    }
-
-    const pool: {div:HTMLDivElement;img:HTMLImageElement;span:HTMLSpanElement}[]=[];
-    for(let i=0;i<VISIBLE*2+1;i++){
-      const div=document.createElement("div");
-      div.className="mosaic-card";
-      div.style.cssText=`position:absolute;width:${CARD_W}px;height:${CARD_H}px;border-radius:14px;overflow:hidden;cursor:grab;will-change:transform;background:#f7f7f7;`;
-      const img=document.createElement("img");
-      img.draggable=false; img.crossOrigin="anonymous"; img.loading="eager";
-      img.style.cssText="width:100%;height:100%;object-fit:cover;pointer-events:none;display:block;";
-      const lbl=document.createElement("div");
-      lbl.style.cssText="position:absolute;inset:0;display:flex;align-items:flex-end;padding:10px;background:linear-gradient(to top,rgba(0,0,0,0.7) 38%,transparent);";
-      const span=document.createElement("span");
-      span.style.cssText="color:#fff;font-family:sans-serif;font-weight:700;font-size:11px;letter-spacing:0.04em;line-height:1.3;pointer-events:none;";
-      lbl.appendChild(span); div.appendChild(img); div.appendChild(lbl);
-      stage.appendChild(div);
-      pool.push({div,img,span});
-    }
-
-    function render(){
-      const ci=Math.round(offset);
-      pool.forEach((el,pi)=>{
-        const d=pi-VISIBLE;
-        const idx=((ci+d)%COUNT+COUNT)%COUNT;
-        const dist=d-(offset-ci);
-        const abs=Math.abs(dist);
-        if(abs>VISIBLE+0.5){el.div.style.display="none";return;}
-        el.div.style.display="";
-        const{scale,tx,ty,zIndex,opacity}=getStyle(dist);
-        el.div.style.transform=`translateX(${tx}px) translateY(${ty}px) scale(${scale})`;
-        el.div.style.zIndex=String(zIndex);
-        el.div.style.opacity=String(opacity);
-        const newSrc=PHOTOS[idx%PHOTOS.length];
-        if(el.img.src!==newSrc) el.img.src=newSrc;
-        el.img.alt=allPlatforms[idx];
-        el.span.textContent=allPlatforms[idx];
-      });
-    }
-
-    let lastTime=0;
-    function animate(ts:number){
-      const dt=lastTime===0?16:Math.min(ts-lastTime,32); lastTime=ts;
-      if(!dragging){
-        if(autoActive) offset+=AUTO_SPEED*(dt/16);
-        else{ vel*=0.94; offset+=vel; if(Math.abs(vel)<0.001) autoActive=true; }
-        offset=((offset%COUNT)+COUNT)%COUNT;
-      }
-      render(); rafId=requestAnimationFrame(animate);
-    }
-
-    function handleVisibilityChange(){
-      if(document.visibilityState==="visible") lastTime=0;
-    }
-    document.addEventListener("visibilitychange",handleVisibilityChange);
-
-    rafId=requestAnimationFrame(animate);
-
-    wrap.addEventListener("pointerdown",e=>{
-      dragging=true; autoActive=false; vel=0;
-      dragStartX=e.clientX; dragStartOff=offset; lastX=e.clientX;
-      wrap.setPointerCapture(e.pointerId);
-    });
-    wrap.addEventListener("pointermove",e=>{
-      if(!dragging) return;
-      vel=(lastX-e.clientX)/STEP; lastX=e.clientX;
-      offset=((dragStartOff+(e.clientX-dragStartX)/STEP*-1)%COUNT+COUNT)%COUNT;
-    });
-    wrap.addEventListener("pointerup",()=>{dragging=false;});
-    wrap.addEventListener("pointerleave",()=>{dragging=false;});
-    wrap.addEventListener("touchstart",e=>e.stopPropagation(),{passive:true});
-    wrap.addEventListener("touchend",e=>e.stopPropagation(),{passive:true});
-    wrap.addEventListener("touchmove",e=>e.stopPropagation(),{passive:true});
-
-    return()=>{
-      cancelAnimationFrame(rafId);
-      document.removeEventListener("visibilitychange",handleVisibilityChange);
-    };
-  },[]);
-
-  return (
-    <div className="w-full relative overflow-hidden max-w-[1200px] max-sm:h-[160px]" style={{height:"220px"}}>
-      <div ref={wrapRef} className="absolute inset-0 overflow-hidden select-none touch-none" style={{userSelect:"none"}}>
-        <div className="absolute left-0 top-0 bottom-0 pointer-events-none z-20" style={{width:"120px",background:"linear-gradient(to right,#f7f7f7 20%,transparent)"}}/>
-        <div className="absolute right-0 top-0 bottom-0 pointer-events-none z-20" style={{width:"120px",background:"linear-gradient(to left,#f7f7f7 20%,transparent)"}}/>
-        <div ref={stageRef} className="absolute" style={{left:"50%",top:"50%",transform:"translate(-50%,-50%)",width:0}}/>
-      </div>
-    </div>
-  );
-}
-
-function PlatformImageSlider({items,selectedCountry}:{items:Platform[];selectedCountry:string}){
-  const [activeIdx,setActiveIdx]=useState(0);
-  const trackRef=useRef<HTMLDivElement>(null);
-  const isDraggingRef=useRef(false);
-  const dragStartXRef=useRef(0);
-  const dragScrollRef=useRef(0);
-  const CARD_W=320,GAP=20,STRIDE=340;
-
-  const activeIdxRef = useRef(0);
-
-  const scrollToIdx=useCallback((idx:number, updateState=true)=>{
-    const clamped=Math.max(0,Math.min(idx,items.length-1));
-    activeIdxRef.current=clamped;
-    if(updateState) setActiveIdx(clamped);
-    const track=trackRef.current;
-    if(!track) return;
-    const target=clamped*STRIDE;
-    const start=track.scrollLeft, dist=target-start, dur=420, t0=performance.now();
-    function ease(t:number){return t<0.5?2*t*t:-1+(4-2*t)*t;}
-    function step(now:number){
-      const pct=Math.min((now-t0)/dur,1);
-      if(track) track.scrollLeft=start+dist*ease(pct);
-      if(pct<1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  },[items.length]);
-
-  // Continuous auto-advance every 4 seconds
-  useEffect(()=>{
-    activeIdxRef.current=0;
-    setActiveIdx(0);
-    scrollToIdx(0,false);
-    const id=setInterval(()=>{
-      const next=(activeIdxRef.current+1)%items.length;
-      activeIdxRef.current=next;
-      setActiveIdx(next);
-      scrollToIdx(next,false);
-    },4000);
-    return()=>clearInterval(id);
-  },[items]);
-
-  const handlePointerDown=useCallback((e:React.PointerEvent)=>{
-    isDraggingRef.current=true;
-    dragStartXRef.current=e.clientX;
-    dragScrollRef.current=trackRef.current?.scrollLeft??0;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-  },[]);
-
-  const handlePointerMove=useCallback((e:React.PointerEvent)=>{
-    if(!isDraggingRef.current||!trackRef.current) return;
-    const dx=dragStartXRef.current-e.clientX;
-    trackRef.current.scrollLeft=dragScrollRef.current+dx;
-  },[]);
-
-  const handlePointerUp=useCallback((e:React.PointerEvent)=>{
-    if(!isDraggingRef.current) return;
-    isDraggingRef.current=false;
-    const dx=e.clientX-dragStartXRef.current;
-    const threshold=40;
-    if(Math.abs(dx)>threshold){
-      const dir=dx<0?1:-1;
-      const next=Math.max(0,Math.min(activeIdx+dir,items.length-1));
-      scrollToIdx(next);
-    } else {
-      scrollToIdx(activeIdx);
-    }
-  },[activeIdx,items.length,scrollToIdx]);
-
-  const descForActive = platformDescriptions[items[activeIdx]?.name] ?? platformDescriptions["ALL"];
-
-  return (
-    <div className="flex flex-col lg:flex-row min-h-[340px] w-full">
-      <div className="flex flex-col justify-center px-8 py-10 flex-shrink-0 lg:w-[38%]">
-        <h2 className="font-black uppercase tracking-[-0.02em] text-white text-[clamp(24px,3vw,42px)] leading-none mb-5 transition-all duration-300" style={{fontFamily:"'Poppins',sans-serif"}}>
-          {items[activeIdx]?.name ?? "Featured Platforms"}
-        </h2>
-        <p className="text-sm text-[rgba(255,255,255,0.6)] leading-[1.8] mb-6" style={{fontFamily:"'Open Sans',sans-serif"}}>
-          {descForActive}
-        </p>
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] font-bold tracking-[2px] uppercase bg-[rgba(255,255,255,0.1)] px-4 py-1.5 rounded-full border border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.7)]" style={{fontFamily:"sans-serif"}}>
-            {items[activeIdx]?.country ?? ""}
-          </span>
-          <span className="text-xs text-[rgba(255,255,255,0.35)]" style={{fontFamily:"'Open Sans',sans-serif"}}>Marketplace Partner</span>
-        </div>
-      </div>
-      <div className="flex-1 relative overflow-hidden min-h-[340px] max-w-[680px]">
-        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none z-10" style={{background:"linear-gradient(to left,#282828 30%,transparent)"}}/>
-        <div
-          ref={trackRef}
-          className="flex h-full overflow-x-auto gap-5 select-none pr-8 items-center"
-          style={{scrollbarWidth:"none",touchAction:"pan-y",cursor:isDraggingRef.current?"grabbing":"grab"}}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
-        >
-          {items.map((p,i)=>(
-            <div key={p.name+i}
-              onClick={()=>{ if(!isDraggingRef.current){ scrollToIdx(i); } }}
-              className="flex-shrink-0 relative rounded-2xl overflow-hidden transition-all duration-300 ease-in-out"
-              style={{width:CARD_W,height:CARD_W,transform:i===activeIdx?"scale(1)":"scale(0.88)",opacity:i===activeIdx?1:0.45,boxShadow:i===activeIdx?"0 20px 60px rgba(0,0,0,0.6)":"0 4px 16px rgba(0,0,0,0.2)",cursor:"pointer"}}>
-              <img src={p.image} alt={p.name} draggable={false} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"/>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent"/>
-              <div className="absolute bottom-0 left-0 right-0 p-7 text-white">
-                <span className="inline-block text-[11px] font-bold tracking-[2px] uppercase bg-white/20 px-4 py-1 rounded-full mb-3 backdrop-blur-sm" style={{fontFamily:"sans-serif"}}>{p.country}</span>
-                <div className="font-black uppercase tracking-[-0.02em] leading-none mb-1.5 text-[clamp(26px,3vw,40px)]" style={{fontFamily:"'Poppins',sans-serif"}}>{p.name}</div>
-                <p className="text-xs text-white/65" style={{fontFamily:"'Open Sans',sans-serif"}}>Marketplace Partner</p>
-              </div>
-              <div className="absolute top-5 right-5 w-10 h-10 rounded-full border-2 border-white/50 flex items-center justify-center text-white/60 text-lg transition-all hover:bg-white hover:text-black">→</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ToolCard({abbr,name,catLabel,desc,color,img}:{abbr:string;name:string;catLabel:string;desc:string;color:string;img:string}){
-  const thumbBg: Record<string,string>={
-    red:"bg-[#a10000] text-white/90",
-    dark:"bg-[#282828] text-white/85",
-    light:"bg-[#f0f0f0] text-[rgba(40,40,40,0.3)]",
-    pink:"bg-[#f9eded] text-[rgba(161,0,0,0.25)]",
-  };
-  return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-[#ebebeb] shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-200">
-      <div className={`h-[130px] flex items-center justify-center font-black text-[52px] tracking-[-0.04em] overflow-hidden ${thumbBg[color]||thumbBg.light}`}
-           style={{fontFamily:"'Poppins',sans-serif"}}>
-        {img ? <img src={img} alt={name} className="w-full h-full object-cover block"/> : abbr}
-      </div>
-      <div className="p-4 pt-[18px]">
-        <div className="text-[10px] font-bold tracking-[2px] uppercase mb-1.5" style={{color:"#a10000",fontFamily:"sans-serif"}}>{catLabel}</div>
-        <div className="font-extrabold text-xl uppercase tracking-[0.03em] text-[#282828] mb-1.5" style={{fontFamily:"'Poppins',sans-serif"}}>{name}</div>
-        <div className="text-[13px] text-[#888] leading-relaxed" style={{fontFamily:"'Open Sans',sans-serif"}}>{desc}</div>
-      </div>
-    </div>
-  );
-}
-
-function AvatarEl({abbr,cls}:{abbr:string;cls?:string}){
-  const colors: Record<string,string>={
-    "":"bg-[#a10000] text-white",dark:"bg-[#282828] text-white/85",
-    gray:"bg-[#e0e0e0] text-[#555]",teal:"bg-[#0d9488] text-white",
-    blue:"bg-[#1e40af] text-white",amber:"bg-[#d97706] text-white",
-    rose:"bg-[#f43f5e] text-white",
-  };
-  return (
-    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${colors[cls||""]||colors[""]}`}
-         style={{fontFamily:"'Poppins',sans-serif"}}>
-      {abbr}
-    </div>
-  );
-}
-
-function BadgeEl({type,label}:{type:string;label:string}){
-  const colors: Record<string,string>={
-    commerce:"bg-[rgba(161,0,0,0.08)] text-[#a10000]",
-    tech:"bg-[rgba(59,130,246,0.1)] text-[#2563eb]",
-    health:"bg-[rgba(13,148,136,0.1)] text-[#0d9488]",
-    retail:"bg-[rgba(161,0,0,0.07)] text-[#a10000]",
-    travel:"bg-[rgba(30,64,175,0.1)] text-[#1e40af]",
-    logistic:"bg-[rgba(217,119,6,0.1)] text-[#d97706]",
-  };
-  return (
-    <span className={`text-[10px] font-bold tracking-[1.5px] uppercase px-2.5 py-0.5 rounded-full ${colors[type]||colors.commerce}`}
-          style={{fontFamily:"sans-serif"}}>
-      {label}
-    </span>
-  );
-}
-
-/* ─── Main Component ─────────────────────────────────────────────────────── */
-export default function PlatformOverview() {
-  const [activeTab, setActiveTab] = useState<Tab>("platforms");
+/* ─────────────────────────────────────────────
+   TAB: PLATFORMS
+───────────────────────────────────────────── */
+function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
   const [selectedCountry, setSelectedCountry] = useState("ALL");
-  const [countryDropOpen, setCountryDropOpen] = useState(false);
-  const [activeToolCat, setActiveToolCat] = useState("all");
-  const [toolShowMore, setToolShowMore] = useState(false);
-  const [activeIndustry, setActiveIndustry] = useState("all");
-  const indAutoRef = useRef<ReturnType<typeof setInterval>|null>(null);
-  const indAutoIdxRef = useRef(0);
-  const [autoHighlight, setAutoHighlight] = useState<string|null>(null);
-  const [indDropOpen, setIndDropOpen] = useState(false);
-  const [indDirFilter, setIndDirFilter] = useState("all");
-  const [dirShowMore, setDirShowMore] = useState(false);
-  const [vertShowMore, setVertShowMore] = useState(false);
-  const countryDropRef = useRef<HTMLDivElement>(null);
-  const indDropRef = useRef<HTMLDivElement>(null);
+  const [dropdownOpen, setDropdownOpen]       = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const stageRef    = useRef<HTMLDivElement>(null);
+  const wrapRef     = useRef<HTMLDivElement>(null);
 
-  const filteredPlatforms = selectedCountry==="ALL" ? platforms : platforms.filter(p=>p.country===selectedCountry);
-  const filteredTools = activeToolCat==="all" ? toolCards : toolCards.filter(t=>t.cat===activeToolCat);
-  const visibleTools = toolShowMore ? filteredTools : filteredTools.slice(0,8);
-  const filteredDir = indDirFilter==="all" ? dirCards : dirCards.filter(c=>c.ind===indDirFilter);
-  const visibleDir = dirShowMore ? filteredDir : filteredDir.slice(0,8);
-  const visibleVerts = vertShowMore ? verticalRows : verticalRows.slice(0,6);
+  usePlatformsMosaic(stageRef as React.RefObject<HTMLDivElement>, wrapRef as React.RefObject<HTMLDivElement>);
+  useScrollAnims();
 
-  // When "all": show all accounts combined; when specific: show that industry's accounts
-  const allAccounts = industryPanels.filter(p=>p.key!=="all").flatMap(p=>p.accounts);
-  const nonAllPanels = industryPanels.filter(p=>p.key!=="all");
-  const activePanel = activeIndustry==="all"
-    ? {...industryPanels[0], accounts: allAccounts}
-    : industryPanels.find(p=>p.key===activeIndustry) ?? industryPanels[1];
+  const filteredPlatforms = (selectedCountry === "ALL" ? platforms : platforms.filter(p => p.country === selectedCountry))
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  // Auto-rotate panel highlight when "all" is selected
-  useEffect(()=>{
-    if(indAutoRef.current) clearInterval(indAutoRef.current);
-    if(activeIndustry!=="all") { setAutoHighlight(null); return; }
-    indAutoIdxRef.current=0;
-    setAutoHighlight(nonAllPanels[0].key);
-    indAutoRef.current=setInterval(()=>{
-      indAutoIdxRef.current=(indAutoIdxRef.current+1)%nonAllPanels.length;
-      setAutoHighlight(nonAllPanels[indAutoIdxRef.current].key);
-    },4000);
-    return()=>{ if(indAutoRef.current) clearInterval(indAutoRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[activeIndustry, activeTab]);
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-  useEffect(()=>{
-    function handleClick(e:MouseEvent){
-      if(countryDropRef.current && !countryDropRef.current.contains(e.target as Node)) setCountryDropOpen(false);
-      if(indDropRef.current && !indDropRef.current.contains(e.target as Node)) setIndDropOpen(false);
-    }
-    document.addEventListener("mousedown",handleClick);
-    return()=>document.removeEventListener("mousedown",handleClick);
-  },[]);
-
-  const indDropPanel = industryPanels.find(p=>p.key===activeIndustry);
+  const headingText = selectedCountry === "ALL" ? "Our Platform Partners" : countryNames[selectedCountry];
+  const subText = selectedCountry === "ALL"
+    ? "Over the years, we've built working relationships with 115+ leading e-commerce platforms — from global giants to regional powerhouses — across 24 countries. Swipe to explore the full network."
+    : `Explore the active marketplace partners we've worked with in ${countryNames[selectedCountry]}. Each platform represents hands-on catalog management and listing expertise delivered by our team.`;
 
   return (
-    <div className="font-sans text-[#282828] overflow-x-hidden" style={{fontFamily:"'Open Sans',sans-serif"}}>
-
-      {/* ══ PLATFORMS TAB ══ */}
-      {activeTab==="platforms" && (
-        <div>
-          {/* Hero */}
-          <section className="bg-[#f7f7f7] overflow-hidden pt-[162px] px-6 pb-0 max-sm:pt-12 max-sm:px-4">
-            <div className="flex flex-col items-center w-full max-w-[1280px] mx-auto">
-              <div className="flex flex-col items-center text-center w-full max-w-[1020px] relative z-[2] pb-12">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] font-black uppercase tracking-[-0.02em] text-[rgba(40,40,40,0.06)] pointer-events-none select-none leading-none text-center z-0 whitespace-nowrap"
-                     style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(60px,10vw,130px)"}}>
-                  PLATFORM<br/>OVERVIEW
-                </div>
-                <div className="relative z-[1] flex flex-col items-center w-full">
-                  <TabNav active={activeTab} onSwitch={setActiveTab} align="center"/>
-                  <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4" style={{color:"#a10000",fontFamily:"sans-serif"}}>PLATFORM ECOSYSTEM</p>
-                  <h1 className="font-black uppercase tracking-[-0.02em] leading-[0.95] text-[#282828] mb-5" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(32px,4vw,56px)"}}>
-                    Powering Growth Across 115+<br/><em className="text-[#a10000] not-italic">Global E-Commerce Platforms</em>
-                  </h1>
-                  <p className="max-w-[560px] mb-7 text-[15px] leading-[1.75] text-[rgba(40,40,40,0.55)]" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                    Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
-                    <strong className="text-[#282828] font-semibold">the world's leading e-commerce ecosystems.</strong>{" "}
-                    Operating across 24 countries with over a decade of marketplace expertise.
-                  </p>
-                  <div className="text-[12px] tracking-[0.04em] text-[#aaa]" style={{fontFamily:"sans-serif"}}>
-                    Home &gt;&gt; About &gt;&gt; <span className="text-[#a10000]">Platform Overview</span>
-                  </div>
-                </div>
-              </div>
-              <MosaicSlider/>
-            </div>
-          </section>
-
-          {/* Stats */}
-          <section className="bg-[#f7f7f7] py-[72px] px-10 max-sm:py-12 max-sm:px-5">
-            <div className="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-              <div className="flex gap-3 items-start">
-                {[
-                  [{val:"115+",label:"E-commerce platforms\nmanaged and optimized",variant:"red"},{val:"10+",label:"Years of hands-on\nmarketplace experience",variant:"white"}],
-                  [{val:"24",label:"Countries with active\nmarketplace operations",variant:"white"},{val:"5★",label:"Client satisfaction across\nglobal engagements",variant:"pink"}],
-                ].map((col,ci)=>(
-                  <div key={ci} className={`flex-1 flex flex-col gap-3 ${ci===1?"pt-8":""}`}>
-                    {col.map((s,si)=>{
-                      const bg=s.variant==="red"?"bg-[#a10000]":s.variant==="pink"?"bg-[#f9eded]":"bg-white";
-                      const valColor=s.variant==="red"?"text-white":s.variant==="pink"?"text-[#a10000]":"text-[#282828]";
-                      const lblColor=s.variant==="red"?"text-white/80":s.variant==="pink"?"text-[#a10000]":"text-[#999]";
-                      return (
-                        <div key={si} className={`relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer hover:-translate-y-1 hover:scale-[1.02] transition-all duration-200 ${bg} ${s.variant==="red"?"shadow-[0_4px_18px_rgba(161,0,0,0.20)]":s.variant==="pink"?"shadow-[0_4px_18px_rgba(161,0,0,0.08)]":"shadow-[0_2px_14px_rgba(0,0,0,0.07)]"}`}>
-                          <div className={`absolute bottom-[-10px] right-[-6px] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none select-none ${s.variant==="red"?"text-white/[0.08]":s.variant==="pink"?"text-[rgba(161,0,0,0.10)]":"text-[rgba(0,0,0,0.04)]"}`} style={{fontFamily:"'Poppins',sans-serif"}}>{s.val}</div>
-                          <div className={`font-black leading-none tracking-[-0.02em] relative ${valColor}`} style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(36px,4vw,52px)"}}>{s.val}</div>
-                          <div className={`text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line ${lblColor}`} style={{fontFamily:"sans-serif"}}>{s.label}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4" style={{color:"#a10000",fontFamily:"sans-serif"}}>OUR GLOBAL EXPERIENCE</p>
-                <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] mb-6 leading-[1.05]" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(28px,3.5vw,44px)"}}>A Decade of<br/>Marketplace Excellence</h2>
-                <p className="text-[15px] text-[#555] leading-[1.8] mb-5" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                  For over 4 years, Telex Philippines has partnered with leading global marketplaces — from industry giants like <strong className="text-[#282828]">Amazon, eBay, and Walmart</strong> to high-performing regional platforms across Europe, the Middle East, and Asia.
-                </p>
-                <p className="text-[15px] text-[#555] leading-[1.8] mb-8" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                  We specialize in end-to-end marketplace operations, including product listing optimization, catalog management, and platform integrations.
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-[3px] bg-[#a10000] rounded"/>
-                  <span className="text-[13px] tracking-[0.04em] font-semibold text-[#282828]" style={{fontFamily:"sans-serif"}}>Trusted by brands operating in 24+ countries worldwide.</span>
-                </div>
+    <>
+      {/* HERO */}
+      <section className="bg-[#f7f7f7] overflow-hidden pt-35 px-6 pb-0">
+        <div className="flex flex-col items-center w-full max-w-[1280px] mx-auto">
+          {/* Text block */}
+          <div className="flex flex-col items-center text-center w-full max-w-[1020px] relative z-[2] pb-12">
+            <div
+              className="absolute font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828]/[0.06] pointer-events-none select-none leading-none text-center z-0 whitespace-nowrap"
+              style={{ top: "50%", left: "50%", transform: "translate(-50%, -55%)", fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em", width: "100%" }}
+            >PLATFORM<br/>OVERVIEW</div>
+            <div className="relative z-[1] flex flex-col items-center w-full">
+              <TabNav active="platforms" onTabSwitch={onTabSwitch} />
+              <p className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">PLATFORM ECOSYSTEM</p>
+              <h1
+                className="anim-up font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828] mb-5"
+                style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(32px,5vw,64px)" }}
+              >
+                Powering Growth Across 115+<br />
+                <em className="text-[#a10000] not-italic">Global E-Commerce Platforms</em>
+              </h1>
+              <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[15px] leading-[1.75] text-[#282828]/55">
+                Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
+                <strong className="text-[#282828] font-semibold">the world's leading e-commerce ecosystems.</strong>{" "}
+                Operating across 24 countries with over a decade of marketplace expertise.
+              </p>
+              <div className="anim-up-3 text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">
+                Home&nbsp;&gt;&gt;&nbsp;About&nbsp;&gt;&gt;&nbsp;<span className="text-[#a10000]">Platform Overview</span>
               </div>
             </div>
-          </section>
-
-          {/* Platform Slider Section */}
-          <section className="bg-[#282828] py-20">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="flex items-end justify-between flex-wrap gap-6 mb-14">
-                <div>
-                  <p className="inline-block text-[11px] tracking-[4px] uppercase font-bold mb-2.5 text-white bg-[#a10000] px-3 py-1 rounded-md" style={{fontFamily:"sans-serif"}}>GLOBAL MARKETPLACE NETWORK</p>
-                  <h2 className="font-black uppercase tracking-[-0.02em] leading-none text-white" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(32px,4vw,52px)"}}>Our Platform Partners</h2>
-                  <p className="mt-3 max-w-[480px] text-sm text-[#9ca3af] leading-[1.75]" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                    {selectedCountry==="ALL" ? "Over the years, we've built working relationships with 115+ leading e-commerce platforms across 24 countries." : `Explore the active marketplace partners in ${countryNames[selectedCountry]}.`}
-                  </p>
-                </div>
-                <div ref={countryDropRef} className="relative flex-shrink-0">
-                  <button onClick={()=>setCountryDropOpen(o=>!o)}
-                    className={`flex items-center gap-3 px-6 py-3.5 border-2 rounded-xl text-sm font-bold tracking-wider uppercase min-w-[220px] justify-between transition-all duration-200 ${countryDropOpen?"bg-white text-black border-white":"bg-transparent border-gray-700 text-white hover:border-gray-400"}`}
-                    style={{fontFamily:"sans-serif"}}>
-                    <span>{selectedCountry==="ALL"?"All Countries":`${selectedCountry} — ${countryNames[selectedCountry]}`}</span>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className={`transition-transform ${countryDropOpen?"rotate-180":""}`}>
-                      <path d="M2 4.5L7 9.5L12 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  {countryDropOpen && (
-                    <div className="absolute top-[calc(100%+8px)] right-0 bg-[#1a1a1a] border border-gray-800 rounded-2xl shadow-2xl z-50 min-w-[260px] max-h-80 overflow-y-auto">
-                      {COUNTRIES.map(c=>{
-                        const count=c==="ALL"?platforms.length:platforms.filter(p=>p.country===c).length;
-                        if(count===0 && c!=="ALL") return null;
-                        return (
-                          <button key={c} onClick={()=>{setSelectedCountry(c);setCountryDropOpen(false);}}
-                            className={`flex items-center justify-between w-full px-6 py-3 text-left hover:bg-white/10 transition-colors border-l-4 text-sm text-gray-300 ${c===selectedCountry?"border-l-[#a10000] text-white":"border-l-transparent"}`}
-                            style={{fontFamily:"sans-serif"}}>
-                            <span>{c==="ALL"?"All Countries":`${c} — ${countryNames[c]}`}</span>
-                            <span className="text-xs bg-white/10 px-2.5 py-0.5 rounded-full">{count}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {filteredPlatforms.length>0
-                ? <PlatformImageSlider items={filteredPlatforms} selectedCountry={selectedCountry}/>
-                : <div className="text-center py-20 text-[#9ca3af]" style={{fontFamily:"'Open Sans',sans-serif"}}>No platforms found for this country.</div>
-              }
-              <div className="text-center mt-8 text-sm text-[#6b7280]" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                Showing <strong className="text-white">{filteredPlatforms.length}</strong> platform{filteredPlatforms.length!==1?"s":""}
-                {selectedCountry!=="ALL" && ` in ${countryNames[selectedCountry]}`}
-              </div>
+          </div>
+          {/* Mosaic */}
+          <div className="w-full relative overflow-hidden max-w-[1200px]" style={{ height: 220 }}>
+            <div ref={wrapRef} className="absolute inset-0 overflow-hidden select-none touch-none">
+              <div className="absolute left-0 top-0 bottom-0 w-[120px] z-[20] pointer-events-none" style={{ background: "linear-gradient(to right, #f7f7f7 20%, transparent)" }} />
+              <div className="absolute right-0 top-0 bottom-0 w-[120px] z-[20] pointer-events-none" style={{ background: "linear-gradient(to left, #f7f7f7 20%, transparent)" }} />
+              <div ref={stageRef} className="absolute" style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)", width: 0, height: 200 }} />
             </div>
-          </section>
-
-          {/* Why Us */}
-          <section className="bg-[#f5f5f5] py-20 px-6">
-            <div className="max-w-[1100px] mx-auto">
-              <div className="text-center mb-14">
-                <p className="text-[11px] tracking-[4px] uppercase font-bold mb-2.5 text-[#a10000]" style={{fontFamily:"sans-serif"}}>Why Choose Telex</p>
-                <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828]" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(30px,4vw,48px)"}}>DRIVING GLOBAL E-COMMERCE PERFORMANCE AT SCALE</h2>
-                <p className="mt-4 max-w-[560px] mx-auto text-[15px] text-[#666] leading-[1.7]" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                  We combine marketplace expertise, advanced technology, and localized execution to help brands expand, optimize, and lead.
-                </p>
-              </div>
-              <div className="grid gap-6" style={{gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))"}}>
-                {[
-                  {title:"Enterprise-Grade Integrations",text:"Seamlessly connect with 115+ global marketplaces through certified partnerships and robust API integrations."},
-                  {title:"End-to-End Catalog Operations",text:"From onboarding and content optimization to pricing and inventory management, we handle the full product lifecycle."},
-                  {title:"Data-Led Growth Strategy",text:"Leverage actionable insights, performance analytics, and continuous optimization to maximize visibility and revenue."},
-                  {title:"Global Reach, Local Expertise",text:"Operate confidently across 24+ countries with region-specific strategies tailored to local marketplaces."},
-                ].map((c,i)=>(
-                  <div key={i} className="bg-white border border-[#e8e8e8] rounded-xl p-8 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
-                    <div className="mb-4">
-                      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#a10000" strokeWidth="2"/><path d="M8 14l4 4 8-8" stroke="#a10000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                    <h3 className="font-extrabold text-[20px] text-[#282828] uppercase tracking-[0.05em] mb-2.5" style={{fontFamily:"'Poppins',sans-serif"}}>{c.title}</h3>
-                    <p className="text-sm text-[#666] leading-[1.65]" style={{fontFamily:"'Open Sans',sans-serif"}}>{c.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+          </div>
         </div>
-      )}
+      </section>
 
-      {/* ══ TOOLS TAB ══ */}
-      {activeTab==="tools" && (
-        <div>
-          {/* Hero */}
-          <section className="bg-[#f7f7f7] overflow-hidden min-h-[870px] flex items-stretch">
-            <div className="flex flex-row items-stretch w-full max-w-[1280px] mx-auto px-6 md:px-10 max-[900px]:flex-col">
-              <div className="flex flex-col justify-center pr-14 py-20 flex-[0_0_52%] max-w-[52%] relative z-[2] items-start text-left max-[900px]:flex-none max-[900px]:max-w-full max-[900px]:pr-0 max-[900px]:px-6 max-[900px]:py-16 max-sm:items-center max-sm:text-center max-sm:px-5 max-sm:py-12">
-                <div className="absolute top-1/2 left-0 -translate-y-[55%] font-black uppercase tracking-[-0.02em] text-[rgba(40,40,40,0.06)] pointer-events-none select-none leading-none z-0 whitespace-nowrap" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(60px,10vw,130px)"}}>
-                  TOOLS &<br/>TECH
+      {/* STATS + ABOUT */}
+      <section className="bg-[#f7f7f7] py-12 px-5 md:py-[72px] md:px-10">
+        <div className="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          {/* Stat cards */}
+          <div className="flex gap-3 items-start">
+            {/* col 1 */}
+            <div className="flex-1 flex flex-col gap-3">
+              {/* red card */}
+              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-[#a10000]" style={{ boxShadow: "0 4px 18px rgba(161,0,0,0.20)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-white/[0.08]">115+</div>
+                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L7.9 4.4L11 4.85L8.75 7.05L9.3 10.15L6.5 8.65L3.7 10.15L4.25 7.05L2 4.85L5.1 4.4L6.5 1.5Z" fill="white" opacity="0.9"/></svg>
                 </div>
-                <div className="relative z-[1] flex flex-col items-start text-left max-sm:items-center max-sm:text-center w-full">
-                  <TabNav active={activeTab} onSwitch={setActiveTab} align="left"/>
-                  <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000]" style={{fontFamily:"sans-serif"}}>TECHNOLOGY STACK</p>
-                  <h1 className="font-black uppercase tracking-[-0.02em] leading-[0.95] text-[#282828] mb-5" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(32px,4vw,56px)"}}>
-                    Powering Operations<br/>with <em className="text-[#a10000] not-italic">20+ Integrated</em><br/><em className="text-[#a10000] not-italic">Tools & Platforms</em>
-                  </h1>
-                  <p className="max-w-[520px] text-[15px] leading-[1.75] text-[rgba(40,40,40,0.55)] mb-7" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                    From catalog management to CRM and analytics, our team operates across a curated stack of enterprise-grade tools.
-                  </p>
-                  <div className="text-[12px] tracking-[0.04em] text-[#aaa]" style={{fontFamily:"sans-serif"}}>
-                    Home &gt;&gt; About &gt;&gt; <span className="text-[#a10000]">Tools Overview</span>
-                  </div>
-                </div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-white relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>115+</div>
+                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-white/80">{"E-commerce platforms successfully\nmanaged and optimized"}</div>
               </div>
-              <div className="flex-1 flex items-center justify-center py-10 relative overflow-hidden max-[900px]:min-h-[280px] max-sm:min-h-[220px]">
-                <div className="relative w-full h-[420px] max-[900px]:h-[280px] max-sm:h-[220px]">
-                  <HeroMosaic id="thm-mosaic" batches={[thmBatch1,thmBatch2]}/>
+              {/* white card */}
+              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-white" style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-black/[0.04]">10+</div>
+                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.07]">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="#a10000" strokeWidth="1.5"/><path d="M6.5 4.5v2l1.2 1.2" stroke="#a10000" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#282828] relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>10+</div>
+                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-[#999]">{"Years of hands-on marketplace\nexperience"}</div>
               </div>
             </div>
-          </section>
-
-          {/* Tool Stack */}
-          <section className="bg-[#f7f7f7] py-[72px] pb-20">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="flex items-end justify-between flex-wrap gap-4 mb-7">
-                <div>
-                  <p className="text-[11px] tracking-[4px] uppercase font-bold mb-2 text-[#a10000]" style={{fontFamily:"sans-serif"}}>INTERNAL TOOLS</p>
-                  <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] leading-none" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(26px,3vw,40px)"}}>Our Tool Stack</h2>
+            {/* col 2 offset */}
+            <div className="flex-1 flex flex-col gap-3 pt-8">
+              {/* white card */}
+              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-white" style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-black/[0.04]">24</div>
+                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.07]">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="5" r="2.2" stroke="#a10000" strokeWidth="1.4"/><path d="M2.5 11.5c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="#a10000" strokeWidth="1.4" strokeLinecap="round"/></svg>
                 </div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#282828] relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>24</div>
+                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-[#999]">{"Countries with active\nmarketplace operations"}</div>
+              </div>
+              {/* pink card */}
+              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-[#f9eded]" style={{ boxShadow: "0 4px 18px rgba(161,0,0,0.08)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-[#a10000]/10">5★</div>
+                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.09]">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L7.9 4.4L11 4.85L8.75 7.05L9.3 10.15L6.5 8.65L3.7 10.15L4.25 7.05L2 4.85L5.1 4.4L6.5 1.5Z" fill="#a10000" opacity="0.85"/></svg>
+                </div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#a10000] relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>5★</div>
+                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-[#a10000]">{"Client satisfaction across\nglobal engagements"}</div>
+              </div>
+            </div>
+          </div>
+          {/* About text */}
+          <div>
+            <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">OUR GLOBAL EXPERIENCE</p>
+            <h2 className="scroll-anim font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-[1.05] mb-6" style={{ letterSpacing: "-0.02em", fontSize: "clamp(28px,3.5vw,44px)" }}>
+              A Decade of<br />Marketplace Excellence
+            </h2>
+            <p className="scroll-anim-2 font-[family-name:var(--font-rubik)] text-[15px] text-[#555] leading-[1.8] mb-5">
+              For over 4 years, Telex Philippines has partnered with leading global marketplaces — from industry giants like{" "}
+              <strong className="text-[#282828]">Amazon, eBay, and Walmart</strong> to high-performing regional platforms across Europe, the Middle East, and Asia.
+            </p>
+            <p className="scroll-anim-3 font-[family-name:var(--font-rubik)] text-[15px] text-[#555] leading-[1.8] mb-8">
+              We specialize in end-to-end marketplace operations, including product listing optimization, catalog management, and platform integrations — enabling brands to scale efficiently and compete globally.
+            </p>
+            <div className="flex items-center gap-4 mt-2">
+              <div className="flex-1 h-px bg-[#e0e0e0]" />
+              <span className="font-[family-name:var(--font-open-sans)] text-[11px] text-[#bbb] tracking-[0.04em] whitespace-nowrap">Trusted by brands operating in 24+ countries worldwide.</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-              </div>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {toolPillCats.map(p=>(
-                  <button key={p.key} onClick={()=>{setActiveToolCat(p.key);setToolShowMore(false);}}
-                    className={`text-xs font-semibold tracking-[0.04em] px-4 py-1.5 rounded-full border-[1.5px] transition-all duration-200 cursor-pointer ${activeToolCat===p.key?"bg-[#a10000] border-[#a10000] text-white":"bg-white border-[#ddd] text-[#888] hover:border-[#a10000] hover:text-[#a10000]"}`}
-                    style={{fontFamily:"sans-serif"}}>
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-              <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                {visibleTools.map((t,i)=><ToolCard key={t.name+i} {...t}/>)}
-              </div>
-              {filteredTools.length>8 && (
-                <div className="text-center mt-8">
-                  <button onClick={()=>setToolShowMore(s=>!s)}
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border-[1.5px] border-[#d0d0d0] bg-white text-xs font-bold tracking-[0.07em] uppercase text-[#555] cursor-pointer hover:border-[#a10000] hover:text-[#a10000] transition-all"
-                    style={{fontFamily:"sans-serif"}}>
-                    {toolShowMore?"Show Less":"Show More"}
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className={toolShowMore?"rotate-180":""}>
-                      <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
+      {/* PLATFORM SLIDER SECTION */}
+      <section className="relative py-20 pt-24" style={{
+        backgroundImage: `url("/images/bgplatform.png")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}>
+        {/* White overlay */}
+        <div className="absolute inset-0 bg-white/85 pointer-events-none" />
+        <div className="relative z-[1] max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="flex items-end justify-between flex-wrap gap-6 mb-14">
+            <div>
+              <span className="inline-block text-[11px] tracking-[4px] uppercase font-bold text-white font-[family-name:var(--font-open-sans)] mb-3 bg-[#a10000] px-3 py-1 rounded-md">GLOBAL MARKETPLACE NETWORK</span>
+              <h2 className="scroll-anim font-[family-name:var(--font-open-sans)] font-black uppercase text-[#1a1a1a] leading-none flex items-center gap-3 flex-wrap" style={{ fontSize: "clamp(28px,3vw,42px)", letterSpacing: "-0.02em" }}>
+                {headingText}
+                {selectedCountry !== "ALL" && countryFlag[selectedCountry] && (
+                  <img
+                    src={`https://flagcdn.com/h40/${countryFlag[selectedCountry]}.png`}
+                    alt={countryNames[selectedCountry]}
+                    style={{ height: "0.75em", width: "auto", display: "inline-block", borderRadius: "3px", boxShadow: "0 1px 4px rgba(0,0,0,0.15)", verticalAlign: "middle", marginBottom: "0.1em" }}
+                  />
+                )}
+              </h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[13px] text-[#555] mt-2.5 max-w-[440px] leading-[1.7]">{subText}</p>
+            </div>
+            {/* Dropdown */}
+            <div className="relative flex-shrink-0" ref={dropdownRef}>
+              <button
+                className={`flex items-center gap-3 px-6 py-3.5 border-2 rounded-xl text-[13px] font-bold tracking-[0.07em] uppercase min-w-[220px] justify-between cursor-pointer transition-all duration-200 font-[family-name:var(--font-open-sans)] whitespace-nowrap
+                  ${dropdownOpen
+                    ? "bg-[#f0f0f0] text-[#1a1a1a] border-[#1a1a1a]"
+                    : "bg-white text-[#1a1a1a] border-[#1a1a1a]/30 hover:border-[#1a1a1a]/60 hover:bg-[#f5f5f5]"
+                  }`}
+                aria-expanded={dropdownOpen}
+                onClick={() => setDropdownOpen(o => !o)}
+              >
+                <span>{selectedCountry === "ALL" ? "All Countries" : `${selectedCountry} — ${countryNames[selectedCountry]}`}</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ transform: dropdownOpen ? "rotate(180deg)" : undefined, transition: "transform 0.2s", flexShrink: 0 }}>
+                  <path d="M2 4.5L7 9.5L12 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              {dropdownOpen && (
+                <div className="dd-fade absolute top-[calc(100%+8px)] right-0 bg-white border border-[#e0e0e0] rounded-[14px] z-[300] min-w-[260px] max-h-[340px] overflow-y-auto" style={{ boxShadow: "0 24px 48px rgba(0,0,0,0.15)", scrollbarWidth: "thin", scrollbarColor: "#ccc #fff" }}>
+                  {COUNTRIES.map(c => {
+                    const count = c === "ALL" ? platforms.length : platforms.filter(p => p.country === c).length;
+                    if (count === 0 && c !== "ALL") return null;
+                    return (
+                      <button
+                        key={c}
+                        className={`flex items-center justify-between w-full px-[22px] py-[11px] text-left font-[family-name:var(--font-open-sans)] text-[12px] font-bold tracking-[0.06em] uppercase border-l-[3px] cursor-pointer transition-all duration-150 whitespace-nowrap bg-transparent hover:bg-[#f5f5f5] hover:text-[#1a1a1a]
+                          ${selectedCountry === c
+                            ? "border-l-[#a10000] text-[#1a1a1a] bg-[#a10000]/[0.06]"
+                            : "border-l-transparent text-[#555]"
+                          }`}
+                        style={{ borderTop: "none", borderRight: "none", borderBottom: "none" }}
+                        onClick={() => { setSelectedCountry(c); setDropdownOpen(false); }}
+                      >
+                        <span>{c === "ALL" ? "All Countries" : `${c} — ${countryNames[c]}`}</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${selectedCountry === c ? "bg-[#a10000]/20 text-[#a10000]" : "bg-[#f0f0f0] text-[#888]"}`}>{count}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
-          </section>
+          </div>
 
-          {/* Platform Backends */}
-          <section className="bg-[#f7f7f7] py-20">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="flex items-end justify-between flex-wrap gap-4 mb-12">
-                <div>
-                  <p className="text-[11px] tracking-[4px] uppercase font-bold mb-2 text-[#a10000]" style={{fontFamily:"sans-serif"}}>PLATFORM BACKENDS</p>
-                  <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] leading-none" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(26px,3vw,40px)"}}>Systems We<br/>Operate Inside</h2>
+          <PlatformSlider items={filteredPlatforms} selectedCountry={selectedCountry} />
+
+          <p className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] text-center mt-4">
+            Showing <strong className="text-[#1a1a1a]">{filteredPlatforms.length}</strong> platform{filteredPlatforms.length !== 1 ? "s" : ""}
+            {selectedCountry !== "ALL" && ` in ${countryNames[selectedCountry]}`}
+          </p>
+        </div>
+      </section>
+
+      {/* WHY US */}
+      <section className="bg-[#f5f5f5] py-20 px-6">
+        <div className="max-w-[1100px] mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2.5">Why Choose Telex</p>
+            <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none" style={{ letterSpacing: "-0.02em", fontSize: "clamp(30px,4vw,48px)" }}>DRIVING GLOBAL E-COMMERCE PERFORMANCE AT SCALE</h2>
+            <p className="font-[family-name:var(--font-rubik)] text-[15px] text-[#666] leading-[1.7] mt-4 max-w-[560px] mx-auto">We combine marketplace expertise, advanced technology, and localized execution to help brands expand, optimize, and lead across the world's most competitive e-commerce platforms.</p>
+          </div>
+          <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))" }}>
+            {[
+              { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#a10000" strokeWidth="2"/><path d="M8 14l4 4 8-8" stroke="#a10000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, title: "Enterprise-Grade Integrations", text: "Seamlessly connect with 115+ global marketplaces through certified partnerships and robust API integrations built for scale and reliability." },
+              { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="16" rx="3" stroke="#a10000" strokeWidth="2"/><path d="M9 14h10M14 10v8" stroke="#a10000" strokeWidth="2" strokeLinecap="round"/></svg>, title: "End-to-End Catalog Operations", text: "From onboarding and content optimization to pricing and inventory management, we handle the full product lifecycle with precision." },
+              { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 3l2.7 5.6 6.3.9-4.6 4.4 1.1 6.1L14 17.1 8.5 20l1.1-6.1L5 9.5l6.3-.9L14 3z" stroke="#a10000" strokeWidth="2" strokeLinejoin="round"/></svg>, title: "Data-Led Growth Strategy", text: "Leverage actionable insights, performance analytics, and continuous optimization to maximize visibility, conversion, and revenue." },
+              { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#a10000" strokeWidth="2"/><path d="M10 14a4 4 0 108 0 4 4 0 00-8 0z" stroke="#a10000" strokeWidth="2"/></svg>, title: "Global Reach, Local Expertise", text: "Operate confidently across 24+ countries with region-specific strategies tailored to local marketplaces, languages, and consumer behavior." },
+            ].map((card, i) => (
+              <div key={i} className="bg-white rounded-[18px] p-7 border border-[#ebebeb] transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+                <div className="flex items-start gap-3.5 mb-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#a10000]/[0.07] flex items-center justify-center flex-shrink-0">{card.icon}</div>
+                  <h3 className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[15px] uppercase tracking-[0.03em] text-[#282828] leading-[1.2]">{card.title}</h3>
                 </div>
-
+                <p className="font-[family-name:var(--font-rubik)] text-[13.5px] text-[#777] leading-[1.7]">{card.text}</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Featured */}
-                <div className="col-span-full grid grid-cols-[1fr_2fr] rounded-[20px] overflow-hidden bg-[#282828] border border-white/[0.06] min-h-[200px] hover:-translate-y-0.5 hover:shadow-2xl transition-all duration-200 max-sm:grid-cols-1">
-                  <div className="bg-[#a10000] flex items-center justify-center font-black text-[72px] tracking-[-0.04em] text-white/20 p-10 max-sm:min-h-[120px] max-sm:text-[52px] max-sm:p-6" style={{fontFamily:"'Poppins',sans-serif"}}>MK</div>
-                  <div className="p-9 flex flex-col justify-center max-sm:p-6">
-                    <span className="inline-block text-[10px] font-bold tracking-[2px] uppercase bg-white/10 text-white/70 px-3 py-1 rounded-full mb-3.5 w-fit" style={{fontFamily:"sans-serif"}}>Flagship Backend</span>
-                    <div className="font-black uppercase tracking-[-0.02em] text-white mb-3 leading-[1.05]" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(22px,2.5vw,30px)"}}>Mirakl — The Marketplace Operating System</div>
-                    <div className="text-sm text-white/55 leading-[1.7]" style={{fontFamily:"'Open Sans',sans-serif"}}>Our most-used platform backend. We manage hundreds of thousands of SKUs across Mirakl-powered storefronts in Europe and beyond.</div>
-                  </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   TAB: TOOLS
+───────────────────────────────────────────── */
+const TOOL_CARDS = [
+  { cat: "catalog",  thumb: "pink",  abbr: "Bb", cat_label: "Catalog",        name: "Babel",        desc: "Translation and localization for multilingual catalog content.",                        image: "/images/Tools Logo/babel.png" },
+  { cat: "comms",    thumb: "dark",  abbr: "Br", cat_label: "Communication",  name: "Bria",         desc: "VoIP communication tool for client-facing and internal calls.",                        image: "/images/Tools Logo/bria.png" },
+  { cat: "security", thumb: "pink",  abbr: "Cv", cat_label: "Security",       name: "CATO VPN",     desc: "Cloud-native network security and secure access edge.",                                 image: "/images/Tools Logo/cato.png" },
+  { cat: "security", thumb: "red",   abbr: "Cx", cat_label: "Security",       name: "Citrix",       desc: "Secure virtual desktop infrastructure for remote operations.",                          image: "/images/Tools Logo/citrix.png" },
+  { cat: "catalog",  thumb: "light", abbr: "Xl", cat_label: "Catalog",        name: "Excel",        desc: "Spreadsheet-based catalog tracking and data workflows.",                               image: "/images/Tools Logo/exc.png" },
+  { cat: "pm",       thumb: "pink",  abbr: "Jr", cat_label: "Project Mgmt",   name: "Jira",         desc: "Agile project tracking and sprint management for ops teams.",                          image: "/images/Tools Logo/jira.png" },
+  { cat: "analytics",thumb: "red",   abbr: "Lk", cat_label: "Analytics & BI", name: "Looker",       desc: "Business intelligence and data visualization for reporting.",                          image: "/images/Tools Logo/looker.png" },
+  { cat: "infra",    thumb: "dark",  abbr: "Od", cat_label: "Infrastructure", name: "OneDrive",     desc: "Cloud file storage and document sharing across global teams.",                         image: "/images/Tools Logo/drive.png" },
+  { cat: "security", thumb: "light", abbr: "Ok", cat_label: "Security",       name: "Okta",         desc: "Identity and access management for secure team authentication.",                       image: "/images/Tools Logo/okta.png" },
+  { cat: "comms",    thumb: "pink",  abbr: "Ol", cat_label: "Communication",  name: "Outlook",      desc: "Enterprise email and calendar coordination across global teams.",                       image: "/images/Tools Logo/outlook.png" },
+  { cat: "pm",       thumb: "light", abbr: "Pp", cat_label: "Project Mgmt",   name: "People Plaza", desc: "HR and workforce management system for team operations.",                              image: "" },
+  { cat: "catalog",  thumb: "light", abbr: "Pt", cat_label: "Catalog",        name: "Powerpoint",   desc: "Presentation and client reporting tool for business reviews.",                         image: "/images/Tools Logo/ppt.png" },
+  { cat: "security", thumb: "red",   abbr: "Sp", cat_label: "Security",       name: "Sailpoint",    desc: "Identity governance and access control for enterprise security.",                      image: "/images/Tools Logo/sail.png" },
+  { cat: "catalog",  thumb: "dark",  abbr: "Sf", cat_label: "Catalog",        name: "Salsify",      desc: "Product experience management (PXM) for content syndication.",                        image: "/images/Tools Logo/salsify.png" },
+  { cat: "comms",    thumb: "light", abbr: "Sl", cat_label: "Communication",  name: "Slack",        desc: "Channel-based team communication and instant messaging.",                              image: "/images/Tools Logo/slack.png" },
+  { cat: "infra",    thumb: "red",   abbr: "Nx", cat_label: "Infrastructure", name: "Nexus",        desc: "Repository manager for artifact storage and build pipelines.",                         image: "/images/Tools Logo/nexus.png" },
+  { cat: "comms",    thumb: "dark",  abbr: "Tm", cat_label: "Communication",  name: "Teams",        desc: "Real-time messaging and video collaboration across departments.",                       image: "/images/Tools Logo/teams.png" },
+  { cat: "catalog",  thumb: "red",   abbr: "Wd", cat_label: "Catalog",        name: "Word",         desc: "Document creation and SOP documentation for operations teams.",                        image: "/images/Tools Logo/word.png" },
+  { cat: "comms",    thumb: "dark",  abbr: "Zd", cat_label: "Communication",  name: "Zendesk",      desc: "Customer support ticketing and communication management.",                             image: "/images/Tools Logo/zendesk.png" },
+];
+
+function makeSVGLogo(name: string, bg: string, fg: string): string {
+  const abbr = name.replace(/[^A-Z0-9]/gi,'').slice(0,3).toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="${bg}"/>
+    <text x="100" y="95" font-family="Arial Black,sans-serif" font-size="52" font-weight="900" fill="${fg}" text-anchor="middle" dominant-baseline="middle">${abbr}</text>
+    <text x="100" y="148" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="${fg}" opacity="0.7" text-anchor="middle">${name}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+const TOOLS_MOSAIC_ITEMS: MosaicItem[] = [
+  { name: "Babel",      bg: "#f9eded", fg: "#a10000", src: "/images/Tools Logo/babel.png" },
+  { name: "Bria",       bg: "#282828", fg: "#ffffff", src: "/images/Tools Logo/bria.png" },
+  { name: "CATO VPN",   bg: "#f9eded", fg: "#a10000", src: "/images/Tools Logo/cato.png" },
+  { name: "Citrix",     bg: "#1e3a5f", fg: "#ffffff", src: "/images/Tools Logo/citrix.png" },
+  { name: "Excel",      bg: "#217346", fg: "#ffffff", src: "/images/Tools Logo/exc.png" },
+  { name: "Jira",       bg: "#0052cc", fg: "#ffffff", src: "/images/Tools Logo/jira.png" },
+  { name: "Looker",     bg: "#4285f4", fg: "#ffffff", src: "/images/Tools Logo/looker.png" },
+  { name: "OneDrive",   bg: "#282828", fg: "#ffffff", src: "/images/Tools Logo/drive.png" },
+  { name: "Okta",       bg: "#007dc1", fg: "#ffffff", src: "/images/Tools Logo/okta.png" },
+  { name: "Outlook",    bg: "#f9eded", fg: "#a10000", src: "/images/Tools Logo/outlook.png" },
+  { name: "Powerpoint", bg: "#f0f0f0", fg: "#282828", src: "/images/Tools Logo/ppt.png" },
+  { name: "Sailpoint",  bg: "#a10000", fg: "#ffffff", src: "/images/Tools Logo/sail.png" },
+  { name: "Salsify",    bg: "#6e40c9", fg: "#ffffff", src: "/images/Tools Logo/salsify.png" },
+  { name: "Slack",      bg: "#4a154b", fg: "#ffffff", src: "/images/Tools Logo/slack.png" },
+  { name: "Nexus",      bg: "#a10000", fg: "#ffffff", src: "/images/Tools Logo/nexus.png" },
+];
+
+const thumbClass: Record<string,string> = {
+  red:   "bg-[#a10000] text-white",
+  dark:  "bg-[#282828] text-white",
+  light: "bg-[#f0f0f0] text-[#282828]/50",
+  pink:  "bg-[#f9eded] text-[#a10000]",
+};
+
+function TabTools({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
+  const [activeCat, setActiveCat] = useState("all");
+  const [toolsExpanded, setToolsExpanded] = useState(false);
+
+  useSVGMosaic("thm-mosaic", TOOLS_MOSAIC_ITEMS);
+  useScrollAnims();
+
+  const INITIAL_LIMIT = 8;
+  const cats = ["all", "security", "comms", "catalog", "analytics", "pm", "infra"];
+  const catLabels: Record<string, string> = { all: "All", security: "Security", comms: "Communication", catalog: "Catalog", analytics: "Analytics & BI", pm: "Project Mgmt", infra: "Infrastructure" };
+
+  const filteredTools = TOOL_CARDS.filter(t => activeCat === "all" || t.cat === activeCat);
+  const visibleTools  = toolsExpanded ? filteredTools : filteredTools.slice(0, INITIAL_LIMIT);
+
+  return (
+    <>
+      {/* HERO */}
+      <section className="bg-[#f7f7f7] overflow-hidden">
+        <div className="flex flex-row items-stretch w-full max-w-[1280px] mx-auto px-6 md:px-10" style={{ minHeight: 700 }}>
+          <div className="flex flex-col justify-center py-20 pr-14 relative z-[2]" style={{ flex: "0 0 50%", maxWidth: "50%" }}>
+            <div className="absolute top-1/2 left-1/2 font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828]/[0.06] pointer-events-none select-none leading-none z-0 whitespace-nowrap" style={{ transform: "translate(-50%,-55%)", fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em" }}>TOOLS &amp;<br/>TECH</div>
+            <div className="relative z-[1]">
+              <TabNav active="tools" onTabSwitch={onTabSwitch} />
+              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">TECHNOLOGY STACK</p>
+              <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828] mb-5" style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(32px,5vw,64px)" }}>
+                Powering Operations<br/>with <em className="text-[#a10000] not-italic">20+ Integrated</em><br/><em className="text-[#a10000] not-italic">Tools &amp; Platforms</em>
+              </h1>
+              <p className="font-[family-name:var(--font-rubik)] text-[15px] leading-[1.75] text-[#282828]/55 max-w-[560px] mb-7">From catalog management to CRM and analytics, our team operates across a curated stack of enterprise-grade tools — ensuring seamless execution across every marketplace we serve.</p>
+              <div className="text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">Home&nbsp;&gt;&gt;&nbsp;About&nbsp;&gt;&gt;&nbsp;<span className="text-[#a10000]">Tools Overview</span></div>
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center py-10 relative overflow-hidden">
+            <div className="relative w-full" style={{ height: 420 }} id="thm-mosaic" />
+          </div>
+        </div>
+      </section>
+
+      {/* TOOL STACK */}
+      <section className="bg-white py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="flex items-end justify-between flex-wrap gap-5 mb-7">
+            <div>
+              <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2">INTERNAL TOOLS</p>
+              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none" style={{ fontSize: "clamp(26px,3vw,40px)", letterSpacing: "-0.02em" }}>Our Tool Stack</h2>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-7">
+            {cats.map(c => (
+              <button key={c}
+                className={`px-4 py-1.5 font-[family-name:var(--font-open-sans)] text-[12px] font-semibold tracking-[0.04em] rounded-full border-[1.5px] cursor-pointer transition-all duration-200 whitespace-nowrap
+                  ${activeCat === c ? "bg-[#a10000] border-[#a10000] text-white" : "bg-white border-[#ddd] text-[#777] hover:border-[#a10000] hover:text-[#a10000]"}`}
+                onClick={() => { setActiveCat(c); setToolsExpanded(false); }}>
+                {catLabels[c]}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {visibleTools.map((t, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-[#e8e8e8] p-5 flex items-start gap-3.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${t.image ? "bg-white border border-[#ebebeb]" : `${thumbClass[t.thumb]} font-[family-name:var(--font-barlow-condensed)] font-black text-[16px] tracking-[-0.02em]`}`}>
+                  {t.image
+                    ? <img src={t.image} alt={t.name} className="w-full h-full object-contain p-1.5" />
+                    : t.abbr
+                  }
                 </div>
-                {[
-                  {abbr:"AMZ",color:"red",tag:"Global Giant",name:"Amazon Seller Central",desc:"Full catalog operations inside Amazon Seller Central — listing creation, optimization, A+ content, pricing, and inventory management."},
-                  {abbr:"WMT",color:"dark",tag:"US Market",name:"Walmart Marketplace",desc:"Direct backend access to Walmart Marketplace — managing product listings, pricing strategies, and catalog compliance."},
-                  {abbr:"50+",color:"light",tag:"Full Network",name:"50+ Platform Backends",desc:"From KAUFLAND, OTTO, and Cdiscount in Europe to Temu, Shein, and BestBuy in the US — our team operates inside every major platform."},
-                ].map((c,i)=>{
-                  const bg=c.color==="red"?"bg-[#a10000] text-white":c.color==="dark"?"bg-[#282828] text-white/85":"bg-[#f0f0f0] text-[rgba(40,40,40,0.5)]";
-                  return (
-                    <div key={i} className="bg-white rounded-2xl border border-[#e8e8e8] p-7 flex flex-col gap-3.5 hover:-translate-y-1 hover:shadow-lg hover:border-[rgba(161,0,0,0.2)] transition-all duration-200">
-                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-black text-xl tracking-[-0.02em] flex-shrink-0 ${bg}`} style={{fontFamily:"'Poppins',sans-serif"}}>{c.abbr}</div>
-                      <div>
-                        <div className="text-[10px] font-bold tracking-[2px] uppercase text-[#a10000] mb-0.5" style={{fontFamily:"sans-serif"}}>{c.tag}</div>
-                        <div className="font-extrabold text-xl uppercase tracking-[0.03em] text-[#282828]" style={{fontFamily:"'Poppins',sans-serif"}}>{c.name}</div>
-                      </div>
-                      <div className="text-[13px] text-[#888] leading-[1.65] mt-auto" style={{fontFamily:"'Open Sans',sans-serif"}}>{c.desc}</div>
-                    </div>
-                  );
-                })}
+                <div className="flex-1">
+                  <div className="font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase text-[#a10000] mb-0.5">{t.cat_label}</div>
+                  <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[18px] uppercase tracking-[0.03em] text-[#282828]">{t.name}</div>
+                  <div className="font-[family-name:var(--font-rubik)] text-[12px] text-[#888] leading-[1.6] mt-1">{t.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {filteredTools.length > INITIAL_LIMIT && (
+            <div className="text-center mt-8">
+              <ShowMoreBtn expanded={toolsExpanded} onClick={() => setToolsExpanded(e => !e)} />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* PLATFORM BACKENDS */}
+      <section className="bg-white py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="flex items-end justify-between flex-wrap gap-5 mb-9">
+            <div>
+              <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2">PLATFORM BACKENDS</p>
+              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none" style={{ fontSize: "clamp(26px,3vw,40px)", letterSpacing: "-0.02em" }}>Systems We<br/>Operate Inside</h2>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Featured */}
+            <div className="scroll-anim md:col-span-3 bg-[#282828] rounded-[20px] overflow-hidden flex flex-col md:flex-row" style={{ minHeight: 10 }}>
+              <div className="bg-[#ffffff] flex items-center justify-center flex-shrink-0" style={{ width: 200, height: 200, minWidth: 150 }}>
+                <img src="/images/Tools Logo/mirakl.png" alt="Mirakl" style={{ width: "100%", height: "100%", objectFit: "contain", padding: "16px" }} />
+              </div>
+              <div className="p-9 flex flex-col justify-center">
+                <span className="inline-block font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase bg-white/10 text-white/70 px-3 py-1 rounded-full mb-3.5 w-fit">Flagship Backend</span>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-white leading-[1.05] mb-3" style={{ fontSize: "clamp(22px,2.5vw,30px)" }}>Mirakl — The Marketplace Operating System</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[14px] text-white/55 leading-[1.7]">Our most-used platform backend. We manage hundreds of thousands of SKUs across Mirakl-powered storefronts in Europe and beyond — from onboarding to live optimization.</div>
               </div>
             </div>
-          </section>
-
-          {/* Integration Flow */}
-          <section className="bg-[#282828] py-20">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
+            {[
+              { abbr: "AMZ", cls: "bg-[#a10000] text-white", tag: "Global Giant", name: "Amazon Seller Central", desc: "Full catalog operations inside Amazon Seller Central — listing creation, optimization, A+ content, pricing, and inventory management across multiple marketplaces.", anim: "scroll-anim" },
+              { abbr: "WMT", cls: "bg-[#282828] text-white/85", tag: "US Market", name: "Walmart Marketplace", desc: "Direct backend access to Walmart Marketplace — managing product listings, pricing strategies, and catalog compliance for US-based clients at scale.", anim: "scroll-anim-2" },
+              { abbr: "50+", cls: "bg-[#f0f0f0] text-[#282828]/50", tag: "Full Network", name: "50+ Platform Backends", desc: "From KAUFLAND, OTTO, and Cdiscount in Europe to Temu, Shein, and BestBuy in the US — our team is trained to operate directly inside every major platform backend.", anim: "scroll-anim-3" },
+            ].map((card, i) => (
+              <div key={i} className={`${card.anim} bg-white rounded-2xl border border-[#e8e8e8] p-7 flex flex-col gap-3.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20`}>
+                <div className={`w-14 h-14 rounded-[14px] flex items-center justify-center font-[family-name:var(--font-barlow-condensed)] font-black text-[20px] tracking-[-0.02em] flex-shrink-0 ${card.cls}`}>{card.abbr}</div>
                 <div>
-                  <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000]" style={{fontFamily:"sans-serif"}}>HOW WE OPERATE</p>
-                  <h2 className="font-black uppercase tracking-[-0.02em] text-white mb-4 leading-none" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(28px,3.5vw,46px)"}}>From Onboarding<br/>to Live Marketplace</h2>
-                  <p className="text-sm text-white/50 leading-[1.75] mb-9" style={{fontFamily:"'Open Sans',sans-serif"}}>A streamlined 5-step process ensures every platform integration is executed consistently at scale.</p>
-                  <div className="flex items-center gap-0 mb-10">
-                    {["CX","ZD","OK","SF"].map((a,i)=>(
-                      <div key={i} className={`w-10 h-10 rounded-full border-2 border-[#282828] flex items-center justify-center font-extrabold text-sm text-white flex-shrink-0 ${i===0?"ml-0":"-ml-2.5"} ${["bg-[#1e3a5f]","bg-[#03363d]","bg-[#007dc1]","bg-[#6e40c9]"][i]}`} style={{fontFamily:"'Poppins',sans-serif"}}>{a}</div>
-                    ))}
-                    <span className="ml-3 text-sm text-white/50" style={{fontFamily:"'Open Sans',sans-serif"}}><strong className="text-white">19 tools</strong> work together</span>
-                  </div>
-                  <div className="flex flex-col gap-0 relative pl-4 border-l-2 border-[rgba(255,255,255,0.08)]">
-                    {[
-                      {title:"Platform Access",desc:"Secure credentials provisioned via Okta and CATO VPN."},
-                      {title:"Catalog Setup",desc:"Product data structured and normalized using Salsify and Excel."},
-                      {title:"Content Push",desc:"Listings pushed via Mirakl, direct API, or seller portal backend."},
-                      {title:"Quality Check",desc:"Listings reviewed in Zendesk and flagged errors resolved via Jira."},
-                      {title:"Live Monitoring",desc:"Performance tracked via Looker with weekly reporting to clients."},
-                    ].map((s,i)=>(
-                      <div key={i} className="flex gap-3 pb-7 last:pb-0">
-                        <div className="relative -left-[22px] mt-1 w-3 h-3 rounded-full bg-[#a10000] flex-shrink-0 ring-4 ring-[#282828]"/>
-                        <div className="-ml-3">
-                          <div className="font-extrabold text-base uppercase tracking-[0.04em] text-white mb-1" style={{fontFamily:"'Poppins',sans-serif"}}>{s.title}</div>
-                          <div className="text-[13px] text-white/45 leading-relaxed" style={{fontFamily:"'Open Sans',sans-serif"}}>{s.desc}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <div className="font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase text-[#a10000] mb-0.5">{card.tag}</div>
+                  <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[20px] uppercase tracking-[0.03em] text-[#282828]">{card.name}</div>
                 </div>
-                <div className="flex flex-col gap-5">
+                <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] leading-[1.65] mt-auto">{card.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW WE OPERATE */}
+      <section className="bg-[#f7f7f7] py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
+            <div>
+              <span className="inline-block font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[4px] uppercase bg-[#a10000] text-white px-3 py-1 rounded-md mb-3">HOW WE OPERATE</span>
+              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4 mt-3" style={{ letterSpacing: "-0.02em", fontSize: "clamp(28px,3.5vw,46px)" }}>From Onboarding<br/>to Live Marketplace</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#777] leading-[1.75] mb-9">A streamlined 5-step process ensures every platform integration is executed consistently and at scale — using the right tool at every stage.</p>
+              <div className="flex items-center gap-0 mb-10">
+                {[
+                  { cls: "bg-[#a10000]", lbl: "CX" },
+                  { cls: "bg-[#4b5563]", lbl: "ZD" },
+                  { cls: "bg-[#6b7280]", lbl: "OK" },
+                  { cls: "bg-[#374151]", lbl: "SF" },
+                ].map((av, i) => (
+                  <div key={i} className={`w-10 h-10 rounded-full border-2 border-[#f7f7f7] flex items-center justify-center font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[14px] text-white flex-shrink-0 ${av.cls}`} style={{ marginLeft: i === 0 ? 0 : -10 }}>{av.lbl}</div>
+                ))}
+                <span className="ml-3.5 font-[family-name:var(--font-rubik)] text-[13px] text-[#999]"><strong className="text-[#282828] font-semibold">19 tools</strong> work together</span>
+              </div>
+              <div className="tl-steps flex flex-col gap-0">
+                {[
+                  { title: "Platform Access",  desc: "Secure credentials provisioned via Okta and CATO VPN." },
+                  { title: "Catalog Setup",    desc: "Product data structured and normalized using Salsify and Excel." },
+                  { title: "Content Push",     desc: "Listings pushed via Mirakl, direct API, or seller portal backend." },
+                  { title: "QA & Review",      desc: "Reviewed in Jira workflows and Looker dashboards for accuracy." },
+                  { title: "Live & Monitor",   desc: "Performance tracked in Looker; issues escalated via Zendesk & Slack." },
+                ].map((step, i) => (
+                  <div key={i} className="flex gap-5 pb-7 relative last:pb-0">
+                    <div className="w-7 h-7 rounded-full bg-[#a10000]/[0.08] border-[1.5px] border-[#a10000]/20 flex items-center justify-center flex-shrink-0 relative z-[1]">
+                      <div className="w-2 h-2 rounded-full bg-[#a10000]" />
+                    </div>
+                    <div className="pt-1">
+                      <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[16px] uppercase tracking-[0.04em] text-[#282828] mb-1">{step.title}</div>
+                      <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] leading-[1.6]">{step.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-5">
+              {[
+                { num: "115+", label: "E-Commerce Platforms",  desc: "Active operations across 115+ marketplace backends globally, each with dedicated team members and established SOPs.", anim: "scroll-anim" },
+                { num: "24",   label: "Countries Served",      desc: "Region-specific strategies tailored to local marketplaces, languages, and consumer behavior — from Europe to Southeast Asia.", anim: "scroll-anim-2" },
+                { num: "10+",  label: "Years of Experience",   desc: "Over a decade of hands-on marketplace operations refined into a repeatable, scalable system used by 22+ global brands.", anim: "scroll-anim-3" },
+              ].map((card, i) => (
+                <div key={i} className={`${card.anim} bg-white border border-[#ebebeb] rounded-2xl px-8 py-7 transition-all duration-200 hover:border-[#a10000]/25 hover:shadow-lg`} style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+                  <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] leading-none tracking-[-0.03em] text-[#a10000]">{card.num}</div>
+                  <div className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[2px] uppercase text-[#aaa] mt-1.5">{card.label}</div>
+                  <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] leading-[1.6] mt-2.5">{card.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY THESE TOOLS */}
+      <section className="bg-white py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="text-center max-w-[680px] mx-auto mb-14">
+            <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-3">WHY THESE TOOLS</p>
+            <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,40px)" }}>Built for Scale,<br/>Precision &amp; Speed</h2>
+            <p className="font-[family-name:var(--font-rubik)] text-[15px] text-[#888] leading-[1.7]">Every tool in our stack was chosen because it solves a real problem — not because it looked good on a slide. Security, speed, and precision are non-negotiables when operating across 24 countries.</p>
+          </div>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-3.5 px-6 py-4 bg-[#f9f9f9] rounded-[14px] border border-[#ebebeb]">
+              <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 border border-[#ebebeb]">
+                <img src="/images/telex-logo.png" alt="Telex Philippines" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <div className="font-[family-name:var(--font-open-sans)] text-[14px] font-bold text-[#282828]">Telex Philippines</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[12px] text-[#aaa] mt-0.5">Operations &amp; Technology Team</div>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { num: "01", title: "Enterprise Security",     desc: "Okta, CATO VPN, and Sailpoint protect client data across every region — with zero compromises on access control.", tag: "Security" },
+              { num: "02", title: "Seamless Comms",          desc: "Slack, Teams, Bria, and Outlook keep globally distributed teams aligned with zero gaps across time zones.", tag: "Collaboration" },
+              { num: "03", title: "Catalog Precision",       desc: "Salsify and Excel power structured workflows to manage hundreds of thousands of SKUs with consistent output.", tag: "Catalog Ops" },
+              { num: "04", title: "Data-Driven Ops",         desc: "Looker gives clients real-time visibility into listing performance, errors, and optimization opportunities.", tag: "Analytics" },
+              { num: "05", title: "Project Accountability",  desc: "Jira ensures every task and escalation is tracked — nothing falls through the cracks across 100+ simultaneous operations.", tag: "Project Mgmt" },
+              { num: "06", title: "Secure Infrastructure",   desc: "Nexus and OneDrive provide a reliable backbone for artifact management, file sharing, and team-wide document access.", tag: "Infrastructure" },
+            ].map((card, i) => (
+              <div key={i} className={`scroll-anim${i % 3 === 1 ? "-2" : i % 3 === 2 ? "-3" : ""} rounded-2xl p-7 border border-[#ebebeb] bg-[#fafafa] transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20`}>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[64px] leading-none text-[#a10000] mb-3">{card.num}</div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[17px] uppercase tracking-[0.04em] text-[#282828] mb-2">{card.title}</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#777] leading-[1.65]">{card.desc}</div>
+                <span className="inline-block mt-3.5 font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase bg-[#a10000]/[0.07] text-[#a10000] px-2.5 py-1 rounded-full">{card.tag}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   TAB: INDUSTRIES
+───────────────────────────────────────────── */
+const IND_MOSAIC_ITEMS: MosaicItem[] = [
+  { name: "Automotive",  bg: "#282828", fg: "#fff", src: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=400&fit=crop&crop=center" },
+  { name: "Electronics", bg: "#282828", fg: "#fff", src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop&crop=center" },
+  { name: "Fashion",     bg: "#4b5563", fg: "#fff", src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&crop=center" },
+  { name: "Home & Ergo", bg: "#a10000", fg: "#fff", src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop&crop=center" },
+  { name: "Kitchen",     bg: "#a10000", fg: "#fff", src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center" },
+  { name: "Logistics",   bg: "#d97706", fg: "#fff", src: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&h=400&fit=crop&crop=center" },
+  { name: "Medical",     bg: "#0d9488", fg: "#fff", src: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=400&fit=crop&crop=center" },
+  { name: "Software",    bg: "#4b5563", fg: "#fff", src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=400&fit=crop&crop=center" },
+  { name: "Specialty",   bg: "#be185d", fg: "#fff", src: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&h=400&fit=crop&crop=center" },
+  { name: "Travel",      bg: "#2563eb", fg: "#fff", src: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=400&fit=crop&crop=center" },
+];
+
+const VERT_ROWS = [
+  { num: "01", name: "Kitchen",             desc: "Cookware, appliances, and kitchen accessories built for modern households.", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop", chips: ["Akicon","Airmsen","Mr.BBQ"] },
+  { num: "02", name: "Electronics",         desc: "Powerbanks, smart lighting, security cameras, and e-cigarette tech.", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop", chips: ["BaseUs","Geekvape","GOVEE","Ezviz"] },
+  { num: "03", name: "Fashion Retail",      desc: "Fashion brands spanning bridal couture and performance athleisure.", img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop", chips: ["Azazie","Baleaf"] },
+  { num: "04", name: "Home & Ergonomics",   desc: "Ergonomic furniture and home wellness products designed for productivity.", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop", chips: ["Flexispot","BESTOi"] },
+  { num: "05", name: "Medical & Healthcare",desc: "Healthcare devices and medical imaging solutions for clinical professionals.", img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop", chips: ["Mindray","Coslus"] },
+  { num: "06", name: "Automotive",          desc: "Auto parts, car accessories, and child safety products for drivers.", img: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&h=400&fit=crop", chips: ["Fridayparts","Diono"] },
+  { num: "07", name: "Travel & Gov't",      desc: "Travel documentation and government service solutions for global citizens.", img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&h=400&fit=crop", chips: ["CGI-Visa","Jettzy"] },
+  { num: "08", name: "Logistics",           desc: "End-to-end logistics management and live shipment tracking platforms.", img: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=600&h=400&fit=crop", chips: ["GOFO"] },
+  { num: "09", name: "Software",            desc: "Consumer and professional software including PC optimization and security tools.", img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop", chips: ["Avanquest"] },
+  { num: "10", name: "Specialty Verticals", desc: "Niche markets spanning eyewear, coolers, micromobility, audio, and hospitality.", img: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&h=400&fit=crop", chips: ["Jadens","Cooler","3KM Ario","Next Marvel","GNG","MasterOnly"] },
+];
+
+const DIR_CARDS = [
+  { ind: "kitchen",    avatar: "",        abbr: "AK", name: "Akicon",      industry: "Kitchen and Bath Industry",          badge: "commerce", badgeTxt: "Kitchen" },
+  { ind: "software",   avatar: "av-dark", abbr: "AV", name: "Avanquest",   industry: "Software Development",               badge: "tech",     badgeTxt: "Software" },
+  { ind: "electronics",avatar: "av-gray", abbr: "EZ", name: "Ezviz",       industry: "Security Home Cameras",              badge: "tech",     badgeTxt: "Electronics" },
+  { ind: "medical",    avatar: "av-teal", abbr: "MN", name: "Mindray",     industry: "Medical Imaging Needs",              badge: "health",   badgeTxt: "Medical" },
+  { ind: "specialty",  avatar: "av-dark", abbr: "JD", name: "Jadens",      industry: "Thermal Label Printers",             badge: "retail",   badgeTxt: "Specialty" },
+  { ind: "home",       avatar: "",        abbr: "FX", name: "Flexispot",   industry: "Ergonomic Furniture & Home",         badge: "commerce", badgeTxt: "Home & Ergo" },
+  { ind: "electronics",avatar: "av-dark", abbr: "BU", name: "BaseUs",      industry: "Powerbanks, Chargers & Cables",      badge: "tech",     badgeTxt: "Electronics" },
+  { ind: "home",       avatar: "av-gray", abbr: "BE", name: "BESTOi",      industry: "Home Ergonomics",                    badge: "commerce", badgeTxt: "Home & Ergo" },
+  { ind: "logistics",  avatar: "av-amber",abbr: "GF", name: "GOFO",        industry: "Logistics, Tracking & Deliveries",   badge: "logistic", badgeTxt: "Logistics" },
+  { ind: "electronics",avatar: "av-dark", abbr: "GV", name: "GOVEE",       industry: "Outdoor Lights",                     badge: "tech",     badgeTxt: "Electronics" },
+  { ind: "electronics",avatar: "av-gray", abbr: "GK", name: "Geekvape",    industry: "Electronic E-Cigarettes",            badge: "tech",     badgeTxt: "Electronics" },
+  { ind: "travel",     avatar: "av-blue", abbr: "CG", name: "CGI-Visa",    industry: "Govt Services / Travel Docs",        badge: "travel",   badgeTxt: "Travel & Gov't" },
+  { ind: "fashion",    avatar: "",        abbr: "AZ", name: "Azazie",      industry: "Fashion Retail",                     badge: "retail",   badgeTxt: "Fashion" },
+  { ind: "specialty",  avatar: "av-dark", abbr: "3K", name: "3KM Ario",    industry: "Micromobility / Transport Tech",     badge: "retail",   badgeTxt: "Specialty" },
+  { ind: "fashion",    avatar: "av-gray", abbr: "BL", name: "Baleaf",      industry: "Fashion Retail",                     badge: "retail",   badgeTxt: "Fashion" },
+  { ind: "specialty",  avatar: "av-dark", abbr: "NM", name: "Next Marvel", industry: "Eyewear Accessories",                badge: "retail",   badgeTxt: "Specialty" },
+  { ind: "specialty",  avatar: "av-gray", abbr: "CO", name: "Cooler",      industry: "Portable Coolers",                   badge: "retail",   badgeTxt: "Specialty" },
+  { ind: "specialty",  avatar: "av-blue", abbr: "GN", name: "GNG",         industry: "Hotel and Booking",                  badge: "travel",   badgeTxt: "Specialty" },
+  { ind: "medical",    avatar: "av-teal", abbr: "CS", name: "Coslus",      industry: "Healthcare and Medical Devices",     badge: "health",   badgeTxt: "Medical" },
+  { ind: "automotive", avatar: "av-dark", abbr: "FP", name: "Fridayparts", industry: "Automotive",                         badge: "commerce", badgeTxt: "Automotive" },
+  { ind: "kitchen",    avatar: "",        abbr: "AI", name: "Airmsen",     industry: "Kitchen Industry",                   badge: "commerce", badgeTxt: "Kitchen" },
+  { ind: "automotive", avatar: "av-gray", abbr: "DN", name: "Diono",       industry: "Carseats Accessories",               badge: "commerce", badgeTxt: "Automotive" },
+  { ind: "kitchen",    avatar: "",        abbr: "MB", name: "Mr.BBQ",      industry: "Kitchen Industry",                   badge: "commerce", badgeTxt: "Kitchen" },
+  { ind: "specialty",  avatar: "av-rose", abbr: "MO", name: "MasterOnly",  industry: "Studio & Speaker Accessories",       badge: "retail",   badgeTxt: "Specialty" },
+  { ind: "travel",     avatar: "av-blue", abbr: "JT", name: "Jettzy",      industry: "Travel Air Booking",                 badge: "travel",   badgeTxt: "Travel & Gov't" },
+];
+
+const IND_PANELS: Record<string, { accounts: { avatar: string; abbr: string; name: string; desc: string; tag: string }[] }> = {
+  kitchen:     { accounts: [
+    { avatar: "",         abbr: "AK", name: "Akicon",   desc: "Kitchen and bath fixtures, faucets, and accessories for modern homes.",          tag: "Kitchen" },
+    { avatar: "",         abbr: "AI", name: "Airmsen",  desc: "Innovative kitchen appliances and cooking tools built for everyday use.",         tag: "Kitchen" },
+    { avatar: "",         abbr: "MB", name: "Mr.BBQ",   desc: "BBQ grills, accessories, and outdoor cooking essentials for enthusiasts.",        tag: "Kitchen" },
+  ]},
+  electronics: { accounts: [
+    { avatar: "av-dark",  abbr: "BU", name: "BaseUs",   desc: "Powerbanks, chargers, and cables engineered for fast, reliable charging.",       tag: "Electronics" },
+    { avatar: "av-gray",  abbr: "GK", name: "Geekvape", desc: "Advanced electronic cigarette devices and vaping accessories for adult consumers.", tag: "Electronics" },
+    { avatar: "av-dark",  abbr: "GV", name: "GOVEE",    desc: "Smart outdoor and ambient lighting solutions powered by app control and AI.",     tag: "Electronics" },
+    { avatar: "av-gray",  abbr: "EZ", name: "Ezviz",    desc: "Home security cameras and smart surveillance systems for residential use.",       tag: "Electronics" },
+  ]},
+  fashion:     { accounts: [
+    { avatar: "",         abbr: "AZ", name: "Azazie",   desc: "Premium bridal gowns, bridesmaid dresses, and event-ready fashion for every occasion.", tag: "Fashion" },
+    { avatar: "av-gray",  abbr: "BL", name: "Baleaf",   desc: "Performance athleisure and activewear designed for workouts, yoga, and everyday comfort.", tag: "Fashion" },
+  ]},
+  home:        { accounts: [
+    { avatar: "",         abbr: "FX", name: "Flexispot", desc: "Standing desks, ergonomic chairs, and height-adjustable workstations for modern offices.", tag: "Home & Ergo" },
+    { avatar: "av-gray",  abbr: "BE", name: "BESTOi",    desc: "Ergonomic home accessories and wellness products that support comfortable living.", tag: "Home & Ergo" },
+  ]},
+  medical:     { accounts: [
+    { avatar: "av-teal",  abbr: "MN", name: "Mindray",  desc: "Medical imaging systems, patient monitoring, and diagnostic equipment for clinical settings.", tag: "Medical" },
+    { avatar: "av-teal",  abbr: "CS", name: "Coslus",   desc: "Consumer healthcare devices including oral care and personal wellness products.", tag: "Medical" },
+  ]},
+  automotive:  { accounts: [
+    { avatar: "av-dark",  abbr: "FP", name: "Fridayparts", desc: "OEM and aftermarket replacement parts for heavy machinery and construction equipment.", tag: "Automotive" },
+    { avatar: "av-gray",  abbr: "DN", name: "Diono",        desc: "Child car seats, boosters, and automotive travel accessories engineered for safety.", tag: "Automotive" },
+  ]},
+  travel:      { accounts: [
+    { avatar: "av-blue",  abbr: "CG", name: "CGI-Visa", desc: "Visa application services, government travel documentation, and consular support solutions.", tag: "Gov't" },
+    { avatar: "av-blue",  abbr: "JT", name: "Jettzy",   desc: "Online air travel booking platform with competitive fares and flexible itinerary options.", tag: "Travel" },
+  ]},
+  logistics:   { accounts: [
+    { avatar: "av-amber", abbr: "GF", name: "GOFO",      desc: "End-to-end logistics management, live shipment tracking, and delivery solutions for e-commerce brands.", tag: "Logistics" },
+  ]},
+  software:    { accounts: [
+    { avatar: "av-dark",  abbr: "AV", name: "Avanquest", desc: "Consumer and professional software including PC optimization, security, and creative tools.", tag: "Software" },
+  ]},
+  specialty:   { accounts: [
+    { avatar: "av-dark",  abbr: "JD", name: "Jadens",      desc: "Thermal label printers and shipping supplies for warehouses and e-commerce sellers.",  tag: "Specialty" },
+    { avatar: "av-gray",  abbr: "CO", name: "Cooler",       desc: "Portable coolers and ice retention products for outdoor and recreational use.",         tag: "Specialty" },
+    { avatar: "av-dark",  abbr: "3K", name: "3KM Ario",     desc: "Micromobility and personal transport tech solutions for urban commuters.",               tag: "Specialty" },
+    { avatar: "av-dark",  abbr: "NM", name: "Next Marvel",  desc: "Eyewear accessories including lens kits, cases, and optical fashion accessories.",       tag: "Specialty" },
+    { avatar: "av-blue",  abbr: "GN", name: "GNG",          desc: "Hotel booking and hospitality solutions for travelers seeking curated accommodations.",   tag: "Specialty" },
+    { avatar: "av-rose",  abbr: "MO", name: "MasterOnly",   desc: "Professional studio speakers, audio accessories, and sound equipment for creators.",     tag: "Specialty" },
+  ]},
+};
+
+const avatarBg: Record<string,string> = {
+  "":         "bg-[#a10000]",
+  "av-dark":  "bg-[#374151]",
+  "av-teal":  "bg-[#0d9488]",
+  "av-blue":  "bg-[#2563eb]",
+  "av-gray":  "bg-[#4b5563]",
+  "av-amber": "bg-[#d97706]",
+  "av-rose":  "bg-[#be185d]",
+};
+
+const badgeStyle: Record<string,string> = {
+  commerce: "bg-[#a10000]/[0.08] text-[#a10000]",
+  tech:     "bg-[#282828]/[0.07] text-[#444]",
+  retail:   "bg-[#4b5563]/[0.08] text-[#4b5563]",
+  health:   "bg-[#0d9488]/[0.08] text-[#0d9488]",
+  logistic: "bg-[#d97706]/10 text-[#d97706]",
+  travel:   "bg-[#2563eb]/[0.09] text-[#2563eb]",
+};
+
+function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
+  const [activePanel, setActivePanel] = useState("kitchen");
+  const [indDdOpen,   setIndDdOpen]   = useState(false);
+  const [activePill,  setActivePill]  = useState("all");
+  const [vertExpanded, setVertExpanded] = useState(false);
+  const [dirExpanded,  setDirExpanded]  = useState(false);
+  const [activeSegFilter, setActiveSegFilter] = useState("all");
+  const [autoSegIdx, setAutoSegIdx] = useState(0);
+  const [segDdOpen, setSegDdOpen] = useState(false);
+  const ddRef = useRef<HTMLDivElement>(null);
+  const segFilterRef = useRef<HTMLDivElement>(null);
+
+  useSVGMosaic("ind-hero-mosaic", IND_MOSAIC_ITEMS);
+  useScrollAnims();
+
+  const VERT_LIMIT = 6, DIR_LIMIT = 12;
+  const curData = industryData[activePanel];
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ddRef.current && !ddRef.current.contains(e.target as Node)) setIndDdOpen(false);
+      if (segFilterRef.current && !segFilterRef.current.contains(e.target as Node)) setSegDdOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Auto-cycle through segments every 5s when filter is "all"
+  useEffect(() => {
+    if (activeSegFilter !== "all") return;
+    const timer = setInterval(() => {
+      setAutoSegIdx(prev => (prev + 1) % 10);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [activeSegFilter]);
+
+  const indPills = ["all","kitchen","electronics","fashion","home","medical","automotive","travel","logistics","software","specialty"];
+  const pillLabels: Record<string,string> = { all:"All", kitchen:"Kitchen", electronics:"Electronics", fashion:"Fashion", home:"Home & Ergo", medical:"Medical", automotive:"Automotive", travel:"Travel & Gov't", logistics:"Logistics", software:"Software", specialty:"Specialty" };
+
+  const filteredDir = activePill === "all" ? DIR_CARDS : DIR_CARDS.filter(c => c.ind === activePill);
+  const visibleDir  = dirExpanded  ? filteredDir : filteredDir.slice(0, DIR_LIMIT);
+  const visibleVert = vertExpanded ? VERT_ROWS   : VERT_ROWS.slice(0, VERT_LIMIT);
+
+  const ddItems = [
+    { panel: "kitchen",    label: "Kitchen",       count: 3 },
+    { panel: "electronics",label: "Electronics",   count: 4 },
+    { panel: "fashion",    label: "Fashion Retail",count: 2 },
+    { panel: "home",       label: "Home & Ergo",   count: 2 },
+    { panel: "medical",    label: "Medical",        count: 2 },
+    { panel: "automotive", label: "Automotive",     count: 2 },
+    { panel: "travel",     label: "Travel & Gov't", count: 2 },
+    { panel: "logistics",  label: "Logistics",      count: 1 },
+    { panel: "software",   label: "Software",       count: 1 },
+    { panel: "specialty",  label: "Specialty",      count: 6 },
+  ];
+
+  const INDUSTRY_SEGMENTS = [
+    { icon: "🍳", title: "Kitchen & Home Essentials",          brands: "Akicon, Airmsen, Mr.BBQ",                         desc: "We support kitchen-focused brands ranging from functional home solutions to outdoor cooking systems. These products demand strong visual presentation, accurate specifications, and consistent catalog structure across platforms." },
+    { icon: "💻", title: "Electronics & Smart Devices",        brands: "BaseUs, Govee, Ezviz, Geekvape, MasterOnly",      desc: "From smart lighting and security cameras to power solutions and audio equipment, electronics brands require precision. We ensure accurate technical specs, compatibility data, and optimized listings across multiple marketplaces." },
+    { icon: "👗", title: "Fashion & Lifestyle Retail",         brands: "Azaire, Baleaf",                                  desc: "Fashion operates at speed. We manage product data, variations, and content updates to keep up with trends while maintaining consistency in sizing, visuals, and descriptions." },
+    { icon: "🪑", title: "Home, Furniture & Ergonomics",       brands: "Flexispot, BESTQi",                               desc: "This segment focuses on comfort, productivity, and lifestyle upgrades. We handle detailed product attributes such as dimensions, materials, and ergonomic features — ensuring clarity for both B2B and B2C buyers." },
+    { icon: "🏥", title: "Healthcare & Medical Technology",    brands: "Mindray, Coslus",                                 desc: "Healthcare products require strict accuracy and compliance. From medical imaging to personal care devices, we manage sensitive product data with precision and reliability." },
+    { icon: "🚗", title: "Automotive & Mobility",              brands: "Fridayparts, Diono, 3KM Ario",                   desc: "This category includes auto parts, safety accessories, and micromobility solutions. We ensure compatibility accuracy, technical clarity, and proper categorization across platforms." },
+    { icon: "✈️", title: "Travel, Hospitality & Gov't",        brands: "GING, Jetzzy, CGI-Visa",                          desc: "We support platforms that enable movement — whether it's booking travel or processing documentation. These services require seamless integration, real-time data handling, and user-focused content." },
+    { icon: "📦", title: "Logistics & Delivery Technology",    brands: "GOFO",                                            desc: "Logistics platforms are the backbone of e-commerce. We help maintain structured data and system clarity for tracking, delivery, and operational visibility." },
+    { icon: "🧠", title: "Software & Digital Solutions",       brands: "Avanquest",                                       desc: "Software products require clear differentiation — versions, licenses, and features must be accurately presented to avoid confusion and ensure compliance." },
+    { icon: "🧩", title: "Specialized & Niche Products",       brands: "Jadens, Next Marvel, Cooler",                    desc: "This category includes unique products such as thermal printers, eyewear accessories, and portable cooling solutions. Each requires a tailored approach to positioning, content, and marketplace strategy." },
+  ];
+
+  const FRAMEWORK_PILLARS = [
+    { label: "Structured & Scalable Product Data",      desc: "Every brand gets a catalog framework built for volume — clean attributes, consistent formats, and replicable workflows." },
+    { label: "Platform-Specific Optimization",          desc: "We adapt content and structure to each marketplace's unique requirements, algorithms, and buyer expectations." },
+    { label: "Consistent & Compliant Listings",         desc: "From regulatory requirements to brand guidelines, we ensure every listing meets the standard — no exceptions." },
+    { label: "Adaptability to Market Requirements",     desc: "Industries evolve. We stay ahead of category changes, platform policy updates, and market shifts to keep listings competitive." },
+  ];
+
+  return (
+    <>
+      {/* ── HERO ── keep mosaic + TabNav, update copy with Poppins headline */}
+      <section className="bg-[#f7f7f7] overflow-hidden flex items-stretch" style={{ minHeight: 700 }}>
+        <div className="flex flex-row items-stretch w-full max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="flex flex-col justify-center py-20 pr-14 relative z-[2]" style={{ flex: "0 0 52%", maxWidth: "52%" }}>
+            <div className="absolute top-1/2 left-1/2 font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828]/[0.06] pointer-events-none select-none leading-none z-0 whitespace-nowrap" style={{ transform: "translate(-50%,-55%)", fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em" }}>INDUSTRIES<br/>OVERVIEW</div>
+            <div className="relative z-[1]">
+              <TabNav active="industries" onTabSwitch={onTabSwitch} />
+              <p className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">BEYOND CATEGORIES</p>
+              <h1
+                className="anim-up font-[family-name:var(--font-poppins)] font-black text-[#282828] mb-5"
+                style={{ lineHeight: "1.05", fontSize: "clamp(30px,4.5vw,58px)", letterSpacing: "-0.02em" }}
+              >
+                Industries<br />
+                <span className="text-[#a10000]">We Power</span>
+              </h1>
+              <p className="anim-up-2 max-w-[520px] mb-4 font-[family-name:var(--font-rubik)] text-[15px] leading-[1.75] text-[#282828]/55">
+                We don't just work with industries — we operate within their complexities. From kitchen hardware and electronics to healthcare, logistics, and travel services, our experience spans a diverse ecosystem of brands.
+              </p>
+              <p className="anim-up-2 max-w-[480px] mb-7 font-[family-name:var(--font-rubik)] text-[13px] leading-[1.7] text-[#282828]/40 italic">
+                Every industry requires a different strategy. We bring the structure, scalability, and precision needed to make each one succeed.
+              </p>
+              <div className="anim-up-3 text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">
+                Home&nbsp;&gt;&gt;&nbsp;About&nbsp;&gt;&gt;&nbsp;<span className="text-[#a10000]">Industries Overview</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center py-10 relative overflow-hidden">
+            <div className="relative w-full" style={{ height: 420 }} id="ind-hero-mosaic" />
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION 2: A MULTI-INDUSTRY ECOSYSTEM ── */}
+      <section className="bg-white py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            {/* stacked image collage — keep existing visual */}
+            <div className="scroll-anim relative" style={{ height: 400 }}>
+              {[
+                { cls: "absolute left-0 top-0 z-[2]", style: { width:"58%", height:"60%", borderRadius:18, overflow:"hidden", boxShadow:"0 12px 40px rgba(0,0,0,0.14)" }, src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop", alt: "Kitchen" },
+                { cls: "absolute right-0 top-0 z-[1]", style: { width:"45%", height:"48%", borderRadius:18, overflow:"hidden", boxShadow:"0 12px 40px rgba(0,0,0,0.14)" }, src: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop", alt: "Tech" },
+                { cls: "absolute z-[3]",               style: { left:"8%", bottom:0, width:"50%", height:"44%", borderRadius:18, overflow:"hidden", boxShadow:"0 12px 40px rgba(0,0,0,0.14)", border:"4px solid #fff" }, src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=360&fit=crop", alt: "Fashion" },
+                { cls: "absolute right-0 z-[2]",       style: { bottom:"14%", width:"38%", height:"38%", borderRadius:18, overflow:"hidden", boxShadow:"0 12px 40px rgba(0,0,0,0.14)" }, src: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=350&h=280&fit=crop", alt: "Medical" },
+              ].map((img, i) => (
+                <div key={i} className={img.cls} style={img.style}>
+                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                </div>
+              ))}
+              {/* floating stat pill */}
+              <div className="absolute bottom-[-18px] left-[32%] z-[10] bg-[#a10000] text-white px-5 py-3 rounded-[14px] flex items-center gap-3 shadow-xl">
+                <span className="font-[family-name:var(--font-open-sans)] font-black text-[26px] leading-none">10</span>
+                <span className="font-[family-name:var(--font-rubik)] text-[11px] leading-[1.4] opacity-80">Active<br/>Industries</span>
+              </div>
+            </div>
+
+            <div className="scroll-anim-2 mt-6 md:mt-0">
+              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">A MULTI-INDUSTRY ECOSYSTEM</p>
+              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-5" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,40px)" }}>One Portfolio.<br/>Many Complexities.</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#777] leading-[1.85] mb-6">
+                Our portfolio is built across a wide spectrum of industries, allowing us to adapt to different business models, compliance requirements, and customer behaviors. Instead of treating industries as isolated segments, we approach them as interconnected ecosystems — where operational efficiency, catalog accuracy, and platform performance must align.
+              </p>
+              <div className="flex gap-5 flex-wrap">
+                {[{ val:"22+", lbl:"Accounts"}, { val:"10", lbl:"Verticals"}, { val:"B2B", lbl:"Model"}].map((s,i) => (
+                  <div key={i} className="flex flex-col items-start px-5 py-4 rounded-[14px] bg-[#f7f7f7] border border-[#ebebeb] min-w-[88px]">
+                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[32px] leading-none text-[#a10000] tracking-[-0.02em]">{s.val}</span>
+                    <span className="font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase text-[#aaa] mt-1">{s.lbl}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION 3: CORE INDUSTRY SEGMENTS ── */}
+      <section className="bg-[#f7f7f7] py-20">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+
+          {/* Section header — title left, filter right */}
+          <div className="scroll-anim mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">CORE INDUSTRY SEGMENTS</p>
+              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,42px)" }}>What We<br/>Operate In</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#888] leading-[1.75] max-w-[420px]">
+                Ten distinct verticals. Each with its own rules, demands, and market dynamics. We operate inside all of them.
+              </p>
+            </div>
+            {/* Filter dropdown — right-aligned next to heading */}
+            <div className="relative z-[10] flex-shrink-0 w-full md:w-[220px]" ref={segFilterRef}>
+              <button
+                onClick={() => setSegDdOpen(v => !v)}
+                className="flex items-center gap-3 px-5 py-3 rounded-[12px] bg-white border border-[#e0e0e0] font-[family-name:var(--font-open-sans)] text-[12px] font-bold tracking-[1px] uppercase text-[#282828] hover:border-[#a10000]/40 transition-all duration-200 w-full"
+                style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
+              >
+                <span className="flex-1 text-left">
+                  {activeSegFilter === "all" ? "All Industries" : {
+                    kitchen: "Kitchen & Home",
+                    electronics: "Electronics",
+                    fashion: "Fashion & Lifestyle",
+                    home: "Home & Ergonomics",
+                    medical: "Healthcare & Medical",
+                    automotive: "Automotive",
+                    travel: "Travel & Gov't",
+                    logistics: "Logistics",
+                    software: "Software",
+                    specialty: "Specialty & Niche",
+                  }[activeSegFilter]}
+                </span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: segDdOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>
+                  <path d="M2 4l4 4 4-4" stroke="#888" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              {segDdOpen && (
+                <div className="absolute left-0 top-full mt-2 z-50 bg-white rounded-[14px] border border-[#e8e8e8] py-2 overflow-hidden dd-fade w-full" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
                   {[
-                    {num:"115+",label:"PLATFORMS MANAGED",desc:"Active integrations across 115+ unique e-commerce platforms globally."},
-                    {num:"100+",label:"SIMULTANEOUS OPERATIONS",desc:"Our team manages 100+ live marketplace accounts at any given time."},
-                    {num:"5",label:"STEP INTEGRATION PROCESS",desc:"From access provisioning to live monitoring — zero gaps in execution."},
-                  ].map((s,i)=>(
-                    <div key={i} className="bg-white/[0.04] border border-white/[0.08] rounded-2xl px-8 py-7 hover:border-[rgba(161,0,0,0.4)] transition-all">
-                      <div className="font-black text-[52px] leading-none tracking-[-0.03em] text-white mb-1.5" style={{fontFamily:"'Poppins',sans-serif"}}>{s.num}</div>
-                      <div className="text-[11px] font-bold tracking-[2px] uppercase text-white/35 mb-2.5" style={{fontFamily:"sans-serif"}}>{s.label}</div>
-                      <div className="text-[13px] text-white/45 leading-relaxed" style={{fontFamily:"'Open Sans',sans-serif"}}>{s.desc}</div>
-                    </div>
+                    { key: "all",         label: "All Industries" },
+                    { key: "kitchen",     label: "Kitchen & Home" },
+                    { key: "electronics", label: "Electronics" },
+                    { key: "fashion",     label: "Fashion & Lifestyle" },
+                    { key: "home",        label: "Home & Ergonomics" },
+                    { key: "medical",     label: "Healthcare & Medical" },
+                    { key: "automotive",  label: "Automotive" },
+                    { key: "travel",      label: "Travel & Gov't" },
+                    { key: "logistics",   label: "Logistics" },
+                    { key: "software",    label: "Software" },
+                    { key: "specialty",   label: "Specialty & Niche" },
+                  ].map(opt => (
+                    <button
+                      key={opt.key}
+                      onClick={() => { setActiveSegFilter(opt.key); setAutoSegIdx(0); setSegDdOpen(false); }}
+                      className={`w-full text-left px-5 py-2.5 font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[0.5px] uppercase transition-colors duration-150 ${activeSegFilter === opt.key ? "text-[#a10000] bg-[#a10000]/[0.05]" : "text-[#444] hover:bg-[#f7f7f7]"}`}
+                    >
+                      {opt.label}
+                    </button>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
-          </section>
+          </div>
 
-          {/* Why Tools */}
-          <section className="bg-white py-20 border-t border-[#ebebeb]">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="text-center max-w-[680px] mx-auto mb-14">
-                <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000]" style={{fontFamily:"sans-serif"}}>WHY OUR STACK</p>
-                <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] mb-4 leading-none" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(26px,3vw,40px)"}}>Built for Scale, Precision & Performance</h2>
-                <p className="text-[15px] text-[#888] leading-[1.7]" style={{fontFamily:"'Open Sans',sans-serif"}}>Every tool in our stack was chosen for a reason — together they form a system that runs 115+ marketplace operations without missing a beat.</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
-                {[
-                  {num:"01",title:"Identity Security",desc:"Citrix, Okta, CATO VPN, and Sailpoint lock down access for every operator across 24+ countries.",tag:"Security"},
-                  {num:"02",title:"Seamless Comms",desc:"Slack, Teams, Bria, and Outlook keep globally distributed teams aligned with zero gaps across time zones.",tag:"Collaboration"},
-                  {num:"03",title:"Catalog Precision",desc:"Salsify and Excel power structured workflows to manage hundreds of thousands of SKUs with consistent output.",tag:"Catalog Ops"},
-                  {num:"04",title:"Data-Driven Ops",desc:"Looker gives clients real-time visibility into listing performance, errors, and optimization opportunities.",tag:"Analytics"},
-                  {num:"05",title:"Project Accountability",desc:"Jira ensures every task and escalation is tracked — nothing falls through the cracks across 100+ simultaneous operations.",tag:"Project Mgmt"},
-                  {num:"06",title:"Secure Infrastructure",desc:"Nexus and OneDrive provide a reliable backbone for artifact management, file sharing, and team-wide document access.",tag:"Infrastructure"},
-                ].map((c,i)=>(
-                  <div key={i} className="rounded-2xl p-7 border border-[#ebebeb] bg-[#fafafa] hover:-translate-y-1 hover:shadow-lg hover:border-[rgba(161,0,0,0.2)] transition-all duration-200">
-                    <div className="font-black text-[36px] leading-none text-[rgba(161,0,0,0.12)] mb-3" style={{fontFamily:"'Poppins',sans-serif"}}>{c.num}</div>
-                    <div className="font-extrabold text-[17px] uppercase tracking-[0.04em] text-[#282828] mb-2" style={{fontFamily:"'Poppins',sans-serif"}}>{c.title}</div>
-                    <div className="text-[13px] text-[#777] leading-[1.65]" style={{fontFamily:"'Open Sans',sans-serif"}}>{c.desc}</div>
-                    <span className="inline-block mt-3.5 text-[10px] font-bold tracking-[2px] uppercase bg-[rgba(161,0,0,0.07)] text-[#a10000] px-2.5 py-0.5 rounded-full" style={{fontFamily:"sans-serif"}}>{c.tag}</span>
-                  </div>
-                ))}
-              </div>
+          {/* Segment display — single block, filtered or auto-cycling */}
+          <div className="flex flex-col">
+            {(() => {
+              const segImages = [
+                "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1570126618953-d437176e8c79?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=900&h=600&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=900&h=600&fit=crop&crop=center",
+              ];
+              const segImagesSmall = [
+                "https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1599202860130-f600f4948364?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop&crop=center",
+                "https://images.unsplash.com/photo-1495364141860-b0d03eccd065?w=600&h=400&fit=crop&crop=center",
+              ];
 
-            </div>
-          </section>
-        </div>
-      )}
+              const segKeyMap: Record<string, number> = {
+                kitchen: 0, electronics: 1, fashion: 2, home: 3, medical: 4,
+                automotive: 5, travel: 6, logistics: 7, software: 8, specialty: 9,
+              };
 
-      {/* ══ INDUSTRIES TAB ══ */}
-      {activeTab==="industries" && (
-        <div>
-          {/* Hero */}
-          <section className="bg-[#f7f7f7] overflow-hidden min-h-[790px] flex items-stretch">
-            <div className="flex flex-row items-stretch w-full max-w-[1280px] mx-auto px-6 md:px-10 max-[900px]:flex-col">
-              <div className="flex flex-col justify-center pr-14 py-20 flex-[0_0_52%] max-w-[52%] relative z-[2] items-start text-left max-[900px]:flex-none max-[900px]:max-w-full max-[900px]:pr-0 max-[900px]:px-6 max-[900px]:py-16 max-sm:items-center max-sm:text-center max-sm:px-5 max-sm:py-12">
-                <div className="relative z-[1] flex flex-col items-start text-left max-sm:items-center max-sm:text-center w-full">
-                  <TabNav active={activeTab} onSwitch={setActiveTab} align="left"/>
-                  <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000]" style={{fontFamily:"sans-serif"}}>INDUSTRY PORTFOLIO</p>
-                  <h1 className="font-black uppercase tracking-[-0.02em] leading-[0.95] text-[#282828] mb-5" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(32px,4vw,56px)"}}>
-                    Serving <em className="text-[#a10000] not-italic">22+ Accounts</em><br/>Across 10 Key Industries
-                  </h1>
-                  <p className="max-w-[520px] text-[15px] leading-[1.75] text-[rgba(40,40,40,0.55)] mb-7" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                    From kitchen goods to government travel documentation — our operations span a diverse portfolio of industries, each served with precision and marketplace expertise.
-                  </p>
-                  <div className="text-[12px] tracking-[0.04em] text-[#aaa]" style={{fontFamily:"sans-serif"}}>
-                    Home &gt;&gt; About &gt;&gt; <span className="text-[#a10000]">Industries Overview</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1 flex items-center justify-center py-10 relative overflow-hidden max-[900px]:min-h-[280px] max-sm:min-h-[240px]">
-                <div className="relative w-full h-[420px] max-[900px]:h-[280px] max-sm:h-[240px]">
-                  <HeroMosaic id="ind-hero-mosaic" batches={[thmBatch2,thmBatch1]}/>
-                </div>
-              </div>
-            </div>
-          </section>
+              // Determine which segment index to show
+              const displayIdx = activeSegFilter === "all" ? autoSegIdx : (segKeyMap[activeSegFilter] ?? 0);
+              const seg = INDUSTRY_SEGMENTS[displayIdx];
+              const i = displayIdx;
 
-          {/* About */}
-          <section className="bg-white py-20">
-            <div className="max-w-[1100px] mx-auto px-10 max-sm:px-5 grid grid-cols-1 md:grid-cols-2 gap-[72px] items-center max-md:gap-12">
-              <div className="relative h-[380px] max-sm:h-[260px]">
-                {[
-                  {cls:"absolute w-[58%] h-[62%] left-0 top-0 z-[2]",src:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop",alt:"Kitchen"},
-                  {cls:"absolute w-[46%] h-[48%] right-0 top-0 z-[1]",src:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",alt:"Tech"},
-                  {cls:"absolute w-[50%] h-[46%] left-[10%] bottom-0 z-[3] border-4 border-white",src:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=360&fit=crop",alt:"Fashion"},
-                  {cls:"absolute w-[38%] h-[38%] right-0 bottom-[14%] z-[2]",src:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=350&h=280&fit=crop",alt:"Medical"},
-                ].map((img,i)=>(
-                  <div key={i} className={`${img.cls} rounded-[18px] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.14)] bg-[#e0e0e0]`}>
-                    <img src={img.src} alt={img.alt} className="w-full h-full object-cover"/>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000]" style={{fontFamily:"sans-serif"}}>About —</p>
-                <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] mb-5 leading-none" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(28px,3.5vw,46px)"}}>Diverse Verticals,<br/>One Standard<br/>of Excellence</h2>
-                <p className="text-sm text-[#777] leading-[1.8] mb-8" style={{fontFamily:"'Open Sans',sans-serif"}}>Our client portfolio spans a wide spectrum of commerce — from household essentials and cutting-edge electronics to specialized healthcare and government services.</p>
-                <div className="flex gap-7 flex-wrap">
-                  {[{val:"22+",lbl:"Accounts"},{val:"10",lbl:"Verticals"},{val:"B2B",lbl:"Model"}].map((s,i)=>(
-                    <div key={i} className="flex flex-col items-start px-6 py-[18px] rounded-xl bg-[#f7f7f7] border border-[#ebebeb] min-w-[90px]">
-                      <span className="font-black text-[36px] leading-none tracking-[-0.02em] text-[#a10000]" style={{fontFamily:"'Poppins',sans-serif"}}>{s.val}</span>
-                      <span className="text-[10px] font-bold tracking-[2px] uppercase text-[#aaa] mt-1" style={{fontFamily:"sans-serif"}}>{s.lbl}</span>
+              return (
+                <div className="scroll-anim bg-[#f7f7f7] rounded-[24px] overflow-visible" style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}>
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] min-h-[400px] gap-3 p-3">
+
+                    {/* LEFT — large image with overlay, rounded corners */}
+                    <div className="relative overflow-hidden rounded-[16px]" style={{ minHeight: 340 }}>
+                      <img
+                        src={segImages[i % segImages.length]}
+                        alt={seg.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 100%)" }} />
+                      {/* Number badge — top right, glass effect */}
+                      <div className="absolute top-4 right-4 z-[3] px-3 py-1.5 rounded-full font-[family-name:var(--font-open-sans)] text-[11px] font-black tracking-[2px] text-white" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                        {`0${i + 1}`.slice(-2)}
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-8 z-[2]">
+                        <h3 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-white leading-[1.1] mb-2" style={{ fontSize: "clamp(20px,2.2vw,28px)", letterSpacing: "-0.01em" }}>{seg.title}</h3>
+                        <p className="font-[family-name:var(--font-rubik)] text-[12.5px] text-white/55 leading-[1.6] max-w-[340px]">
+                          {seg.desc.split(". ")[0]}.
+                        </p>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
 
-          {/* Industries We Serve */}
-          <section className="py-20 relative" style={{background:"#1a1a1a",backgroundImage:"url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=60&fit=crop'),linear-gradient(135deg,rgba(26,26,26,0.92),rgba(30,24,24,0.97))",backgroundBlendMode:"multiply",backgroundSize:"cover",backgroundPosition:"center"}}>
-            <div className="absolute inset-0 pointer-events-none z-0" style={{background:"radial-gradient(ellipse at 70% 50%,rgba(161,0,0,0.06) 0%,transparent 65%),linear-gradient(180deg,rgba(26,26,26,0.45) 0%,rgba(26,26,26,0.75) 100%)"}}/>
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10 relative z-[1]">
-              {/* Header + dropdown */}
-              <div className="flex items-end justify-between gap-8 flex-wrap mb-9 max-sm:flex-col max-sm:items-start max-sm:gap-4">
-                <div className="flex-1 min-w-0">
-                  <span className="inline-block text-[11px] tracking-[4px] uppercase font-bold mb-2 text-white bg-[#a10000] px-3 py-1 rounded-md" style={{fontFamily:"sans-serif"}}>BY VERTICAL</span>
-                  <h2 className="font-black uppercase tracking-[-0.02em] text-white leading-none" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(28px,3vw,42px)"}}>Industries We Serve</h2>
-                  <p className="text-[13px] text-white/35 mt-2.5 max-w-[480px] leading-[1.7]" style={{fontFamily:"'Open Sans',sans-serif"}}>
-                    Select an industry from the dropdown to explore the accounts we manage within that vertical.
-                  </p>
-                </div>
-                <div ref={indDropRef} className="relative inline-block flex-shrink-0 z-[100] max-sm:w-full">
-                  <button onClick={()=>setIndDropOpen(o=>!o)}
-                    className={`flex items-center gap-3 px-6 py-3.5 border-2 rounded-xl text-[13px] font-bold tracking-[0.07em] uppercase min-w-[240px] justify-between cursor-pointer transition-all duration-200 max-sm:w-full max-sm:min-w-0 max-sm:box-border ${indDropOpen?"bg-white text-[#1a1a1a] border-white":"bg-transparent border-white/20 text-white hover:border-white/40"}`}
-                    style={{fontFamily:"sans-serif"}}>
-                    <span>{activeIndustry==="all"?"ALL INDUSTRIES":(industryPanels.find(p=>p.key===activeIndustry)?.label.toUpperCase()??"ALL INDUSTRIES")}</span>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={`transition-transform flex-shrink-0 ${indDropOpen?"rotate-180":""}`}>
-                      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  {indDropOpen && (
-                    <div className="absolute top-[calc(100%+8px)] left-0 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-[0_24px_48px_rgba(0,0,0,0.55)] z-[999] min-w-[260px] max-h-[340px] overflow-y-auto">
-                      {industryPanels.map(p=>(
-                        <button key={p.key} onClick={()=>{
-                          if(indAutoRef.current){ clearInterval(indAutoRef.current); indAutoRef.current=null; }
-                          setActiveIndustry(p.key);setIndDropOpen(false);
-                        }}
-                          className={`flex items-center justify-between w-full px-[22px] py-[11px] text-left text-xs font-bold tracking-[0.06em] uppercase transition-all border-l-[3px] bg-none cursor-pointer hover:bg-white/[0.07] hover:text-white ${activeIndustry===p.key?"border-l-[#a10000] text-white bg-[rgba(161,0,0,0.08)]":"border-l-transparent text-white/60"}`}
-                          style={{fontFamily:"sans-serif",borderTop:"none",borderRight:"none",borderBottom:"none"}}>
-                          <span>{p.label}</span>
-                          <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full font-bold text-white/40">{p.count}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Two-col layout */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start min-h-[460px] max-sm:gap-8">
-                {/* Left panel */}
-                <div className="relative overflow-hidden rounded-[20px] bg-white/[0.03] border border-white/[0.07] px-9 py-10 min-h-[380px] flex flex-col justify-end max-sm:min-h-[260px] max-sm:px-6 max-sm:py-7">
-                  <div className="absolute bottom-[-10px] right-[-10px] font-black leading-none tracking-[-0.04em] text-white/[0.04] pointer-events-none select-none uppercase transition-opacity duration-300" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(80px,18vw,200px)"}}>{activePanel.backdropLetters}</div>
-                  <div className="relative z-[1]">
-                    <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[3px] uppercase text-white bg-[#a10000] px-3 py-1 rounded-md mb-3 w-fit" style={{fontFamily:"sans-serif"}}>{activePanel.eyebrow}</div>
-                    <div className="font-black uppercase tracking-[-0.02em] text-white leading-[1.05] mb-4" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(18px,2.8vw,34px)"}}>{activePanel.title}</div>
-                    <div className="text-[13.5px] text-white/45 leading-[1.85] max-w-[400px] max-sm:max-w-full max-sm:text-[13px]" style={{fontFamily:"'Open Sans',sans-serif"}}>{activePanel.body}</div>
-                    <div className="mt-6 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.06] border border-white/10">
-                      <span className="font-black text-[22px] text-[#a10000] tracking-[-0.02em]" style={{fontFamily:"'Poppins',sans-serif"}}>{activePanel.count}</span>
-                      <span className="text-[10px] font-bold tracking-[2px] uppercase text-white/35" style={{fontFamily:"sans-serif"}}>Managed Accounts</span>
-                    </div>
-                  </div>
-                </div>
-                {/* Right panel */}
-                <div className="overflow-y-auto max-h-[480px] pr-1" style={{scrollbarWidth:"thin",scrollbarColor:"rgba(255,255,255,0.1) transparent"}}>
-                  <div className="flex flex-col gap-2.5">
-                    {activePanel.accounts.length>0 ? activePanel.accounts.map((acc,i)=>(
-                      <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.07] hover:border-white/[0.12] transition-all cursor-default max-sm:px-3.5 max-sm:py-3 max-sm:gap-3">
-                        <AvatarEl abbr={acc.abbr} cls={acc.avatarClass}/>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-extrabold text-[15px] uppercase tracking-[0.04em] text-white mb-0.5" style={{fontFamily:"'Poppins',sans-serif"}}>{acc.name}</div>
-                          <div className="text-[13px] text-white/45 leading-relaxed max-sm:text-xs max-sm:whitespace-normal" style={{fontFamily:"'Open Sans',sans-serif"}}>{acc.desc}</div>
+                    {/* RIGHT — small image + text content */}
+                    <div className="flex flex-col gap-3">
+                      {/* Small image */}
+                      <div className="relative overflow-hidden rounded-[16px]" style={{ height: 190 }}>
+                        <img
+                          src={segImagesSmall[i % segImagesSmall.length]}
+                          alt={seg.title + " detail"}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Text content */}
+                      <div className="flex-1 rounded-[16px] p-8 flex flex-col justify-between" style={{ background: "#fff" }}>
+                        <div>
+                          <p className="font-[family-name:var(--font-rubik)] text-[13.5px] text-[#555] leading-[1.8] mb-5">
+                            {seg.desc}
+                          </p>
                         </div>
-                        <span className="text-[10px] font-bold tracking-[1.5px] uppercase px-2.5 py-0.5 rounded-full bg-[#a10000]/20 text-[#a10000] flex-shrink-0" style={{fontFamily:"sans-serif"}}>{acc.tag}</span>
+                        <div className="pt-4 border-t border-[#f0f0f0]">
+                          <div className="font-[family-name:var(--font-open-sans)] text-[9px] font-bold tracking-[2px] uppercase text-[#bbb] mb-3">Partners</div>
+                          <div className="flex flex-wrap gap-2">
+                            {seg.brands.split(", ").map((brand, bi) => (
+                              <span key={bi} className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[0.5px] uppercase text-[#a10000] px-3 py-1 rounded-full" style={{ background: "rgba(161,0,0,0.08)", border: "1px solid rgba(161,0,0,0.15)" }}>
+                                {brand}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    )) : (
-                      <div className="text-white/30 text-sm pt-8" style={{fontFamily:"'Open Sans',sans-serif"}}>Select a vertical to see managed accounts.</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+                    </div>
 
-          {/* Accounts by Industry (Verticals) */}
-          <section className="bg-[#f7f7f7] py-20">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="mb-9 text-center">
-                <p className="text-[11px] tracking-[4px] uppercase font-bold mb-2 text-[#a10000]" style={{fontFamily:"sans-serif"}}>INDUSTRY BREAKDOWN</p>
-                <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] leading-none mb-3" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(28px,3vw,42px)"}}>Accounts by Industry</h2>
-                <p className="text-[13px] text-[#888] max-w-[560px] mx-auto leading-[1.7]" style={{fontFamily:"'Open Sans',sans-serif"}}>We partner with brands across 10 distinct verticals — from kitchen essentials to cutting-edge tech, healthcare, and specialty niches.</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {visibleVerts.map((v,i)=>(
-                  <div key={i} className="bg-white rounded-2xl border border-[#e8e8e8] overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200">
-                    <div className="relative h-[200px] overflow-hidden bg-[#e0e0e0]">
-                      <img src={v.img} alt={v.name} className="w-full h-full object-cover"/>
-                      <div className="absolute top-4 left-4 font-black text-[52px] leading-none tracking-[-0.04em] text-[#a10000]" style={{fontFamily:"'Poppins',sans-serif",WebkitTextStroke:"2px #a10000",color:"transparent"}}>{v.num}</div>
-                    </div>
-                    <div className="p-6">
-                      <div className="font-black text-xl uppercase tracking-[-0.01em] text-[#282828] mb-2" style={{fontFamily:"'Poppins',sans-serif"}}>{v.name}</div>
-                      <div className="text-[13px] text-[#888] mb-4 leading-[1.65]" style={{fontFamily:"'Open Sans',sans-serif"}}>{v.desc}</div>
-                      <div className="flex flex-wrap gap-2">
-                        {v.chips.map((c,ci)=>(
-                          <span key={ci} className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[rgba(161,0,0,0.06)] text-[#a10000] border border-[rgba(161,0,0,0.12)]" style={{fontFamily:"sans-serif"}}>{c}</span>
-                        ))}
-                      </div>
-                    </div>
                   </div>
-                ))}
-              </div>
-              {verticalRows.length>6 && (
-                <div className="text-center mt-8">
-                  <button onClick={()=>setVertShowMore(s=>!s)}
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border-[1.5px] border-[#ddd] bg-white text-xs font-bold tracking-[0.07em] uppercase text-[#555] cursor-pointer hover:border-[#a10000] hover:text-[#a10000] transition-all"
-                    style={{fontFamily:"sans-serif"}}>
-                    {vertShowMore?"Show Less":"Show More"}
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className={vertShowMore?"rotate-180":""}>
-                      <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
                 </div>
-              )}
-            </div>
-          </section>
-
-          {/* Full Account Directory */}
-          <section className="bg-[#f0f0f0] py-20">
-            <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-              <div className="mb-8">
-                <p className="text-[11px] tracking-[4px] uppercase font-bold mb-2 text-[#a10000]" style={{fontFamily:"sans-serif"}}>COMPLETE ROSTER</p>
-                <h2 className="font-black uppercase tracking-[-0.02em] text-[#282828] leading-none mb-2.5" style={{fontFamily:"'Poppins',sans-serif",fontSize:"clamp(26px,3vw,40px)"}}>Full Account Directory</h2>
-                <p className="text-sm text-[#888] leading-[1.7] max-w-[520px] mb-8" style={{fontFamily:"'Open Sans',sans-serif"}}>Every brand we've partnered with, organized by vertical. Use the filters below to explore specific industries.</p>
-                <div className="flex flex-wrap gap-2 mb-7">
-                  {[{k:"all",l:"All"},{k:"kitchen",l:"Kitchen"},{k:"electronics",l:"Electronics"},{k:"fashion",l:"Fashion"},{k:"home",l:"Home & Ergo"},{k:"medical",l:"Medical"},{k:"automotive",l:"Automotive"},{k:"travel",l:"Travel & Gov't"},{k:"logistics",l:"Logistics"},{k:"software",l:"Software"},{k:"specialty",l:"Specialty"}].map(p=>(
-                    <button key={p.k} onClick={()=>{setIndDirFilter(p.k);setDirShowMore(false);}}
-                      className={`text-xs font-semibold tracking-[0.04em] px-4 py-1.5 rounded-full border-[1.5px] transition-all cursor-pointer ${indDirFilter===p.k?"bg-[#a10000] border-[#a10000] text-white":"bg-white border-[#ddd] text-[#777] hover:border-[#a10000] hover:text-[#a10000]"}`}
-                      style={{fontFamily:"sans-serif"}}>{p.l}</button>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {visibleDir.map((c,i)=>(
-                  <div key={i} className="bg-white rounded-2xl border border-[#e8e8e8] p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all">
-                    <div className="flex items-center gap-3">
-                      <AvatarEl abbr={c.abbr} cls={c.ac}/>
-                      <div>
-                        <div className="font-extrabold text-base uppercase tracking-[0.03em] text-[#282828]" style={{fontFamily:"'Poppins',sans-serif"}}>{c.name}</div>
-                        <div className="text-xs text-[#aaa]" style={{fontFamily:"'Open Sans',sans-serif"}}>{c.industry}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <BadgeEl type={c.badge} label={c.badgeLabel}/>
-                      <div className="w-2 h-2 rounded-full bg-[#22c55e]"/>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {filteredDir.length>8 && (
-                <div className="text-center mt-8">
-                  <button onClick={()=>setDirShowMore(s=>!s)}
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border-[1.5px] border-[#ddd] bg-white text-xs font-bold tracking-[0.07em] uppercase text-[#555] cursor-pointer hover:border-[#a10000] hover:text-[#a10000] transition-all"
-                    style={{fontFamily:"sans-serif"}}>
-                    {dirShowMore?"Show Less":"Show More"}
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className={dirShowMore?"rotate-180":""}>
-                      <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
+              );
+            })()}
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* ── SECTION 4: ONE FRAMEWORK. MULTIPLE INDUSTRIES. ── */}
+      <section className="bg-white py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
+          {/* Header */}
+          <div className="scroll-anim text-center mb-14">
+            <span className="inline-block font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[4px] uppercase bg-[#a10000] text-white px-3 py-1 rounded-md mb-4">WHAT MAKES US DIFFERENT</span>
+            <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,42px)" }}>One Framework.<br/>Multiple Industries.</h2>
+            <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#888] leading-[1.85] max-w-[520px] mx-auto">
+              While industries differ, the foundation of success remains the same. We apply a unified operational framework, customized per industry — ensuring both efficiency and relevance.
+            </p>
+          </div>
+
+          {/* Therapy-style layout: 2 cards | center image | 2 cards */}
+          <div className="scroll-anim-2 grid grid-cols-[1fr_320px_1fr] gap-6 items-center">
+
+            {/* Left column — pillars 0 & 1 */}
+            <div className="flex flex-col gap-5">
+              {FRAMEWORK_PILLARS.slice(0, 2).map((p, i) => (
+                <div key={i} className="rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-6 flex flex-col gap-3 transition-all duration-200 hover:border-[#a10000]/30 hover:shadow-md" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+                  <div className="w-9 h-9 rounded-full bg-[#a10000]/[0.08] flex items-center justify-center flex-shrink-0">
+                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[12px] text-[#a10000]">{String(i + 1).padStart(2,"0")}</span>
+                  </div>
+                  <div className="font-[family-name:var(--font-open-sans)] font-black text-[13px] uppercase tracking-[0.04em] text-[#282828] leading-snug">{p.label}</div>
+                  <p className="font-[family-name:var(--font-rubik)] text-[12.5px] text-[#999] leading-[1.7]">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Center — image */}
+            <div className="rounded-[22px] overflow-hidden flex-shrink-0" style={{ height: 460, boxShadow: "0 16px 48px rgba(0,0,0,0.13)" }}>
+              <img
+                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=640&h=920&fit=crop&crop=center"
+                alt="Framework"
+                className="w-full h-full object-cover block"
+              />
+            </div>
+
+            {/* Right column — pillars 2 & 3 */}
+            <div className="flex flex-col gap-5">
+              {FRAMEWORK_PILLARS.slice(2, 4).map((p, i) => (
+                <div key={i} className="rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-6 flex flex-col gap-3 transition-all duration-200 hover:border-[#a10000]/30 hover:shadow-md" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+                  <div className="w-9 h-9 rounded-full bg-[#a10000]/[0.08] flex items-center justify-center flex-shrink-0">
+                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[12px] text-[#a10000]">{String(i + 3).padStart(2,"0")}</span>
+                  </div>
+                  <div className="font-[family-name:var(--font-open-sans)] font-black text-[13px] uppercase tracking-[0.04em] text-[#282828] leading-snug">{p.label}</div>
+                  <p className="font-[family-name:var(--font-rubik)] text-[12.5px] text-[#999] leading-[1.7]">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
+          {/* complexity → clarity callout — bottom */}
+          <div className="scroll-anim-3 mt-10 rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-7 max-w-[700px] mx-auto text-center" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+            <div className="font-[family-name:var(--font-open-sans)] font-black text-[12px] uppercase tracking-[3px] text-[#a10000] mb-2">From Complexity to Clarity</div>
+            <p className="font-[family-name:var(--font-rubik)] text-[13.5px] text-[#888] leading-[1.8]">
+              Each industry brings its own challenges — technical specifications, regulatory requirements, fast-moving inventories, or niche audiences. Our role is to simplify that complexity and translate it into clear, high-performing marketplace content.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION 6: CLOSING — INDUSTRIES ARE JUST THE STARTING POINT ── */}
+      <section className="bg-white py-20 border-t border-[#ebebeb]">
+        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="scroll-anim">
+              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">INDUSTRIES ARE JUST THE STARTING POINT</p>
+              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-5" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,40px)" }}>What Defines<br/>Our Work</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14.5px] text-[#666] leading-[1.85] mb-6">
+                What defines our work is not the industry itself, but how we operate within it. Whether it's a kitchen appliance, a medical device, or a travel platform, we bring the same level of precision, adaptability, and execution — built to scale across global marketplaces.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {["Precision","Adaptability","Execution","Scale"].map(tag => (
+                  <span key={tag} className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[1.5px] uppercase px-4 py-2 rounded-full border-2 border-[#a10000]/20 text-[#a10000] bg-[#a10000]/[0.04]">{tag}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* industry image grid */}
+            <div className="scroll-anim-2 grid grid-cols-5 gap-2">
+              {[
+                { label: "Kitchen",     src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop&crop=center" },
+                { label: "Electronics", src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=center" },
+                { label: "Fashion",     src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop&crop=center" },
+                { label: "Home",        src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&h=300&fit=crop&crop=center" },
+                { label: "Medical",     src: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=300&h=300&fit=crop&crop=center" },
+                { label: "Automotive",  src: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=300&fit=crop&crop=center" },
+                { label: "Travel",      src: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=300&h=300&fit=crop&crop=center" },
+                { label: "Logistics",   src: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=300&h=300&fit=crop&crop=center" },
+                { label: "Software",    src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=300&fit=crop&crop=center" },
+                { label: "Specialty",   src: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=300&h=300&fit=crop&crop=center" },
+              ].map((tile, i) => (
+                <div key={i} className="relative flex flex-col items-center justify-end aspect-square rounded-[14px] overflow-hidden border border-[#ebebeb] group cursor-default transition-all duration-200 hover:scale-[1.04] hover:shadow-md" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+                  <img src={tile.src} alt={tile.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <span className="relative z-[1] font-[family-name:var(--font-open-sans)] text-[8px] font-black tracking-[1px] uppercase text-white text-center leading-tight pb-2 px-1">{tile.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   ROOT COMPONENT
+───────────────────────────────────────────── */
+export default function PlatformOverview() {
+  const [activeTab, setActiveTab] = useState<"platforms" | "tools" | "industries">("platforms");
+
+  // Inject only the minimal CSS that Tailwind can't handle
+  useEffect(() => {
+    const id = "platform-overview-minimal-styles";
+    if (!document.getElementById(id)) {
+      const style = document.createElement("style");
+      style.id = id;
+      style.textContent = MINIMAL_CSS;
+      document.head.appendChild(style);
+    }
+    return () => {
+      document.getElementById(id)?.remove();
+    };
+  }, []);
+
+  const handleTabSwitch = (tab: string) => {
+    setActiveTab(tab as "platforms" | "tools" | "industries");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className={FONT_VARS}>
+      {activeTab === "platforms"  && <TabPlatforms   onTabSwitch={handleTabSwitch} />}
+      {activeTab === "tools"      && <TabTools        onTabSwitch={handleTabSwitch} />}
+      {activeTab === "industries" && <TabIndustries   onTabSwitch={handleTabSwitch} />}
     </div>
   );
 }

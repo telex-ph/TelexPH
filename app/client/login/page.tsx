@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { getClientAuthenticateUrl } from '@/lib/api-base'
 
 export default function ClientLoginPage() {
   const [email, setEmail] = useState('')
@@ -28,7 +29,7 @@ export default function ClientLoginPage() {
     setSuccess('')
     setIsLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/client/authenticate`, {
+      const response = await fetch(getClientAuthenticateUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

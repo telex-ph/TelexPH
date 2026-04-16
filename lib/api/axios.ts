@@ -51,9 +51,14 @@ api.interceptors.response.use(
           // You can also clear other auth-related data here
         }
         
-        // Only redirect if not already on login page (prevent infinite loop)
-        if (typeof window !== 'undefined' && !path.includes('/login')) {
-          window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
+        const onLoginPage = /\/login(?:\/|$)/.test(path);
+        if (typeof window !== 'undefined' && !onLoginPage) {
+          let loginBase = '/admin/login';
+          if (path.startsWith('/client')) loginBase = '/client/login';
+          else if (path.startsWith('/VirtualAssistant') || path.startsWith('/VAdash')) {
+            loginBase = '/VirtualAssistant/login';
+          }
+          window.location.href = `${loginBase}?redirect=${encodeURIComponent(path)}`;
         }
       }
       

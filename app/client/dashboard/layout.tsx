@@ -27,10 +27,11 @@ const SettingsIco   = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z
 const BillingIco    = () => <NavIcon><Ico d="M3 10h18M7 15h.01M11 15h2M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" size={13} /></NavIcon>
 const ServicesIco   = () => <NavIcon><Ico d="M4 6h16M4 10h16M4 14h16M4 18h16" size={13} /></NavIcon>
 const MessagingIco  = () => <NavIcon><Ico d="M8 9h8M8 13h6M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
+const CalIcon     = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
+const BookingIcon = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
+const SettingsIco = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
 
 // ─── UTILITY ICONS ────────────────────────────────────────────────────────────
-const ChevronDown  = () => <Ico d="M6 9l6 6 6-6"    size={13} sw={1.5} />
-const ChevronUp    = () => <Ico d="M18 15l-6-6-6 6" size={13} sw={1.5} />
 const ChevronLeft  = () => <Ico d="M15 18l-6-6 6-6" size={14} sw={1.5} />
 const ChevronRight = () => <Ico d="M9 18l6-6-6-6"   size={14} sw={1.5} />
 const SearchIco    = () => <Ico d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" size={14} />
@@ -345,91 +346,6 @@ function NavSection({
   )
 }
 
-// ─── REUSABLE ACCORDION DROPDOWN ─────────────────────────────────────────────
-function NavDropdown({
-  sectionLabel,
-  triggerLabel,
-  triggerIcon,
-  children,
-  collapsed,
-  pathname,
-  open,
-  onToggle,
-}: {
-  sectionLabel: string
-  triggerLabel: string
-  triggerIcon: React.ReactNode
-  children: { label: string; href: string; badge?: string }[]
-  collapsed: boolean
-  pathname: string
-  open: boolean
-  onToggle: () => void
-}) {
-  const isActive  = (href: string) => pathname === href
-  const anyActive = children.some((c) => pathname === c.href)
-
-  if (collapsed) return null
-
-  return (
-    <div style={{ marginBottom: 6 }}>
-      {sectionLabel && (
-        <div style={{ fontSize: 10, color: '#aaa', padding: '10px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          {sectionLabel}
-        </div>
-      )}
-
-      <div
-        onClick={onToggle}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '7px 10px', borderRadius: 8, cursor: 'pointer',
-          color: '#333',
-          background: anyActive && !open ? '#f5f3f3' : 'transparent',
-        }}
-      >
-        {triggerIcon}
-        <span style={{ flex: 1, fontSize: 12 }}>{triggerLabel}</span>
-        <span style={{ color: '#aaa', display: 'flex' }}>
-          {open ? <ChevronUp /> : <ChevronDown />}
-        </span>
-      </div>
-
-      {open && (
-        <div style={{ position: 'relative', marginLeft: 23, marginTop: 2 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 15, width: '1px', background: '#e0dede' }} />
-          {children.map((child) => (
-            <div key={child.href} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <div style={{ position: 'absolute', left: 0, top: 15, width: 12, height: '1px', background: '#e0dede' }} />
-              <div style={{
-                position: 'absolute', left: 12, top: 12,
-                width: 4, height: 4, borderRadius: '50%',
-                border: '1px solid #e0dede',
-                background: isActive(child.href) ? '#800000' : '#fff',
-              }} />
-              <Link
-                href={child.href}
-                style={{
-                  display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between',
-                  padding: '6px 12px 6px 22px', borderRadius: 6, fontSize: 11.5,
-                  color: isActive(child.href) ? '#800000' : '#777',
-                  background: isActive(child.href) ? '#fff5f5' : 'transparent',
-                }}
-              >
-                <span>{child.label}</span>
-                {child.badge && (
-                  <span style={{ fontSize: 8, fontWeight: 700, background: '#ef4444', color: '#fff', padding: '2px 5px', borderRadius: 4 }}>
-                    {child.badge}
-                  </span>
-                )}
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 // ─── LAYOUT ───────────────────────────────────────────────────────────────────
 export default function ClientDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -442,6 +358,10 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
   const [billingOpen,   setBillingOpen]   = useState(false)
   const [clientInfo,    setClientInfo]    = useState<ClientInfo | null>(null)
   const [loggingOut,    setLoggingOut]    = useState(false)
+  const [collapsed,  setCollapsed]  = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
