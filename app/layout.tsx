@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ResponsiveNav from "@/components/Home/Navbar/ResponsiveNav";
 import LoadingProvider from "@/components/ProgressProvider/ProgressProvider";
-import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { Poppins, Open_Sans } from "next/font/google";
 import ExitIntentPopup from "./exit-intent/components/ExitIntentPopup";
 import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTracker";
 
@@ -20,12 +20,6 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-rubik",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -89,10 +83,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+      className={`${poppins.variable} ${openSans.variable}`}
     >
       <body
-        className="font-rubik antialiased bg-white text-black"
+        className="font-poppins antialiased bg-white text-black"
         suppressHydrationWarning={true} // This line suppresses the hydration mismatch warning
       >
         <SitePageViewTracker />

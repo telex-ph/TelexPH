@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useDarkMode } from './layout'
+import api from '@/lib/api/axios'
 
 import api from '@/lib/api/axios'
 
@@ -97,6 +98,8 @@ export default function adminpage() {
         seterror(null)
         const response = await api.get('/dashboard/stats/casestudies-summary')
         setcasestudystats(response.data)
+      } catch (error) {
+        seterror(error instanceof Error ? error.message : 'Unknown error')
       } catch (error: any) {
         if (error.response?.status !== 401) {
           seterror(error.response?.data?.message || error.message || 'Unknown error')
@@ -113,6 +116,11 @@ export default function adminpage() {
     const fetchEngagementMetrics = async () => {
       try {
         setloading(true)
+        const response = await api.get(
+          `/dashboard/engagement-metrics?resourceType=${resourceFilter}`
+        )
+        setengagementdata(response.data)
+      } catch (error) {
         const response = await api.get(`/dashboard/engagement-metrics?resourceType=${resourceFilter}`)
         setengagementdata(response.data)
       } catch (error: any) {

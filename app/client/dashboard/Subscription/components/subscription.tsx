@@ -20,7 +20,10 @@ interface VA {
   available: boolean
   bio: string
   rate: number
+<<<<<<< HEAD
+=======
   rateLabel: string
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   experience: number
   jobsCompleted: number
   avgResponse: string
@@ -62,8 +65,12 @@ const MOCK_VAS: VA[] = [
     id: 'ms', initials: 'MS', name: 'Maria Santos', role: 'Customer Service Specialist',
     rating: 4.9, reviews: 124, available: true,
     bio: 'Dedicated CSR with 5 years in SaaS and eCommerce support. Expert in de-escalation, CRM systems, and building customer loyalty through every interaction.',
+<<<<<<< HEAD
+    rate: 12, experience: 5, jobsCompleted: 89, avgResponse: '< 1 hr', languages: 'English, Filipino',
+=======
     rate: 12, rateLabel: '$12/hr',
     experience: 5, jobsCompleted: 89, avgResponse: '< 1 hr', languages: 'English, Filipino',
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
     location: 'Cebu, PH', timezone: 'PST (UTC+8)',
     skills: ['Zendesk', 'Freshdesk', 'HubSpot', 'Live Chat', 'Email Support', 'CRM', 'CSAT Reporting', 'Intercom'],
     education: 'BS Business Administration – University of San Carlos',
@@ -79,11 +86,18 @@ const MOCK_VAS: VA[] = [
     ],
   },
   {
+<<<<<<< HEAD
+    id: 'jr', initials: 'JR', name: 'James Reyes', role: 'Technical Support Engineer',
+    rating: 4.8, reviews: 98, available: true,
+    bio: 'Technical support pro with deep eCommerce and SaaS platform knowledge. Handles complex escalations with ease.',
+    rate: 15, experience: 6, jobsCompleted: 63, avgResponse: '< 2 hrs', languages: 'English, Filipino',
+=======
     id: 'jr', initials: 'JR', name: 'James Reyes', role: 'Technical Support Representative',
     rating: 4.8, reviews: 98, available: true,
     bio: 'Technical support pro with deep eCommerce and SaaS platform knowledge. Handles complex escalations with ease.',
     rate: 15, rateLabel: '$1,800',
     experience: 6, jobsCompleted: 63, avgResponse: '< 2 hrs', languages: 'English, Filipino',
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
     location: 'Manila, PH', timezone: 'PST (UTC+8)',
     skills: ['Tier 1–2 Support', 'API Troubleshooting', 'Shopify', 'SaaS Backends', 'Postman', 'SQL Basics', 'Jira', 'Confluence'],
     education: 'BS Computer Science – De La Salle University',
@@ -105,6 +119,21 @@ const BUDGET_OPTIONS = ['$500–$1,000 / mo', '$1,000–$2,000 / mo', '$2,000–
 const CONTRACT_TYPES = ['Full-Time (40 hrs/wk)', 'Part-Time (20 hrs/wk)', 'Project-Based']
 const HIRE_FLOW_STEPS = ['Services', 'Project Brief', 'Choose VA', 'VA Profile', 'Interview', 'Hire Request']
 
+<<<<<<< HEAD
+const TIME_SLOTS: TimeSlot[] = [
+  { time: '8:00 AM',  available: true  },
+  { time: '9:00 AM',  available: true  },
+  { time: '10:00 AM', available: false },
+  { time: '11:00 AM', available: true  },
+  { time: '1:00 PM',  available: true  },
+  { time: '2:00 PM',  available: false },
+  { time: '3:00 PM',  available: true  },
+  { time: '4:00 PM',  available: true  },
+  { time: '5:00 PM',  available: false },
+]
+
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
 const MOCK_RECORDINGS: Recording[] = [
   { id: 'rec-001', title: 'Discovery Call',     date: 'Mar 10, 2025', duration: '32 min', thumbnail: 'MS', status: 'completed' },
   { id: 'rec-002', title: 'Final Interview',    date: 'Mar 14, 2025', duration: '48 min', thumbnail: 'JR', status: 'completed' },
@@ -154,6 +183,26 @@ const PRIORITY_META = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ─── SHARED SUBCOMPONENTS ──────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
+<<<<<<< HEAD
+function getCalendarDays() {
+  const days = []
+  const today = new Date()
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() + i)
+    days.push({
+      date: d.toISOString().split('T')[0],
+      label: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      day: d.getDate(),
+      isToday: i === 0,
+      isWeekend: d.getDay() === 0 || d.getDay() === 6,
+    })
+  }
+  return days
+}
+
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
 function Stars({ rating, size = 12 }: { rating: number; size?: number }) {
   return (
     <span style={{ display: 'inline-flex', gap: 1 }}>
@@ -225,8 +274,12 @@ function HireFlowPage({
   onBack: () => void
   onComplete: () => void
 }) {
+<<<<<<< HEAD
+  const [step, setStep]               = useState(1)
+=======
   // Start at step 2 (Choose a VA) — skip the Project Brief intro step
   const [step, setStep]               = useState(2)
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   const [brief, setBrief]             = useState<ProjectBrief>({ goals: '', tools: '', hoursPerWeek: HOURS_OPTIONS[1], startDate: '', budgetRange: '', notes: '' })
   const [selectedVA, setSelectedVA]   = useState<VA | null>(null)
   const [profileTab, setProfileTab]   = useState<'overview' | 'portfolio' | 'history'>('overview')
@@ -236,7 +289,16 @@ function HireFlowPage({
   const [availableOnly, setAvailableOnly] = useState(false)
   const [successCount, setSuccessCount]   = useState(3)
 
+<<<<<<< HEAD
+  const calDays = getCalendarDays()
+  const [interviewView, setInterviewView]     = useState<'schedule' | 'recordings'>('schedule')
+  const [selectedDay,   setSelectedDay]       = useState(calDays[1].date)
+  const [selectedTime,  setSelectedTime]      = useState<string | null>(null)
+  const [interviewBooked, setInterviewBooked] = useState(false)
+  const [playingRecId,  setPlayingRecId]      = useState<string | null>(null)
+=======
   const [playingRecId, setPlayingRecId] = useState<string | null>(null)
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
 
   const [briefSubmitted, setBriefSubmitted] = useState(false)
   const [tasks, setTasks]                   = useState<Task[]>(INITIAL_TASKS)
@@ -278,19 +340,33 @@ function HireFlowPage({
     setMsgInput('')
   }
 
+<<<<<<< HEAD
+  // ── Page header ────────────────────────────────────────────────────────────
+  const stepTitles = ['', 'Project Brief', 'Choose a VA', 'VA Profile', 'Interview', 'Hire Request', 'Done']
+  const stepDescs  = ['', 'Tell us about your project so we can find the best match.', 'Browse and select from our qualified virtual assistants.', 'Review the complete profile before scheduling.', 'Schedule or review interview recordings.', 'Send your official hire request.', '']
+=======
   // Step titles & descriptions — index matches step number
   const stepTitles = ['', 'Project Brief', 'Choose a VA', 'VA Profile', 'Interview Recordings', 'Hire Request', 'Done']
   const stepDescs  = ['', 'Tell us about your project so we can find the best match.', 'Browse and select from our qualified virtual assistants.', 'Review the complete profile before scheduling.', 'Review the VA\'s pre-recorded interview before proceeding.', 'Send your official hire request.', '']
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
 
   const renderPageHeader = () => (
     <div style={{ marginBottom: 28 }}>
       {step < 6 && (
         <button
+<<<<<<< HEAD
+          onClick={step === 1 ? onBack : () => setStep(s => s - 1)}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 12, fontWeight: 500, marginBottom: 14, padding: 0, fontFamily: 'Poppins, sans-serif' }}
+        >
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          {step === 1 ? 'Back to Services' : `Back to ${HIRE_FLOW_STEPS[step - 2]}`}
+=======
           onClick={step === 2 ? onBack : () => setStep(s => s - 1)}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 12, fontWeight: 500, marginBottom: 14, padding: 0, fontFamily: 'Poppins, sans-serif' }}
         >
           <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           {step === 2 ? 'Back to Services' : `Back to ${HIRE_FLOW_STEPS[step - 2]}`}
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
         </button>
       )}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
@@ -380,6 +456,19 @@ function HireFlowPage({
   // ── STEP 2: Choose VA ──────────────────────────────────────────────────────
   const renderChooseVA = () => (
     <PageLayout>
+<<<<<<< HEAD
+      <div style={{ background: '#fffbf0', border: '1px solid #f0d8a0', borderRadius: 12, padding: '12px 18px', marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#555', minWidth: 0 }}>
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/></svg>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <strong>Your Brief:</strong> {brief.goals.slice(0, 80)}{brief.goals.length > 80 ? '…' : ''}
+          </span>
+        </div>
+        <span style={{ background: '#fef3c7', color: '#b45309', borderRadius: 8, padding: '3px 10px', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{brief.hoursPerWeek.replace(' / week', '/wk')}</span>
+      </div>
+
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 180 }}>
           <div style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: '#aaa', pointerEvents: 'none', display: 'flex' }}>
@@ -435,8 +524,12 @@ function HireFlowPage({
               {v.skills.length > 4 && <span style={{ fontSize: 10, color: '#aaa', padding: '3px 6px' }}>+{v.skills.length - 4} more</span>}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, borderTop: '1px solid #f0eeee' }}>
+<<<<<<< HEAD
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#800000' }}>${v.rate}/hr</span>
+=======
               {/* Use rateLabel for display */}
               <span style={{ fontSize: 14, fontWeight: 700, color: '#800000' }}>{v.rateLabel}</span>
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
               <div style={{ display: 'flex', gap: 10, fontSize: 11, color: '#888' }}>
                 <span>{v.experience} yrs exp</span><span>·</span><span>{v.jobsCompleted} jobs</span>
               </div>
@@ -460,6 +553,17 @@ function HireFlowPage({
       <PageLayout sidebar={
         <>
           <SideCard>
+<<<<<<< HEAD
+            <div style={{ fontSize: 10, color: '#888', marginBottom: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Hourly Rate</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 16 }}>
+              <span style={{ fontSize: 30, fontWeight: 700, color: '#800000', letterSpacing: '-0.02em' }}>${va.rate}</span>
+              <span style={{ fontSize: 12, color: '#888' }}>/hr</span>
+            </div>
+            {[['Experience', `${va.experience} yrs`], ['Jobs Completed', String(va.jobsCompleted)], ['Avg. Response', va.avgResponse], ['Languages', va.languages], ['Est. Monthly', `$${monthlyEst.toLocaleString()}`]].map(([k, val]) => (
+              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderTop: '1px solid #f5f2f2', fontSize: 12 }}>
+                <span style={{ color: '#666' }}>{k}</span>
+                <span style={{ fontWeight: 600, color: k === 'Est. Monthly' ? '#800000' : '#1a1a2e', textAlign: 'right', maxWidth: 140, wordBreak: 'break-word' }}>{val}</span>
+=======
             <div style={{ fontSize: 10, color: '#888', marginBottom: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Rate</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 16 }}>
               <span style={{ fontSize: 30, fontWeight: 700, color: '#800000', letterSpacing: '-0.02em' }}>{va.rateLabel}</span>
@@ -468,14 +572,21 @@ function HireFlowPage({
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderTop: '1px solid #f5f2f2', fontSize: 12 }}>
                 <span style={{ color: '#666' }}>{k}</span>
                 <span style={{ fontWeight: 600, color: '#1a1a2e', textAlign: 'right', maxWidth: 140, wordBreak: 'break-word' }}>{val}</span>
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
               </div>
             ))}
           </SideCard>
           <button onClick={() => setStep(4)} style={{ ...hirePrimaryBtn, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.889L15 14M3 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+<<<<<<< HEAD
+            Schedule Interview
+          </button>
+          <div style={{ fontSize: 11, color: '#888', textAlign: 'center', lineHeight: 1.5, marginBottom: 14 }}>Schedule or view pre-recorded interview</div>
+=======
             View Interview Recording
           </button>
           <div style={{ fontSize: 11, color: '#888', textAlign: 'center', lineHeight: 1.5, marginBottom: 14 }}>Review the VA's pre-recorded interview</div>
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
           <SideCard>
             <div style={{ fontSize: 10, fontWeight: 700, color: '#800000', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Selected Service</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e' }}>{svc.name.replace('\n', ' ')}</div>
@@ -529,7 +640,11 @@ function HireFlowPage({
                   <div style={{ fontSize: 13, color: '#444' }}>{va.education}</div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+<<<<<<< HEAD
+                  {[{ label: 'Jobs Completed', value: String(va.jobsCompleted), icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }, { label: 'Avg. Response', value: va.avgResponse, icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' }, { label: 'Hourly Rate', value: `$${va.rate}/hr`, icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }].map(stat => (
+=======
                   {[{ label: 'Jobs Completed', value: String(va.jobsCompleted), icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }, { label: 'Avg. Response', value: va.avgResponse, icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' }, { label: 'Rate', value: va.rateLabel, icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }].map(stat => (
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
                     <div key={stat.label} style={{ background: '#f8f6f6', border: '1px solid #e8e4e4', borderRadius: 10, padding: '14px', textAlign: 'center' }}>
                       <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 8px', display: 'block' }}><path d={stat.icon}/></svg>
                       <div style={{ fontSize: 15, fontWeight: 700, color: '#1a1a2e', marginBottom: 3 }}>{stat.value}</div>
@@ -582,11 +697,173 @@ function HireFlowPage({
     )
   }
 
+<<<<<<< HEAD
+  // ── STEP 4: Interview ──────────────────────────────────────────────────────
+=======
   // ── STEP 4: Interview Recordings ───────────────────────────────────────────
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   const renderInterview = () => {
     if (!va) return null
     return (
       <PageLayout sidebar={
+<<<<<<< HEAD
+        !interviewBooked ? (
+          <SideCard>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>Summary</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+              {[{ label: 'VA', value: va.name }, { label: 'Type', value: 'Discovery Call' }, { label: 'Duration', value: '30 minutes' }, { label: 'Format', value: 'Google Meet / Zoom' }, { label: 'Date', value: selectedDay ? new Date(selectedDay).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—' }, { label: 'Time', value: selectedTime ?? '—' }].map(s => (
+                <div key={s.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span style={{ color: '#aaa' }}>{s.label}</span>
+                  <span style={{ color: '#1a1a2e', fontWeight: 600, textAlign: 'right', maxWidth: 130 }}>{s.value}</span>
+                </div>
+              ))}
+            </div>
+            <button disabled={!selectedTime} onClick={() => { if (selectedTime) setInterviewBooked(true) }}
+              style={{ width: '100%', padding: '11px 0', background: selectedTime ? '#800000' : '#f0edec', color: selectedTime ? '#fff' : '#ccc', border: 'none', borderRadius: 10, fontSize: 12, fontWeight: 600, fontFamily: 'Poppins, sans-serif', cursor: selectedTime ? 'pointer' : 'not-allowed', transition: 'background 0.15s' }}>
+              Confirm Interview
+            </button>
+            <div style={{ textAlign: 'center', fontSize: 10, color: '#bbb', marginTop: 8 }}>A calendar invite will be sent to your email.</div>
+          </SideCard>
+        ) : (
+          <SideCard>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#800000', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Interview Chapters</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[{ n: 1, title: 'Intro & Motivation', start: '0:00', active: true }, { n: 2, title: 'Experience', start: '1:38', active: false }, { n: 3, title: 'Skills Deep Dive', start: '3:30', active: false }, { n: 4, title: 'Availability & Rate', start: '4:55', active: false }].map(ch => (
+                <div key={ch.n} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: ch.active ? '#fff5f5' : 'transparent', border: `1.5px solid ${ch.active ? '#800000' : '#e8e4e4'}`, cursor: 'pointer' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: ch.active ? '#800000' : '#f0eeee', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {ch.active ? <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M10 9v6m4-6v6"/></svg> : <span style={{ fontSize: 11, fontWeight: 700, color: '#888' }}>{ch.n}</span>}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: ch.active ? '#800000' : '#333' }}>{ch.title}</div>
+                    <div style={{ fontSize: 10, color: '#888' }}>Starts at {ch.start}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SideCard>
+        )
+      }>
+        <div style={{ display: 'inline-flex', background: '#f5f3f3', borderRadius: 10, padding: 4, gap: 2, marginBottom: 24, border: '1px solid #ece8e8' }}>
+          {(['schedule', 'recordings'] as const).map((view, idx) => (
+            <button key={view} onClick={() => setInterviewView(view)} style={{ border: 'none', borderRadius: 8, padding: '9px 18px', fontSize: 12, fontFamily: 'Poppins, sans-serif', fontWeight: 500, cursor: 'pointer', background: interviewView === view ? '#800000' : 'transparent', color: interviewView === view ? '#fff' : '#888', transition: 'all 0.15s' }}>
+              {idx === 0 ? '📅 Schedule Interview' : `🎥 Recordings (${MOCK_RECORDINGS.length})`}
+            </button>
+          ))}
+        </div>
+
+        {interviewView === 'schedule' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {interviewBooked ? (
+              <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #f0edec', padding: '48px 32px', textAlign: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', margin: '0 0 8px', fontFamily: 'Poppins, sans-serif' }}>Interview Scheduled!</h3>
+                <p style={{ fontSize: 13, color: '#666', margin: '0 0 6px', fontFamily: 'Poppins, sans-serif' }}>Your discovery call has been booked for</p>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#800000', fontFamily: 'Poppins, sans-serif', marginBottom: 28 }}>
+                  {new Date(selectedDay).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {selectedTime}
+                </div>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+                  <button onClick={() => { setInterviewBooked(false); setSelectedTime(null) }} style={{ padding: '10px 20px', background: '#f5f3f3', color: '#444', border: 'none', borderRadius: 9, fontSize: 12, fontWeight: 600, fontFamily: 'Poppins, sans-serif', cursor: 'pointer' }}>Reschedule</button>
+                  <button onClick={() => setStep(5)} style={{ padding: '10px 24px', background: '#800000', color: '#fff', border: 'none', borderRadius: 9, fontSize: 12, fontWeight: 600, fontFamily: 'Poppins, sans-serif', cursor: 'pointer' }}>Proceed to Hire →</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #f0edec', padding: '22px 24px' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 14 }}>Select a Date</div>
+                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+                    {calDays.map(d => (
+                      <button key={d.date} disabled={d.isWeekend} onClick={() => { setSelectedDay(d.date); setSelectedTime(null) }}
+                        style={{ border: `1.5px solid ${selectedDay === d.date ? '#800000' : '#e8e4e4'}`, borderRadius: 10, padding: '8px 6px', textAlign: 'center', cursor: d.isWeekend ? 'not-allowed' : 'pointer', background: selectedDay === d.date ? '#800000' : '#fff', minWidth: 52, transition: 'all 0.15s', opacity: d.isWeekend ? 0.4 : 1 }}>
+                        <div style={{ fontSize: 9, fontWeight: 600, color: selectedDay === d.date ? 'rgba(255,255,255,0.8)' : '#aaa', textTransform: 'uppercase', marginBottom: 3 }}>{d.label}</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: selectedDay === d.date ? '#fff' : d.isToday ? '#800000' : '#1a1a2e' }}>{d.day}</div>
+                        {d.isToday && selectedDay !== d.date && <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#800000', margin: '3px auto 0' }} />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ background: '#fff', borderRadius: 14, border: '1px solid #f0edec', padding: '22px 24px' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 14 }}>
+                    Available Times <span style={{ fontSize: 11, fontWeight: 400, color: '#aaa', marginLeft: 6 }}>{new Date(selectedDay).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                    {TIME_SLOTS.map(slot => (
+                      <button key={slot.time} disabled={!slot.available} onClick={() => setSelectedTime(slot.time)}
+                        style={{ border: `1.5px solid ${selectedTime === slot.time ? '#800000' : slot.available ? '#e8e4e4' : '#f0edec'}`, borderRadius: 8, padding: '10px 0', fontSize: 12, fontFamily: 'Poppins, sans-serif', fontWeight: 500, background: selectedTime === slot.time ? '#800000' : slot.available ? '#fff' : '#f5f3f3', color: selectedTime === slot.time ? '#fff' : slot.available ? '#444' : '#ccc', cursor: slot.available ? 'pointer' : 'not-allowed', transition: 'all 0.15s' }}>
+                        {slot.time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {interviewView === 'recordings' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ background: '#fff', border: '1.5px solid #e0dcdc', borderRadius: 14, padding: '22px 24px', marginBottom: 4 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>Pre-Recorded Interview — Now Playing</div>
+              <div style={{ background: 'linear-gradient(135deg,#2d0000,#1a0000)', borderRadius: 12, padding: '20px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+                    <svg width={18} height={18} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M5 3l14 9-14 9V3z"/></svg>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Discovery Call — {va.name}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,200,200,0.7)', marginTop: 3 }}>Mar 10, 2025 · 8:42</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2, height: 40, marginBottom: 10 }}>
+                  {Array.from({ length: 58 }).map((_, i) => (
+                    <div key={i} style={{ flex: 1, background: i < 15 ? '#c04040' : 'rgba(255,255,255,0.2)', borderRadius: 2, height: `${22 + Math.sin(i * 0.6) * 14 + (i % 3) * 4}%`, minHeight: 4 }} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'rgba(255,200,200,0.6)' }}>
+                  <span>0:00</span><span>8:42</span>
+                </div>
+              </div>
+            </div>
+            {MOCK_RECORDINGS.map(rec => {
+              const st = REC_STATUS_STYLE[rec.status]
+              const isPlaying = playingRecId === rec.id
+              return (
+                <div key={rec.id} style={{ background: '#fff', border: '1px solid #f0edec', borderRadius: 12, padding: '16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+                  <div style={{ width: 56, height: 56, borderRadius: 12, background: 'linear-gradient(135deg,#800000,#c05050)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: rec.status === 'completed' ? 'pointer' : 'default', position: 'relative', overflow: 'hidden' }}
+                    onClick={() => rec.status === 'completed' && setPlayingRecId(isPlaying ? null : rec.id)}>
+                    <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>{rec.thumbnail}</span>
+                    {rec.status === 'completed' && (
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {isPlaying ? <svg width={18} height={18} viewBox="0 0 24 24" fill="#fff" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg> : <svg width={18} height={18} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg>}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.title} — {va.name}</div>
+                    <div style={{ display: 'flex', gap: 10, fontSize: 11, color: '#aaa' }}><span>{rec.date}</span><span>·</span><span>{rec.duration}</span></div>
+                    {isPlaying && <div style={{ marginTop: 6, fontSize: 11, color: '#800000', fontWeight: 500 }}>▶ Playing recording…</div>}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, background: st.bg, color: st.color, borderRadius: 20, padding: '3px 10px' }}>{st.label}</span>
+                    {rec.status === 'completed' && (
+                      <button style={{ background: 'none', border: '1px solid #e0dcdc', borderRadius: 7, padding: '5px 10px', fontSize: 11, color: '#555', fontFamily: 'Poppins, sans-serif', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        Download
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+              <button onClick={() => setStep(5)} style={{ padding: '12px 28px', background: '#800000', color: '#fff', border: 'none', borderRadius: 10, fontSize: 12, fontWeight: 600, fontFamily: 'Poppins, sans-serif', cursor: 'pointer' }}>
+                Proceed to Hire Request →
+              </button>
+            </div>
+          </div>
+        )}
+=======
         <SideCard>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#800000', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Interview Chapters</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -679,6 +956,7 @@ function HireFlowPage({
             </button>
           </div>
         </div>
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       </PageLayout>
     )
   }
@@ -696,7 +974,11 @@ function HireFlowPage({
         <>
           <SideCard>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Cost Estimate</div>
+<<<<<<< HEAD
+            {[['VA Rate', `$${va.rate}/hr`], [`${hoursNum} hrs/week`, `$${weeklyRate}/wk`], ['Est. Monthly', `$${monthlyEst.toLocaleString()}/mo`]].map(([k, val]) => (
+=======
             {[['VA Rate', va.rateLabel], [`${hoursNum} hrs/week`, `$${weeklyRate}/wk`], ['Est. Monthly', `$${monthlyEst.toLocaleString()}/mo`]].map(([k, val]) => (
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 12 }}>
                 <span style={{ color: '#666' }}>{k}</span>
                 <span style={{ fontWeight: 500, color: '#1a1a2e' }}>{val}</span>
@@ -718,6 +1000,10 @@ function HireFlowPage({
           </div>
         </>
       }>
+<<<<<<< HEAD
+        {/* VA summary */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
         <div style={{ background: '#fff', border: '1.5px solid #e0dcdc', borderRadius: 14, padding: '20px 24px', marginBottom: 18 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: '#800000', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>You're Hiring</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -732,11 +1018,20 @@ function HireFlowPage({
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
+<<<<<<< HEAD
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#800000' }}>${va.rate}</div>
+              <div style={{ fontSize: 11, color: '#888' }}>per hour</div>
+=======
               <div style={{ fontSize: 22, fontWeight: 700, color: '#800000' }}>{va.rateLabel}</div>
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
             </div>
           </div>
         </div>
 
+<<<<<<< HEAD
+        {/* Project brief */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
         {!briefSubmitted ? (
           <div style={{ background: '#fff', border: '1.5px solid #e0dcdc', borderRadius: 14, padding: '22px 24px', marginBottom: 18 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 4 }}>Project Brief</div>
@@ -847,6 +1142,10 @@ function HireFlowPage({
           </div>
         )}
 
+<<<<<<< HEAD
+        {/* Engagement details */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
         <div style={{ background: '#fff', border: '1.5px solid #e0dcdc', borderRadius: 14, padding: '22px 24px' }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 20 }}>Engagement Details</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
@@ -917,7 +1216,11 @@ function HireFlowPage({
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
+<<<<<<< HEAD
+// ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
+=======
 // ─── MAIN PAGE ─────────────────════════════════════════════════════════════════
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function SubscriptionsPage() {
   const [search, setSearch]           = useState('')
@@ -927,12 +1230,20 @@ export default function SubscriptionsPage() {
   const [activeCategory, setActiveCategory] = useState('staff')
   const [plans, setPlans]             = useState<Plan[]>(INITIAL_PLANS)
 
+  // ── Service flow (non-hire): modals ──
   const [flowStep, setFlowStep]       = useState<'detail' | 'customize' | 'confirm' | 'success' | null>(null)
   const [selectedSvc, setSelectedSvc] = useState<Service | null>(null)
   const [preferences, setPreferences] = useState<Preferences | null>(null)
 
+<<<<<<< HEAD
+  // ── Hire flow: full page ──
   const [hireFlowSvc, setHireFlowSvc] = useState<Service | null>(null)
 
+  // ── Plan action modals ──
+=======
+  const [hireFlowSvc, setHireFlowSvc] = useState<Service | null>(null)
+
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   const [planModal, setPlanModal]             = useState<'renew'|'pay'|'edit'|'dots'|null>(null)
   const [activePlan, setActivePlan]           = useState<Plan | null>(null)
   const [dotsTriggerRect, setDotsTriggerRect] = useState<DOMRect | null>(null)
@@ -947,6 +1258,10 @@ export default function SubscriptionsPage() {
   }
   const closePlanModal = () => { setPlanModal(null); setActivePlan(null); setDotsTriggerRect(null) }
 
+<<<<<<< HEAD
+  // Determine if a service should use the hire flow (Dedicated Staff category)
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   const isHireService = (svc: Service) => {
     const staffCat = SERVICE_CATEGORIES.find(c => c.key === 'staff')
     return staffCat?.services.some(s => s.id === svc.id) ?? false
@@ -1046,7 +1361,11 @@ export default function SubscriptionsPage() {
     return matchSearch && matchFilter
   })
 
+<<<<<<< HEAD
+  // ── If hire flow is active, render it as the full page ──────────────────────
+=======
   // ── Hire flow: render full page (no page header repeated) ─────────────────
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   if (hireFlowSvc) {
     return (
       <div style={{ fontFamily: "'Poppins', sans-serif", padding: '24px' }}>
@@ -1057,7 +1376,17 @@ export default function SubscriptionsPage() {
             {toast}
           </div>
         )}
+<<<<<<< HEAD
+        {/* Minimal page header stays visible */}
+        <div style={{ marginBottom: 22 }}>
+          <p style={{ fontSize: 11, color: '#666', fontWeight: 500, margin: '0 0 2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Account</p>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Subscriptions</h2>
+          <p style={{ fontSize: 13, color: '#555', fontWeight: 400, margin: '3px 0 0' }}>Manage and track your active subscription plans.</p>
+        </div>
+        <div style={{ height: 1, background: '#e8e4e4', marginBottom: 24 }} />
+=======
         {/* Page header removed — hire flow has its own header via renderPageHeader() */}
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
         <HireFlowPage
           svc={hireFlowSvc}
           onBack={() => { setHireFlowSvc(null); setActiveTab('services') }}
@@ -1067,20 +1396,36 @@ export default function SubscriptionsPage() {
     )
   }
 
+<<<<<<< HEAD
+  // ── Normal subscriptions page ────────────────────────────────────────────────
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
   return (
     <div style={{ fontFamily: "'Poppins', sans-serif", padding: '24px' }}>
       <style>{GLOBAL_CSS}</style>
 
+<<<<<<< HEAD
+      {/* Service flow modals (non-hire) */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       {flowStep === 'detail'    && selectedSvc && <ServiceDetailModal svc={selectedSvc} onClose={closeFlow} onProceed={() => setFlowStep('customize')} />}
       {flowStep === 'customize' && selectedSvc && <CustomizationModal svc={selectedSvc} onBack={() => setFlowStep('detail')} onProceed={prefs => { setPreferences(prefs); setFlowStep('confirm') }} />}
       {flowStep === 'confirm'   && selectedSvc && preferences && <ConfirmModal svc={selectedSvc} preferences={preferences} onBack={() => setFlowStep('customize')} onConfirm={() => setFlowStep('success')} />}
       {flowStep === 'success'   && selectedSvc && <SuccessModal svc={selectedSvc} onDone={handleServiceSuccess} />}
 
+<<<<<<< HEAD
+      {/* Plan action modals */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       {planModal === 'renew' && activePlan && <RenewModal plan={activePlan} onClose={closePlanModal} onConfirm={handleRenewConfirm} />}
       {planModal === 'pay'   && activePlan && <PayModal   plan={activePlan} onClose={closePlanModal} onConfirm={handlePayConfirm} />}
       {planModal === 'edit'  && activePlan && <EditModal  plan={activePlan} onClose={closePlanModal} onSave={handleEditSave} />}
       {planModal === 'dots'  && activePlan && <DotsMenu plan={activePlan} onClose={closePlanModal} onAction={action => handleDotsAction(action, activePlan)} triggerRect={dotsTriggerRect} />}
 
+<<<<<<< HEAD
+      {/* Toast */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       {toast && (
         <div style={{ position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)', background: '#1a1a2e', color: '#fff', borderRadius: 12, padding: '12px 22px', fontSize: 13, fontWeight: 600, zIndex: 2000, boxShadow: '0 8px 32px rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', gap: 10, whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
           <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
@@ -1088,12 +1433,20 @@ export default function SubscriptionsPage() {
         </div>
       )}
 
+<<<<<<< HEAD
+      {/* Header */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       <div style={{ marginBottom: 22 }}>
         <p style={{ fontSize: 11, color: '#666', fontWeight: 500, margin: '0 0 2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Account</p>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>Subscriptions</h2>
         <p style={{ fontSize: 13, color: '#555', fontWeight: 400, margin: '3px 0 0' }}>Manage and track your active subscription plans.</p>
       </div>
 
+<<<<<<< HEAD
+      {/* Stat Cards */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 22 }}>
         {([
           { label: 'Active Plans',  value: `${activePlans.length} plans`, sub: 'Currently running', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', img: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&q=80' },
@@ -1117,6 +1470,10 @@ export default function SubscriptionsPage() {
         ))}
       </div>
 
+<<<<<<< HEAD
+      {/* Tabs */}
+=======
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
       <div style={{ display: 'flex', gap: 4, background: '#ede8e8', borderRadius: 10, padding: 4, marginBottom: 20, width: 'fit-content' }}>
         <button className={`tab-btn ${activeTab === 'plans' ? 'active' : ''}`} onClick={() => setActiveTab('plans')}>My Plans</button>
         <button className={`tab-btn ${activeTab === 'services' ? 'active' : ''}`} onClick={() => setActiveTab('services')}>Browse Services</button>
@@ -1142,8 +1499,13 @@ export default function SubscriptionsPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 16 }} className="cards-grid">
             {currentCat?.services.map(svc => {
+<<<<<<< HEAD
+              const isFeatured  = svc.featured
+              const isHire      = isHireService(svc)
+=======
               const isFeatured = svc.featured
               const isHire     = isHireService(svc)
+>>>>>>> 52c648c06e9284ba1a6ec4483e67a962cd5841b8
               return (
                 <div key={svc.id} className={`price-card ${isFeatured ? 'featured' : ''}`}>
                   <div style={{ padding: '20px 20px 16px', position: 'relative', background: isFeatured ? 'linear-gradient(135deg,#800000 0%,#b03030 100%)' : 'linear-gradient(135deg,#f8f5f5 0%,#f0ecec 100%)' }}>

@@ -28,6 +28,26 @@ import { COLORS, FONT_CLASSES } from "@/constant/styles";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
  
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+/* ─── GHL Funnel URLs per service ────────────────────────────── */
+// Kapag may dedicated funnel na per service, palitan ang URL dito.
+// Sa ngayon, same preview URL ang lahat — AI Builder funnel muna.
+const GHL_FUNNEL_MAP: Record<string, string> = {
+  "ai-builder":              "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  automation:                "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "booking-appointment":     "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "courses-products":        "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  crm:                       "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  csr:                       "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "email-marketing":         "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "funnel-builder":          "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "gray-label":              "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "social-media-management": "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "survey-forms":            "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "tech-support":            "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  "web-development":         "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+};
+
  
 /* ─── Per-service GHL Funnel URLs ────────────────────────────── */
 const GHL_SERVICE_URLS: Record<string, string> = {
@@ -47,11 +67,13 @@ const MAROON       = "#7B0D1E";
 const MAROON_MID   = "#9B1D2E";
 const MAROON_LIGHT = "#C0392B";
 const MAROON_DARK  = "#4A0A12";
+
  
 /* Font helpers */
 const FONT_HEADING = "'Poppins', 'Open Sans', sans-serif";
 const FONT_BODY    = "'Open Sans', 'Poppins', sans-serif";
 const FONT_MONO    = "'Poppins', monospace";
+
  
 const ICON_MAP: Record<string, any> = {
   "ai-builder":              PackageSearch,
@@ -98,6 +120,12 @@ interface ServiceType {
   coverPhoto?: string | null;
   inactivePhoto?: string | null;
 }
+
+/* ─── GHL open helper ────────────────────────────────────────── */
+const openAuditFunnel = (serviceId: string) => {
+  const url = GHL_FUNNEL_MAP[serviceId] || GHL_FUNNEL_MAP["ai-builder"];
+  window.open(url, "_blank", "noopener,noreferrer");
+};
 
 /* ─── Service Card ────────────────────────────────────────────── */
 const ServiceCard: React.FC<{
@@ -296,6 +324,15 @@ const ServiceCard: React.FC<{
         >
           {service.description}
         </p>
+
+        {/* ── CTA row ── */}
+        <div style={{ marginTop: "18px", display: "flex", alignItems: "center", gap: "6px" }}>
+          {service.isActive ? (
+            /* 👇 "Get a Free Audit" button — stops card-select propagation */
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                openAuditFunnel(service.serviceId);
  
         {/* ── CTA row ── */}
         <div style={{ marginTop: "18px", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -441,6 +478,7 @@ const ServiceCarouselPanel: React.FC<{
   onRetry: () => void;
   onSelectService: (service: ServiceType) => void;
   selectedService: ServiceType | null;
+}> = ({ services, loading, error, onRetry, onSelectService, selectedService }) => {
   onAuditClick: (service: ServiceType) => void;
 }> = ({ services, loading, error, onRetry, onSelectService, selectedService, onAuditClick }) => {
   const scrollRef    = useRef<HTMLDivElement>(null);
@@ -448,17 +486,24 @@ const ServiceCarouselPanel: React.FC<{
   const isPausedRef  = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [filterMode, setFilterMode]   = useState<FilterMode>("all");
+
  
   const CARD_WIDTH = 340;
   const GAP        = 20;
   const STEP       = CARD_WIDTH + GAP;
   const SPEED      = 0.55;
+
  
   const filteredServices = services.filter((s) => {
     if (filterMode === "active")      return s.isActive;
     if (filterMode === "coming-soon") return !s.isActive;
     return true;
   });
+
+  const activeCount     = services.filter((s) =>  s.isActive).length;
+  const comingSoonCount = services.filter((s) => !s.isActive).length;
+  const dotCount        = Math.min(filteredServices.length, 12);
+
  
   const activeCount     = services.filter((s) =>  s.isActive).length;
   const comingSoonCount = services.filter((s) => !s.isActive).length;
@@ -645,6 +690,7 @@ const ServiceCarouselPanel: React.FC<{
 };
  
 /* ─── Left CSR Panel ──────────────────────────────────────────── */
+const CSRPanel: React.FC<{ selected: ServiceType | null }> = ({ selected }) => {
 const CSRPanel: React.FC<{ 
   selected: ServiceType | null;
   onAuditClick: (service: ServiceType) => void;
@@ -655,6 +701,7 @@ const CSRPanel: React.FC<{
     "Client satisfaction tracking",
     "Omnichannel support",
   ];
+
  
   const IconComponent  = selected?.icon ?? Headphones;
   const titleWords     = selected ? selected.title.split(" ") : ["Customer", "Service & Support"];
@@ -704,12 +751,18 @@ const CSRPanel: React.FC<{
           )}
         </div>
       </div>
+
  
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
         <div style={{ width: "40px", height: "3px", borderRadius: "99px", background: "linear-gradient(90deg, #a10000, #c0392b)" }} />
         <div style={{ width: "10px", height: "3px", borderRadius: "99px", background: "#a1000050" }} />
         <div style={{ width: "5px",  height: "3px", borderRadius: "99px", background: "#a1000028" }} />
       </div>
+
+      <p style={{ fontFamily: FONT_BODY, fontSize: "15px", fontWeight: 400, color: "#64748b", lineHeight: 1.75, margin: "0 0 28px 0", maxWidth: "370px", transition: "all 0.3s ease" }}>
+        {displayDescription}
+      </p>
+
  
       <p style={{ fontFamily: FONT_BODY, fontSize: "15px", fontWeight: 400, color: "#64748b", lineHeight: 1.75, margin: "0 0 28px 0", maxWidth: "370px", transition: "all 0.3s ease" }}>
         {displayDescription}
@@ -837,6 +890,105 @@ export default function ServiceFeatures() {
  
   return (
     <section className="relative overflow-hidden" style={{ padding: "96px 0 112px" }}>
+        {/* Background (unchanged) */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
+          <div style={{ position: "absolute", inset: 0, background: "#ffffff" }} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `
+                radial-gradient(ellipse 60% 50% at 0% 0%,   #f3f4f6 0%, transparent 65%),
+                radial-gradient(ellipse 55% 50% at 100% 100%, #f1f2f4 0%, transparent 60%)
+              `,
+            }}
+          />
+          <svg
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice"
+            viewBox="0 0 1440 900"
+          >
+            <defs>
+              <linearGradient id="grayFill1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#d1d5db" stopOpacity="0.35" /><stop offset="100%" stopColor="#e5e7eb" stopOpacity="0.1" /></linearGradient>
+              <linearGradient id="grayFill2" x1="100%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#9ca3af" stopOpacity="0.18" /><stop offset="100%" stopColor="#d1d5db" stopOpacity="0.06" /></linearGradient>
+              <linearGradient id="grayFill3" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#e5e7eb" stopOpacity="0.28" /><stop offset="100%" stopColor="#f3f4f6" stopOpacity="0.08" /></linearGradient>
+              <linearGradient id="grayStroke1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#9ca3af" stopOpacity="0.5" /><stop offset="100%" stopColor="#d1d5db" stopOpacity="0.1" /></linearGradient>
+              <linearGradient id="grayStroke2" x1="100%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#6b7280" stopOpacity="0.2" /><stop offset="100%" stopColor="#9ca3af" stopOpacity="0.05" /></linearGradient>
+              <filter id="grayBlur"><feGaussianBlur stdDeviation="3" /></filter>
+              <filter id="grayBlurSm"><feGaussianBlur stdDeviation="1" /></filter>
+            </defs>
+            <rect x="-140" y="-140" width="500" height="500" rx="90" fill="url(#grayFill1)" transform="rotate(22, 110, 110)" filter="url(#grayBlur)" />
+            <circle cx="1390" cy="-80" r="300" fill="url(#grayFill2)" filter="url(#grayBlur)" />
+            <circle cx="-50" cy="970" r="240" fill="url(#grayFill3)" filter="url(#grayBlur)" />
+            <rect x="1080" y="680" width="460" height="460" rx="100" fill="url(#grayFill1)" transform="rotate(-16, 1310, 910)" filter="url(#grayBlur)" />
+            <ellipse cx="720" cy="-60" rx="340" ry="190" fill="url(#grayFill2)" filter="url(#grayBlur)" />
+            <rect x="70" y="370" width="130" height="130" rx="20" fill="url(#grayFill1)" transform="rotate(45, 135, 435)" filter="url(#grayBlurSm)" />
+            <rect x="910" y="50" width="210" height="210" rx="44" fill="url(#grayFill3)" transform="rotate(12, 1015, 155)" filter="url(#grayBlurSm)" />
+            <rect x="550" y="730" width="110" height="110" rx="14" fill="url(#grayFill2)" transform="rotate(45, 605, 785)" filter="url(#grayBlurSm)" />
+            <rect x="1340" y="430" width="90" height="90" rx="18" fill="url(#grayFill1)" transform="rotate(-25, 1385, 475)" filter="url(#grayBlurSm)" />
+            <circle cx="1310" cy="130" r="190" fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5" />
+            <circle cx="1310" cy="130" r="245" fill="none" stroke="url(#grayStroke2)" strokeWidth="1" strokeDasharray="7 13" />
+            <circle cx="1310" cy="130" r="300" fill="none" stroke="#e5e7eb" strokeOpacity="0.6" strokeWidth="0.8" strokeDasharray="4 18" />
+            <circle cx="130" cy="790" r="160" fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5" />
+            <circle cx="130" cy="790" r="210" fill="none" stroke="url(#grayStroke2)" strokeWidth="1" strokeDasharray="6 14" />
+            <circle cx="130" cy="790" r="265" fill="none" stroke="#e5e7eb" strokeOpacity="0.5" strokeWidth="0.8" strokeDasharray="3 18" />
+            <circle cx="720" cy="450" r="380" fill="none" stroke="#e5e7eb" strokeOpacity="0.8" strokeWidth="1" strokeDasharray="5 22" />
+            <circle cx="720" cy="450" r="460" fill="none" stroke="#f3f4f6" strokeOpacity="0.9" strokeWidth="0.7" strokeDasharray="3 26" />
+            <rect x="55" y="55" width="110" height="110" rx="20" fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5" transform="rotate(18, 110, 110)" />
+            <rect x="1260" y="370" width="85" height="85" rx="16" fill="none" stroke="url(#grayStroke1)" strokeWidth="1.5" transform="rotate(-28, 1302, 412)" />
+            <rect x="655" y="795" width="65" height="65" rx="11" fill="none" stroke="url(#grayStroke2)" strokeWidth="1.2" transform="rotate(45, 687, 827)" />
+            <rect x="860" y="30" width="50" height="50" rx="10" fill="none" stroke="#d1d5db" strokeOpacity="0.7" strokeWidth="1" transform="rotate(30, 885, 55)" />
+            {Array.from({ length: 6 }).map((_, row) => Array.from({ length: 6 }).map((_, col) => (<circle key={`dot-tr-${row}-${col}`} cx={1080 + col * 24} cy={70 + row * 24} r="2.2" fill="#9ca3af" fillOpacity={Math.max(0.04, 0.18 - row * 0.022 - col * 0.01)} />)))}
+            {Array.from({ length: 6 }).map((_, row) => Array.from({ length: 6 }).map((_, col) => (<circle key={`dot-bl-${row}-${col}`} cx={210 + col * 24} cy={740 + row * 24} r="2.2" fill="#9ca3af" fillOpacity={Math.max(0.03, 0.15 - row * 0.018 - col * 0.01)} />)))}
+            {Array.from({ length: 4 }).map((_, row) => Array.from({ length: 4 }).map((_, col) => (<circle key={`dot-cr-${row}-${col}`} cx={1200 + col * 20} cy={460 + row * 20} r="1.8" fill="#d1d5db" fillOpacity={Math.max(0.04, 0.14 - row * 0.02)} />)))}
+            <line x1="0" y1="0" x2="380" y2="280" stroke="#e5e7eb" strokeOpacity="0.9" strokeWidth="1" />
+            <line x1="1440" y1="0" x2="1060" y2="320" stroke="#e5e7eb" strokeOpacity="0.9" strokeWidth="1" />
+            <line x1="0" y1="900" x2="360" y2="600" stroke="#e5e7eb" strokeOpacity="0.8" strokeWidth="1" />
+            <line x1="1440" y1="900" x2="1080" y2="580" stroke="#e5e7eb" strokeOpacity="0.8" strokeWidth="1" />
+            <polygon points="1390,210 1425,270 1355,270" fill="none" stroke="#d1d5db" strokeOpacity="0.6" strokeWidth="1.2" />
+            <polygon points="75,710 55,750 95,750" fill="none" stroke="#d1d5db" strokeOpacity="0.5" strokeWidth="1" />
+            <polygon points="700,44 720,14 740,44" fill="none" stroke="#d1d5db" strokeOpacity="0.5" strokeWidth="1" />
+            <polygon points="400,820 418,854 382,854" fill="none" stroke="#e5e7eb" strokeOpacity="0.7" strokeWidth="1" />
+          </svg>
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle, #d1d5db 1px, transparent 1px)", backgroundSize: "36px 36px", opacity: 0.25 }} />
+          <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to right, rgba(255,255,255,0.7) 0%, transparent 8%, transparent 92%, rgba(255,255,255,0.7) 100%), linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 10%, transparent 90%, rgba(255,255,255,0.6) 100%)` }} />
+        </div>
+
+        {/* ── Content ── */}
+        <div className="relative z-10 mx-auto px-6 lg:px-8" style={{ maxWidth: "1360px" }}>
+          <div style={{ marginBottom: "64px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+              <div style={{ width: "36px", height: "2px", background: "#a10000", borderRadius: "99px" }} />
+              <span style={{ fontFamily: FONT_MONO, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#a10000", fontWeight: 600 }}>
+                Our Services
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "24px" }}>
+              <h2 style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "clamp(32px, 4vw, 52px)", letterSpacing: "-0.03em", color: "#0f172a", lineHeight: 1.1, margin: 0 }}>
+                Services Designed to<br />
+                <span style={{ color: "#a10000" }}>Meet Every Need</span>
+              </h2>
+              <p style={{ fontFamily: FONT_BODY, fontSize: "15px", fontWeight: 400, color: "#64748b", lineHeight: 1.75, maxWidth: "400px", margin: 0 }}>
+                From customer support to technical assistance, we provide comprehensive solutions that drive your business forward.
+              </p>
+            </div>
+          </div>
+
+          {/* Two-column layout */}
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "56px", flexWrap: "wrap" }}>
+            <CSRPanel selected={selectedService} />
+            <div className="hidden lg:block" style={{ width: "1px", alignSelf: "stretch", flexShrink: 0, background: "linear-gradient(to bottom, transparent, #a1000022 20%, #a1000022 80%, transparent)" }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <ServiceCarouselPanel
+                services={services}
+                loading={loading}
+                error={error}
+                onRetry={fetchServices}
+                onSelectService={setSelectedService}
+                selectedService={selectedService}
+              />
+            </div>
       {/* Background (unchanged) */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: "#ffffff" }} />
@@ -938,7 +1090,6 @@ export default function ServiceFeatures() {
             />
           </div>
         </div>
-      </div>
-    </section>
+      </section>
   );
 }

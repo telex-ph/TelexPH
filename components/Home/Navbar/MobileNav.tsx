@@ -7,7 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { navLinks } from "@/constant/constant";
 import { RiCloseFill } from "react-icons/ri";
 import { HiChevronDown } from "react-icons/hi";
-import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { Poppins, Open_Sans } from "next/font/google";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -20,13 +20,6 @@ const openSans = Open_Sans({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-open-sans",
-  display: "swap",
-});
-
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-rubik",
   display: "swap",
 });
 
@@ -159,7 +152,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
   };
 
   return (
-    <div className={`lg:hidden ${poppins.variable} ${openSans.variable} ${rubik.variable} font-poppins`}>
+    <div className={`lg:hidden ${poppins.variable} ${openSans.variable} font-poppins`}>
       <div 
         className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] transition-opacity duration-300 ${showNav ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`} 
         onClick={closeNav}

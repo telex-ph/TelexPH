@@ -21,17 +21,10 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["500"],
-  variable: "--font-rubik",
-  display: "swap",
-});
 
 const FONT_CLASSES = {
   openSansBold: openSans.className,
   poppinsBlack: poppins.className,
-  rubikRegular: rubik.className,
 };
 
 const COLORS = {
@@ -154,7 +147,7 @@ const HighLevelMessage: React.FC = () => {
           HighLevel Certified Admins
         </span>
         <p
-          className={`text-[10px] mt-0.5 leading-snug ${FONT_CLASSES.rubikRegular}`}
+          className={`text-[10px] mt-0.5 leading-snug ${poppins.className}`}
           style={{ color: "#6b7280" }}
         >
           We build, automate, and optimize your CRM, funnels, and workflows.
@@ -169,7 +162,7 @@ const Hero = () => {
   return (
     <div
       id="home"
-      className={`relative w-full ${RESPONSIVE_HEIGHT.hero} bg-cover bg-center overflow-hidden ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+      className={`relative w-full ${RESPONSIVE_HEIGHT.hero} bg-cover bg-center overflow-hidden ${poppins.variable} ${openSans.variable}`}
       style={{
         backgroundImage: `url(${HERO_BG_IMAGE})`,
         backgroundAttachment: "fixed",
@@ -208,7 +201,7 @@ const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-white text-xs sm:text-sm leading-relaxed max-w-lg mb-5 sm:mb-6 font-rubik"
+                className="text-white text-xs sm:text-sm leading-relaxed max-w-lg mb-5 sm:mb-6 font-poppins"
               >
                 We deliver world-class business support services designed to
                 optimize efficiency, reduce costs, and empower your growth.
@@ -299,7 +292,7 @@ const Hero = () => {
                         <h3 className="text-gray-900 font-open-sans-bold text-base xl:text-lg mb-1 whitespace-nowrap">
                           {card.title}
                         </h3>
-                        <p className="text-xs xl:text-sm text-gray-600 leading-relaxed font-rubik">
+                        <p className="text-xs xl:text-sm text-gray-600 leading-relaxed font-poppins">
                           {card.desc}
                         </p>
                       </div>

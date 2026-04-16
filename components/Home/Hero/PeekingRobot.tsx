@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { Poppins, Open_Sans } from "next/font/google";
 import { FONT_CLASSES, COLORS } from "@/constant/styles";
 import HighLevelMessage from "./HighLevelMessage"; // Import the HighLevelMessage component
 
@@ -21,13 +21,6 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["500"],
-  variable: "--font-rubik",
-  display: "swap",
-});
-
 // 🤖 PEEKING ROBOT COMPONENT
 const PeekingRobot: React.FC = () => {
   return (
@@ -35,7 +28,7 @@ const PeekingRobot: React.FC = () => {
       initial={{ x: -250 }}
       animate={{ x: -50 }}
       transition={{ duration: 1, delay: 2, ease: "easeOut" }} // Robot peeking animation
-      className={`absolute bottom-0 left-0 z-50 cursor-pointer hidden md:block ${poppins.variable} ${openSans.variable} ${rubik.variable}`}
+      className={`absolute bottom-0 left-0 z-50 cursor-pointer hidden md:block ${poppins.variable} ${openSans.variable}`}
       whileHover={{ x: 0 }}
     >
       {/* 🤖 Robot Container */}

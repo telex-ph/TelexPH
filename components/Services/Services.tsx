@@ -30,6 +30,11 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   "survey-forms": (<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></>),
   "tech-support": (<><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></>),
   "web-development": (<><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>),
+  "document-signing": (<><path d="M12 22h8a2 2 0 002-2V6l-6-6H6a2 2 0 00-2 2v12a2 2 0 002 2z"/><path d="M14 2v4a2 2 0 002 2h4M16 13H8M16 17H8M10 9H8"/></>),
+  "sms": (<><path d="M22 16.92v3a2 2 0 01-2.58 1.91L10 18l-2 1v-4H4a2 2 0 01-2-2v-7a2 2 0 012-2h16a2 2 0 012 2v7.92z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></>),
+  "video-graphics-design": (<><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/><path d="M7 15h6"/></>),
+  "website-builder": (<><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></>),
+  "white-label": (<><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></>),
 };
 
 const IMAGE_MAP: Record<string, string> = {
@@ -46,6 +51,11 @@ const IMAGE_MAP: Record<string, string> = {
   "survey-forms": "/images/services5.webp",
   "tech-support": "/images/services6.webp",
   "web-development": "/images/services1.webp",
+  "document-signing": "/images/services2.webp",
+  "sms": "/images/services3.webp",
+  "video-graphics-design": "/images/services4.webp",
+  "website-builder": "/images/services5.webp",
+  "white-label": "/images/services6.webp",
 };
 
 const SERVICE_META: Record<string, { tag: string; detail1: string; detail2: string; detail3: string; blurb: string }> = {
@@ -62,6 +72,11 @@ const SERVICE_META: Record<string, { tag: string; detail1: string; detail2: stri
   "survey-forms":            { tag: "Forms",        detail1: "Forms",         detail2: "Responses",      detail3: "Reports",        blurb: "Collect valuable feedback and data with custom forms, surveys, and detailed reports." },
   "tech-support":            { tag: "Support",      detail1: "24/7 Help",     detail2: "Remote Fix",     detail3: "Fast Response",  blurb: "Get reliable technical support whenever you need it — fast, remote, and always available." },
   "web-development":         { tag: "Development",  detail1: "Custom Dev",    detail2: "Responsive",     detail3: "SEO Ready",      blurb: "Launch beautiful, fast, and SEO-optimized websites built to represent your brand perfectly." },
+  "document-signing":       { tag: "Documents",    detail1: "Digital Sign",  detail2: "Secure",         detail3: "Workflow",       blurb: "Streamline your document workflow with secure digital signature solutions." },
+  "sms":                     { tag: "SMS",          detail1: "High Open Rate", detail2: "Instant",        detail3: "Automation",     blurb: "Reach customers directly with powerful SMS marketing and communication solutions." },
+  "video-graphics-design":  { tag: "Design",       detail1: "Professional",  detail2: "Video",          detail3: "Brand",          blurb: "Create stunning visual content and videos that captivate your audience." },
+  "website-builder":         { tag: "Builder",      detail1: "Drag & Drop",   detail2: "No Coding",      detail3: "Mobile Ready",   blurb: "Build professional websites with our intuitive drag-and-drop website builder." },
+  "white-label":             { tag: "White Label",  detail1: "Full Branding", detail2: "Custom Features", detail3: "Revenue Share",  blurb: "Offer our complete platform under your brand with full customization options." },
 };
 
 interface ServiceType {
@@ -220,7 +235,7 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
         <div className="flex items-center justify-between">
           <span style={{ fontSize: "11px", color: "#9ca3af" }}>Remote · Digital</span>
           <Link
-            href="/services"
+            href={`/funnels/${service.serviceId}`}
             className="flex items-center gap-1.5 rounded-xl text-white"
             style={{
               backgroundColor: DARK_RED,
@@ -240,7 +255,7 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
             }}
           >
             <ArrowUpRight width={13} height={13} />
-            Learn More
+            Get a Free Audit
           </Link>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { Poppins, Open_Sans } from "next/font/google";
 import { FONT_CLASSES, COLORS } from "@/constant/styles";
 
 // ✅ Font setup
@@ -17,13 +17,6 @@ const openSans = Open_Sans({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-open-sans",
-  display: "swap",
-});
-
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["500"],
-  variable: "--font-rubik",
   display: "swap",
 });
 
