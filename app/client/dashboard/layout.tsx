@@ -27,9 +27,6 @@ const SettingsIco   = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z
 const BillingIco    = () => <NavIcon><Ico d="M3 10h18M7 15h.01M11 15h2M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" size={13} /></NavIcon>
 const ServicesIco   = () => <NavIcon><Ico d="M4 6h16M4 10h16M4 14h16M4 18h16" size={13} /></NavIcon>
 const MessagingIco  = () => <NavIcon><Ico d="M8 9h8M8 13h6M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} /></NavIcon>
-const CalIcon     = () => <NavIcon><Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={13} /></NavIcon>
-const BookingIcon = () => <NavIcon><Ico d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" size={13} /></NavIcon>
-const SettingsIco = () => <NavIcon><Ico d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" d2="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" size={13} /></NavIcon>
 
 // ─── UTILITY ICONS ────────────────────────────────────────────────────────────
 const ChevronLeft  = () => <Ico d="M15 18l-6-6 6-6" size={14} sw={1.5} />
@@ -306,6 +303,74 @@ function Header({
   )
 }
 
+// ─── COLLAPSIBLE NAV DROPDOWN ─────────────────────────────────────────────────
+function NavDropdown({
+  sectionLabel,
+  triggerLabel,
+  triggerIcon,
+  children,
+  collapsed,
+  pathname,
+  open,
+  onToggle,
+}: {
+  sectionLabel: string
+  triggerLabel: string
+  triggerIcon: React.ReactNode
+  children: { label: string; href: string; badge?: string }[]
+  collapsed: boolean
+  pathname: string
+  open: boolean
+  onToggle: () => void
+}) {
+  const isActive = (href: string) => pathname === href
+
+  return (
+    <div style={{ marginBottom: 6 }}>
+      {!collapsed && sectionLabel && (
+        <div style={{ fontSize: 10, color: '#aaa', padding: '10px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          {sectionLabel}
+        </div>
+      )}
+      <button
+        onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+          padding: '7px 10px', borderRadius: 8, border: 'none', background: 'transparent',
+          color: '#333', cursor: 'pointer', textAlign: 'left',
+        }}
+      >
+        {triggerIcon}
+        {!collapsed && <span style={{ flex: 1, fontSize: 12 }}>{triggerLabel}</span>}
+        {!collapsed && (open ? <ChevronLeft /> : <ChevronRight />)}
+      </button>
+      {open && (
+        <div style={{ marginLeft: collapsed ? 0 : 20 }}>
+          {children.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '7px 10px', borderRadius: 8,
+                color: isActive(item.href) ? '#800000' : '#333',
+                background: isActive(item.href) ? '#fff5f5' : 'transparent',
+              }}
+            >
+              {!collapsed && <span style={{ flex: 1, fontSize: 12 }}>{item.label}</span>}
+              {item.badge && (
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#800000', background: '#fff5f5', border: '1px solid #f3d9d9', borderRadius: 4, padding: '1px 5px' }}>
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── FLAT NAV SECTION ─────────────────────────────────────────────────────────
 function NavSection({
   label,
@@ -358,10 +423,6 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
   const [billingOpen,   setBillingOpen]   = useState(false)
   const [clientInfo,    setClientInfo]    = useState<ClientInfo | null>(null)
   const [loggingOut,    setLoggingOut]    = useState(false)
-  const [collapsed,  setCollapsed]  = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
-  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {

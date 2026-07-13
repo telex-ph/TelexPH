@@ -29,20 +29,20 @@ const F = {
 const FW = { bold: 700, semibold: 600, medium: 500, normal: 400 };
 
 const IMGS = {
-  exterior:      "_DSC9564-Edit.jpg",
-  mainFloor:     "_DSC9626.jpg",
-  mainFloorWide: "_DSC9632.jpg",
-  techTeam:      "_DSC9635.jpg",
-  agents:        "_DSC9637.jpg",
-  dualMonitor:   "_DSC9639.jpg",
-  server:        "_DSC9649.jpg",
-  admin:         "_DSC9654.jpg",
-  studioDesk:    "_DSC9659.jpg",
-  studioGear:    "_DSC9660.jpg",
-  hallway:       "_DSC9664.jpg",
-  conference:    "_DSC9667.jpg",
-  meeting1:      "_DSC9669.jpg",
-  meeting2:      "_DSC9671.jpg",
+  exterior:      "/images/usecase1.jpg",
+  mainFloor:     "/images/usecase5.jpg",
+  mainFloorWide: "/images/usecase2.jpg",
+  techTeam:      "/images/usecase3.jpg",
+  agents:        "/images/usecase5.jpg",
+  dualMonitor:   "/images/usecase3.jpg",
+  server:        "/images/usecase4.jpg",
+  admin:         "/images/usecase2.jpg",
+  studioDesk:    "/images/usecase1.jpg",
+  studioGear:    "/images/usecase3.jpg",
+  hallway:       "/images/usecase2.jpg",
+  conference:    "/images/usecase5.jpg",
+  meeting1:      "/images/usecase1.jpg",
+  meeting2:      "/images/usecase3.jpg",
 } as const;
 
 type ImgKey = keyof typeof IMGS;
