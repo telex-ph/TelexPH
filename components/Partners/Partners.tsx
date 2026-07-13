@@ -1,7 +1,13 @@
 import React from "react";
 import Image from "next/image";
 import { Settings, Users, Wrench, Award } from "lucide-react";
+import { Rubik } from "next/font/google";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 // 1. UPDATED INTERFACE to include backgroundColor
 interface PartnersProps {
@@ -72,16 +78,16 @@ const Partners: React.FC<PartnersProps> = ({
                           {feature.icon}
                         </div>
 
-                        <h3 className="text-sm md:text-xl lg:text-2xl font-poppins-black text-[#a10000] leading-tight relative z-10">
+                        <h3 className="font-poppins font-bold text-sm md:text-xl lg:text-2xl text-[#a10000] leading-tight relative z-10">
                           {firstWord}
                         </h3>
                         {secondPart && (
-                          <h3 className="text-sm md:text-xl lg:text-2xl font-poppins-black text-[#a10000] mb-1 md:mb-2 relative z-10">
+                          <h3 className="font-poppins font-bold text-sm md:text-xl lg:text-2xl text-[#a10000] mb-1 md:mb-2 relative z-10">
                             {secondPart}
                           </h3>
                         )}
 
-                        <p className="font-poppins text-gray-600 text-[10px] md:text-sm lg:text-base leading-snug md:leading-relaxed relative z-10">
+                        <p className={`${rubik.className} text-gray-600 text-[10px] md:text-sm lg:text-base leading-snug md:leading-relaxed relative z-10`}>
                           {feature.description}
                         </p>
                       </div>

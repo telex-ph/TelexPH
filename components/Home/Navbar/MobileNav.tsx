@@ -158,7 +158,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
         onClick={closeNav}
       ></div>
       
-      <div className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-white z-[2050] transform transition-transform duration-500 ease-in-out ${showNav ? "translate-x-0" : "-translate-x-full"} flex flex-col shadow-2xl`}>
+      <div className={`fixed top-0 left-0 h-full w-[70%] max-w-xs bg-white z-[2050] transform transition-transform duration-500 ease-in-out ${showNav ? "translate-x-0" : "-translate-x-full"} flex flex-col shadow-2xl`}>
         <div className="flex items-center justify-between px-6 py-5 bg-gray-800">
           <Image src="/images/Weblogo.webp" alt="Logo" width={150} height={30} className="object-contain" priority />
           <button onClick={closeNav} className="text-white hover:text-[#a10000]">
@@ -166,7 +166,7 @@ const MobileNav = ({ showNav, closeNav }: Props) => {
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-2">
+        <nav className="overflow-y-auto py-2">
           {navLinks.map((link) => {
             const mega = getMegaData(link.label);
             const isMainOpen = openMainId === link.id;

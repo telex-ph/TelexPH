@@ -85,20 +85,20 @@ export default function PageViewsAnalyticsSection() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
           {FEATURES.map(({ title, description, Icon }) => (
             <div
               key={title}
-              className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-xl sm:rounded-2xl border border-gray-100 bg-white p-3 sm:p-6 shadow-sm hover:shadow-md transition-shadow"
             >
               <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-4"
                 style={{ backgroundColor: COLORS.primaryLight, color: COLORS.primary }}
               >
-                <Icon className="w-5 h-5" strokeWidth={2} />
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2} />
               </div>
-              <h3 className={`text-lg ${FONT_CLASSES.openSansBold} text-gray-900 mb-2`}>{title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
+              <h3 className={`text-sm sm:text-lg ${FONT_CLASSES.openSansBold} text-gray-900 mb-1 sm:mb-2`}>{title}</h3>
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{description}</p>
             </div>
           ))}
         </div>

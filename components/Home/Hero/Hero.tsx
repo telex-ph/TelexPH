@@ -22,15 +22,6 @@ const openSans = Open_Sans({
 });
 
 
-const FONT_CLASSES = {
-  openSansBold: openSans.className,
-  poppinsBlack: poppins.className,
-};
-
-const COLORS = {
-  primary: "#a10000",
-};
-
 const HERO_BG_IMAGE = "/images/background.webp";
 
 const AVATARS = [
@@ -100,69 +91,12 @@ const FLOATING_CARDS = [
   },
 ];
 
-// ✅ HighLevelMessage (only for <1020px screens)
-const HighLevelMessage: React.FC = () => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 2.5 }}
-      className={`absolute z-[9999] left-1/2 -translate-x-1/2 
-                  bottom-4 sm:bottom-6 
-                  bg-white px-4 py-3 rounded-2xl shadow-2xl 
-                  w-[90%] sm:w-[85%] md:w-[70%]
-                  border border-gray-200 
-                  flex items-center gap-3
-                  transition-all duration-300
-                  lg:hidden`}  
-    >
-      {/* Bubble Tail */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 top-[-10px] w-0 h-0 
-                   border-b-[15px] border-b-white 
-                   border-l-[10px] border-l-transparent 
-                   border-r-[10px] border-r-transparent"
-      />
-
-      {/* Logo */}
-      <img
-        src="/images/unnamed.png"
-        alt="HighLevel Admins Logo"
-        className="w-10 h-10 object-contain rounded-xl flex-shrink-0"
-        loading="lazy"
-      />
-
-      {/* Text */}
-      <div className="flex flex-col leading-tight flex-grow">
-        <span
-          className={`text-xs ${FONT_CLASSES.openSansBold}`}
-          style={{ color: COLORS.primary }}
-        >
-          Powered by
-        </span>
-        <span
-          className={`text-sm ${FONT_CLASSES.poppinsBlack}`}
-          style={{ color: "#7a0000" }}
-        >
-          HighLevel Certified Admins
-        </span>
-        <p
-          className={`text-[10px] mt-0.5 leading-snug ${poppins.className}`}
-          style={{ color: "#6b7280" }}
-        >
-          We build, automate, and optimize your CRM, funnels, and workflows.
-        </p>
-      </div>
-    </motion.div>
-  );
-};
-
 // ✅ HERO COMPONENT
 const Hero = () => {
   return (
     <div
       id="home"
-      className={`relative w-full ${RESPONSIVE_HEIGHT.hero} bg-cover bg-center overflow-hidden ${poppins.variable} ${openSans.variable}`}
+      className={`relative w-full ${RESPONSIVE_HEIGHT.hero} [@media(max-height:500px)]:h-auto [@media(max-height:500px)]:min-h-[520px] bg-cover bg-center overflow-hidden ${poppins.variable} ${openSans.variable}`}
       style={{
         backgroundImage: `url(${HERO_BG_IMAGE})`,
         backgroundAttachment: "fixed",
@@ -172,7 +106,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-red-950 via-red-900 to-red-950 opacity-45"></div>
 
       {/* Main Content */}
-      <div className="relative z-10 w-full h-full flex items-end sm:items-center pb-32 sm:pb-0 pt-0 sm:pt-20 lg:pt-0">
+      <div className="relative z-10 w-full h-full flex items-end sm:items-center pb-32 sm:pb-0 pt-0 sm:pt-20 lg:pt-0 [@media(max-height:500px)]:items-center [@media(max-height:500px)]:pt-[130px] [@media(max-height:500px)]:pb-8">
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Section */}
@@ -305,13 +239,15 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* 🤖 Robot – only on large screens */}
-      <div className="hidden lg:block">
+      {/* 🤖 Robot – small peek on mobile/tablet, own bubble scales down with it. Hidden on short/landscape phone viewports where there isn't room. */}
+      <div className="block lg:hidden [@media(max-height:500px)]:!hidden scale-[0.48] origin-bottom-left">
         <PeekingRobot />
       </div>
 
-      {/* 💬 Floating Message – visible only below 1020px */}
-      <HighLevelMessage />
+      {/* 🤖 Robot – full size with its own bubble on large screens */}
+      <div className="hidden lg:block">
+        <PeekingRobot />
+      </div>
     </div>
   );
 };

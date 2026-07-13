@@ -41,7 +41,7 @@ const Footer = () => {
   }, [handleScroll]);
 
   return (
-    <footer className="relative bg-[#282828] text-white pt-10 sm:pt-16 md:pt-20 mt-16 sm:mt-20">
+    <footer className="relative bg-[#282828] text-white pt-20 sm:pt-16 md:pt-16 mt-16 sm:mt-20">
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full z-20">
         <div className={DEFAULT_MAX_WIDTH_CLASS}>
           <FooterCTA />
@@ -75,7 +75,7 @@ const Footer = () => {
 
       {/* Main Footer Content Grid */}
       <div
-        className={`${DEFAULT_MAX_WIDTH_CLASS} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 py-20 relative z-10`}
+        className={`${DEFAULT_MAX_WIDTH_CLASS} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 py-10 sm:pt-16 sm:pb-14 md:py-20 relative z-10`}
       >
 
         {/* ✅ Chatbase Chatbot Integration */}

@@ -113,7 +113,7 @@ const TopBar = () => {
       >
         <Container>
           <div className="px-2 py-2 text-sm space-y-1 flex flex-col items-center">
-            <div className="flex items-center justify-center gap-4"> 
+            <div className="flex items-center justify-between w-full">
               <span className="flex items-center gap-1">
                 <Mail className="w-3.5 h-3.5" />
                 <span className="text-xs whitespace-nowrap">
@@ -127,15 +127,29 @@ const TopBar = () => {
                 </span>
               </span>
             </div>
-            <Link
-              href="/location"
-              className="flex items-center gap-1 hover:opacity-80 transition-opacity text-center"
-            >
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="text-xs underline underline-offset-2 whitespace-nowrap">
-                Guimba, Nueva Ecija
-              </span>
-            </Link>
+            <div className="flex items-center justify-between w-full">
+              <Link
+                href="/location"
+                className="flex items-center gap-1 hover:opacity-80 transition-opacity text-center"
+              >
+                <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="text-xs underline underline-offset-2 whitespace-nowrap">
+                  Guimba, Nueva Ecija
+                </span>
+              </Link>
+              <div className="flex items-center gap-2">
+                <a
+                  href={facebookLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Facebook className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+                </a>
+                <Twitter className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Instagram className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Youtube className="w-3.5 h-3.5 cursor-pointer hover:opacity-80 transition-opacity" />
+              </div>
+            </div>
           </div>
         </Container>
       </div>
@@ -145,7 +159,7 @@ const TopBar = () => {
       >
         <Container>
           <div className="px-1 py-1.5 text-xs space-y-1 flex flex-col items-center">
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-between w-full">
               <span className="flex items-center gap-1">
                 <Mail className="w-3 h-3" />
                 <span className="text-[10px] whitespace-nowrap">
@@ -159,15 +173,29 @@ const TopBar = () => {
                 </span>
               </span>
             </div>
-            <Link
-              href="/location"
-              className="flex items-center justify-center gap-1 hover:opacity-80 transition-opacity text-center"
-            >
-              <MapPin className="w-3 h-3 flex-shrink-0" />
-              <span className="text-[10px] underline underline-offset-2 whitespace-nowrap">
-                Guimba, Nueva Ecija
-              </span>
-            </Link>
+            <div className="flex items-center justify-between w-full">
+              <Link
+                href="/location"
+                className="flex items-center gap-1 hover:opacity-80 transition-opacity text-center"
+              >
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                <span className="text-[10px] underline underline-offset-2 whitespace-nowrap">
+                  Guimba, Nueva Ecija
+                </span>
+              </Link>
+              <div className="flex items-center gap-1.5">
+                <a
+                  href={facebookLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Facebook className="w-3 h-3 cursor-pointer hover:opacity-80 transition-opacity" />
+                </a>
+                <Twitter className="w-3 h-3 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Instagram className="w-3 h-3 cursor-pointer hover:opacity-80 transition-opacity" />
+                <Youtube className="w-3 h-3 cursor-pointer hover:opacity-80 transition-opacity" />
+              </div>
+            </div>
           </div>
         </Container>
       </div>

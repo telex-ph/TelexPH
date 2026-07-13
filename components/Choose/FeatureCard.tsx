@@ -1,5 +1,11 @@
 import React from 'react';
-import { COLORS } from "@/constant/styles";
+import { Rubik } from "next/font/google";
+import { COLORS, FONT_CLASSES } from "@/constant/styles";
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 type FeatureCardProps = {
   feature: {
@@ -91,10 +97,16 @@ const FeatureCard = ({ feature }: FeatureCardProps) => {
           {getIconSVG(feature.icon)}
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-bold text-gray-900 mb-2">
+          <h3
+            className={`${FONT_CLASSES.poppinsBlack} text-lg mb-2`}
+            style={{ color: COLORS.dark }}
+          >
             {feature.title}
           </h3>
-          <p className="text-gray-600 text-sm leading-relaxed">
+          <p
+            className={`${rubik.className} text-sm leading-relaxed`}
+            style={{ color: COLORS.dark }}
+          >
             {feature.description}
           </p>
         </div>

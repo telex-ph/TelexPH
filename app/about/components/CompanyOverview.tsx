@@ -3,7 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import { Check, PhoneCall } from "lucide-react";
+import { Rubik } from "next/font/google";
 import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles";
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 export default function CompanyOverview() {
   return (
@@ -40,8 +46,8 @@ export default function CompanyOverview() {
 
             {/* HEADING */}
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
-              style={{ color: SEMANTIC_COLORS.text.primary }}
+              className={`${FONT_CLASSES.poppinsBlack} text-2xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+              style={{ color: COLORS.dark }}
             >
               Powering Your Business <br className="hidden lg:inline" />
               <span style={{ color: COLORS.primary }}>the Smart Way</span>
@@ -49,7 +55,7 @@ export default function CompanyOverview() {
 
             {/* DESCRIPTION */}
             <p
-              className={`${FONT_CLASSES.rubikRegular} mb-5 leading-relaxed text-lg`}
+              className={`${rubik.className} mb-5 leading-relaxed text-base sm:text-lg`}
               style={{ color: SEMANTIC_COLORS.text.secondary }}
             >
               At Telex Philippines, we provide innovative and cost-efficient
@@ -63,8 +69,8 @@ export default function CompanyOverview() {
               {/* FEATURE LIST */}
               <div>
                 <h3
-                  className={`${FONT_CLASSES.openSansBold} text-xl mb-6`}
-                  style={{ color: SEMANTIC_COLORS.text.primary }}
+                  className={`${FONT_CLASSES.poppinsBlack} text-xl mb-6`}
+                  style={{ color: COLORS.dark }}
                 >
                   Best Feature List <br /> About Us
                 </h3>
@@ -78,14 +84,14 @@ export default function CompanyOverview() {
                   ].map((feature, index) => (
                     <div
                       key={index}
-                      className={`flex items-center space-x-3 ${FONT_CLASSES.rubikRegular}`}
+                      className={`flex items-center space-x-3 ${rubik.className}`}
                       style={{ color: SEMANTIC_COLORS.text.secondary }}
                     >
                       <Check
                         className="w-4 h-4 flex-shrink-0"
                         style={{ color: COLORS.primary }}
                       />
-                      <span className="text-base font-medium">{feature}</span>
+                      <span className="text-base font-normal">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -122,7 +128,7 @@ export default function CompanyOverview() {
                     </p>
                     <p
                       className={`${FONT_CLASSES.openSansBold} text-xl`}
-                      style={{ color: SEMANTIC_COLORS.text.primary }}
+                      style={{ color: COLORS.dark }}
                     >
                       (044) 331 - 5040
                     </p>
