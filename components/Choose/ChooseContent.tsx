@@ -79,7 +79,8 @@ const ContactUsButtonMobile: React.FC = () => {
           <ArrowUpRight className="w-5 h-5 rotate-[15deg]" />
         </button>
         <p
-          className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-base transition-colors group-hover:text-gray-700 select-none`}
+          className={`${FONT_CLASSES.openSansBold} text-base transition-colors select-none`}
+          style={{ color: COLORS.dark }}
         >
           Choose Us
         </p>
@@ -102,7 +103,8 @@ const ChooseHeader: React.FC = () => {
           WHY CHOOSE US
         </p>
         <h2
-          className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-tight`}
+          className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.poppinsBlack} leading-tight`}
+          style={{ color: COLORS.dark }}
         >
           We Use Proven Smart Technologies
           <br />
@@ -134,7 +136,8 @@ const ChooseHeader: React.FC = () => {
           <ArrowUpRight className="w-6 h-6" />
         </button>
         <p
-          className={`text-gray-900 ${FONT_CLASSES.openSansBold} text-lg select-none`}
+          className={`${FONT_CLASSES.openSansBold} text-lg select-none`}
+          style={{ color: COLORS.dark }}
         >
           Contact Us
         </p>

@@ -989,20 +989,24 @@ function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
           {/* Text block */}
           <div className="flex flex-col items-center text-center w-full max-w-[1020px] relative z-[2] pb-12">
             <div
-              className="absolute font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828]/[0.06] pointer-events-none select-none leading-none text-center z-0 whitespace-nowrap"
-              style={{ top: "50%", left: "50%", transform: "translate(-50%, -55%)", fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em", width: "100%" }}
-            >PLATFORM<br/>OVERVIEW</div>
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[85%] font-[family-name:var(--font-barlow-condensed)] font-black uppercase pointer-events-none select-none leading-none text-center z-0 whitespace-nowrap opacity-15"
+              style={{ fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em" }}
+            >
+              <span style={{ WebkitTextStroke: "1px #282828", WebkitTextFillColor: "transparent", opacity: 0.85 } as React.CSSProperties}>
+                PLATFORM OVERVIEW
+              </span>
+            </div>
             <div className="relative z-[1] flex flex-col items-center w-full">
               <TabNav active="platforms" onTabSwitch={onTabSwitch} />
               <p className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">PLATFORM ECOSYSTEM</p>
               <h1
-                className="anim-up font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828] mb-5"
-                style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(32px,5vw,64px)" }}
+                className="anim-up font-[family-name:var(--font-poppins)] font-black uppercase text-[#282828] mb-5"
+                style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(32px,5vw,48px)" }}
               >
                 Powering Growth Across 115+<br />
                 <em className="text-[#a10000] not-italic">Global E-Commerce Platforms</em>
               </h1>
-              <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[15px] leading-[1.75] text-[#282828]/55">
+              <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[15px] md:text-[18px] leading-[1.75] text-[#282828]/55">
                 Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
                 <strong className="text-[#282828] font-semibold">the world's leading e-commerce ecosystems.</strong>{" "}
                 Operating across 24 countries with over a decade of marketplace expertise.

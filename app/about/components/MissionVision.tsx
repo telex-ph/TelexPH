@@ -1,6 +1,12 @@
 import React from "react";
 import { Target, Eye, Users, Award, TrendingUp, Heart } from "lucide-react";
+import { Rubik } from "next/font/google";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 export default function MissionVision() {
   return (
@@ -44,12 +50,14 @@ export default function MissionVision() {
 
                 <div className="flex-1">
                   <h2
-                    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 mb-4 sm:mb-6 tracking-tight`}
+                    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl mb-4 sm:mb-6 tracking-tight`}
+                    style={{ color: COLORS.dark }}
                   >
                     MISSION
                   </h2>
                   <p
-                    className={`${FONT_CLASSES.rubikRegular} text-gray-600 text-sm sm:text-base leading-relaxed`}
+                    className={`${rubik.className} text-sm sm:text-base leading-relaxed`}
+                    style={{ color: COLORS.dark }}
                   >
                     To empower businesses through innovative outsourcing
                     solutions, cutting-edge technology, and adaptive strategies
@@ -80,12 +88,14 @@ export default function MissionVision() {
 
                 <div className="flex-1">
                   <h2
-                    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 mb-4 sm:mb-6 tracking-tight`}
+                    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl mb-4 sm:mb-6 tracking-tight`}
+                    style={{ color: COLORS.dark }}
                   >
                     VISION
                   </h2>
                   <p
-                    className={`${FONT_CLASSES.rubikRegular} text-gray-600 text-sm sm:text-base leading-relaxed`}
+                    className={`${rubik.className} text-sm sm:text-base leading-relaxed`}
+                    style={{ color: COLORS.dark }}
                   >
                     To be a global leader in business process solutions,
                     recognized for harnessing innovation, people, and technology
@@ -134,7 +144,8 @@ export default function MissionVision() {
 
               <div className="flex flex-col items-center">
                 <h2
-                  className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 tracking-tight translate-y-1`}
+                  className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl tracking-tight translate-y-1`}
+                  style={{ color: COLORS.dark }}
                 >
                   CORE VALUES
                 </h2>
@@ -179,7 +190,8 @@ export default function MissionVision() {
               </div>
 
               <h2
-                className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl text-gray-900 tracking-tight text-center sm:text-left`}
+                className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl tracking-tight text-center sm:text-left`}
+                style={{ color: COLORS.dark }}
               >
                 CORE VALUES
               </h2>
@@ -225,12 +237,14 @@ export default function MissionVision() {
 
                   <div className="flex items-baseline gap-2">
                     <span
-                      className={`${FONT_CLASSES.openSansBold} text-xs sm:text-sm text-gray-900`}
+                      className={`${FONT_CLASSES.openSansBold} text-xs sm:text-sm`}
+                      style={{ color: COLORS.dark }}
                     >
                       To
                     </span>
                     <h3
-                      className={`${FONT_CLASSES.poppinsBlack} text-lg sm:text-2xl text-gray-900 leading-tight`}
+                      className={`${FONT_CLASSES.poppinsBlack} text-lg sm:text-2xl leading-tight`}
+                      style={{ color: COLORS.dark }}
                     >
                       {item.title}
                     </h3>
@@ -239,7 +253,8 @@ export default function MissionVision() {
 
                 {/* ✅ Description (normal weight, not bold) */}
                 <p
-                  className={`${FONT_CLASSES.rubikRegular} text-gray-700 text-[13px] sm:text-[14px] leading-relaxed mb-3 sm:mb-4`}
+                  className={`${rubik.className} text-[13px] sm:text-[14px] leading-relaxed mb-3 sm:mb-4`}
+                  style={{ color: COLORS.dark }}
                 >
                   {item.desc}
                 </p>

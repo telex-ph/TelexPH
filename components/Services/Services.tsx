@@ -4,15 +4,45 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Layout, Loader2, AlertCircle } from "lucide-react";
+import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
 
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://telexph-admin.onrender.com";
-const CARDS_VISIBLE = 3;
 const GAP = 24;
 const SLIDE_DURATION = 520;
 const AUTO_INTERVAL = 3800;
+
+/* ─── Per-service GHL Funnel URLs (only some services have their own) ──── */
+const GHL_SERVICE_URLS: Record<string, string> = {
+  "ai-builder":      "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
+  csr:               "https://app.gohighlevel.com/v2/preview/ibY6nU0jCLIQNHOgScWG",
+  automation:        "https://app.gohighlevel.com/v2/preview/n6hA9geZeMpPR4znvPAm",
+  "funnel-builder":  "https://app.gohighlevel.com/v2/preview/oMEKJgm8HwQDG47bxMbc",
+  "tech-support":    "https://app.gohighlevel.com/v2/preview/DTmridl6UOnMYfnEgY2b",
+  "web-development": "https://app.gohighlevel.com/v2/preview/CslyXVQZdPxdsrtvohsu",
+};
+
+/* Fallback for services that don't have a specific funnel URL yet */
+const GHL_FALLBACK_URL = "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t";
+
+function getCardsVisible(width: number): number {
+  if (width < 640) return 1;
+  if (width < 1024) return 2;
+  return 3;
+}
+
+function useCardsVisible(): number {
+  const [cardsVisible, setCardsVisible] = useState(3);
+  useEffect(() => {
+    const update = () => setCardsVisible(getCardsVisible(window.innerWidth));
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return cardsVisible;
+}
 
 // ─── Icon Map ─────────────────────────────────────────────────────────────────
 
@@ -85,6 +115,7 @@ interface ServiceType {
   title: string;
   imageSrc: string;
   isHighlight: boolean;
+  isActive: boolean;
   icon: React.ReactNode;
   description: string;
   coverPhoto?: string | null;
@@ -124,7 +155,7 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
       }}
     >
       {/* Image */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "4/3" }}>
+      <div className="relative w-full overflow-hidden aspect-[16/10] sm:aspect-[4/3]">
         {useNativeImg ? (
           <img
             src={service.imageSrc}
@@ -179,20 +210,20 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
       </div>
 
       {/* Body */}
-      <div className="flex flex-col flex-1 p-5">
+      <div className="flex flex-col flex-1 p-4 sm:p-5">
         {/* Icon + title */}
-        <div className="flex items-start gap-3 mb-3">
+        <div className="flex items-start gap-2.5 sm:gap-3 mb-2.5 sm:mb-3">
           <div
             className="flex-shrink-0 flex items-center justify-center rounded-xl"
-            style={{ width: 38, height: 38, background: "#fff5f5", border: "1px solid #fde0e0" }}
+            style={{ width: 34, height: 34, background: "#fff5f5", border: "1px solid #fde0e0" }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={DARK_RED} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={DARK_RED} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               {service.icon}
             </svg>
           </div>
           <h3
             className="flex-1 leading-snug line-clamp-2"
-            style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "14px", color: "#111827", marginTop: 3 }}
+            style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "13px", color: "#111827", marginTop: 3 }}
           >
             {service.title}
           </h3>
@@ -200,14 +231,14 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
 
         {/* Description */}
         <p
-          className="line-clamp-2 flex-1 mb-4"
-          style={{ fontSize: "12px", color: "#6b7280", lineHeight: 1.65 }}
+          className="line-clamp-2 flex-1 mb-3 sm:mb-4"
+          style={{ fontSize: "11.5px", color: "#6b7280", lineHeight: 1.6 }}
         >
           {meta.blurb}
         </p>
 
         {/* Feature chips */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-3 sm:mb-4">
           {[meta.detail1, meta.detail2, meta.detail3].map((chip) => (
             <span
               key={chip}
@@ -229,34 +260,55 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
           ))}
         </div>
 
-        <div style={{ height: 1, background: "#f3f4f6", marginBottom: 14 }} />
+        <div style={{ height: 1, background: "#f3f4f6", marginBottom: 12 }} />
 
         {/* Footer */}
         <div className="flex items-center justify-between">
           <span style={{ fontSize: "11px", color: "#9ca3af" }}>Remote · Digital</span>
-          <Link
-            href={`/funnels/${service.serviceId}`}
-            className="flex items-center gap-1.5 rounded-xl text-white"
-            style={{
-              backgroundColor: DARK_RED,
-              fontFamily: "'Poppins', sans-serif",
-              fontWeight: 500,
-              fontSize: "12px",
-              padding: "7px 14px",
-              transition: "background-color 0.2s, transform 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = HOVER_DARK_RED;
-              (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.04)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = DARK_RED;
-              (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
-            }}
-          >
-            <ArrowUpRight width={13} height={13} />
-            Get a Free Audit
-          </Link>
+          {service.isActive ? (
+            <button
+              type="button"
+              onClick={() => {
+                const url = GHL_SERVICE_URLS[service.serviceId] ?? GHL_FALLBACK_URL;
+                trackOutboundFunnelView(url, { label: service.title });
+                window.open(url, "_blank", "noopener,noreferrer");
+              }}
+              className="flex items-center gap-1.5 rounded-xl text-white"
+              style={{
+                backgroundColor: DARK_RED,
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 500,
+                fontSize: "12px",
+                padding: "7px 14px",
+                border: "none",
+                cursor: "pointer",
+                transition: "background-color 0.2s, transform 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = HOVER_DARK_RED;
+                (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.04)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = DARK_RED;
+                (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+              }}
+            >
+              <ArrowUpRight width={13} height={13} />
+              Get a Free Audit
+            </button>
+          ) : (
+            <span
+              style={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 400,
+                fontSize: "12px",
+                color: "#9ca3af",
+                letterSpacing: "0.02em",
+              }}
+            >
+              Coming soon
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -292,24 +344,34 @@ interface TrackSliderProps {
   extended: ServiceType[];
   index: number;
   animated: boolean;
+  cardsVisible: number;
+  busy: boolean;
+  onSwipePrev: () => void;
+  onSwipeNext: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 }
 
-function TrackSlider({ extended, index, animated }: TrackSliderProps) {
+function TrackSlider({ extended, index, animated, cardsVisible, busy, onSwipePrev, onSwipeNext, onDragStart, onDragEnd }: TrackSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [cardWidth, setCardWidth] = useState(0);
+
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const draggedRef = useRef(false);
 
   useEffect(() => {
     const measure = () => {
       if (!containerRef.current) return;
       const w = containerRef.current.offsetWidth;
-      setCardWidth((w - GAP * (CARDS_VISIBLE - 1)) / CARDS_VISIBLE);
+      setCardWidth((w - GAP * (cardsVisible - 1)) / cardsVisible);
     };
     measure();
     const ro = new ResizeObserver(measure);
     if (containerRef.current) ro.observe(containerRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [cardsVisible]);
 
   useEffect(() => {
     if (!trackRef.current || cardWidth === 0) return;
@@ -320,15 +382,70 @@ function TrackSlider({ extended, index, animated }: TrackSliderProps) {
     trackRef.current.style.transform = `translateX(${tx}px)`;
   }, [index, animated, cardWidth]);
 
+  const snapBack = () => {
+    if (!trackRef.current) return;
+    trackRef.current.style.transition = `transform ${SLIDE_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+    trackRef.current.style.transform = `translateX(${-(index * (cardWidth + GAP))}px)`;
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (busy || cardWidth === 0) return;
+    isDraggingRef.current = true;
+    draggedRef.current = false;
+    startXRef.current = e.clientX;
+    onDragStart();
+    if (trackRef.current) {
+      trackRef.current.style.transition = "none";
+      trackRef.current.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !trackRef.current) return;
+    const delta = e.clientX - startXRef.current;
+    if (Math.abs(delta) > 4) draggedRef.current = true;
+    const base = -(index * (cardWidth + GAP));
+    trackRef.current.style.transform = `translateX(${base + delta}px)`;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    const delta = e.clientX - startXRef.current;
+    const threshold = Math.max(40, cardWidth * 0.18);
+    if (delta <= -threshold) {
+      onSwipeNext();
+    } else if (delta >= threshold) {
+      onSwipePrev();
+    } else {
+      snapBack();
+    }
+    onDragEnd();
+  };
+
   return (
-    <div ref={containerRef} style={{ width: "100%", overflow: "hidden" }}>
+    <div
+      ref={containerRef}
+      style={{ width: "100%", overflow: "hidden", touchAction: "pan-y", cursor: busy ? "default" : "grab" }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onClickCapture={(e) => {
+        if (draggedRef.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          draggedRef.current = false;
+        }
+      }}
+    >
       <div ref={trackRef} style={{ display: "flex", gap: `${GAP}px`, willChange: "transform" }}>
         {extended.map((service, i) => (
           <div
             key={`${service._id}-${i}`}
             style={{
               flexShrink: 0,
-              width: cardWidth > 0 ? `${cardWidth}px` : `calc((100% - ${GAP * (CARDS_VISIBLE - 1)}px) / ${CARDS_VISIBLE})`,
+              width: cardWidth > 0 ? `${cardWidth}px` : `calc((100% - ${GAP * (cardsVisible - 1)}px) / ${cardsVisible})`,
             }}
           >
             <ServiceCard service={service} index={i} />
@@ -346,21 +463,30 @@ function ServicesGrid() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // index into the extended list; starts at CARDS_VISIBLE (first real card)
-  const [index, setIndex] = useState(CARDS_VISIBLE);
+  const cardsVisible = useCardsVisible();
+
+  // index into the extended list; starts at cardsVisible (first real card)
+  const [index, setIndex] = useState(cardsVisible);
   const [animated, setAnimated] = useState(true);
   const [busy, setBusy] = useState(false);
   const isHovering = useRef(false);
   const autoRef = useRef<NodeJS.Timeout | null>(null);
 
-  const totalPages = Math.ceil(services.length / CARDS_VISIBLE);
+  // reset position whenever the responsive card count changes (e.g. viewport resize)
+  useEffect(() => {
+    setAnimated(false);
+    setIndex(cardsVisible);
+    requestAnimationFrame(() => setAnimated(true));
+  }, [cardsVisible]);
+
+  const totalPages = Math.ceil(services.length / cardsVisible);
   const activePage = services.length > 0
-    ? Math.floor(((index - CARDS_VISIBLE) % services.length) / CARDS_VISIBLE)
+    ? Math.floor(((index - cardsVisible) % services.length) / cardsVisible)
     : 0;
 
   // extended list = last N clones + originals + first N clones
   const extended = services.length > 0
-    ? [...services.slice(-CARDS_VISIBLE), ...services, ...services.slice(0, CARDS_VISIBLE)]
+    ? [...services.slice(-cardsVisible), ...services, ...services.slice(0, cardsVisible)]
     : [];
 
   const slideTo = useCallback((newIndex: number, withAnim = true) => {
@@ -374,36 +500,41 @@ function ServicesGrid() {
         setBusy(false);
         setIndex((prev) => {
           const real = services.length;
-          if (prev >= CARDS_VISIBLE + real) return prev - real;
-          if (prev < CARDS_VISIBLE) return prev + real;
+          if (prev >= cardsVisible + real) return prev - real;
+          if (prev < cardsVisible) return prev + real;
           return prev;
         });
         setAnimated(false);
         requestAnimationFrame(() => setAnimated(true));
       }, SLIDE_DURATION + 20);
     }
-  }, [busy, services.length]);
+  }, [busy, services.length, cardsVisible]);
 
   const advance = useCallback(() => {
-    if (!isHovering.current) slideTo(index + CARDS_VISIBLE);
-  }, [index, slideTo]);
+    if (!isHovering.current) slideTo(index + cardsVisible);
+  }, [index, slideTo, cardsVisible]);
 
   const resetAuto = useCallback(() => {
     if (autoRef.current) clearInterval(autoRef.current);
-    if (services.length > CARDS_VISIBLE) {
+    if (services.length > cardsVisible) {
       autoRef.current = setInterval(advance, AUTO_INTERVAL);
     }
-  }, [advance, services.length]);
+  }, [advance, services.length, cardsVisible]);
 
   useEffect(() => {
     resetAuto();
     return () => { if (autoRef.current) clearInterval(autoRef.current); };
   }, [resetAuto]);
 
-  const goToPage = useCallback((page: number) => {
-    slideTo(CARDS_VISIBLE + page * CARDS_VISIBLE);
+  const slideByOne = useCallback((direction: 1 | -1) => {
+    slideTo(index + direction);
     resetAuto();
-  }, [slideTo, resetAuto]);
+  }, [index, slideTo, resetAuto]);
+
+  const goToPage = useCallback((page: number) => {
+    slideTo(cardsVisible + page * cardsVisible);
+    resetAuto();
+  }, [slideTo, resetAuto, cardsVisible]);
 
   const getImageSource = (item: any): string => {
     const photo = item.isActive
@@ -440,14 +571,10 @@ function ServicesGrid() {
             imageSrc: getImageSource(item),
             coverPhoto: item.coverPhoto,
             isHighlight: item.serviceId === "tech-support",
+            isActive: item.isActive ?? false,
             icon: ICON_MAP[item.serviceId] || <Layout className="w-full h-full" />,
           }))
-          .sort((a: any, b: any) => {
-            const aActive = data.find((d: any) => d._id === a._id)?.isActive ?? false;
-            const bActive = data.find((d: any) => d._id === b._id)?.isActive ?? false;
-            if (aActive === bActive) return 0;
-            return aActive ? -1 : 1;
-          })
+          .sort((a, b) => Number(b.isActive) - Number(a.isActive))
       );
     } catch (err: any) {
       setError(err.message || "Could not load services at this time");
@@ -521,7 +648,17 @@ function ServicesGrid() {
               onMouseEnter={() => { isHovering.current = true; }}
               onMouseLeave={() => { isHovering.current = false; }}
             >
-              <TrackSlider extended={extended} index={index} animated={animated} />
+              <TrackSlider
+                extended={extended}
+                index={index}
+                animated={animated}
+                cardsVisible={cardsVisible}
+                busy={busy}
+                onSwipePrev={() => slideByOne(-1)}
+                onSwipeNext={() => slideByOne(1)}
+                onDragStart={() => { isHovering.current = true; }}
+                onDragEnd={() => { isHovering.current = false; }}
+              />
             </div>
 
             {totalPages > 1 && (

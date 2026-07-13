@@ -53,14 +53,14 @@ const FooterPosts: React.FC = () => {
 
   return (
     <div className="w-full px-4 sm:px-0">
-      <div className="mb-6">
+      <div className="mb-4">
         <h3 className="font-poppins-black mb-2 text-base text-white">
           Popular Post
         </h3>
         <div className="w-12 h-1 bg-[#a10000]"></div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3 w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2 sm:gap-3 w-full">
         {posts.map((post) => (
           <Link
             key={post.id}
@@ -70,10 +70,10 @@ const FooterPosts: React.FC = () => {
               : {})}
             onClick={(e) => handleClick(e, post.id)}
             className="
-              relative 
+              relative
               aspect-[3/2] sm:aspect-square
-              max-h-40 sm:max-h-none
-              rounded-lg 
+              max-h-24 sm:max-h-none
+              rounded-lg
               overflow-hidden 
               group 
               cursor-pointer 

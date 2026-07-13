@@ -2,7 +2,13 @@
 
 import React from "react";
 import { FaLinkedin } from "react-icons/fa";
+import { Rubik } from "next/font/google";
 import { FONT_CLASSES } from "@/constant/styles";
+
+const rubik = Rubik({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 const COLORS = {
   primary: "#a10000",
@@ -11,23 +17,11 @@ const COLORS = {
 const SEMANTIC_COLORS = {
   text: {
     primary: "#282828",
-    secondary: "#6b7280",
+    secondary: "#282828",
   },
   background: {
     primary: "#f9fafb",
   },
-};
-
-const FONTS = {
-  openSans: "'Open Sans', sans-serif",
-  rubik: "'Rubik', sans-serif",
-  poppins: "'Poppins', sans-serif",
-};
-
-const FONT_WEIGHTS = {
-  regular: "400",
-  bold: "700",
-  black: "900",
 };
 
 interface MemberCardProps {
@@ -62,10 +56,8 @@ const MemberCard = ({
 
       <div className="relative bg-gray-100 p-6 text-center z-20 border-t border-gray-200 flex flex-col justify-center items-center">
         <h3
-          className="text-lg leading-snug mb-1"
+          className={`${FONT_CLASSES.poppinsBlack} text-lg leading-snug mb-1`}
           style={{
-            fontFamily: FONTS.openSans,
-            fontWeight: FONT_WEIGHTS.bold,
             color: SEMANTIC_COLORS.text.primary,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -75,10 +67,8 @@ const MemberCard = ({
           {name}
         </h3>
         <p
-          className="text-xs mt-0"
+          className={`${rubik.className} text-xs mt-0`}
           style={{
-            fontFamily: FONTS.rubik,
-            fontWeight: FONT_WEIGHTS.regular,
             color: SEMANTIC_COLORS.text.secondary,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -113,18 +103,14 @@ export default function Team() {
         {/* Header */}
         <div className="mb-16">
           <span
-            className="text-base uppercase tracking-[0.2em]"
-            style={{
-              color: COLORS.primary,
-              fontFamily: FONTS.poppins,
-              fontWeight: FONT_WEIGHTS.bold,
-            }}
+            className={`${FONT_CLASSES.openSansBold} text-base uppercase tracking-[0.2em]`}
+            style={{ color: COLORS.primary }}
           >
             — MEET OUR TEAM
           </span>
 
           <h2
-            className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+            className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
             style={{ color: SEMANTIC_COLORS.text.primary }}
           >
             The Team That Helps You <br className="hidden lg:inline" />
@@ -132,12 +118,8 @@ export default function Team() {
           </h2>
 
           <p
-            className="max-w-3xl mx-auto"
-            style={{
-              color: SEMANTIC_COLORS.text.secondary,
-              fontFamily: FONTS.rubik,
-              fontWeight: FONT_WEIGHTS.regular,
-            }}
+            className={`${rubik.className} max-w-3xl mx-auto`}
+            style={{ color: SEMANTIC_COLORS.text.secondary }}
           >
             Behind Telix Philippines is a team of dedicated professionals
             passionate about delivering world-class support services. Our people
@@ -148,12 +130,8 @@ export default function Team() {
 
         {/* Executive Committee */}
         <h2
-          className="text-3xl mb-8"
-          style={{
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.bold,
-            color: SEMANTIC_COLORS.text.primary,
-          }}
+          className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+          style={{ color: SEMANTIC_COLORS.text.primary }}
         >
           Executive Committee
         </h2>
@@ -178,12 +156,8 @@ export default function Team() {
 
         {/* Executive Office */}
         <h2
-          className="text-3xl mb-8"
-          style={{
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.bold,
-            color: SEMANTIC_COLORS.text.primary,
-          }}
+          className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+          style={{ color: SEMANTIC_COLORS.text.primary }}
         >
           Executive Office
         </h2>
@@ -208,12 +182,8 @@ export default function Team() {
 
         {/* Operations Division */}
         <h2
-          className="text-3xl mb-8"
-          style={{
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.bold,
-            color: SEMANTIC_COLORS.text.primary,
-          }}
+          className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+          style={{ color: SEMANTIC_COLORS.text.primary }}
         >
           Operations Division
         </h2>
@@ -238,12 +208,8 @@ export default function Team() {
 
         {/* Governance & Technology Division */}
         <h2
-          className="text-3xl mb-8"
-          style={{
-            fontFamily: FONTS.poppins,
-            fontWeight: FONT_WEIGHTS.bold,
-            color: SEMANTIC_COLORS.text.primary,
-          }}
+          className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+          style={{ color: SEMANTIC_COLORS.text.primary }}
         >
           Governance & Technology Division
         </h2>

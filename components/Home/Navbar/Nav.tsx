@@ -158,11 +158,11 @@ const Nav = ({ openNav }: Props) => {
     <nav className={`fixed w-full z-[1000] top-0 ${poppins.variable} ${openSans.variable}`}>
       <TopBar />
       <div className={`relative bg-white transition-all duration-300 ${navBg ? "shadow-md" : ""}`}>
-        <div className="relative h-[80px] flex items-stretch">
-          <div className="bg-gray-800 flex items-center justify-center h-full relative z-10 px-4 sm:px-8 w-auto lg:w-[350px]">
-            <Image src="/images/Weblogo.webp" alt="Logo" width={250} height={50} className="object-contain" priority />
+        <div className="relative h-[60px] lg:h-[80px] flex items-stretch">
+          <div className="bg-gray-800 flex items-center justify-center h-full relative z-10 pl-3 pr-8 sm:pl-6 sm:pr-12 lg:pl-8 lg:pr-20 w-auto lg:w-[350px]">
+            <Image src="/images/Weblogo.webp" alt="Logo" width={250} height={50} className="object-contain w-[140px] sm:w-[180px] lg:w-[250px] h-auto" priority />
           </div>
-          <div className="h-full z-30 w-[60px] -ml-[30px] relative hidden lg:block">
+          <div className="h-full z-30 w-[40px] lg:w-[60px] -ml-[20px] lg:-ml-[30px] relative block">
             <div className="absolute top-0 left-0 w-full h-full bg-[#a10000]" style={{ clipPath: "polygon(50% 0, 100% 0, 50% 100%, 0 100%)" }} />
           </div>
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">

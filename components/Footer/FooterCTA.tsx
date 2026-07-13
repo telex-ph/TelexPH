@@ -21,9 +21,9 @@ const FooterCTA = () => {
     <div
       className={`relative z-20 ${poppins.variable} ${openSans.variable}`}
     >
-      <div className="w-full bg-[#a10000] text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.3)] rounded-lg h-40 sm:h-48 overflow-hidden relative flex items-center px-4 sm:px-6 md:px-8 lg:px-12">
+      <div className="w-full bg-[#a10000] text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.3)] rounded-lg overflow-hidden relative flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-4 sm:py-0 sm:h-48 px-4 sm:px-6 md:px-8 lg:px-12">
         <div className="z-10 flex-1 max-w-lg">
-          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-poppins-black mb-1 sm:mb-2">
+          <h2 className="text-xl sm:text-xl md:text-2xl lg:text-3xl font-poppins-black mb-1 sm:mb-2">
             Ready to Scale Smarter?
           </h2>
           <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-poppins">
@@ -48,7 +48,7 @@ const FooterCTA = () => {
         <a
           href="https://hiretelex.com/scale-with-telex"
           target="_blank"
-          className="z-20 ml-auto bg-white text-[#a10000] font-open-sans-bold px-4 sm:px-5 md:px-6 lg:px-7 py-2.5 sm:py-3 md:py-3.5 rounded shadow hover:bg-gray-100 transition whitespace-nowrap text-xs sm:text-sm md:text-base inline-block text-center"
+          className="z-20 self-start sm:self-auto sm:ml-auto bg-white text-[#a10000] font-open-sans-bold px-4 sm:px-5 md:px-6 lg:px-7 py-2 sm:py-3 md:py-3.5 rounded shadow hover:bg-gray-100 transition whitespace-nowrap text-xs sm:text-sm md:text-base inline-block text-center"
         >
           CONTACT US NOW
         </a>

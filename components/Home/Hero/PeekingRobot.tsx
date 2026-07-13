@@ -22,13 +22,13 @@ const openSans = Open_Sans({
 });
 
 // 🤖 PEEKING ROBOT COMPONENT
-const PeekingRobot: React.FC = () => {
+const PeekingRobot: React.FC<{ showMessage?: boolean }> = ({ showMessage = true }) => {
   return (
     <motion.div
       initial={{ x: -250 }}
       animate={{ x: -50 }}
       transition={{ duration: 1, delay: 2, ease: "easeOut" }} // Robot peeking animation
-      className={`absolute bottom-0 left-0 z-50 cursor-pointer hidden md:block ${poppins.variable} ${openSans.variable}`}
+      className={`absolute bottom-0 left-0 z-50 cursor-pointer ${poppins.variable} ${openSans.variable}`}
       whileHover={{ x: 0 }}
     >
       {/* 🤖 Robot Container */}
@@ -289,7 +289,7 @@ const PeekingRobot: React.FC = () => {
       </div>
 
       {/* HighLevel Message - Handles the single message display */}
-      <HighLevelMessage />
+      {showMessage && <HighLevelMessage />}
     </motion.div>
   );
 };
