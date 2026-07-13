@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useDarkMode } from '../layout'
 
+// Full applicant record — only returned by GET /applicants/:id (detail fetch)
 interface Applicant {
   _id: string
   firstName: string
@@ -30,6 +31,17 @@ interface Applicant {
   status: 'pending' | 'approved' | 'rejected'
   confirmCode?: string
   pipelineStage?: 'details' | 'shortlist' | 'assessment' | 'interview' | 'hired'
+}
+
+// Slim shape returned by GET /applicants (list) — table/card view only needs these fields
+interface ApplicantListItem {
+  _id: string
+  firstName: string
+  lastName: string
+  email: string
+  services?: string[]
+  appliedAt: string
+  status: 'pending' | 'approved' | 'rejected'
 }
 
 const poppins: React.CSSProperties = {
@@ -137,7 +149,7 @@ function HeroStatCard({ label, value, sub, bgImage, icon }: { label: string; val
 }
 
 // ─── Download Analytics + Applicants List CSV ─────────────────────────────────
-function downloadAnalyticsCSV(applicants: Applicant[]) {
+function downloadAnalyticsCSV(applicants: ApplicantListItem[]) {
   const total = applicants.length
   const approved = applicants.filter((a) => a.status === 'approved').length
   const pending = applicants.filter((a) => a.status === 'pending').length
@@ -235,7 +247,7 @@ function downloadAnalyticsCSV(applicants: Applicant[]) {
 }
 
 // ─── Analytics Section ────────────────────────────────────────────────────────
-function AnalyticsSection({ applicants, isdarkmode }: { applicants: Applicant[]; isdarkmode: boolean }) {
+function AnalyticsSection({ applicants, isdarkmode }: { applicants: ApplicantListItem[]; isdarkmode: boolean }) {
   const total = applicants.length
   const pending = applicants.filter((a) => a.status === 'pending').length
   const approved = applicants.filter((a) => a.status === 'approved').length
@@ -990,7 +1002,7 @@ function ApplicantModal({
 }
 
 // ─── Table Stat Cards ─────────────────────────────────────────────────────────
-function TableStatCards({ applicants, filtered, filterStatus, isdarkmode }: { applicants: Applicant[]; filtered: Applicant[]; filterStatus: string; isdarkmode: boolean }) {
+function TableStatCards({ applicants, filtered, filterStatus, isdarkmode }: { applicants: ApplicantListItem[]; filtered: ApplicantListItem[]; filterStatus: string; isdarkmode: boolean }) {
   const total = applicants.length
   const pending = applicants.filter((a) => a.status === 'pending').length
   const approved = applicants.filter((a) => a.status === 'approved').length
@@ -1008,7 +1020,7 @@ function TableStatCards({ applicants, filtered, filterStatus, isdarkmode }: { ap
 function FilterTabs({ filterStatus, setFilterStatus, isdarkmode }: {
   filterStatus: 'all' | 'pending' | 'approved' | 'rejected'
   setFilterStatus: (v: 'all' | 'pending' | 'approved' | 'rejected') => void
-  applicants: Applicant[]
+  applicants: ApplicantListItem[]
   isdarkmode: boolean
 }) {
   const dm = isdarkmode
@@ -1067,13 +1079,14 @@ function FilterTabs({ filterStatus, setFilterStatus, isdarkmode }: {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ApplicantsList() {
   const { isdarkmode } = useDarkMode()
-  const [applicants, setApplicants] = useState<Applicant[]>([])
+  const [applicants, setApplicants] = useState<ApplicantListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all')
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [modalToast, setModalToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null)
+  const [selectedApplicantLoading, setSelectedApplicantLoading] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(true)
   const [downloading, setDownloading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -1109,6 +1122,23 @@ export default function ApplicantsList() {
   }
 
   useEffect(() => { fetchApplicants() }, [])
+
+  const openApplicant = async (item: ApplicantListItem) => {
+    setSelectedApplicantLoading(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applicants/${item._id}`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      if (response.ok) {
+        setSelectedApplicant(await response.json())
+      } else {
+        showToast('Failed to load applicant details.', 'error')
+      }
+    } catch (error) {
+      console.error('Error fetching applicant detail:', error)
+      showToast('Failed to load applicant details.', 'error')
+    } finally {
+      setSelectedApplicantLoading(false)
+    }
+  }
 
   const handleAction = async (id: string, action: 'approve' | 'reject') => {
     setActionLoading(`${id}-${action}`)
@@ -1160,7 +1190,6 @@ export default function ApplicantsList() {
         showSmartToast(msg, 'success')
       }
 
-      setApplicants((prev) => prev.map((a) => a._id === id ? { ...a, pipelineStage: stage } : a))
       setSelectedApplicant((prev) => prev?._id === id ? { ...prev, pipelineStage: stage } : prev)
     } catch {
       // Even on network error, wait out the minimum display time
@@ -1170,7 +1199,6 @@ export default function ApplicantsList() {
         await new Promise<void>((resolve) => setTimeout(resolve, remaining))
       }
 
-      setApplicants((prev) => prev.map((a) => a._id === id ? { ...a, pipelineStage: stage } : a))
       setSelectedApplicant((prev) => prev?._id === id ? { ...prev, pipelineStage: stage } : prev)
       showSmartToast(msg, 'success')
     } finally {
@@ -1385,7 +1413,7 @@ export default function ApplicantsList() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ ...poppins, fontSize: '10px', color: '#9ca3af' }}>{applicant.appliedAt ? formatDate(applicant.appliedAt) : '—'}</span>
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => setSelectedApplicant(applicant)} style={{ ...poppins, fontSize: '10px', fontWeight: 500, padding: '4px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: isdarkmode ? 'rgba(255,255,255,0.07)' : '#eeeeee', color: isdarkmode ? '#d1d5db' : '#374151' }}>View</button>
+                        <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} style={{ ...poppins, fontSize: '10px', fontWeight: 500, padding: '4px 10px', borderRadius: '8px', border: 'none', cursor: selectedApplicantLoading ? 'not-allowed' : 'pointer', opacity: selectedApplicantLoading ? 0.6 : 1, background: isdarkmode ? 'rgba(255,255,255,0.07)' : '#eeeeee', color: isdarkmode ? '#d1d5db' : '#374151' }}>View</button>
                         {applicant.status === 'pending' && (
                           <>
                             <button onClick={() => handleAction(applicant._id, 'approve')} disabled={!!actionLoading} style={{ ...poppins, fontSize: '10px', fontWeight: 500, padding: '4px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: 'rgba(5,150,105,0.1)', color: '#059669' }}>✓</button>
@@ -1431,7 +1459,7 @@ export default function ApplicantsList() {
                         <td className="px-6 py-4"><span className={statusBadge(applicant.status)} style={poppins}>{applicant.status}</span></td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button onClick={() => setSelectedApplicant(applicant)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-none cursor-pointer transition-all active:scale-95 ${isdarkmode ? 'bg-white/5 text-gray-300 hover:bg-white/10' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`} style={{ ...poppins, fontSize: '11px', fontWeight: 500 }}>
+                            <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-none transition-all active:scale-95 ${isdarkmode ? 'bg-white/5 text-gray-300 hover:bg-white/10' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`} style={{ ...poppins, fontSize: '11px', fontWeight: 500, cursor: selectedApplicantLoading ? 'not-allowed' : 'pointer', opacity: selectedApplicantLoading ? 0.6 : 1 }}>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View
                             </button>
                             {applicant.status === 'pending' && (
