@@ -45,7 +45,6 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
-
 // Config: Specify which routes should use this middleware
 // Importante: Define exactly which paths ang mag-trigger ng middleware
 export const config = {
