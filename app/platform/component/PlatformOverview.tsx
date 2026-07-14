@@ -79,7 +79,7 @@ const MINIMAL_CSS = `
   .no-scrollbar::-webkit-scrollbar { display: none; }
 
   /* Mosaic cards — built by vanilla JS, need these classes */
-  .mosaic-card { position: absolute; width: 130px; height: 200px; border-radius: 14px; overflow: hidden; cursor: grab; will-change: transform; background: #fff; border: 1px solid #ebebeb; }
+  .mosaic-card { position: absolute; width: 180px; height: 200px; border-radius: 14px; overflow: hidden; cursor: grab; will-change: transform; background: #fff; border: 1px solid #ebebeb; }
   @media (min-width: 640px) { .mosaic-card { width: 200px; height: 200px; } }
   .mosaic-card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
   .mosaic-card-label { position: absolute; bottom: 0; left: 0; right: 0; height: 28%; display: flex; align-items: center; padding: 0 10px; background: #fff; border-top: 1px solid #ebebeb; }
@@ -97,6 +97,30 @@ const MINIMAL_CSS = `
   /* show-more expanded chevron */
   .show-more-btn svg { transition: transform 0.3s; }
   .show-more-btn.expanded svg { transform: rotate(180deg); }
+
+  /* reveal-on-scroll — each section gets its own entrance direction */
+  .rv { opacity: 0; transition: opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1); will-change: opacity, transform; }
+  .rv.in { opacity: 1; transform: none; }
+  .rv-up    { transform: translateY(48px); }
+  .rv-down  { transform: translateY(-48px); }
+  .rv-left  { transform: translateX(-56px); }
+  .rv-right { transform: translateX(56px); }
+  .rv-scale { transform: scale(.9); }
+  .rv-blur  { transform: translateY(28px); filter: blur(8px); }
+  .rv-blur.in { filter: blur(0); }
+  .rv-d1 { transition-delay: .1s; }
+  .rv-d2 { transition-delay: .2s; }
+  .rv-d3 { transition-delay: .3s; }
+
+  /* staggered children */
+  .rv-stagger > * { opacity: 0; transform: translateY(40px); transition: opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1); }
+  .rv-stagger.in > * { opacity: 1; transform: none; }
+  .rv-stagger.in > *:nth-child(1) { transition-delay: .05s; }
+  .rv-stagger.in > *:nth-child(2) { transition-delay: .15s; }
+  .rv-stagger.in > *:nth-child(3) { transition-delay: .25s; }
+  .rv-stagger.in > *:nth-child(4) { transition-delay: .35s; }
+  .rv-stagger.in > *:nth-child(5) { transition-delay: .45s; }
+  .rv-stagger.in > *:nth-child(6) { transition-delay: .55s; }
 `;
 
 /* ─────────────────────────────────────────────
@@ -401,12 +425,12 @@ function usePlatformsMosaic(stageRef: React.RefObject<HTMLDivElement>, wrapRef: 
     if (!stage || !wrap) return;
 
     const isMobile = window.innerWidth < 640;
-    const CARD_W = isMobile ? 130 : 200;
-    const CARD_H = isMobile ? 86  : 200;
-    const STEP   = CARD_W + (isMobile ? 10 : 16);
+    const CARD_W = isMobile ? 175 : 200;
+    const CARD_H = isMobile ? 150 : 200;
+    const STEP   = CARD_W + (isMobile ? 14 : 16);
     const COUNT  = ALL_PLATFORMS.length;
     const AUTO_SPEED = 0.010;
-    const VISIBLE = isMobile ? 3 : 7;
+    const VISIBLE = isMobile ? 2 : 7;
 
     stage.style.height = CARD_H + "px";
 
@@ -527,7 +551,7 @@ function usePlatformsMosaic(stageRef: React.RefObject<HTMLDivElement>, wrapRef: 
 ───────────────────────────────────────────── */
 interface MosaicItem { name: string; bg: string; fg: string; src: string; }
 
-function useSVGMosaic(containerId: string, items: MosaicItem[]) {
+function useSVGMosaic(containerId: string, items: MosaicItem[], variant: "logo" | "photo" = "logo") {
   useEffect(() => {
     const container = document.getElementById(containerId);
     if (!container || items.length < 5) return;
@@ -570,10 +594,18 @@ function useSVGMosaic(containerId: string, items: MosaicItem[]) {
       });
       const img = document.createElement('img');
       img.src = item.src; img.alt = item.name;
-      Object.assign(img.style, {
-        width: '85%', height: '85%', objectFit: 'contain',
-        display: 'block', pointerEvents: 'none',
-      });
+      if (variant === "photo") {
+        Object.assign(img.style, {
+          position: 'absolute', top: '0', left: '0',
+          width: '100%', height: '72%', objectFit: 'cover',
+          display: 'block', pointerEvents: 'none',
+        });
+      } else {
+        Object.assign(img.style, {
+          width: '85%', height: '85%', objectFit: 'contain',
+          display: 'block', pointerEvents: 'none',
+        });
+      }
       el.appendChild(img);
       const label = document.createElement('div');
       label.setAttribute('data-label', '1');
@@ -583,7 +615,7 @@ function useSVGMosaic(containerId: string, items: MosaicItem[]) {
         padding: '0 12px',
         background: '#fff',
         borderTop: '1px solid #ebebeb',
-        color: '#1a1a1a', fontSize: '11px', fontWeight: '700',
+        color: '#1a1a1a', fontSize: '14px', fontWeight: '700',
         letterSpacing: '0.06em', textTransform: 'uppercase',
       });
       label.textContent = item.name;
@@ -637,7 +669,19 @@ function useScrollAnims() {
       { threshold: 0.15 }
     );
     els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
+
+    // Generic reveal-on-scroll: any `.rv` element gets `.in` when it enters view.
+    // Staggered children via `.rv-stagger > *` animate in sequence (CSS handles delay).
+    const rvEls = document.querySelectorAll(".rv, .rv-stagger");
+    const rvObs = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add("in"); rvObs.unobserve(e.target); }
+      }),
+      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
+    );
+    rvEls.forEach(el => rvObs.observe(el));
+
+    return () => { obs.disconnect(); rvObs.disconnect(); };
   });
 }
 
@@ -654,7 +698,17 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
   const badgeRef   = useRef<HTMLSpanElement>(null);
   const activeRef  = useRef(0); // mirrors activeIdx without closure stale issues
 
-  const STRIDE = 340;
+  const [cardSize, setCardSize] = useState(320);
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      setCardSize(w < 768 ? Math.round(w * 0.70) : 320);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  const STRIDE = cardSize + 20;
   const count  = items.length;
 
   // looped = [clone-of-last,  item0, item1, …, itemN-1,  clone-of-first]
@@ -714,7 +768,7 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
       // This shouldn't happen here since we always go to wrapped+1 (1..count),
       // but guard anyway.
     });
-  }, [count, animateTo, updatePanel]);
+  }, [count, animateTo, updatePanel, STRIDE]);
 
   // Navigate to a looped index — used for the "wrap-around" transition
   // Scrolls to clone, then instantly jumps to the real equivalent
@@ -729,7 +783,7 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
       const track = trackRef.current;
       if (track) track.scrollLeft = (thenRealIdx + 1) * STRIDE;
     });
-  }, [count, animateTo, updatePanel]);
+  }, [count, animateTo, updatePanel, STRIDE]);
 
   // Decide which animation to use: normal vs wrap-around clone
   const navigate = useCallback((from: number, to: number) => {
@@ -758,20 +812,37 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
     }, 3500);
   }, [count, navigate]);
 
-  // Init
+  // Init — reset to the first item whenever the filtered item list changes.
   useEffect(() => {
     const track = trackRef.current;
     if (!track || count === 0) return;
     activeRef.current = 0;
     setActiveIdx(0);
     track.scrollLeft = STRIDE; // looped[1] = items[0]
-    scheduleAuto(0);
-    return () => {
-      if (autoRef.current) clearTimeout(autoRef.current);
-      cancelAnimationFrame(rafRef.current);
-    };
+    return () => cancelAnimationFrame(rafRef.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
+
+  // Auto-advance timer — lives in its own effect keyed on `scheduleAuto`
+  // itself, so whenever STRIDE (mobile card size) changes and produces a
+  // fresh `scheduleAuto` closure, the previous (stale-width) pending timer
+  // is cancelled and a correct one takes over, instead of firing once with
+  // the wrong stride and misaligning the track.
+  useEffect(() => {
+    if (count === 0) return;
+    scheduleAuto(activeRef.current);
+    return () => { if (autoRef.current) clearTimeout(autoRef.current); };
+  }, [scheduleAuto, count]);
+
+  // Re-sync scroll position whenever the card size (and thus STRIDE) changes —
+  // e.g. right after mount when the real mobile width is detected, or on
+  // orientation change. Without this the track stays aligned to the stale
+  // width, leaving cards partially cut off on mobile.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || count === 0) return;
+    track.scrollLeft = (activeRef.current + 1) * STRIDE;
+  }, [STRIDE, count]);
 
   // Drag
   const dragRef    = useRef<{ startX: number; startScroll: number; dragging: boolean }>({ startX: 0, startScroll: 0, dragging: false });
@@ -810,24 +881,24 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
     else destReal = nearest - 1;
     navigate(activeRef.current, destReal);
     scheduleAuto(destReal);
-  }, [looped.length, count, navigate, scheduleAuto]);
+  }, [looped.length, count, navigate, scheduleAuto, STRIDE]);
 
   if (count === 0) {
     return <p className="text-center py-20 text-gray-400 font-[family-name:var(--font-rubik)]">No platforms found for this country.</p>;
   }
 
   return (
-    <div className="grid grid-cols-1 gap-7 mt-6" style={{ gridTemplateColumns: "300px 1fr" }}>
+    <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-7 mt-6">
       {/* Left panel */}
       <div className="flex flex-col gap-4">
         <h2
           ref={nameRef}
           className="txt-fade txt-visible font-[family-name:var(--font-open-sans)] font-black uppercase leading-none text-[#282828]"
-          style={{ fontSize: "clamp(24px,2.5vw,36px)", letterSpacing: "-0.02em" }}
+          style={{ fontSize: "clamp(16px,2.5vw,36px)", letterSpacing: "-0.02em" }}
         >{items[0]?.name ?? "Featured Platforms"}</h2>
         <p
           ref={descRef}
-          className="txt-fade txt-visible font-[family-name:var(--font-rubik)] text-[13px] leading-[1.75] text-[#555]"
+          className="txt-fade txt-visible font-[family-name:var(--font-rubik)] text-[13px] md:text-[16px] leading-[1.75] text-[#555]"
           style={{ transitionDelay: ".05s" }}
         >{platformDescriptions[items[0]?.name] ?? platformDescriptions["ALL"]}</p>
         <div className="txt-fade txt-visible flex items-center gap-3" style={{ transitionDelay: ".1s" }}>
@@ -863,7 +934,8 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
                 key={p.name + "-" + i}
                 className="flex-shrink-0 rounded-[20px] overflow-hidden relative transition-all duration-300"
                 style={{
-                  width: 320, height: 320,
+                  width: cardSize,
+                  height: cardSize,
                   transform: isActive ? "scale(1)" : "scale(0.92)",
                   opacity:   isActive ? 1 : 0.65,
                   cursor: "pointer",
@@ -896,8 +968,8 @@ function PlatformSlider({ items, selectedCountry }: { items: Platform[]; selecte
                   className="absolute bottom-0 left-0 right-0 bg-white border-t border-[#ebebeb]"
                   style={{ height: "28%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 18px" }}
                 >
-                  <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[24px] uppercase tracking-[0.03em] leading-none mb-1" style={{ color: "#1a1a1a" }}>{p.name}</div>
-                  <p className="font-[family-name:var(--font-rubik)] text-[13px]" style={{ color: "#555" }}>Marketplace Partner</p>
+                  <div className="font-[family-name:var(--font-poppins)] font-black uppercase tracking-[0.03em] leading-none mb-1" style={{ color: "#1a1a1a", fontSize: "20px" }}>{p.name}</div>
+                  <p className="font-[family-name:var(--font-rubik)] font-normal text-[13px]" style={{ color: "#555" }}>Marketplace Partner</p>
                 </div>
               </div>
             );
@@ -984,29 +1056,32 @@ function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
   return (
     <>
       {/* HERO */}
-      <section className="bg-[#f7f7f7] overflow-hidden pt-35 px-6 pb-0">
-        <div className="flex flex-col items-center w-full max-w-[1280px] mx-auto">
+      <section className="bg-[#f7f7f7] overflow-hidden pt-32 md:pt-35 px-6 pb-0 flex items-center min-h-[820px] md:min-h-[800px]">
+        <div className="flex flex-col items-center justify-center w-full max-w-[1280px] mx-auto h-full">
           {/* Text block */}
           <div className="flex flex-col items-center text-center w-full max-w-[1020px] relative z-[2] pb-12">
-            <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[85%] font-[family-name:var(--font-barlow-condensed)] font-black uppercase pointer-events-none select-none leading-none text-center z-0 whitespace-nowrap opacity-15"
-              style={{ fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em" }}
-            >
-              <span style={{ WebkitTextStroke: "1px #282828", WebkitTextFillColor: "transparent", opacity: 0.85 } as React.CSSProperties}>
-                PLATFORM OVERVIEW
-              </span>
-            </div>
+
             <div className="relative z-[1] flex flex-col items-center w-full">
               <TabNav active="platforms" onTabSwitch={onTabSwitch} />
-              <p className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">PLATFORM ECOSYSTEM</p>
-              <h1
-                className="anim-up font-[family-name:var(--font-poppins)] font-black uppercase text-[#282828] mb-5"
-                style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(32px,5vw,48px)" }}
-              >
-                Powering Growth Across 115+<br />
-                <em className="text-[#a10000] not-italic">Global E-Commerce Platforms</em>
-              </h1>
-              <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[15px] md:text-[18px] leading-[1.75] text-[#282828]/55">
+              <p className="anim-up text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">PLATFORM ECOSYSTEM</p>
+              <div className="relative">
+                <div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[38%] font-[family-name:var(--font-barlow-condensed)] font-black uppercase pointer-events-none select-none leading-none text-center z-0 w-full opacity-10"
+                  style={{ fontSize: "clamp(60px,20vw,160px)", letterSpacing: "-0.02em" }}
+                >
+                  <span style={{ WebkitTextStroke: "1px #282828", WebkitTextFillColor: "transparent", opacity: 0.85 } as React.CSSProperties}>
+                    PLATFORM OVERVIEW
+                  </span>
+                </div>
+                <h1
+                  className="anim-up font-[family-name:var(--font-poppins)] font-black uppercase text-[#282828] mb-5 relative z-[1]"
+                  style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(26px,6vw,48px)" }}
+                >
+                  Powering Growth Across 115+<br />
+                  <em className="text-[#a10000] not-italic">Global E-Commerce Platforms</em>
+                </h1>
+              </div>
+              <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] leading-[1.75] text-[#282828]/55">
                 Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
                 <strong className="text-[#282828] font-semibold">the world's leading e-commerce ecosystems.</strong>{" "}
                 Operating across 24 countries with over a decade of marketplace expertise.
@@ -1031,61 +1106,61 @@ function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
       <section className="bg-[#f7f7f7] py-12 px-5 md:py-[72px] md:px-10">
         <div className="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           {/* Stat cards */}
-          <div className="flex gap-3 items-start">
+          <div className="order-2 md:order-1 flex gap-3 items-start">
             {/* col 1 */}
             <div className="flex-1 flex flex-col gap-3">
               {/* red card */}
-              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-[#a10000]" style={{ boxShadow: "0 4px 18px rgba(161,0,0,0.20)" }}>
-                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-white/[0.08]">115+</div>
-                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+              <div className="relative overflow-hidden rounded-2xl p-4 pb-4 md:p-6 md:pb-5 flex flex-col justify-between min-h-[104px] md:min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-[#a10000]" style={{ boxShadow: "0 4px 18px rgba(161,0,0,0.20)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] md:text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-white/[0.08]">115+</div>
+                <div className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/15 flex items-center justify-center">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L7.9 4.4L11 4.85L8.75 7.05L9.3 10.15L6.5 8.65L3.7 10.15L4.25 7.05L2 4.85L5.1 4.4L6.5 1.5Z" fill="white" opacity="0.9"/></svg>
                 </div>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-white relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>115+</div>
-                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-white/80">{"E-commerce platforms successfully\nmanaged and optimized"}</div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-white relative" style={{ fontSize: "clamp(28px,7vw,52px)" }}>115+</div>
+                <div className="text-[11px] md:text-[12px] font-normal leading-[1.5] md:leading-[1.8] tracking-[0.04em] mt-3 md:mt-5 relative whitespace-pre-line font-[family-name:var(--font-rubik)] text-white/80">{"E-commerce platforms successfully\nmanaged and optimized"}</div>
               </div>
               {/* white card */}
-              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-white" style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07)" }}>
-                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-black/[0.04]">10+</div>
-                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.07]">
+              <div className="relative overflow-hidden rounded-2xl p-4 pb-4 md:p-6 md:pb-5 flex flex-col justify-between min-h-[104px] md:min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-white" style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] md:text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-black/[0.04]">10+</div>
+                <div className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.07]">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="4" stroke="#a10000" strokeWidth="1.5"/><path d="M6.5 4.5v2l1.2 1.2" stroke="#a10000" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </div>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#282828] relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>10+</div>
-                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-[#999]">{"Years of hands-on marketplace\nexperience"}</div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#282828] relative" style={{ fontSize: "clamp(28px,7vw,52px)" }}>10+</div>
+                <div className="text-[11px] md:text-[12px] font-normal leading-[1.5] md:leading-[1.8] tracking-[0.04em] mt-3 md:mt-5 relative whitespace-pre-line font-[family-name:var(--font-rubik)] text-[#999]">{"Years of hands-on marketplace\nexperience"}</div>
               </div>
             </div>
             {/* col 2 offset */}
-            <div className="flex-1 flex flex-col gap-3 pt-8">
+            <div className="flex-1 flex flex-col gap-3 pt-5 md:pt-8">
               {/* white card */}
-              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-white" style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07)" }}>
-                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-black/[0.04]">24</div>
-                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.07]">
+              <div className="relative overflow-hidden rounded-2xl p-4 pb-4 md:p-6 md:pb-5 flex flex-col justify-between min-h-[104px] md:min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-white" style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] md:text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-black/[0.04]">24</div>
+                <div className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.07]">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="5" r="2.2" stroke="#a10000" strokeWidth="1.4"/><path d="M2.5 11.5c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="#a10000" strokeWidth="1.4" strokeLinecap="round"/></svg>
                 </div>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#282828] relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>24</div>
-                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-[#999]">{"Countries with active\nmarketplace operations"}</div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#282828] relative" style={{ fontSize: "clamp(28px,7vw,52px)" }}>24</div>
+                <div className="text-[11px] md:text-[12px] font-normal leading-[1.5] md:leading-[1.8] tracking-[0.04em] mt-3 md:mt-5 relative whitespace-pre-line font-[family-name:var(--font-rubik)] text-[#999]">{"Countries with active\nmarketplace operations"}</div>
               </div>
               {/* pink card */}
-              <div className="relative overflow-hidden rounded-2xl p-6 pb-5 flex flex-col justify-between min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-[#f9eded]" style={{ boxShadow: "0 4px 18px rgba(161,0,0,0.08)" }}>
-                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-[#a10000]/10">5★</div>
-                <div className="absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.09]">
+              <div className="relative overflow-hidden rounded-2xl p-4 pb-4 md:p-6 md:pb-5 flex flex-col justify-between min-h-[104px] md:min-h-[130px] cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:scale-[1.02] bg-[#f9eded]" style={{ boxShadow: "0 4px 18px rgba(161,0,0,0.08)" }}>
+                <div className="absolute bottom-[-10px] right-[-6px] font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] md:text-[72px] leading-none tracking-[-0.04em] pointer-events-none whitespace-nowrap select-none text-[#a10000]/10">5★</div>
+                <div className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center bg-[#a10000]/[0.09]">
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L7.9 4.4L11 4.85L8.75 7.05L9.3 10.15L6.5 8.65L3.7 10.15L4.25 7.05L2 4.85L5.1 4.4L6.5 1.5Z" fill="#a10000" opacity="0.85"/></svg>
                 </div>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#a10000] relative" style={{ fontSize: "clamp(36px,4vw,52px)" }}>5★</div>
-                <div className="text-[11px] font-medium leading-[1.8] tracking-[0.04em] mt-5 relative whitespace-pre-line font-[family-name:var(--font-open-sans)] text-[#a10000]">{"Client satisfaction across\nglobal engagements"}</div>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black leading-none tracking-[-0.02em] text-[#a10000] relative" style={{ fontSize: "clamp(28px,7vw,52px)" }}>5★</div>
+                <div className="text-[11px] md:text-[12px] font-normal leading-[1.5] md:leading-[1.8] tracking-[0.04em] mt-3 md:mt-5 relative whitespace-pre-line font-[family-name:var(--font-rubik)] text-[#a10000]">{"Client satisfaction across\nglobal engagements"}</div>
               </div>
             </div>
           </div>
           {/* About text */}
-          <div>
-            <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">OUR GLOBAL EXPERIENCE</p>
-            <h2 className="scroll-anim font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-[1.05] mb-6" style={{ letterSpacing: "-0.02em", fontSize: "clamp(28px,3.5vw,44px)" }}>
+          <div className="order-1 md:order-2">
+            <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">OUR GLOBAL EXPERIENCE</p>
+            <h2 className="scroll-anim font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-[1.05] mb-6" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3.5vw,44px)" }}>
               A Decade of<br />Marketplace Excellence
             </h2>
-            <p className="scroll-anim-2 font-[family-name:var(--font-rubik)] text-[15px] text-[#555] leading-[1.8] mb-5">
+            <p className="scroll-anim-2 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#555] leading-[1.8] mb-5">
               For over 4 years, Telex Philippines has partnered with leading global marketplaces — from industry giants like{" "}
               <strong className="text-[#282828]">Amazon, eBay, and Walmart</strong> to high-performing regional platforms across Europe, the Middle East, and Asia.
             </p>
-            <p className="scroll-anim-3 font-[family-name:var(--font-rubik)] text-[15px] text-[#555] leading-[1.8] mb-8">
+            <p className="scroll-anim-3 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#555] leading-[1.8] mb-8">
               We specialize in end-to-end marketplace operations, including product listing optimization, catalog management, and platform integrations — enabling brands to scale efficiently and compete globally.
             </p>
             <div className="flex items-center gap-4 mt-2">
@@ -1107,8 +1182,8 @@ function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
         <div className="relative z-[1] max-w-[1280px] mx-auto px-6 md:px-10">
           <div className="flex items-end justify-between flex-wrap gap-6 mb-14">
             <div>
-              <span className="inline-block text-[11px] tracking-[4px] uppercase font-bold text-white font-[family-name:var(--font-open-sans)] mb-3 bg-[#a10000] px-3 py-1 rounded-md">GLOBAL MARKETPLACE NETWORK</span>
-              <h2 className="scroll-anim font-[family-name:var(--font-open-sans)] font-black uppercase text-[#1a1a1a] leading-none flex items-center gap-3 flex-wrap" style={{ fontSize: "clamp(28px,3vw,42px)", letterSpacing: "-0.02em" }}>
+              <span className="inline-block text-[11px] md:text-[16px] tracking-[4px] uppercase font-bold text-white font-[family-name:var(--font-open-sans)] mb-3 bg-[#a10000] px-3 py-1 rounded-md">GLOBAL MARKETPLACE NETWORK</span>
+              <h2 className="scroll-anim font-[family-name:var(--font-poppins)] font-bold uppercase text-[#1a1a1a] leading-none flex items-center gap-3 flex-wrap" style={{ fontSize: "clamp(20px,3vw,48px)", letterSpacing: "-0.02em" }}>
                 {headingText}
                 {selectedCountry !== "ALL" && countryFlag[selectedCountry] && (
                   <img
@@ -1118,12 +1193,12 @@ function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
                   />
                 )}
               </h2>
-              <p className="font-[family-name:var(--font-rubik)] text-[13px] text-[#555] mt-2.5 max-w-[440px] leading-[1.7]">{subText}</p>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#555] mt-2.5 max-w-[440px] leading-[1.7]">{subText}</p>
             </div>
             {/* Dropdown */}
-            <div className="relative flex-shrink-0" ref={dropdownRef}>
+            <div className="relative flex-shrink-0 ml-auto md:ml-0" ref={dropdownRef}>
               <button
-                className={`flex items-center gap-3 px-6 py-3.5 border-2 rounded-xl text-[13px] font-bold tracking-[0.07em] uppercase min-w-[220px] justify-between cursor-pointer transition-all duration-200 font-[family-name:var(--font-open-sans)] whitespace-nowrap
+                className={`flex items-center gap-3 px-4 md:px-6 py-2.5 md:py-3.5 border-2 rounded-xl text-[11px] md:text-[12px] font-bold tracking-[0.07em] uppercase md:min-w-[220px] justify-between cursor-pointer transition-all duration-200 font-[family-name:var(--font-open-sans)] whitespace-nowrap
                   ${dropdownOpen
                     ? "bg-[#f0f0f0] text-[#1a1a1a] border-[#1a1a1a]"
                     : "bg-white text-[#1a1a1a] border-[#1a1a1a]/30 hover:border-[#1a1a1a]/60 hover:bg-[#f5f5f5]"
@@ -1175,23 +1250,23 @@ function TabPlatforms({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
       <section className="bg-[#f5f5f5] py-20 px-6">
         <div className="max-w-[1100px] mx-auto">
           <div className="text-center mb-14">
-            <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2.5">Why Choose Telex</p>
-            <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none" style={{ letterSpacing: "-0.02em", fontSize: "clamp(30px,4vw,48px)" }}>DRIVING GLOBAL E-COMMERCE PERFORMANCE AT SCALE</h2>
-            <p className="font-[family-name:var(--font-rubik)] text-[15px] text-[#666] leading-[1.7] mt-4 max-w-[560px] mx-auto">We combine marketplace expertise, advanced technology, and localized execution to help brands expand, optimize, and lead across the world's most competitive e-commerce platforms.</p>
+            <p className="text-[12px] md:text-[14px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2.5">Why Choose Telex</p>
+            <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,4vw,48px)" }}>DRIVING GLOBAL E-COMMERCE PERFORMANCE AT SCALE</h2>
+            <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#666] leading-[1.7] mt-4 max-w-[560px] mx-auto">We combine marketplace expertise, advanced technology, and localized execution to help brands expand, optimize, and lead across the world's most competitive e-commerce platforms.</p>
           </div>
-          <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#a10000" strokeWidth="2"/><path d="M8 14l4 4 8-8" stroke="#a10000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, title: "Enterprise-Grade Integrations", text: "Seamlessly connect with 115+ global marketplaces through certified partnerships and robust API integrations built for scale and reliability." },
-              { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="16" rx="3" stroke="#a10000" strokeWidth="2"/><path d="M9 14h10M14 10v8" stroke="#a10000" strokeWidth="2" strokeLinecap="round"/></svg>, title: "End-to-End Catalog Operations", text: "From onboarding and content optimization to pricing and inventory management, we handle the full product lifecycle with precision." },
+              { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="16" rx="3" stroke="#a10000" strokeWidth="2"/><path d="M9 14h10M14 10v8" stroke="#a10000" strokeWidth="2" strokeLinecap="round"/></svg>, title: "Catalog Operations", text: "From onboarding and content optimization to pricing and inventory management, we handle the full product lifecycle with precision." },
               { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 3l2.7 5.6 6.3.9-4.6 4.4 1.1 6.1L14 17.1 8.5 20l1.1-6.1L5 9.5l6.3-.9L14 3z" stroke="#a10000" strokeWidth="2" strokeLinejoin="round"/></svg>, title: "Data-Led Growth Strategy", text: "Leverage actionable insights, performance analytics, and continuous optimization to maximize visibility, conversion, and revenue." },
               { icon: <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#a10000" strokeWidth="2"/><path d="M10 14a4 4 0 108 0 4 4 0 00-8 0z" stroke="#a10000" strokeWidth="2"/></svg>, title: "Global Reach, Local Expertise", text: "Operate confidently across 24+ countries with region-specific strategies tailored to local marketplaces, languages, and consumer behavior." },
             ].map((card, i) => (
               <div key={i} className="bg-white rounded-[18px] p-7 border border-[#ebebeb] transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
                 <div className="flex items-start gap-3.5 mb-3.5">
                   <div className="w-11 h-11 rounded-xl bg-[#a10000]/[0.07] flex items-center justify-center flex-shrink-0">{card.icon}</div>
-                  <h3 className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[15px] uppercase tracking-[0.03em] text-[#282828] leading-[1.2]">{card.title}</h3>
+                  <h3 className="font-[family-name:var(--font-poppins)] font-bold text-[12px] uppercase tracking-[0.03em] text-[#282828] leading-[1.2]">{card.title}</h3>
                 </div>
-                <p className="font-[family-name:var(--font-rubik)] text-[13.5px] text-[#777] leading-[1.7]">{card.text}</p>
+                <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#777] leading-[1.7]">{card.text}</p>
               </div>
             ))}
           </div>
@@ -1225,6 +1300,60 @@ const TOOL_CARDS = [
   { cat: "catalog",  thumb: "red",   abbr: "Wd", cat_label: "Catalog",        name: "Word",         desc: "Document creation and SOP documentation for operations teams.",                        image: "/images/Tools Logo/word.png" },
   { cat: "comms",    thumb: "dark",  abbr: "Zd", cat_label: "Communication",  name: "Zendesk",      desc: "Customer support ticketing and communication management.",                             image: "/images/Tools Logo/zendesk.png" },
 ];
+
+const TOOL_ARC_ICONS = TOOL_CARDS.filter(t => t.image);
+const TOOL_ARC_TOP    = TOOL_ARC_ICONS.slice(0, Math.ceil(TOOL_ARC_ICONS.length / 2));
+const TOOL_ARC_BOTTOM = TOOL_ARC_ICONS.slice(Math.ceil(TOOL_ARC_ICONS.length / 2));
+
+const TOOL_LOOP_REPEATS = 5;
+const TOOL_TOP_TILES    = Array.from({ length: TOOL_LOOP_REPEATS }, () => TOOL_ARC_TOP).flat();
+const TOOL_BOTTOM_TILES = Array.from({ length: TOOL_LOOP_REPEATS }, () => TOOL_ARC_BOTTOM).flat();
+
+/* The icons are rendered as plain JSX <img> tags (React handles that reliably,
+   same as everywhere else on the page) — this hook only ever touches `transform`
+   on the already-rendered nodes every frame. Nothing about image loading/creation
+   is done imperatively, so there's nothing here that can leave a card blank. */
+function useToolsLoop(containerRef: React.RefObject<HTMLDivElement>, setCount: number, direction: 1 | -1, amplitude: number) {
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const children = Array.from(container.children) as HTMLElement[];
+    if (children.length === 0) return;
+
+    const CARD = 64, GAP = 20, STEP = CARD + GAP;
+    const SET_WIDTH = setCount * STEP;
+    const TOTAL_WIDTH = children.length * STEP;
+    const SPEED = 0.5;
+
+    let offset = 0;
+    let rafId: number;
+    let lastTime = 0;
+
+    function render() {
+      children.forEach((el, i) => {
+        const baseX = i * STEP;
+        let x = (baseX - offset * direction) % TOTAL_WIDTH;
+        if (x < 0) x += TOTAL_WIDTH;
+        x -= TOTAL_WIDTH / 2;
+        const wave = amplitude * Math.sin(((baseX - offset * direction) / SET_WIDTH) * Math.PI * 2);
+        el.style.transform = `translate(${x}px, ${wave}px)`;
+      });
+    }
+    render();
+
+    function animate(ts: number) {
+      const dt = lastTime === 0 ? 16 : Math.min(ts - lastTime, 32);
+      lastTime = ts;
+      offset += SPEED * (dt / 16);
+      render();
+      rafId = requestAnimationFrame(animate);
+    }
+    rafId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(rafId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
 
 function makeSVGLogo(name: string, bg: string, fg: string): string {
   const abbr = name.replace(/[^A-Z0-9]/gi,'').slice(0,3).toUpperCase();
@@ -1262,121 +1391,113 @@ const thumbClass: Record<string,string> = {
 };
 
 function TabTools({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
-  const [activeCat, setActiveCat] = useState("all");
-  const [toolsExpanded, setToolsExpanded] = useState(false);
-
   useSVGMosaic("thm-mosaic", TOOLS_MOSAIC_ITEMS);
   useScrollAnims();
 
-  const INITIAL_LIMIT = 8;
-  const cats = ["all", "security", "comms", "catalog", "analytics", "pm", "infra"];
-  const catLabels: Record<string, string> = { all: "All", security: "Security", comms: "Communication", catalog: "Catalog", analytics: "Analytics & BI", pm: "Project Mgmt", infra: "Infrastructure" };
-
-  const filteredTools = TOOL_CARDS.filter(t => activeCat === "all" || t.cat === activeCat);
-  const visibleTools  = toolsExpanded ? filteredTools : filteredTools.slice(0, INITIAL_LIMIT);
+  const toolsTopRef    = useRef<HTMLDivElement>(null);
+  const toolsBottomRef = useRef<HTMLDivElement>(null);
+  useToolsLoop(toolsTopRef as React.RefObject<HTMLDivElement>, TOOL_ARC_TOP.length, 1, 28);
+  useToolsLoop(toolsBottomRef as React.RefObject<HTMLDivElement>, TOOL_ARC_BOTTOM.length, -1, 28);
 
   return (
     <>
       {/* HERO */}
-      <section className="bg-[#f7f7f7] overflow-hidden">
-        <div className="flex flex-row items-stretch w-full max-w-[1280px] mx-auto px-6 md:px-10" style={{ minHeight: 700 }}>
-          <div className="flex flex-col justify-center py-20 pr-14 relative z-[2]" style={{ flex: "0 0 50%", maxWidth: "50%" }}>
-            <div className="absolute top-1/2 left-1/2 font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828]/[0.06] pointer-events-none select-none leading-none z-0 whitespace-nowrap" style={{ transform: "translate(-50%,-55%)", fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em" }}>TOOLS &amp;<br/>TECH</div>
-            <div className="relative z-[1]">
+      <section className="bg-[#f7f7f7] overflow-hidden flex items-center pt-32 md:pt-0 md:min-h-[800px]">
+        <div className="flex flex-col md:flex-row items-center w-full max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="flex flex-col justify-center py-10 md:py-20 md:pr-14 relative z-[2] w-full md:w-auto md:flex-none" style={{ maxWidth: "100%" }}>
+            <div className="rv rv-up relative z-[1] flex flex-col items-center text-center md:items-start md:text-left">
               <TabNav active="tools" onTabSwitch={onTabSwitch} />
-              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">TECHNOLOGY STACK</p>
-              <h1 className="font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828] mb-5" style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(32px,5vw,64px)" }}>
-                Powering Operations<br/>with <em className="text-[#a10000] not-italic">20+ Integrated</em><br/><em className="text-[#a10000] not-italic">Tools &amp; Platforms</em>
-              </h1>
-              <p className="font-[family-name:var(--font-rubik)] text-[15px] leading-[1.75] text-[#282828]/55 max-w-[560px] mb-7">From catalog management to CRM and analytics, our team operates across a curated stack of enterprise-grade tools — ensuring seamless execution across every marketplace we serve.</p>
+              <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">TECHNOLOGY STACK</p>
+              <div className="relative w-full">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[38%] font-[family-name:var(--font-barlow-condensed)] font-black uppercase pointer-events-none select-none leading-none z-0 w-full text-center opacity-10" style={{ fontSize: "clamp(60px,20vw,160px)", letterSpacing: "-0.02em" }}>
+                  <span style={{ WebkitTextStroke: "1px #282828", WebkitTextFillColor: "transparent", opacity: 0.85 } as React.CSSProperties}>
+                    TOOLS &amp; TECH
+                  </span>
+                </div>
+                <h1 className="font-[family-name:var(--font-poppins)] font-black uppercase text-[#282828] mb-5 relative z-[1]" style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(26px,5vw,48px)" }}>
+                  Powering Operations<br/>with <em className="text-[#a10000] not-italic">20+ Integrated</em><br/><em className="text-[#a10000] not-italic">Tools &amp; Platforms</em>
+                </h1>
+              </div>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] leading-[1.75] text-[#282828]/55 max-w-[560px] mb-7">From catalog management to CRM and analytics, our team operates across a curated stack of enterprise-grade tools — ensuring seamless execution across every marketplace we serve.</p>
               <div className="text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">Home&nbsp;&gt;&gt;&nbsp;About&nbsp;&gt;&gt;&nbsp;<span className="text-[#a10000]">Tools Overview</span></div>
             </div>
           </div>
-          <div className="flex-1 flex items-center justify-center py-10 relative overflow-hidden">
+          <div className="hidden md:flex flex-1 items-center justify-center py-10 relative overflow-hidden">
             <div className="relative w-full" style={{ height: 420 }} id="thm-mosaic" />
           </div>
-        </div>
-      </section>
-
-      {/* TOOL STACK */}
-      <section className="bg-white py-20 border-t border-[#ebebeb]">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-          <div className="flex items-end justify-between flex-wrap gap-5 mb-7">
-            <div>
-              <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2">INTERNAL TOOLS</p>
-              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none" style={{ fontSize: "clamp(26px,3vw,40px)", letterSpacing: "-0.02em" }}>Our Tool Stack</h2>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2 mb-7">
-            {cats.map(c => (
-              <button key={c}
-                className={`px-4 py-1.5 font-[family-name:var(--font-open-sans)] text-[12px] font-semibold tracking-[0.04em] rounded-full border-[1.5px] cursor-pointer transition-all duration-200 whitespace-nowrap
-                  ${activeCat === c ? "bg-[#a10000] border-[#a10000] text-white" : "bg-white border-[#ddd] text-[#777] hover:border-[#a10000] hover:text-[#a10000]"}`}
-                onClick={() => { setActiveCat(c); setToolsExpanded(false); }}>
-                {catLabels[c]}
-              </button>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {visibleTools.map((t, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-[#e8e8e8] p-5 flex items-start gap-3.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${t.image ? "bg-white border border-[#ebebeb]" : `${thumbClass[t.thumb]} font-[family-name:var(--font-barlow-condensed)] font-black text-[16px] tracking-[-0.02em]`}`}>
-                  {t.image
-                    ? <img src={t.image} alt={t.name} className="w-full h-full object-contain p-1.5" />
-                    : t.abbr
-                  }
-                </div>
-                <div className="flex-1">
-                  <div className="font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase text-[#a10000] mb-0.5">{t.cat_label}</div>
-                  <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[18px] uppercase tracking-[0.03em] text-[#282828]">{t.name}</div>
-                  <div className="font-[family-name:var(--font-rubik)] text-[12px] text-[#888] leading-[1.6] mt-1">{t.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {filteredTools.length > INITIAL_LIMIT && (
-            <div className="text-center mt-8">
-              <ShowMoreBtn expanded={toolsExpanded} onClick={() => setToolsExpanded(e => !e)} />
-            </div>
-          )}
         </div>
       </section>
 
       {/* PLATFORM BACKENDS */}
       <section className="bg-white py-20 border-t border-[#ebebeb]">
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
-          <div className="flex items-end justify-between flex-wrap gap-5 mb-9">
+          <div className="rv rv-left flex items-end justify-between flex-wrap gap-5 mb-9">
             <div>
-              <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2">PLATFORM BACKENDS</p>
-              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none" style={{ fontSize: "clamp(26px,3vw,40px)", letterSpacing: "-0.02em" }}>Systems We<br/>Operate Inside</h2>
+              <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-2">PLATFORM BACKENDS</p>
+              <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none" style={{ fontSize: "clamp(20px,3vw,48px)", letterSpacing: "-0.02em" }}>Systems We<br/>Operate Inside</h2>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="rv-stagger grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Featured */}
-            <div className="scroll-anim md:col-span-3 bg-[#282828] rounded-[20px] overflow-hidden flex flex-col md:flex-row" style={{ minHeight: 10 }}>
-              <div className="bg-[#ffffff] flex items-center justify-center flex-shrink-0" style={{ width: 200, height: 200, minWidth: 150 }}>
-                <img src="/images/Tools Logo/mirakl.png" alt="Mirakl" style={{ width: "100%", height: "100%", objectFit: "contain", padding: "16px" }} />
+            <div className="md:col-span-3 bg-[#282828] rounded-[20px] overflow-hidden flex flex-row items-stretch" style={{ minHeight: 10 }}>
+              <div className="bg-[#ffffff] flex items-center justify-center flex-shrink-0 w-[110px] md:w-[200px]">
+                <img src="/images/Tools Logo/mirakl.png" alt="Mirakl" className="w-full h-auto object-contain p-4 md:p-5" />
               </div>
-              <div className="p-9 flex flex-col justify-center">
-                <span className="inline-block font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase bg-white/10 text-white/70 px-3 py-1 rounded-full mb-3.5 w-fit">Flagship Backend</span>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-white leading-[1.05] mb-3" style={{ fontSize: "clamp(22px,2.5vw,30px)" }}>Mirakl — The Marketplace Operating System</div>
-                <div className="font-[family-name:var(--font-rubik)] text-[14px] text-white/55 leading-[1.7]">Our most-used platform backend. We manage hundreds of thousands of SKUs across Mirakl-powered storefronts in Europe and beyond — from onboarding to live optimization.</div>
+              <div className="p-5 md:p-9 flex flex-col justify-center">
+                <span className="inline-block font-[family-name:var(--font-open-sans)] text-[9px] md:text-[12px] font-bold tracking-[2px] uppercase bg-white/10 text-white/70 px-2.5 py-1 md:px-3 md:py-1 rounded-full mb-2 md:mb-3.5 w-fit">Flagship Backend</span>
+                <div className="font-[family-name:var(--font-poppins)] font-bold uppercase text-white leading-[1.1] md:leading-[1.05] mb-1.5 md:mb-3 text-[12px] md:text-[16px]">Mirakl — The Marketplace Operating System</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[11px] md:text-[16px] text-white/55 leading-[1.6] md:leading-[1.7]">Our most-used platform backend. We manage hundreds of thousands of SKUs across Mirakl-powered storefronts in Europe and beyond — from onboarding to live optimization.</div>
               </div>
             </div>
             {[
-              { abbr: "AMZ", cls: "bg-[#a10000] text-white", tag: "Global Giant", name: "Amazon Seller Central", desc: "Full catalog operations inside Amazon Seller Central — listing creation, optimization, A+ content, pricing, and inventory management across multiple marketplaces.", anim: "scroll-anim" },
-              { abbr: "WMT", cls: "bg-[#282828] text-white/85", tag: "US Market", name: "Walmart Marketplace", desc: "Direct backend access to Walmart Marketplace — managing product listings, pricing strategies, and catalog compliance for US-based clients at scale.", anim: "scroll-anim-2" },
-              { abbr: "50+", cls: "bg-[#f0f0f0] text-[#282828]/50", tag: "Full Network", name: "50+ Platform Backends", desc: "From KAUFLAND, OTTO, and Cdiscount in Europe to Temu, Shein, and BestBuy in the US — our team is trained to operate directly inside every major platform backend.", anim: "scroll-anim-3" },
+              { abbr: "AMZ", cls: "bg-[#a10000] text-white", tag: "Global Giant", name: "Amazon Seller Central", desc: "Full catalog operations inside Amazon Seller Central — listing creation, optimization, A+ content, pricing, and inventory management across multiple marketplaces." },
+              { abbr: "WMT", cls: "bg-[#282828] text-white/85", tag: "US Market", name: "Walmart Marketplace", desc: "Direct backend access to Walmart Marketplace — managing product listings, pricing strategies, and catalog compliance for US-based clients at scale." },
+              { abbr: "50+", cls: "bg-[#f0f0f0] text-[#282828]/50", tag: "Full Network", name: "50+ Platform Backends", desc: "From KAUFLAND, OTTO, and Cdiscount in Europe to Temu, Shein, and BestBuy in the US — our team is trained to operate directly inside every major platform backend." },
             ].map((card, i) => (
-              <div key={i} className={`${card.anim} bg-white rounded-2xl border border-[#e8e8e8] p-7 flex flex-col gap-3.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20`}>
+              <div key={i} className={`bg-white rounded-2xl border border-[#e8e8e8] p-7 flex flex-col gap-3.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20`}>
                 <div className={`w-14 h-14 rounded-[14px] flex items-center justify-center font-[family-name:var(--font-barlow-condensed)] font-black text-[20px] tracking-[-0.02em] flex-shrink-0 ${card.cls}`}>{card.abbr}</div>
                 <div>
-                  <div className="font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase text-[#a10000] mb-0.5">{card.tag}</div>
-                  <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[20px] uppercase tracking-[0.03em] text-[#282828]">{card.name}</div>
+                  <div className="font-[family-name:var(--font-open-sans)] text-[11px] md:text-[12px] font-bold tracking-[2px] uppercase text-[#a10000] mb-0.5">{card.tag}</div>
+                  <div className="font-[family-name:var(--font-poppins)] font-bold text-[14px] md:text-[16px] uppercase tracking-[0.03em] text-[#282828]">{card.name}</div>
                 </div>
-                <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] leading-[1.65] mt-auto">{card.desc}</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#888] leading-[1.65] mt-auto">{card.desc}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TOOL STACK — continuous scrolling loop (same pool+offset technique as the Platforms mosaic) */}
+      <section className="bg-white py-24 border-t border-[#ebebeb] overflow-hidden">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10 relative">
+          <div className="relative overflow-hidden mb-10 md:mb-14" style={{ height: 130 }}>
+            <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: "linear-gradient(to right, #fff, transparent)" }} />
+            <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: "linear-gradient(to left, #fff, transparent)" }} />
+            <div ref={toolsTopRef} className="absolute inset-0">
+              {TOOL_TOP_TILES.map((t, i) => (
+                <div key={i} className="absolute top-1/2 left-1/2 -mt-8 -ml-8 w-16 h-16 rounded-2xl bg-white border border-[#ebebeb] shadow-sm flex items-center justify-center overflow-hidden">
+                  <img src={t.image} alt={t.name} loading="eager" className="w-full h-full object-contain p-2.5" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rv rv-scale text-center max-w-[640px] mx-auto relative z-[1]">
+            <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-3">INTERNAL TOOLS</p>
+            <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none mb-4" style={{ fontSize: "clamp(20px,3vw,48px)", letterSpacing: "-0.02em" }}>Our Tool Stack</h2>
+            <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#777] leading-[1.7]">A curated ecosystem of 19+ enterprise-grade tools — powering catalog operations, communication, security, and analytics across every marketplace we serve.</p>
+          </div>
+
+          <div className="relative overflow-hidden mt-10 md:mt-14" style={{ height: 130 }}>
+            <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: "linear-gradient(to right, #fff, transparent)" }} />
+            <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: "linear-gradient(to left, #fff, transparent)" }} />
+            <div ref={toolsBottomRef} className="absolute inset-0">
+              {TOOL_BOTTOM_TILES.map((t, i) => (
+                <div key={i} className="absolute top-1/2 left-1/2 -mt-8 -ml-8 w-16 h-16 rounded-2xl bg-white border border-[#ebebeb] shadow-sm flex items-center justify-center overflow-hidden">
+                  <img src={t.image} alt={t.name} loading="eager" className="w-full h-full object-contain p-2.5" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1385,10 +1506,10 @@ function TabTools({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
       <section className="bg-[#f7f7f7] py-20 border-t border-[#ebebeb]">
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
-            <div>
-              <span className="inline-block font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[4px] uppercase bg-[#a10000] text-white px-3 py-1 rounded-md mb-3">HOW WE OPERATE</span>
-              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4 mt-3" style={{ letterSpacing: "-0.02em", fontSize: "clamp(28px,3.5vw,46px)" }}>From Onboarding<br/>to Live Marketplace</h2>
-              <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#777] leading-[1.75] mb-9">A streamlined 5-step process ensures every platform integration is executed consistently and at scale — using the right tool at every stage.</p>
+            <div className="rv rv-left">
+              <span className="inline-block font-[family-name:var(--font-open-sans)] text-[12px] md:text-[16px] font-bold tracking-[4px] uppercase bg-[#a10000] text-white px-3 py-1 rounded-md mb-3">HOW WE OPERATE</span>
+              <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none mb-4 mt-3" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3.5vw,48px)" }}>From Onboarding<br/>to Live Marketplace</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#777] leading-[1.75] mb-9">A streamlined 5-step process ensures every platform integration is executed consistently and at scale — using the right tool at every stage.</p>
               <div className="flex items-center gap-0 mb-10">
                 {[
                   { cls: "bg-[#a10000]", lbl: "CX" },
@@ -1413,23 +1534,23 @@ function TabTools({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
                       <div className="w-2 h-2 rounded-full bg-[#a10000]" />
                     </div>
                     <div className="pt-1">
-                      <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[16px] uppercase tracking-[0.04em] text-[#282828] mb-1">{step.title}</div>
-                      <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] leading-[1.6]">{step.desc}</div>
+                      <div className="font-[family-name:var(--font-poppins)] font-bold text-[14px] md:text-[16px] uppercase tracking-[0.04em] text-[#282828] mb-1">{step.title}</div>
+                      <div className="font-[family-name:var(--font-rubik)] font-normal text-[14px] md:text-[16px] text-[#888] leading-[1.6]">{step.desc}</div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="flex flex-col gap-5">
+            <div className="rv-stagger flex flex-col gap-5">
               {[
-                { num: "115+", label: "E-Commerce Platforms",  desc: "Active operations across 115+ marketplace backends globally, each with dedicated team members and established SOPs.", anim: "scroll-anim" },
-                { num: "24",   label: "Countries Served",      desc: "Region-specific strategies tailored to local marketplaces, languages, and consumer behavior — from Europe to Southeast Asia.", anim: "scroll-anim-2" },
-                { num: "10+",  label: "Years of Experience",   desc: "Over a decade of hands-on marketplace operations refined into a repeatable, scalable system used by 22+ global brands.", anim: "scroll-anim-3" },
+                { num: "115+", label: "E-Commerce Platforms",  desc: "Active operations across 115+ marketplace backends globally, each with dedicated team members and established SOPs." },
+                { num: "24",   label: "Countries Served",      desc: "Region-specific strategies tailored to local marketplaces, languages, and consumer behavior — from Europe to Southeast Asia." },
+                { num: "10+",  label: "Years of Experience",   desc: "Over a decade of hands-on marketplace operations refined into a repeatable, scalable system used by 22+ global brands." },
               ].map((card, i) => (
-                <div key={i} className={`${card.anim} bg-white border border-[#ebebeb] rounded-2xl px-8 py-7 transition-all duration-200 hover:border-[#a10000]/25 hover:shadow-lg`} style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
-                  <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[52px] leading-none tracking-[-0.03em] text-[#a10000]">{card.num}</div>
-                  <div className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[2px] uppercase text-[#aaa] mt-1.5">{card.label}</div>
-                  <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#888] leading-[1.6] mt-2.5">{card.desc}</div>
+                <div key={i} className={`bg-white border border-[#ebebeb] rounded-2xl px-8 py-7 transition-all duration-200 hover:border-[#a10000]/25 hover:shadow-lg`} style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+                  <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[40px] md:text-[52px] leading-none tracking-[-0.03em] text-[#a10000]">{card.num}</div>
+                  <div className="font-[family-name:var(--font-poppins)] font-bold text-[12px] md:text-[14px] tracking-[2px] uppercase text-[#282828] mt-1.5">{card.label}</div>
+                  <div className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#888] leading-[1.6] mt-2.5">{card.desc}</div>
                 </div>
               ))}
             </div>
@@ -1441,18 +1562,16 @@ function TabTools({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
       <section className="bg-white py-20 border-t border-[#ebebeb]">
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
           <div className="text-center max-w-[680px] mx-auto mb-14">
-            <p className="text-[11px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-3">WHY THESE TOOLS</p>
-            <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,40px)" }}>Built for Scale,<br/>Precision &amp; Speed</h2>
-            <p className="font-[family-name:var(--font-rubik)] text-[15px] text-[#888] leading-[1.7]">Every tool in our stack was chosen because it solves a real problem — not because it looked good on a slide. Security, speed, and precision are non-negotiables when operating across 24 countries.</p>
+            <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold text-[#a10000] font-[family-name:var(--font-open-sans)] mb-3">WHY THESE TOOLS</p>
+            <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3vw,48px)" }}>Built for Scale,<br/>Precision &amp; Speed</h2>
+            <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#888] leading-[1.7]">Every tool in our stack was chosen because it solves a real problem — not because it looked good on a slide. Security, speed, and precision are non-negotiables when operating across 24 countries.</p>
           </div>
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-3.5 px-6 py-4 bg-[#f9f9f9] rounded-[14px] border border-[#ebebeb]">
-              <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 border border-[#ebebeb]">
-                <img src="/images/telex-logo.png" alt="Telex Philippines" className="w-full h-full object-cover" />
-              </div>
+              <img src="/images/telexlogo.webp" alt="Telex Philippines" className="w-11 h-11 object-contain flex-shrink-0" />
               <div>
-                <div className="font-[family-name:var(--font-open-sans)] text-[14px] font-bold text-[#282828]">Telex Philippines</div>
-                <div className="font-[family-name:var(--font-rubik)] text-[12px] text-[#aaa] mt-0.5">Operations &amp; Technology Team</div>
+                <div className="font-[family-name:var(--font-open-sans)] text-[12px] md:text-[14px] font-bold text-[#282828]">Telex Philippines</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[11px] md:text-[12px] text-[#aaa] mt-0.5">Operations &amp; Technology Team</div>
               </div>
             </div>
           </div>
@@ -1466,10 +1585,10 @@ function TabTools({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) {
               { num: "06", title: "Secure Infrastructure",   desc: "Nexus and OneDrive provide a reliable backbone for artifact management, file sharing, and team-wide document access.", tag: "Infrastructure" },
             ].map((card, i) => (
               <div key={i} className={`scroll-anim${i % 3 === 1 ? "-2" : i % 3 === 2 ? "-3" : ""} rounded-2xl p-7 border border-[#ebebeb] bg-[#fafafa] transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#a10000]/20`}>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[64px] leading-none text-[#a10000] mb-3">{card.num}</div>
-                <div className="font-[family-name:var(--font-barlow-condensed)] font-extrabold text-[17px] uppercase tracking-[0.04em] text-[#282828] mb-2">{card.title}</div>
-                <div className="font-[family-name:var(--font-rubik)] text-[13px] text-[#777] leading-[1.65]">{card.desc}</div>
-                <span className="inline-block mt-3.5 font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase bg-[#a10000]/[0.07] text-[#a10000] px-2.5 py-1 rounded-full">{card.tag}</span>
+                <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[48px] md:text-[64px] leading-none text-[#a10000] mb-3">{card.num}</div>
+                <div className="font-[family-name:var(--font-poppins)] font-bold text-[14px] md:text-[16px] uppercase tracking-[0.04em] text-[#282828] mb-2">{card.title}</div>
+                <div className="font-[family-name:var(--font-rubik)] text-[13px] md:text-[14px] text-[#777] leading-[1.65]">{card.desc}</div>
+                <span className="inline-block mt-3.5 font-[family-name:var(--font-open-sans)] text-[12px] font-bold tracking-[2px] uppercase bg-[#a10000]/[0.07] text-[#a10000] px-2.5 py-1 rounded-full">{card.tag}</span>
               </div>
             ))}
           </div>
@@ -1615,7 +1734,7 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
   const ddRef = useRef<HTMLDivElement>(null);
   const segFilterRef = useRef<HTMLDivElement>(null);
 
-  useSVGMosaic("ind-hero-mosaic", IND_MOSAIC_ITEMS);
+  useSVGMosaic("ind-hero-mosaic", IND_MOSAIC_ITEMS, "photo");
   useScrollAnims();
 
   const VERT_LIMIT = 6, DIR_LIMIT = 12;
@@ -1682,24 +1801,30 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
   return (
     <>
       {/* ── HERO ── keep mosaic + TabNav, update copy with Poppins headline */}
-      <section className="bg-[#f7f7f7] overflow-hidden flex items-stretch" style={{ minHeight: 700 }}>
-        <div className="flex flex-row items-stretch w-full max-w-[1280px] mx-auto px-6 md:px-10">
-          <div className="flex flex-col justify-center py-20 pr-14 relative z-[2]" style={{ flex: "0 0 52%", maxWidth: "52%" }}>
-            <div className="absolute top-1/2 left-1/2 font-[family-name:var(--font-barlow-condensed)] font-black uppercase text-[#282828]/[0.06] pointer-events-none select-none leading-none z-0 whitespace-nowrap" style={{ transform: "translate(-50%,-55%)", fontSize: "clamp(60px,10vw,130px)", letterSpacing: "-0.02em" }}>INDUSTRIES<br/>OVERVIEW</div>
-            <div className="relative z-[1]">
+      <section className="bg-[#f7f7f7] overflow-hidden flex items-center pt-32 md:pt-0 md:min-h-[800px]">
+        <div className="flex flex-col md:flex-row items-center w-full max-w-[1280px] mx-auto px-6 md:px-10">
+          <div className="flex flex-col justify-center py-10 md:py-20 md:pr-14 relative z-[2] w-full md:w-auto md:flex-none" style={{ maxWidth: "100%" }}>
+            <div className="relative z-[1] flex flex-col items-center text-center md:items-start md:text-left">
               <TabNav active="industries" onTabSwitch={onTabSwitch} />
-              <p className="anim-up text-[11px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">BEYOND CATEGORIES</p>
-              <h1
-                className="anim-up font-[family-name:var(--font-poppins)] font-black text-[#282828] mb-5"
-                style={{ lineHeight: "1.05", fontSize: "clamp(30px,4.5vw,58px)", letterSpacing: "-0.02em" }}
-              >
-                Industries<br />
-                <span className="text-[#a10000]">We Power</span>
-              </h1>
-              <p className="anim-up-2 max-w-[520px] mb-4 font-[family-name:var(--font-rubik)] text-[15px] leading-[1.75] text-[#282828]/55">
+              <p className="anim-up text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">BEYOND CATEGORIES</p>
+              <div className="relative w-full">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[38%] font-[family-name:var(--font-barlow-condensed)] font-black uppercase pointer-events-none select-none leading-none z-0 w-full text-center opacity-10 text-[clamp(44px,15vw,100px)] md:text-[clamp(60px,20vw,160px)]" style={{ letterSpacing: "-0.02em" }}>
+                  <span style={{ WebkitTextStroke: "1px #282828", WebkitTextFillColor: "transparent", opacity: 0.85 } as React.CSSProperties}>
+                    INDUSTRIES OVERVIEW
+                  </span>
+                </div>
+                <h1
+                  className="anim-up font-[family-name:var(--font-poppins)] font-black uppercase text-[#282828] mb-5 relative z-[1]"
+                  style={{ lineHeight: ".95", fontSize: "clamp(32px,8vw,48px)", letterSpacing: "-0.02em" }}
+                >
+                  Industries<br />
+                  <span className="text-[#a10000]">We Power</span>
+                </h1>
+              </div>
+              <p className="anim-up-2 max-w-[520px] mb-4 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] leading-[1.75] text-[#282828]/55">
                 We don't just work with industries — we operate within their complexities. From kitchen hardware and electronics to healthcare, logistics, and travel services, our experience spans a diverse ecosystem of brands.
               </p>
-              <p className="anim-up-2 max-w-[480px] mb-7 font-[family-name:var(--font-rubik)] text-[13px] leading-[1.7] text-[#282828]/40 italic">
+              <p className="anim-up-2 max-w-[480px] mb-7 font-[family-name:var(--font-rubik)] text-[12px] md:text-[13px] leading-[1.7] text-[#282828]/40 italic">
                 Every industry requires a different strategy. We bring the structure, scalability, and precision needed to make each one succeed.
               </p>
               <div className="anim-up-3 text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">
@@ -1707,7 +1832,7 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
               </div>
             </div>
           </div>
-          <div className="flex-1 flex items-center justify-center py-10 relative overflow-hidden">
+          <div className="hidden md:flex flex-1 items-center justify-center py-10 relative overflow-hidden">
             <div className="relative w-full" style={{ height: 420 }} id="ind-hero-mosaic" />
           </div>
         </div>
@@ -1716,9 +1841,9 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
       {/* ── SECTION 2: A MULTI-INDUSTRY ECOSYSTEM ── */}
       <section className="bg-white py-20 border-t border-[#ebebeb]">
         <div className="max-w-[1100px] mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
             {/* stacked image collage — keep existing visual */}
-            <div className="scroll-anim relative" style={{ height: 400 }}>
+            <div className="scroll-anim relative h-[300px] md:h-[400px] order-last md:order-none mt-2 md:mt-0">
               {[
                 { cls: "absolute left-0 top-0 z-[2]", style: { width:"58%", height:"60%", borderRadius:18, overflow:"hidden", boxShadow:"0 12px 40px rgba(0,0,0,0.14)" }, src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop", alt: "Kitchen" },
                 { cls: "absolute right-0 top-0 z-[1]", style: { width:"45%", height:"48%", borderRadius:18, overflow:"hidden", boxShadow:"0 12px 40px rgba(0,0,0,0.14)" }, src: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop", alt: "Tech" },
@@ -1730,23 +1855,23 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                 </div>
               ))}
               {/* floating stat pill */}
-              <div className="absolute bottom-[-18px] left-[32%] z-[10] bg-[#a10000] text-white px-5 py-3 rounded-[14px] flex items-center gap-3 shadow-xl">
-                <span className="font-[family-name:var(--font-open-sans)] font-black text-[26px] leading-none">10</span>
-                <span className="font-[family-name:var(--font-rubik)] text-[11px] leading-[1.4] opacity-80">Active<br/>Industries</span>
+              <div className="absolute bottom-[-18px] left-[32%] z-[10] bg-[#a10000] text-white px-4 py-2.5 md:px-5 md:py-3 rounded-[14px] flex items-center gap-2 md:gap-3 shadow-xl">
+                <span className="font-[family-name:var(--font-open-sans)] font-black text-[20px] md:text-[26px] leading-none">10</span>
+                <span className="font-[family-name:var(--font-rubik)] text-[9px] md:text-[11px] leading-[1.4] opacity-80">Active<br/>Industries</span>
               </div>
             </div>
 
-            <div className="scroll-anim-2 mt-6 md:mt-0">
-              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">A MULTI-INDUSTRY ECOSYSTEM</p>
-              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-5" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,40px)" }}>One Portfolio.<br/>Many Complexities.</h2>
-              <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#777] leading-[1.85] mb-6">
+            <div className="scroll-anim-2">
+              <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">A MULTI-INDUSTRY ECOSYSTEM</p>
+              <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none mb-5" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3.5vw,48px)" }}>One Portfolio.<br/>Many Complexities.</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#777] leading-[1.85] mb-6">
                 Our portfolio is built across a wide spectrum of industries, allowing us to adapt to different business models, compliance requirements, and customer behaviors. Instead of treating industries as isolated segments, we approach them as interconnected ecosystems — where operational efficiency, catalog accuracy, and platform performance must align.
               </p>
               <div className="flex gap-5 flex-wrap">
                 {[{ val:"22+", lbl:"Accounts"}, { val:"10", lbl:"Verticals"}, { val:"B2B", lbl:"Model"}].map((s,i) => (
-                  <div key={i} className="flex flex-col items-start px-5 py-4 rounded-[14px] bg-[#f7f7f7] border border-[#ebebeb] min-w-[88px]">
-                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[32px] leading-none text-[#a10000] tracking-[-0.02em]">{s.val}</span>
-                    <span className="font-[family-name:var(--font-open-sans)] text-[10px] font-bold tracking-[2px] uppercase text-[#aaa] mt-1">{s.lbl}</span>
+                  <div key={i} className="flex flex-col items-start px-4 py-3 md:px-5 md:py-4 rounded-[14px] bg-[#f7f7f7] border border-[#ebebeb] min-w-[70px] md:min-w-[88px]">
+                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[24px] md:text-[32px] leading-none text-[#a10000] tracking-[-0.02em]">{s.val}</span>
+                    <span className="font-[family-name:var(--font-open-sans)] text-[9px] md:text-[10px] font-bold tracking-[2px] uppercase text-[#aaa] mt-1">{s.lbl}</span>
                   </div>
                 ))}
               </div>
@@ -1760,22 +1885,26 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
 
           {/* Section header — title left, filter right */}
-          <div className="scroll-anim mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="scroll-anim relative z-[50] mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">CORE INDUSTRY SEGMENTS</p>
-              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,42px)" }}>What We<br/>Operate In</h2>
-              <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#888] leading-[1.75] max-w-[420px]">
+              <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">CORE INDUSTRY SEGMENTS</p>
+              <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3.5vw,48px)" }}>What We<br/>Operate In</h2>
+              <p className="font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#888] leading-[1.75] max-w-[420px]">
                 Ten distinct verticals. Each with its own rules, demands, and market dynamics. We operate inside all of them.
               </p>
             </div>
             {/* Filter dropdown — right-aligned next to heading */}
-            <div className="relative z-[10] flex-shrink-0 w-full md:w-[220px]" ref={segFilterRef}>
+            <div className="relative flex-shrink-0 self-end md:self-auto" ref={segFilterRef}>
               <button
                 onClick={() => setSegDdOpen(v => !v)}
-                className="flex items-center gap-3 px-5 py-3 rounded-[12px] bg-white border border-[#e0e0e0] font-[family-name:var(--font-open-sans)] text-[12px] font-bold tracking-[1px] uppercase text-[#282828] hover:border-[#a10000]/40 transition-all duration-200 w-full"
-                style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
+                className={`flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2.5 md:py-3.5 border-2 rounded-xl text-[10px] md:text-[12px] font-bold tracking-[0.07em] uppercase min-w-[160px] md:min-w-[220px] justify-between cursor-pointer transition-all duration-200 font-[family-name:var(--font-open-sans)] whitespace-nowrap
+                  ${segDdOpen
+                    ? "bg-[#f0f0f0] text-[#1a1a1a] border-[#1a1a1a]"
+                    : "bg-white text-[#1a1a1a] border-[#1a1a1a]/30 hover:border-[#1a1a1a]/60 hover:bg-[#f5f5f5]"
+                  }`}
+                aria-expanded={segDdOpen}
               >
-                <span className="flex-1 text-left">
+                <span>
                   {activeSegFilter === "all" ? "All Industries" : {
                     kitchen: "Kitchen & Home",
                     electronics: "Electronics",
@@ -1789,12 +1918,12 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                     specialty: "Specialty & Niche",
                   }[activeSegFilter]}
                 </span>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: segDdOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>
-                  <path d="M2 4l4 4 4-4" stroke="#888" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ transform: segDdOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>
+                  <path d="M2 4.5L7 9.5L12 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
               {segDdOpen && (
-                <div className="absolute left-0 top-full mt-2 z-50 bg-white rounded-[14px] border border-[#e8e8e8] py-2 overflow-hidden dd-fade w-full" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+                <div className="dd-fade absolute top-[calc(100%+8px)] right-0 bg-white border border-[#e0e0e0] rounded-[14px] z-[300] min-w-[200px] md:min-w-[260px] max-h-[340px] overflow-y-auto" style={{ boxShadow: "0 24px 48px rgba(0,0,0,0.15)", scrollbarWidth: "thin", scrollbarColor: "#ccc #fff" }}>
                   {[
                     { key: "all",         label: "All Industries" },
                     { key: "kitchen",     label: "Kitchen & Home" },
@@ -1811,9 +1940,14 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                     <button
                       key={opt.key}
                       onClick={() => { setActiveSegFilter(opt.key); setAutoSegIdx(0); setSegDdOpen(false); }}
-                      className={`w-full text-left px-5 py-2.5 font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[0.5px] uppercase transition-colors duration-150 ${activeSegFilter === opt.key ? "text-[#a10000] bg-[#a10000]/[0.05]" : "text-[#444] hover:bg-[#f7f7f7]"}`}
+                      className={`flex items-center justify-between w-full px-[16px] py-[10px] md:px-[22px] md:py-[11px] text-left font-[family-name:var(--font-open-sans)] text-[10px] md:text-[12px] font-bold tracking-[0.06em] uppercase border-l-[3px] cursor-pointer transition-all duration-150 whitespace-nowrap bg-transparent hover:bg-[#f5f5f5] hover:text-[#1a1a1a]
+                        ${activeSegFilter === opt.key
+                          ? "border-l-[#a10000] text-[#1a1a1a] bg-[#a10000]/[0.06]"
+                          : "border-l-transparent text-[#555]"
+                        }`}
+                      style={{ borderTop: "none", borderRight: "none", borderBottom: "none" }}
                     >
-                      {opt.label}
+                      <span>{opt.label}</span>
                     </button>
                   ))}
                 </div>
@@ -1864,7 +1998,7 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                   <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] min-h-[400px] gap-3 p-3">
 
                     {/* LEFT — large image with overlay, rounded corners */}
-                    <div className="relative overflow-hidden rounded-[16px]" style={{ minHeight: 340 }}>
+                    <div className="relative overflow-hidden rounded-[16px] min-h-[240px] md:min-h-[340px]">
                       <img
                         src={segImages[i % segImages.length]}
                         alt={seg.title}
@@ -1872,12 +2006,12 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                       />
                       <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 100%)" }} />
                       {/* Number badge — top right, glass effect */}
-                      <div className="absolute top-4 right-4 z-[3] px-3 py-1.5 rounded-full font-[family-name:var(--font-open-sans)] text-[11px] font-black tracking-[2px] text-white" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                      <div className="absolute top-4 right-4 z-[3] px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-[family-name:var(--font-open-sans)] text-[9px] md:text-[11px] font-black tracking-[2px] text-white" style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                         {`0${i + 1}`.slice(-2)}
                       </div>
-                      <div className="absolute bottom-0 left-0 right-0 p-8 z-[2]">
-                        <h3 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-white leading-[1.1] mb-2" style={{ fontSize: "clamp(20px,2.2vw,28px)", letterSpacing: "-0.01em" }}>{seg.title}</h3>
-                        <p className="font-[family-name:var(--font-rubik)] text-[12.5px] text-white/55 leading-[1.6] max-w-[340px]">
+                      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-[2]">
+                        <h3 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-white leading-[1.1] mb-2" style={{ fontSize: "clamp(18px,2.2vw,28px)", letterSpacing: "-0.01em" }}>{seg.title}</h3>
+                        <p className="font-[family-name:var(--font-rubik)] text-[12px] md:text-[14px] text-white/55 leading-[1.6] max-w-[340px]">
                           {seg.desc.split(". ")[0]}.
                         </p>
                       </div>
@@ -1886,7 +2020,7 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                     {/* RIGHT — small image + text content */}
                     <div className="flex flex-col gap-3">
                       {/* Small image */}
-                      <div className="relative overflow-hidden rounded-[16px]" style={{ height: 190 }}>
+                      <div className="relative overflow-hidden rounded-[16px] h-[140px] md:h-[190px]">
                         <img
                           src={segImagesSmall[i % segImagesSmall.length]}
                           alt={seg.title + " detail"}
@@ -1895,17 +2029,17 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
                       </div>
 
                       {/* Text content */}
-                      <div className="flex-1 rounded-[16px] p-8 flex flex-col justify-between" style={{ background: "#fff" }}>
+                      <div className="flex-1 rounded-[16px] p-6 md:p-8 flex flex-col justify-between" style={{ background: "#fff" }}>
                         <div>
-                          <p className="font-[family-name:var(--font-rubik)] text-[13.5px] text-[#555] leading-[1.8] mb-5">
+                          <p className="font-[family-name:var(--font-rubik)] text-[12px] md:text-[13.5px] text-[#555] leading-[1.8] mb-5">
                             {seg.desc}
                           </p>
                         </div>
                         <div className="pt-4 border-t border-[#f0f0f0]">
-                          <div className="font-[family-name:var(--font-open-sans)] text-[9px] font-bold tracking-[2px] uppercase text-[#bbb] mb-3">Partners</div>
+                          <div className="font-[family-name:var(--font-open-sans)] text-[8px] md:text-[9px] font-bold tracking-[2px] uppercase text-[#bbb] mb-3">Partners</div>
                           <div className="flex flex-wrap gap-2">
                             {seg.brands.split(", ").map((brand, bi) => (
-                              <span key={bi} className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[0.5px] uppercase text-[#a10000] px-3 py-1 rounded-full" style={{ background: "rgba(161,0,0,0.08)", border: "1px solid rgba(161,0,0,0.15)" }}>
+                              <span key={bi} className="font-[family-name:var(--font-open-sans)] text-[9px] md:text-[11px] font-bold tracking-[0.5px] uppercase text-[#a10000] px-2 py-0.5 md:px-3 md:py-1 rounded-full" style={{ background: "rgba(161,0,0,0.08)", border: "1px solid rgba(161,0,0,0.15)" }}>
                                 {brand}
                               </span>
                             ))}
@@ -1927,31 +2061,31 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
         <div className="max-w-[1280px] mx-auto px-6 md:px-10">
           {/* Header */}
           <div className="scroll-anim text-center mb-14">
-            <span className="inline-block font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[4px] uppercase bg-[#a10000] text-white px-3 py-1 rounded-md mb-4">WHAT MAKES US DIFFERENT</span>
-            <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,42px)" }}>One Framework.<br/>Multiple Industries.</h2>
-            <p className="font-[family-name:var(--font-rubik)] text-[14px] text-[#888] leading-[1.85] max-w-[520px] mx-auto">
+            <span className="inline-block font-[family-name:var(--font-open-sans)] text-[12px] md:text-[16px] font-bold tracking-[4px] uppercase bg-[#a10000] text-white px-3 py-1 md:px-4 md:py-1.5 rounded-md mb-4">WHAT MAKES US DIFFERENT</span>
+            <h2 className="font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] mb-4" style={{ letterSpacing: "-0.02em", fontSize: "clamp(24px,5vw,48px)", lineHeight: ".95" }}>One Framework.<br/>Multiple Industries.</h2>
+            <p className="font-[family-name:var(--font-rubik)] font-normal text-[14px] md:text-[16px] text-[#888] leading-[1.85] max-w-[640px] mx-auto">
               While industries differ, the foundation of success remains the same. We apply a unified operational framework, customized per industry — ensuring both efficiency and relevance.
             </p>
           </div>
 
           {/* Therapy-style layout: 2 cards | center image | 2 cards */}
-          <div className="scroll-anim-2 grid grid-cols-[1fr_320px_1fr] gap-6 items-center">
+          <div className="scroll-anim-2 grid grid-cols-1 md:grid-cols-[1fr_320px_1fr] gap-6 items-center">
 
             {/* Left column — pillars 0 & 1 */}
             <div className="flex flex-col gap-5">
               {FRAMEWORK_PILLARS.slice(0, 2).map((p, i) => (
-                <div key={i} className="rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-6 flex flex-col gap-3 transition-all duration-200 hover:border-[#a10000]/30 hover:shadow-md" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+                <div key={i} className="rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-5 md:p-6 flex flex-col gap-3 transition-all duration-200 hover:border-[#a10000]/30 hover:shadow-md" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
                   <div className="w-9 h-9 rounded-full bg-[#a10000]/[0.08] flex items-center justify-center flex-shrink-0">
-                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[12px] text-[#a10000]">{String(i + 1).padStart(2,"0")}</span>
+                    <span className="font-[family-name:var(--font-open-sans)] font-bold text-[12px] text-[#a10000]">{String(i + 1).padStart(2,"0")}</span>
                   </div>
-                  <div className="font-[family-name:var(--font-open-sans)] font-black text-[13px] uppercase tracking-[0.04em] text-[#282828] leading-snug">{p.label}</div>
-                  <p className="font-[family-name:var(--font-rubik)] text-[12.5px] text-[#999] leading-[1.7]">{p.desc}</p>
+                  <div className="font-[family-name:var(--font-poppins)] font-bold text-[14px] md:text-[16px] uppercase tracking-[0.04em] text-[#282828] leading-snug">{p.label}</div>
+                  <p className="font-[family-name:var(--font-rubik)] font-normal text-[13px] md:text-[14px] text-[#999] leading-[1.7]">{p.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* Center — image */}
-            <div className="rounded-[22px] overflow-hidden flex-shrink-0" style={{ height: 460, boxShadow: "0 16px 48px rgba(0,0,0,0.13)" }}>
+            <div className="rounded-[22px] overflow-hidden flex-shrink-0 h-[300px] md:h-[460px] order-first md:order-none" style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.13)" }}>
               <img
                 src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=640&h=920&fit=crop&crop=center"
                 alt="Framework"
@@ -1962,12 +2096,12 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
             {/* Right column — pillars 2 & 3 */}
             <div className="flex flex-col gap-5">
               {FRAMEWORK_PILLARS.slice(2, 4).map((p, i) => (
-                <div key={i} className="rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-6 flex flex-col gap-3 transition-all duration-200 hover:border-[#a10000]/30 hover:shadow-md" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+                <div key={i} className="rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-5 md:p-6 flex flex-col gap-3 transition-all duration-200 hover:border-[#a10000]/30 hover:shadow-md" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
                   <div className="w-9 h-9 rounded-full bg-[#a10000]/[0.08] flex items-center justify-center flex-shrink-0">
-                    <span className="font-[family-name:var(--font-open-sans)] font-black text-[12px] text-[#a10000]">{String(i + 3).padStart(2,"0")}</span>
+                    <span className="font-[family-name:var(--font-open-sans)] font-bold text-[12px] text-[#a10000]">{String(i + 3).padStart(2,"0")}</span>
                   </div>
-                  <div className="font-[family-name:var(--font-open-sans)] font-black text-[13px] uppercase tracking-[0.04em] text-[#282828] leading-snug">{p.label}</div>
-                  <p className="font-[family-name:var(--font-rubik)] text-[12.5px] text-[#999] leading-[1.7]">{p.desc}</p>
+                  <div className="font-[family-name:var(--font-poppins)] font-bold text-[14px] md:text-[16px] uppercase tracking-[0.04em] text-[#282828] leading-snug">{p.label}</div>
+                  <p className="font-[family-name:var(--font-rubik)] font-normal text-[13px] md:text-[14px] text-[#999] leading-[1.7]">{p.desc}</p>
                 </div>
               ))}
             </div>
@@ -1975,56 +2109,16 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
           </div>
 
           {/* complexity → clarity callout — bottom */}
-          <div className="scroll-anim-3 mt-10 rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-7 max-w-[700px] mx-auto text-center" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
-            <div className="font-[family-name:var(--font-open-sans)] font-black text-[12px] uppercase tracking-[3px] text-[#a10000] mb-2">From Complexity to Clarity</div>
-            <p className="font-[family-name:var(--font-rubik)] text-[13.5px] text-[#888] leading-[1.8]">
+          <div className="scroll-anim-3 mt-10 rounded-[18px] border border-[#ebebeb] bg-[#fafafa] p-5 md:p-7 max-w-[760px] mx-auto text-center" style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+            <div className="font-[family-name:var(--font-open-sans)] font-bold text-[12px] md:text-[16px] uppercase tracking-[4px] text-[#a10000] mb-3">From Complexity to Clarity</div>
+            <p className="font-[family-name:var(--font-rubik)] font-normal text-[14px] md:text-[16px] text-[#888] leading-[1.85]">
               Each industry brings its own challenges — technical specifications, regulatory requirements, fast-moving inventories, or niche audiences. Our role is to simplify that complexity and translate it into clear, high-performing marketplace content.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 6: CLOSING — INDUSTRIES ARE JUST THE STARTING POINT ── */}
-      <section className="bg-white py-20 border-t border-[#ebebeb]">
-        <div className="max-w-[1100px] mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="scroll-anim">
-              <p className="text-[11px] tracking-[4px] uppercase font-bold mb-3 text-[#a10000] font-[family-name:var(--font-open-sans)]">INDUSTRIES ARE JUST THE STARTING POINT</p>
-              <h2 className="font-[family-name:var(--font-open-sans)] font-black uppercase text-[#282828] leading-none mb-5" style={{ letterSpacing: "-0.02em", fontSize: "clamp(26px,3vw,40px)" }}>What Defines<br/>Our Work</h2>
-              <p className="font-[family-name:var(--font-rubik)] text-[14.5px] text-[#666] leading-[1.85] mb-6">
-                What defines our work is not the industry itself, but how we operate within it. Whether it's a kitchen appliance, a medical device, or a travel platform, we bring the same level of precision, adaptability, and execution — built to scale across global marketplaces.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {["Precision","Adaptability","Execution","Scale"].map(tag => (
-                  <span key={tag} className="font-[family-name:var(--font-open-sans)] text-[11px] font-bold tracking-[1.5px] uppercase px-4 py-2 rounded-full border-2 border-[#a10000]/20 text-[#a10000] bg-[#a10000]/[0.04]">{tag}</span>
-                ))}
-              </div>
-            </div>
 
-            {/* industry image grid */}
-            <div className="scroll-anim-2 grid grid-cols-5 gap-2">
-              {[
-                { label: "Kitchen",     src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&h=300&fit=crop&crop=center" },
-                { label: "Electronics", src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=300&fit=crop&crop=center" },
-                { label: "Fashion",     src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop&crop=center" },
-                { label: "Home",        src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&h=300&fit=crop&crop=center" },
-                { label: "Medical",     src: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=300&h=300&fit=crop&crop=center" },
-                { label: "Automotive",  src: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&h=300&fit=crop&crop=center" },
-                { label: "Travel",      src: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=300&h=300&fit=crop&crop=center" },
-                { label: "Logistics",   src: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=300&h=300&fit=crop&crop=center" },
-                { label: "Software",    src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=300&fit=crop&crop=center" },
-                { label: "Specialty",   src: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=300&h=300&fit=crop&crop=center" },
-              ].map((tile, i) => (
-                <div key={i} className="relative flex flex-col items-center justify-end aspect-square rounded-[14px] overflow-hidden border border-[#ebebeb] group cursor-default transition-all duration-200 hover:scale-[1.04] hover:shadow-md" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-                  <img src={tile.src} alt={tile.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <span className="relative z-[1] font-[family-name:var(--font-open-sans)] text-[8px] font-black tracking-[1px] uppercase text-white text-center leading-tight pb-2 px-1">{tile.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
     </>
   );
