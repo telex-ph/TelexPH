@@ -136,182 +136,166 @@ export default function DetailsHeader() {
       <Nav openNav={() => setShowNav(true)} />
       <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
 
-      <section className="w-full bg-white overflow-hidden pt-16 md:pt-0">
-        <div className="flex flex-col md:flex-row-reverse min-h-[320px] md:min-h-[360px] w-full">
+      <section className="w-full bg-white overflow-hidden pt-24 md:pt-28 pb-6 md:pb-8">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-16">
 
-          {/* IMAGE SIDE */}
-          <div
-            className="relative w-full md:w-[55%] h-[22vh] md:h-auto overflow-hidden z-10"
+          {/* Breadcrumb */}
+          <nav
+            className="flex flex-wrap items-center gap-1 mb-6 md:mb-8 text-sm"
             style={{
-              maskImage: 'linear-gradient(to left, black 80%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to left, black 80%, transparent 100%)',
+              fontFamily: FONTS.openSans,
+              fontWeight: FONT_WEIGHTS.medium,
+              color: getColorWithOpacity("dark", 0.7),
             }}
           >
-            <img
-              src={displayData.image}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${loading ? 'opacity-0' : 'opacity-100'}`}
-              alt={displayData.title}
-            />
-          </div>
-
-          {/* TEXT SIDE */}
-          <div className="relative flex flex-col justify-center w-full md:w-[45%] px-6 sm:px-10 md:px-12 lg:px-20 py-8 md:py-10 z-20 bg-white">
-
-            {/* Breadcrumb */}
-            <nav
-              className="flex flex-wrap items-center gap-1 mb-5 md:mb-6 text-sm"
-              style={{
-                fontFamily: FONTS.openSans,
-                fontWeight: FONT_WEIGHTS.medium,
-                color: getColorWithOpacity("dark", 0.7),
-              }}
+            <Link
+              href="/"
+              className="transition-colors"
+              style={{ color: getColorWithOpacity("dark", 0.7) }}
+              onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
+              onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
             >
-              <Link
-                href="/"
-                className="transition-colors"
-                style={{ color: getColorWithOpacity("dark", 0.7) }}
-                onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
-                onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
-              >
-                Home
-              </Link>
-              <span className="mx-1 opacity-50">&gt;&gt;</span>
-              <Link
-                href="/resources"
-                className="transition-colors"
-                style={{ color: getColorWithOpacity("dark", 0.7) }}
-                onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
-                onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
-              >
-                Resources
-              </Link>
-              <span className="mx-1 opacity-50">&gt;&gt;</span>
+              Home
+            </Link>
+            <span className="mx-1 opacity-50">&gt;&gt;</span>
+            <Link
+              href="/resources"
+              className="transition-colors"
+              style={{ color: getColorWithOpacity("dark", 0.7) }}
+              onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
+              onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
+            >
+              Resources
+            </Link>
+            <span className="mx-1 opacity-50">&gt;&gt;</span>
+            <span
+              className="truncate max-w-[180px] md:max-w-none"
+              style={{ color: COLORS.primary }}
+            >
+              {displayData.title}
+            </span>
+          </nav>
+
+          <div className="max-w-3xl">
+
+            {/* Label */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-4 h-[1px]" style={{ background: getColorWithOpacity("dark", 0.2) }} />
               <span
-                className="truncate max-w-[150px] md:max-w-none"
-                style={{ color: COLORS.primary }}
-              >
-                {displayData.title}
-              </span>
-            </nav>
-
-            <div className="max-w-xl">
-
-              {/* Label */}
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-4 h-[1px]" style={{ background: getColorWithOpacity("dark", 0.2) }} />
-                <span
-                  style={{
-                    fontFamily: FONTS.openSans,
-                    fontSize: '13px',
-                    color: getColorWithOpacity("dark", 0.5),
-                    letterSpacing: '0.04em',
-                  }}
-                >
-                  {displayData.type}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1
-                className="text-5xl md:text-6xl mb-3 tracking-tight"
-                style={{
-                  fontFamily: TYPOGRAPHY.heading.fontFamily,
-                  fontWeight: TYPOGRAPHY.heading.fontWeight,
-                  color: COLORS.black,
-                  lineHeight: 1.05,
-                }}
-              >
-                <span className="block">{titleRow1}</span>
-                <span className="block">
-                  {titleRow2Body && <>{titleRow2Body} </>}
-                  <span style={{ color: COLORS.primary }}>{titleRow2Last}</span>
-                </span>
-              </h1>
-
-              {/* Subtitle */}
-              {displayData.subtitle && (
-                <p
-                  className="text-md md:text-lg mb-5"
-                  style={{
-                    fontFamily: FONTS.rubik,
-                    color: getColorWithOpacity("dark", 0.7),
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {displayData.subtitle}
-                </p>
-              )}
-
-              {/* Author */}
-              <p
-                className="mb-6 md:mb-7"
                 style={{
                   fontFamily: FONTS.openSans,
-                  fontSize: '13px',
+                  fontWeight: FONT_WEIGHTS.bold,
+                  fontSize: '16px',
                   color: getColorWithOpacity("dark", 0.5),
                   letterSpacing: '0.04em',
                 }}
               >
-                By {displayData.author || "Customer Experience Team"}
+                {displayData.type}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1
+              className="text-[36px] md:text-[48px] mb-3 tracking-tight"
+              style={{
+                fontFamily: FONTS.poppins,
+                fontWeight: 900,
+                color: '#282828',
+                lineHeight: 1.05,
+              }}
+            >
+              <span className="block">{titleRow1}</span>
+              <span className="block">
+                {titleRow2Body && <>{titleRow2Body} </>}
+                <span style={{ color: COLORS.primary }}>{titleRow2Last}</span>
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            {displayData.subtitle && (
+              <p
+                className="mb-5"
+                style={{
+                  fontFamily: FONTS.rubik,
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  color: getColorWithOpacity("dark", 0.7),
+                  lineHeight: 1.65,
+                }}
+              >
+                {displayData.subtitle}
               </p>
+            )}
 
-              {/* Social + Like */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 pt-5 md:pt-6 border-t border-zinc-100">
-                <div className="flex items-center gap-2">
-                  {[
-                    { icon: <FaFacebookF size={11} />, label: 'Facebook' },
-                    { icon: <FaTwitter size={11} />, label: 'Twitter' },
-                    { icon: <FaLinkedinIn size={11} />, label: 'LinkedIn' },
-                    { icon: <FaEnvelope size={11} />, label: 'Email' },
-                    { icon: <HiOutlineLink size={14} />, label: 'Copy' },
-                  ].map((social, idx) => (
-                    <button
-                      key={idx}
-                      aria-label={social.label}
-                      className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all"
-                      style={{
-                        background: getColorWithOpacity("dark", 0.04),
-                        color: getColorWithOpacity("dark", 0.4),
-                        border: `0.5px solid ${getColorWithOpacity("dark", 0.1)}`,
-                      }}
-                      onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.08);
-                        (e.currentTarget as HTMLButtonElement).style.color = COLORS.black;
-                      }}
-                      onMouseLeave={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.04);
-                        (e.currentTarget as HTMLButtonElement).style.color = getColorWithOpacity("dark", 0.4);
-                      }}
-                    >
-                      {social.icon}
-                    </button>
-                  ))}
-                </div>
+            {/* Author */}
+            <p
+              className="mb-6 md:mb-7"
+              style={{
+                fontFamily: FONTS.openSans,
+                fontSize: '13px',
+                color: getColorWithOpacity("dark", 0.5),
+                letterSpacing: '0.04em',
+              }}
+            >
+              By {displayData.author || "Customer Experience Team"}
+            </p>
 
-                <button
-                  onClick={handleLikeToggle}
-                  disabled={isLiking}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
-                  style={{
-                    background: 'rgba(161,0,0,0.04)',
-                    border: '0.5px solid rgba(161,0,0,0.15)',
-                  }}
-                >
-                  <FaHeart size={12} style={{ color: COLORS.primary }} />
-                  <span
+            {/* Social + Like */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 pt-5 md:pt-6 border-t border-zinc-100">
+              <div className="flex items-center gap-2">
+                {[
+                  { icon: <FaFacebookF size={11} />, label: 'Facebook' },
+                  { icon: <FaTwitter size={11} />, label: 'Twitter' },
+                  { icon: <FaLinkedinIn size={11} />, label: 'LinkedIn' },
+                  { icon: <FaEnvelope size={11} />, label: 'Email' },
+                  { icon: <HiOutlineLink size={14} />, label: 'Copy' },
+                ].map((social, idx) => (
+                  <button
+                    key={idx}
+                    aria-label={social.label}
+                    className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all"
                     style={{
-                      fontFamily: FONTS.openSans,
-                      fontSize: '13px',
-                      color: COLORS.primary,
-                      letterSpacing: '0.02em',
+                      background: getColorWithOpacity("dark", 0.04),
+                      color: getColorWithOpacity("dark", 0.4),
+                      border: `0.5px solid ${getColorWithOpacity("dark", 0.1)}`,
+                    }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.08);
+                      (e.currentTarget as HTMLButtonElement).style.color = COLORS.black;
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.04);
+                      (e.currentTarget as HTMLButtonElement).style.color = getColorWithOpacity("dark", 0.4);
                     }}
                   >
-                    {likesCount} {likesCount === 1 ? 'like' : 'likes'}
-                  </span>
-                </button>
+                    {social.icon}
+                  </button>
+                ))}
               </div>
 
+              <button
+                onClick={handleLikeToggle}
+                disabled={isLiking}
+                className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
+                style={{
+                  background: 'rgba(161,0,0,0.04)',
+                  border: '0.5px solid rgba(161,0,0,0.15)',
+                }}
+              >
+                <FaHeart size={12} style={{ color: COLORS.primary }} />
+                <span
+                  style={{
+                    fontFamily: FONTS.openSans,
+                    fontSize: '13px',
+                    color: COLORS.primary,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {likesCount} {likesCount === 1 ? 'like' : 'likes'}
+                </span>
+              </button>
             </div>
+
           </div>
         </div>
       </section>

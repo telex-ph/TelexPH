@@ -34,7 +34,7 @@ export default function CaseStudiesHero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1
-            className="text-[48px] mb-6 tracking-tight uppercase"
+            className="text-[32px] md:text-[48px] mb-6 tracking-tight uppercase"
             style={{
               fontFamily: TYPOGRAPHY.heading.fontFamily,
               fontWeight: TYPOGRAPHY.heading.fontWeight,
@@ -45,7 +45,7 @@ export default function CaseStudiesHero() {
           </h1>
 
           <p
-            className="text-[16px] max-w-2xl mx-auto mb-8 font-normal"
+            className="text-[14px] md:text-[16px] max-w-2xl mx-auto mb-8 font-normal"
             style={{
               fontFamily: FONTS.rubik,
               color: getColorWithOpacity("dark", 0.7),
