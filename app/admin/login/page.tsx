@@ -236,9 +236,9 @@ export default function AdminLoginPage() {
 
         {/* mobile: compact sign-in form */}
         {showMobileForm && (
-          <div className="relative md:hidden w-full h-full overflow-y-auto bg-gradient-to-br from-[#4a0000] via-[#800000] to-[#2a0000]">
-            {/* red header band */}
-            <div className="relative w-full h-[110px] overflow-hidden">
+          <div className="relative md:hidden w-full h-full overflow-y-auto flex flex-col bg-gradient-to-br from-[#4a0000] via-[#800000] to-[#2a0000]">
+            {/* red header band — locked to a 30% share of the container (panel below takes the other 70%), so the ratio stays balanced instead of the header ballooning on tall devices */}
+            <div className="relative w-full basis-[30%] min-h-[110px]">
               <div
                 className="absolute inset-0 opacity-30"
                 style={{
@@ -254,10 +254,24 @@ export default function AdminLoginPage() {
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
               </button>
+
+              {/* illustration, anchored to the header's own bottom edge so it always straddles the header/panel boundary no matter how tall the header grows.
+                  bottom-0 + translate-y-1/3 (instead of a fixed px offset) keeps the same overlap ratio no matter how big the asset itself renders. */}
+              <div className="absolute inset-x-0 bottom-0 translate-y-1/3 flex justify-center pointer-events-none z-20">
+                <div className="relative w-full max-w-[clamp(170px,27vh,260px)] aspect-[558/447] animate-illo-float-slow">
+                  <Image
+                    src="/images/loginformicon-removebg-preview.png"
+                    alt="Secure login"
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                    priority
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* curved white form panel, pulled up so its top edge sits mid-illustration */}
-            <div className="relative bg-white rounded-t-[40px] -mt-10 min-h-[calc(100%-70px)]">
+            {/* curved white form panel, pulled up so its top edge sits mid-illustration — basis is 70% PLUS the 2.5rem it loses to -mt-10 (the negative margin that pulls it up over the header), so the panel's visible height still comes out to exactly 70% of the container instead of leaving a gap of background color at the very bottom */}
+            <div className="relative bg-white rounded-t-[40px] -mt-10 basis-[calc(70%_+_2.5rem)] shrink-0">
               <div className="px-6 pt-[90px] pb-4 animate-fade-in-up">
                 <div className="mb-3 text-center">
                   <p className="text-xs font-semibold text-[#800000] tracking-widest uppercase mb-1 font-poppins">
@@ -275,19 +289,6 @@ export default function AdminLoginPage() {
                   )}
                 </div>
                 {loginForm}
-              </div>
-            </div>
-
-            {/* illustration, absolutely centered on the header/panel boundary */}
-            <div className="absolute top-2 inset-x-0 flex justify-center pointer-events-none">
-              <div className="relative w-full max-w-[190px] aspect-[558/447] animate-illo-float-slow">
-                <Image
-                  src="/images/loginformicon-removebg-preview.png"
-                  alt="Secure login"
-                  fill
-                  className="object-contain drop-shadow-2xl"
-                  priority
-                />
               </div>
             </div>
           </div>
@@ -329,7 +330,7 @@ export default function AdminLoginPage() {
           </div>
           <div className="relative z-20 text-center px-10 pb-12">
             <p className="text-gray-500 text-sm font-normal max-w-[380px] mx-auto leading-relaxed font-poppins">
-              this system is strictly for administrative use. all access attempts are monitored and unauthorized entry is prohibited.
+              This system is strictly for administrative use. all access attempts are monitored and unauthorized entry is prohibited.
             </p>
           </div>
           <div className="absolute top-10 right-10 w-40 h-40 border border-[#800000]/5 rounded-full" />

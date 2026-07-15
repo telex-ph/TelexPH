@@ -285,7 +285,7 @@ export default function ForgotPasswordPage() {
           </div>
           <div className="relative z-20 text-center px-10 pb-12">
             <p className="text-gray-500 text-sm font-normal max-w-[380px] mx-auto leading-relaxed font-poppins">
-              this system is strictly for administrative use. all access attempts are monitored and unauthorized entry is prohibited.
+              This system is strictly for administrative use. all access attempts are monitored and unauthorized entry is prohibited.
             </p>
           </div>
           <div className="absolute top-10 right-10 w-40 h-40 border border-[#800000]/5 rounded-full" />
