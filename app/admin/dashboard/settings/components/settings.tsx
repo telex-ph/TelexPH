@@ -128,13 +128,16 @@ export default function AdminSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
       })
-      if (!response.ok) throw new Error('Failed to update profile')
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null)
+        throw new Error(errorBody?.error || errorBody?.message || `Failed to update profile (${response.status})`)
+      }
       const updatedUser = await response.json()
       setUserData(updatedUser)
       showToast('Profile updated successfully!', true)
     } catch (err) {
       console.error('Error updating profile:', err)
-      showToast('Failed to update profile', false)
+      showToast(err instanceof Error ? err.message : 'Failed to update profile', false)
     } finally {
       setSaving(false)
     }
