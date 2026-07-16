@@ -7,7 +7,7 @@ const T = {
   primary:      "#a10000",
   primaryDark:  "#7a0000",
   white:        "#ffffff",
-  offwhite:     "#f7f5f2",
+  offwhite:     "#f9f9f9",
   borderLight:  "#e4e4e7",
   textDark:     "#0a0a0a",
   textMuted:    "rgba(0,0,0,0.35)",
@@ -25,6 +25,7 @@ const F = {
   heading: "'Open Sans', sans-serif",
   sans:    "'Open Sans', sans-serif",
   body:    "'Rubik', sans-serif",
+  poppins: "var(--font-poppins), sans-serif",
 };
 const FW = { bold: 700, semibold: 600, medium: 500, normal: 400 };
 
@@ -106,8 +107,6 @@ const UseCaseChallenges = () => {
   return (
     <section style={{ backgroundColor: T.offwhite, position: "relative", overflow: "hidden" }}>
 
-      <div style={{ width: "100%", height: "3px", background: `linear-gradient(90deg, ${T.primary} 0%, ${T.primaryDark} 100%)` }} />
-
       <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 clamp(20px,5vw,64px)" }}>
 
         {/* SECTION HEADER */}
@@ -120,22 +119,22 @@ const UseCaseChallenges = () => {
           <div>
             <span style={{
               fontFamily: F.sans, fontWeight: FW.bold,
-              fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.25em",
+              fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.25em",
               color: T.primary, display: "block", marginBottom: "14px",
             }}>
               — Industry Challenges
             </span>
             <h2 style={{
               fontFamily: F.heading, fontWeight: FW.bold,
-              fontSize: "clamp(1.875rem, 4vw, 2.25rem)",
-              color: T.textDark, letterSpacing: "-0.025em", lineHeight: 1.15, margin: 0,
+              fontSize: "30px",
+              color: "#282828", letterSpacing: "-0.025em", lineHeight: 1.15, margin: 0,
             }}>
               The Obstacles We Solve Daily.
             </h2>
           </div>
           <p style={{
             fontFamily: F.body, fontWeight: FW.normal,
-            fontSize: "1rem", color: T.textBody,
+            fontSize: "16px", color: T.textBody,
             lineHeight: "1.85", maxWidth: "400px", margin: 0,
           }}>
             Modern customer service is riddled with structural pain points. We identify
@@ -226,19 +225,19 @@ const UseCaseChallenges = () => {
           <div style={{ padding: "56px clamp(28px,4vw,56px)", display: "flex", flexDirection: "column", justifyContent: "space-between", backgroundColor: T.white }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
-                <span style={{ fontFamily: F.sans, fontWeight: FW.medium, fontSize: "14px", color: T.primary }}>
+                <span style={{ fontFamily: F.sans, fontWeight: FW.medium, fontSize: "12px", color: T.primary }}>
                   {current.tag}
                 </span>
                 <span style={{ flex: 1, height: "1px", backgroundColor: "#f4f4f5" }} />
-                <span style={{ fontFamily: F.sans, fontWeight: FW.medium, fontSize: "14px", color: T.textHint }}>
+                <span style={{ fontFamily: F.sans, fontWeight: FW.medium, fontSize: "12px", color: T.textHint }}>
                   {current.index}
                 </span>
               </div>
 
               <h3 style={{
-                fontFamily: F.heading, fontWeight: FW.bold,
-                fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
-                color: T.textDark, letterSpacing: "-0.025em",
+                fontFamily: F.poppins, fontWeight: FW.bold,
+                fontSize: "24px",
+                color: "#282828", letterSpacing: "-0.025em",
                 lineHeight: 1.2, marginBottom: "8px",
               }}>
                 {current.title}
@@ -290,7 +289,7 @@ const UseCaseChallenges = () => {
                   backgroundColor: T.primary, color: T.white,
                   border: "none", borderRadius: "0",
                   cursor: "pointer",
-                  fontFamily: F.sans, fontWeight: FW.medium,
+                  fontFamily: F.sans, fontWeight: FW.bold,
                   fontSize: "14px",
                   boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
                   transition: "opacity 0.2s, transform 0.15s",
@@ -363,7 +362,7 @@ const UseCaseChallenges = () => {
         }}>
           <p style={{
             fontFamily: F.body, fontWeight: FW.normal,
-            fontSize: "1rem", color: T.textBody,
+            fontSize: "16px", color: T.textBody,
             lineHeight: "1.85", maxWidth: "540px", margin: 0,
           }}>
             Every challenge above has a documented resolution. See how Telex Philippines
@@ -377,7 +376,7 @@ const UseCaseChallenges = () => {
             padding: "12px 24px",
             backgroundColor: T.primary, color: T.white,
             textDecoration: "none",
-            fontFamily: F.sans, fontWeight: FW.medium,
+            fontFamily: F.sans, fontWeight: FW.bold,
             fontSize: "14px",
             borderRadius: "0",
             boxShadow: "0 4px 16px rgba(161,0,0,0.25)",

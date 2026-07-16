@@ -21,7 +21,7 @@ const T = {
   pinkLight:    "#ffc5c5",
   pinkMid:      "#e88888",
   borderLight:  "#e4e4e7",
-  textDark:     "#0a0a0a",
+  textDark:     "#282828",
   textMuted:    "rgba(0,0,0,0.35)",
   textBody:     "rgba(0,0,0,0.60)",
   textHint:     "rgba(0,0,0,0.30)",
@@ -42,9 +42,66 @@ async function getCaseStudyById(id: string) {
   }
 }
 
-const FIRST_SECTION_EXTRA = `By centralizing all communication channels into a unified inbox, agents gained full visibility into every customer interaction regardless of where it originated. This eliminated duplicate responses, reduced average handling time, and allowed supervisors to monitor performance in real time. The platform's smart routing also ensured that inquiries were automatically assigned to the most appropriate team member based on topic and availability — keeping queues balanced and customers satisfied.`;
+async function getAllCaseStudies() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/casestudies`);
+    if (!response.ok) throw new Error("Failed to fetch case studies");
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching case studies:", error);
+    return [];
+  }
+}
 
-type SidebarState = "wallet" | "challenge" | "solution" | "both";
+// Deterministic avatar per author/id (matches the Resources listing style)
+function avatarFor(seed: string | number) {
+  const seedNum =
+    typeof seed === "string"
+      ? seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      : seed;
+  const num = (seedNum % 70) + 1;
+  return `https://i.pravatar.cc/150?img=${num}`;
+}
+
+const RELATED_FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800";
+
+// Upgrade insecure http:// image URLs to https:// so they aren't blocked as mixed content
+function toHttps(url?: string) {
+  if (!url) return "";
+  return url.startsWith("http://") ? url.replace("http://", "https://") : url;
+}
+
+function transformRelated(item: any) {
+  let description = "";
+  if (Array.isArray(item.challenge) && item.challenge.length > 0) {
+    description = item.challenge[0]?.text || "";
+  } else if (Array.isArray(item.sections) && item.sections.length > 0) {
+    description = item.sections[0]?.text || "";
+  } else if (Array.isArray(item.solution) && item.solution.length > 0) {
+    description = item.solution[0]?.text || "";
+  }
+  description = item.subtitle || description;
+  if (description.length > 90) description = description.slice(0, 90) + "…";
+
+  return {
+    id: item._id,
+    title: item.title || "Untitled Case Study",
+    description: description || "Read the full case study.",
+    image: toHttps(item.cover) || RELATED_FALLBACK_IMG,
+    author: item.author || "Customer Experience Team",
+    status: item.status || "Active",
+    date: item.createdAt
+      ? new Date(item.createdAt).toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : "",
+  };
+}
+
+const FIRST_SECTION_EXTRA = `By centralizing all communication channels into a unified inbox, agents gained full visibility into every customer interaction regardless of where it originated. This eliminated duplicate responses, reduced average handling time, and allowed supervisors to monitor performance in real time. The platform's smart routing also ensured that inquiries were automatically assigned to the most appropriate team member based on topic and availability — keeping queues balanced and customers satisfied.`;
 
 // ─── Loading Experience ───────────────────────────────────────────────────────
 function LoadingExperience() {
@@ -235,15 +292,18 @@ function LoadingExperience() {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+type FolderState = "wallet" | "challenge" | "solution" | "both";
+
 function CaseStudyDetailsContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
   const [study, setStudy]         = useState<any>(null);
+  const [related, setRelated]     = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApiData, setIsApiData] = useState(false);
   const [mounted, setMounted]     = useState(false);
-  const [sidebarState, setSidebarState] = useState<SidebarState>("wallet");
+  const [folderState, setFolderState] = useState<FolderState>("wallet");
 
   useEffect(() => {
     async function loadCaseStudy() {
@@ -252,6 +312,9 @@ function CaseStudyDetailsContent() {
       const apiData = await getCaseStudyById(id);
       if (apiData) {
         const transformedStudy = {
+          title: apiData.title || "Case Study",
+          type: "Case Studies",
+          image: toHttps(apiData.cover) || RELATED_FALLBACK_IMG,
           challenge:
             Array.isArray(apiData.challenge) && apiData.challenge.length > 0
               ? apiData.challenge.map((c: any) => c.text).join(" ")
@@ -270,6 +333,18 @@ function CaseStudyDetailsContent() {
         setStudy(transformedStudy);
         setIsApiData(true);
       }
+
+      // Related case studies for the "Article for you" sidebar
+      const all = await getAllCaseStudies();
+      if (Array.isArray(all)) {
+        setRelated(
+          all
+            .filter((item: any) => item._id !== id)
+            .slice(0, 4)
+            .map(transformRelated)
+        );
+      }
+
       setIsLoading(false);
       setTimeout(() => setMounted(true), 50);
     }
@@ -309,38 +384,80 @@ function CaseStudyDetailsContent() {
 
   // ── Page ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white">
-
-      <div className="print:hidden"><DetailsHeader /></div>
-
-      {/* Progress bar */}
-      <div className="w-full h-[3px] bg-zinc-100 print:hidden">
-        <div className="h-full w-1/3 transition-all duration-500" style={{ backgroundColor: T.primary }} />
+    <div className="min-h-screen bg-white relative">
+      {/* ── Print-specific font sizes ── */}
+      <style>{`
+        @media screen {
+          .drop-cap-p::first-letter {
+            font-size: 4.5rem;
+            font-weight: 900;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+          }
+        }
+        @media print {
+          .print-main-title { font-size: 35px !important; line-height: 1.1 !important; }
+          .print-subtitle { font-size: 16px !important; font-family: var(--font-rubik), sans-serif !important; }
+          .print-overview-h2 { font-size: 30px !important; margin-bottom: 20px !important; }
+          .print-overview-desc { font-size: 16px !important; font-family: var(--font-rubik), sans-serif !important; }
+          .print-section-h { font-size: 18px !important; }
+          .print-section-desc { font-size: 16px !important; font-family: var(--font-rubik), sans-serif !important; }
+          nextjs-portal,
+          #__next-build-indicator,
+          [data-nextjs-dialog-overlay],
+          [data-nextjs-toast],
+          body > nextjs-portal { display: none !important; }
+        }
+      `}</style>
+      {/* ── Print Watermark ── */}
+      <div className="hidden print:flex fixed inset-0 items-center justify-center pointer-events-none z-0">
+        <span 
+          style={{ 
+            fontFamily: FONTS.poppins, 
+            fontWeight: 900, 
+            fontSize: "140px", 
+            color: "rgba(0,0,0,0.04)", 
+            transform: "rotate(-35deg)",
+            whiteSpace: "nowrap",
+            letterSpacing: "0.05em",
+          }}
+        >
+          TELEX PH
+        </span>
       </div>
 
-      {/* Breadcrumb bar */}
-      <div className="border-b border-zinc-100 print:hidden">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-16 h-12 flex items-center justify-between">
-          <Link
-            href="/resources"
-            className="flex items-center gap-2 text-sm hover:opacity-60 transition-opacity"
-            style={{ color: T.primary, fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium }}
-          >
-            <FaChevronLeft size={8} />
-            Back to Insights
-          </Link>
-          <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>
-            Industry Intelligence · 2026
-          </span>
-        </div>
-      </div>
+      <div><DetailsHeader /></div>
+
+
 
       {/* Main grid */}
-      <div className="max-w-screen-xl mx-auto px-6 md:px-16 py-16 md:py-24">
+      <div className="max-w-screen-xl mx-auto px-6 md:px-16 pt-6 md:pt-8 pb-16 md:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
           {/* ══════════════ MAIN CONTENT ══════════════ */}
           <main className="lg:col-span-8">
+            {/* Hero image — banner above the article */}
+            <div
+              className="mb-10 md:mb-12 rounded-2xl overflow-hidden"
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(24px)",
+                transition: "opacity 0.6s ease, transform 0.6s ease",
+              }}
+            >
+              <img
+                src={study.image}
+                alt={study.title}
+                className="w-full h-[240px] sm:h-[320px] md:h-[420px] object-cover"
+                onError={(e) => {
+                  const t = e.target as HTMLImageElement;
+                  if (t.src !== RELATED_FALLBACK_IMG) t.src = RELATED_FALLBACK_IMG;
+                }}
+              />
+            </div>
+
             {study.body[0] && (
               <div
                 className="mb-8 pb-8 border-b border-zinc-100"
@@ -351,23 +468,23 @@ function CaseStudyDetailsContent() {
                 }}
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.primary }}>Overview</span>
+                  <span className="text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary }}>Overview</span>
                   <span className="flex-1 h-[1px] bg-zinc-100" />
-                  <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>01</span>
+                  <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>01</span>
                 </div>
                 <h2
-                  className="text-2xl md:text-3xl mb-8 tracking-tight"
-                  style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: T.textDark }}
+                  className="print-overview-h2 text-[22px] md:text-[30px] mb-8 tracking-tight"
+                  style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: T.textDark, lineHeight: 1.25 }}
                 >
                   {study.body[0].title}
                 </h2>
                 <p
-                  className="text-md md:text-lg leading-[1.85] mt-4 text-justify first-letter:text-[4.5rem] first-letter:font-black first-letter:float-left first-letter:leading-[0.8] first-letter:mr-3 first-letter:mt-1"
-                  style={{ fontFamily: FONTS.rubik, color: T.textBody }}
+                  className="drop-cap-p print-overview-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px]"
+                  style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
                 >
                   {study.body[0].text}
                 </p>
-                <p className="text-md md:text-lg leading-[1.85] mt-6 text-justify" style={{ fontFamily: FONTS.rubik, color: T.textBody }}>
+                <p className="print-overview-desc leading-[1.85] mt-6 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
                   {FIRST_SECTION_EXTRA}
                 </p>
               </div>
@@ -385,16 +502,71 @@ function CaseStudyDetailsContent() {
                   }}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.primary }}>{item.title}</span>
+                    <span className="print-section-h text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary }}>{item.title}</span>
                     <span className="flex-1 h-[1px] bg-zinc-100" />
-                    <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>0{idx + 2}</span>
+                    <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>0{idx + 2}</span>
                   </div>
-                  <p className="text-md md:text-lg leading-[1.85] mt-4 text-justify" style={{ fontFamily: FONTS.rubik, color: T.textBody }}>
+                  <p className="print-section-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
                     {item.text}
                   </p>
                 </div>
               ))}
+
             </article>
+
+            {/* ── Print-only Challenge & Solution cards (hidden on screen, visible in PDF) ── */}
+            <div className="hidden print:block mt-16 pt-10 border-t border-zinc-100 space-y-6">
+              {/* Challenge */}
+              <div
+                style={{
+                  backgroundColor: T.primaryDark,
+                  borderRadius: "16px",
+                  padding: "28px 32px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.whiteAlpha40 }}>The Problem</span>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.pinkLight, display: "inline-block" }} />
+                </div>
+                <h3 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.white, marginBottom: "8px", letterSpacing: "-0.02em" }}>
+                  Challenge
+                </h3>
+                <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "14px" }} />
+                <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
+                  {study.challenge}
+                </p>
+                <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.whiteAlpha10}` }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.whiteAlpha30 }}>Industry Intelligence · 2026</span>
+                </div>
+              </div>
+
+              {/* Solution */}
+              <div
+                style={{
+                  backgroundColor: T.white,
+                  border: `1px solid ${T.borderLight}`,
+                  borderRadius: "16px",
+                  padding: "28px 32px",
+                  boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.textMuted }}>The Resolution</span>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.primary, display: "inline-block" }} />
+                </div>
+                <h3 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.textDark, marginBottom: "8px", letterSpacing: "-0.02em" }}>
+                  Solution
+                </h3>
+                <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "14px" }} />
+                <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
+                  {study.solution}
+                </p>
+                <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.textHint }}>Industry Intelligence · 2026</span>
+                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: T.primary, fontWeight: FONT_WEIGHTS.medium }}>Resolved ✓</span>
+                </div>
+              </div>
+            </div>
 
             <div
               className="mt-20 pt-10 border-t border-zinc-100 flex items-center print:hidden"
@@ -411,18 +583,20 @@ function CaseStudyDetailsContent() {
             </div>
           </main>
 
-          {/* ══════════════ SIDEBAR ══════════════ */}
-          <aside className="lg:col-span-4 lg:sticky lg:top-8 h-fit">
+          {/* ══════════════ SIDEBAR — Article for you ══════════════ */}
+          {/* print:hidden — entire aside (wallet design + article list) is excluded from PDF */}
+          <aside className="lg:col-span-4 h-fit print:hidden">
+            {/* ══ Challenge + Solution — original wallet/credit-card design ══ */}
             <div
+              className="mb-12"
               style={{
                 opacity: mounted ? 1 : 0,
-                transform: mounted ? "translateY(0)" : "translateY(32px)",
-                transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s",
+                transform: mounted ? "translateY(0)" : "translateY(24px)",
+                transition: "opacity 0.6s ease 0.35s, transform 0.6s ease 0.35s",
               }}
             >
-
               {/* ══ WALLET STATE ══ */}
-              {sidebarState === "wallet" && (
+              {folderState === "wallet" && (
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: "48px", paddingTop: "16px" }}>
                   <div className="cs-wallet">
                     <div className="cs-wallet-back" />
@@ -430,7 +604,7 @@ function CaseStudyDetailsContent() {
                     {/* Challenge card — maroon, sits behind */}
                     <div
                       className="cs-card cs-challenge"
-                      onClick={() => setSidebarState("challenge")}
+                      onClick={() => setFolderState("challenge")}
                       title="Click to view Challenge"
                     >
                       <div className="cs-card-inner">
@@ -448,7 +622,7 @@ function CaseStudyDetailsContent() {
                     {/* Solution card — white, sits on top */}
                     <div
                       className="cs-card cs-solution"
-                      onClick={() => setSidebarState("solution")}
+                      onClick={() => setFolderState("solution")}
                       title="Click to view Solution"
                     >
                       <div className="cs-card-inner">
@@ -500,13 +674,13 @@ function CaseStudyDetailsContent() {
                     </div>
 
                     {/* Pocket overlay */}
-                    <div className="cs-expand-trigger" onClick={() => setSidebarState("both")} />
+                    <div className="cs-expand-trigger" onClick={() => setFolderState("both")} />
                   </div>
                 </div>
               )}
 
               {/* ══ CHALLENGE SOLO — maroon, click to return to wallet ══ */}
-              {sidebarState === "challenge" && (
+              {folderState === "challenge" && (
                 <div style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
                   <div
                     style={{
@@ -519,7 +693,7 @@ function CaseStudyDetailsContent() {
                       transition: "transform 0.3s ease",
                       cursor: "pointer",
                     }}
-                    onClick={() => setSidebarState("wallet")}
+                    onClick={() => setFolderState("wallet")}
                     onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"; }}
                   >
@@ -531,7 +705,7 @@ function CaseStudyDetailsContent() {
                       Challenge
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
                       {study.challenge}
                     </p>
                     <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.whiteAlpha10}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -543,7 +717,7 @@ function CaseStudyDetailsContent() {
               )}
 
               {/* ══ SOLUTION SOLO — white, click to return to wallet ══ */}
-              {sidebarState === "solution" && (
+              {folderState === "solution" && (
                 <div style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
                   <div
                     style={{
@@ -557,7 +731,7 @@ function CaseStudyDetailsContent() {
                       transition: "transform 0.3s ease, box-shadow 0.3s ease",
                       cursor: "pointer",
                     }}
-                    onClick={() => setSidebarState("wallet")}
+                    onClick={() => setFolderState("wallet")}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
                       (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)";
@@ -575,7 +749,7 @@ function CaseStudyDetailsContent() {
                       Solution
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
                       {study.solution}
                     </p>
                     <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -587,7 +761,7 @@ function CaseStudyDetailsContent() {
               )}
 
               {/* ══ BOTH CARDS ══ */}
-              {sidebarState === "both" && (
+              {folderState === "both" && (
                 <div style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
 
                   {/* Challenge card — maroon, on top */}
@@ -603,7 +777,7 @@ function CaseStudyDetailsContent() {
                       transition: "transform 0.3s ease",
                       cursor: "pointer",
                     }}
-                    onClick={() => setSidebarState("challenge")}
+                    onClick={() => setFolderState("challenge")}
                     onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"; }}
                   >
@@ -615,7 +789,7 @@ function CaseStudyDetailsContent() {
                       Challenge
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
                       {study.challenge}
                     </p>
                   </div>
@@ -634,7 +808,7 @@ function CaseStudyDetailsContent() {
                       transition: "transform 0.3s ease, box-shadow 0.3s ease",
                       cursor: "pointer",
                     }}
-                    onClick={() => setSidebarState("solution")}
+                    onClick={() => setFolderState("solution")}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = "translateY(4px)";
                       (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)";
@@ -653,7 +827,7 @@ function CaseStudyDetailsContent() {
                       Solution
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
                       {study.solution}
                     </p>
                     <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -664,7 +838,121 @@ function CaseStudyDetailsContent() {
 
                 </div>
               )}
+            </div>
 
+            <div
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(32px)",
+                transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s",
+              }}
+            >
+              {/* Top divider */}
+              <div style={{ height: '1px', backgroundColor: '#A10000', marginBottom: '20px' }} />
+              <h2
+                className="mb-6"
+                style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.textDark }}
+              >
+                Article for you
+              </h2>
+
+              <div className="flex flex-col gap-5">
+                {related.length === 0 && (
+                  <p className="text-sm" style={{ fontFamily: FONTS.rubik, color: T.textHint }}>
+                    No related case studies yet.
+                  </p>
+                )}
+
+                {related.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/resources/CaseStudiesCardDetails?id=${item.id}`}
+                    className="group block rounded-2xl overflow-hidden border border-zinc-100 bg-white hover:shadow-lg transition-shadow"
+                  >
+                    <div className="relative h-[150px] w-full overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const t = e.target as HTMLImageElement;
+                          if (t.src !== RELATED_FALLBACK_IMG) t.src = RELATED_FALLBACK_IMG;
+                        }}
+                      />
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span
+                          className="bg-white/90 px-2.5 py-1 rounded-full shadow-sm"
+                          style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px", letterSpacing: "0.06em", textTransform: "uppercase", color: T.textDark }}
+                        >
+                          Case studies
+                        </span>
+                        {item.status && (
+                          <span
+                            className="bg-white/90 px-2.5 py-1 rounded-full shadow-sm"
+                            style={{ 
+                              fontFamily: FONTS.openSans, 
+                              fontWeight: FONT_WEIGHTS.bold, 
+                              fontSize: "10px", 
+                              letterSpacing: "0.06em", 
+                              textTransform: "uppercase", 
+                              color: item.status.toLowerCase() === 'active' ? '#16a34a' : item.status.toLowerCase() === 'draft' ? '#ea580c' : T.textDark 
+                            }}
+                          >
+                            {item.status}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="p-4">
+                      <h3
+                        className="mb-1.5 line-clamp-2 transition-colors"
+                        style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "15px", color: T.textDark, lineHeight: 1.3 }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p
+                        className="mb-3 line-clamp-2"
+                        style={{ fontFamily: FONTS.rubik, fontWeight: 400, fontSize: "13px", color: T.textBody, lineHeight: 1.5 }}
+                      >
+                        {item.description}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={avatarFor(item.id)}
+                          alt={item.author}
+                          className="w-7 h-7 rounded-full object-cover bg-gray-200 flex-shrink-0"
+                        />
+                        <div className="flex flex-col min-w-0">
+                          <span className="truncate" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "12px", color: T.textDark }}>
+                            {item.author}
+                          </span>
+                          <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", color: T.textHint }}>
+                            {item.date}{item.date ? " · " : ""}4 min read
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <Link
+                href={`/resources?tab=${encodeURIComponent(study.type)}`}
+                className="flex items-center justify-center gap-2 mt-6 w-full py-3 rounded-lg border transition-colors hover:opacity-80"
+                style={{
+                  fontFamily: FONTS.openSans,
+                  fontWeight: FONT_WEIGHTS.bold,
+                  fontSize: "13px",
+                  letterSpacing: "0.04em",
+                  color: T.primary,
+                  borderColor: "rgba(161,0,0,0.25)",
+                }}
+              >
+                View All Articles
+              </Link>
+              {/* Bottom divider */}
+              <div style={{ height: '1px', backgroundColor: '#A10000', marginTop: '24px' }} />
             </div>
           </aside>
         </div>
@@ -765,8 +1053,8 @@ function CaseStudyDetailsContent() {
         @media print {
           @page { margin: 15mm; size: auto; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white !important; }
-          .lg\\:col-span-8 { width: 100% !important; float: none !important; }
-          .lg\\:col-span-4 { width: 100% !important; margin-top: 50px; }
+          /* Main content takes full page width; sidebar is hidden via print:hidden utility */
+          .lg\\:col-span-8 { grid-column: span 12 / span 12 !important; max-width: 100% !important; }
           h1, h2 { font-size: 22pt !important; }
           .shadow-xl, .shadow-lg, .shadow-md { box-shadow: none !important; }
           .sticky { position: static !important; }

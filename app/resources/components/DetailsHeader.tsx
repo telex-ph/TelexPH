@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { HiOutlineLink } from "react-icons/hi2";
 import { 
-  FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaHeart
+  FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaHeart, FaChevronLeft, FaRegCalendarAlt
 } from "react-icons/fa";
 import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/styles";
 
@@ -27,6 +27,7 @@ interface CaseStudy {
   tags: string[];
   authors: CaseStudyAuthor[];
   likesCount?: number;
+  createdAt?: string;
 }
 
 const FALLBACK_DATA = {
@@ -36,6 +37,7 @@ const FALLBACK_DATA = {
   subtitle: "please wait while we load the content",
   image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
   author: "Customer Experience Team",
+  date: "",
 };
 
 const formatAuthors = (authors: CaseStudyAuthor[]): string =>
@@ -141,36 +143,24 @@ export default function DetailsHeader() {
 
   return (
     <>
-      <Nav openNav={() => setShowNav(true)} />
-      <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
+      <div className="print:hidden">
+        <Nav openNav={() => setShowNav(true)} />
+        <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
+      </div>
 
-      <section className="w-full bg-white overflow-hidden pt-16 md:pt-0">
-        <div className="flex flex-col md:flex-row-reverse min-h-[320px] md:min-h-[360px] w-full">
+      <section className="w-full bg-white overflow-hidden pt-36 md:pt-44 pb-6 md:pb-8 print:pt-8 print:pb-2">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-16">
 
-          {/* IMAGE SIDE */}
-          <div
-            className="relative w-full md:w-[55%] h-[22vh] md:h-auto overflow-hidden z-10"
-            style={{
-              maskImage: 'linear-gradient(to left, black 80%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to left, black 80%, transparent 100%)',
-            }}
-          >
-            <img
-              src={displayData.image}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${loading ? 'opacity-0' : 'opacity-100'}`}
-              alt={displayData.title}
-            />
-          </div>
-
-          {/* TEXT SIDE */}
-          <div className="relative flex flex-col justify-center w-full md:w-[45%] px-6 sm:px-10 md:px-12 lg:px-20 py-8 md:py-10 z-20 bg-white">
-
+          {/* Top Bar: Breadcrumb + Button */}
+          <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8 print:mb-4">
             {/* Breadcrumb */}
             <nav
-              className="flex flex-wrap items-center gap-1 mb-5 md:mb-6 text-sm"
+              className="flex flex-wrap items-center gap-1 print:hidden"
               style={{
                 fontFamily: FONTS.openSans,
-                fontWeight: FONT_WEIGHTS.medium,
+                fontWeight: FONT_WEIGHTS.bold,
+                fontSize: "10px",
+                textTransform: "uppercase",
                 color: getColorWithOpacity("dark", 0.7),
               }}
             >
@@ -195,130 +185,154 @@ export default function DetailsHeader() {
               </Link>
               <span className="mx-1 opacity-50">&gt;&gt;</span>
               <span
-                className="truncate max-w-[150px] md:max-w-none"
-                style={{ color: COLORS.primary }}
+                className="truncate max-w-[180px] md:max-w-none"
+                style={{ color: '#A10000' }}
               >
                 {displayData.title}
               </span>
             </nav>
 
-            <div className="max-w-xl">
+            <Link
+              href="/resources"
+              className="print:hidden flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-5 md:py-2 rounded-full text-white text-[11px] md:text-sm hover:opacity-90 active:scale-95 transition-all w-fit self-start md:self-auto"
+              style={{
+                backgroundColor: COLORS.primary,
+                fontFamily: FONTS.openSans,
+                fontWeight: FONT_WEIGHTS.medium,
+                boxShadow: "0 2px 8px rgba(161,0,0,0.25)"
+              }}
+            >
+              <FaChevronLeft size={10} />
+              Back
+            </Link>
+          </div>
 
-              {/* Label */}
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-4 h-[1px]" style={{ background: getColorWithOpacity("dark", 0.2) }} />
-                <span
-                  style={{
-                    fontFamily: FONTS.openSans,
-                    fontSize: '13px',
-                    color: getColorWithOpacity("dark", 0.5),
-                    letterSpacing: '0.04em',
-                  }}
-                >
-                  {displayData.type}
-                </span>
-              </div>
+          <div className="max-w-3xl">
 
-              {/* Title */}
-              <h1
-                className="text-5xl md:text-6xl mb-3 tracking-tight"
-                style={{
-                  fontFamily: TYPOGRAPHY.heading.fontFamily,
-                  fontWeight: TYPOGRAPHY.heading.fontWeight,
-                  color: COLORS.black,
-                  lineHeight: 1.05,
-                }}
-              >
-                <span className="block">{titleRow1}</span>
-                <span className="block">
-                  {titleRow2Body && <>{titleRow2Body} </>}
-                  <span style={{ color: COLORS.primary }}>{titleRow2Last}</span>
-                </span>
-              </h1>
-
-              {/* Subtitle */}
-              {displayData.subtitle && (
-                <p
-                  className="text-md md:text-lg mb-5"
-                  style={{
-                    fontFamily: FONTS.rubik,
-                    color: getColorWithOpacity("dark", 0.7),
-                    lineHeight: 1.65,
-                  }}
-                >
-                  {displayData.subtitle}
-                </p>
-              )}
-
-              {/* Author */}
-              <p
-                className="mb-6 md:mb-7"
+            {/* Label */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-4 h-[1px]" style={{ background: '#A10000' }} />
+              <span
+                className="text-[10px] md:text-[14px]"
                 style={{
                   fontFamily: FONTS.openSans,
-                  fontSize: '13px',
-                  color: getColorWithOpacity("dark", 0.5),
+                  fontWeight: FONT_WEIGHTS.bold,
+                  color: '#A10000',
                   letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
                 }}
               >
-                By {displayData.author || "Customer Experience Team"}
+                {displayData.type}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1
+              className="print-main-title text-[28px] md:text-[48px] mb-3 tracking-tight"
+              style={{
+                fontFamily: FONTS.poppins,
+                fontWeight: 900,
+                color: '#282828',
+                lineHeight: 1.05,
+              }}
+            >
+              <span className="block">{titleRow1}</span>
+              <span className="block">
+                {titleRow2Body && <>{titleRow2Body} </>}
+                <span style={{ color: COLORS.primary }}>{titleRow2Last}</span>
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            {displayData.subtitle && (
+              <p
+                className="print-subtitle mb-5 text-[14px] md:text-[16px]"
+                style={{
+                  fontFamily: FONTS.rubik,
+                  fontWeight: FONT_WEIGHTS.regular,
+                  color: getColorWithOpacity("dark", 0.7),
+                  lineHeight: 1.65,
+                }}
+              >
+                {displayData.subtitle}
               </p>
+            )}
 
-              {/* Social + Like */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 pt-5 md:pt-6 border-t border-zinc-100">
-                <div className="flex items-center gap-2">
-                  {[
-                    { icon: <FaFacebookF size={11} />, label: 'Facebook' },
-                    { icon: <FaTwitter size={11} />, label: 'Twitter' },
-                    { icon: <FaLinkedinIn size={11} />, label: 'LinkedIn' },
-                    { icon: <FaEnvelope size={11} />, label: 'Email' },
-                    { icon: <HiOutlineLink size={14} />, label: 'Copy' },
-                  ].map((social, idx) => (
-                    <button
-                      key={idx}
-                      aria-label={social.label}
-                      className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all"
-                      style={{
-                        background: getColorWithOpacity("dark", 0.04),
-                        color: getColorWithOpacity("dark", 0.4),
-                        border: `0.5px solid ${getColorWithOpacity("dark", 0.1)}`,
-                      }}
-                      onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.08);
-                        (e.currentTarget as HTMLButtonElement).style.color = COLORS.black;
-                      }}
-                      onMouseLeave={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.04);
-                        (e.currentTarget as HTMLButtonElement).style.color = getColorWithOpacity("dark", 0.4);
-                      }}
-                    >
-                      {social.icon}
-                    </button>
-                  ))}
+          </div>{/* end max-w-3xl */}
+
+          {/* Author row & Socials */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8">
+            {/* Left: Avatar + Name & Date */}
+            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-0">
+              <img
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayData.author || "Customer Experience Team")}&background=f3f4f6&color=374151`}
+                alt={displayData.author || "Customer Experience Team"}
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
+              />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[13px] md:text-[15px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: '#282828' }}>
+                  {displayData.author || "Customer Experience Team"}
+                </span>
+                <div className="flex items-center gap-1.5 text-[11px] md:text-[13px]" style={{ fontFamily: FONTS.openSans, color: getColorWithOpacity("dark", 0.6) }}>
+                  <FaRegCalendarAlt size={11} />
+                  <span>
+                    {displayData.date ? `${displayData.date} • ` : ""}4 min read
+                  </span>
                 </div>
+              </div>
+            </div>
 
+            {/* Right (Desktop) / Bottom (Mobile): Social icons + Like — print:hidden */}
+            <div className="flex items-center gap-2 print:hidden mt-2 md:mt-0">
+              {[
+                { icon: <FaFacebookF size={11} />, label: 'Facebook' },
+                { icon: <FaTwitter size={11} />, label: 'Twitter' },
+                { icon: <FaLinkedinIn size={11} />, label: 'LinkedIn' },
+                { icon: <FaEnvelope size={11} />, label: 'Email' },
+                { icon: <HiOutlineLink size={14} />, label: 'Copy' },
+              ].map((social, idx) => (
                 <button
-                  onClick={handleLikeToggle}
-                  disabled={isLiking}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
+                  key={idx}
+                  aria-label={social.label}
+                  className="w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all"
                   style={{
-                    background: 'rgba(161,0,0,0.04)',
-                    border: '0.5px solid rgba(161,0,0,0.15)',
+                    background: getColorWithOpacity("dark", 0.04),
+                    color: '#A10000',
+                    border: `0.5px solid rgba(161,0,0,0.2)`,
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(161,0,0,0.08)';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#A10000';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.04);
+                    (e.currentTarget as HTMLButtonElement).style.color = '#A10000';
                   }}
                 >
-                  <FaHeart size={12} style={{ color: COLORS.primary }} />
-                  <span
-                    style={{
-                      fontFamily: FONTS.openSans,
-                      fontSize: '13px',
-                      color: COLORS.primary,
-                      letterSpacing: '0.02em',
-                    }}
-                  >
-                    {likesCount} {likesCount === 1 ? 'like' : 'likes'}
-                  </span>
+                  {social.icon}
                 </button>
-              </div>
-
+              ))}
+              <button
+                onClick={handleLikeToggle}
+                disabled={isLiking}
+                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-all ml-1 md:ml-2"
+                style={{
+                  background: 'rgba(161,0,0,0.04)',
+                  border: '0.5px solid rgba(161,0,0,0.15)',
+                }}
+              >
+                <FaHeart size={10} className="md:w-3 md:h-3" style={{ color: COLORS.primary }} />
+                <span
+                  className="text-[11px] md:text-[13px]"
+                  style={{
+                    fontFamily: FONTS.openSans,
+                    color: COLORS.primary,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {likesCount} {likesCount === 1 ? 'like' : 'likes'}
+                </span>
+              </button>
             </div>
           </div>
         </div>

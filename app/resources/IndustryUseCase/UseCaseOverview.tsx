@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Layers, Target, ShieldCheck, Globe, ChevronRight, ChevronLeft, Activity } from "lucide-react";
-import { COLORS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, FONTS, FONT_WEIGHTS, FONT_CLASSES } from "@/constant/styles";
 
 const UseCaseOverview = () => {
   const MAROON = "#800000";
@@ -64,23 +64,24 @@ const UseCaseOverview = () => {
         <div className="mb-20 text-left">
           <div className="inline-block mb-4">
             <span
-              className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block font-bold`}
-              style={{ color: MAROON }}
+              className="uppercase tracking-[0.25em] py-2 inline-block"
+              style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "14px", color: COLORS.primary }}
             >
               — Strategic Overview
             </span>
           </div>
           <h2
-            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
-            style={{ color: COLORS.black }}
+            className="mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "48px", color: "#282828" }}
           >
             Redefining the
             <br />
-            <span style={{ color: MAROON }}>Customer Ecosystem.</span>
+            <span style={{ color: COLORS.primary }}>Customer Ecosystem.</span>
           </h2>
-          
+
           <p
-            className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed`}
+            className="max-w-2xl leading-relaxed text-gray-500 font-normal"
+            style={{ fontSize: "16px" }}
           >
             We transcend traditional outsourcing by integrating <strong>high-velocity technology</strong> with <strong>emotional intelligence</strong> to drive long-term brand loyalty.
           </p>
@@ -117,10 +118,13 @@ const UseCaseOverview = () => {
                   />
                 </div>
                 <div>
-                  <h4 className={`${FONT_CLASSES.openSansBold} text-lg text-gray-900 uppercase tracking-tight mb-3 font-bold group-hover:text-[#800000] transition-colors`}>
+                  <h4
+                    className="uppercase tracking-tight mb-3 group-hover:text-[#800000] transition-colors"
+                    style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "18px", color: "#282828" }}
+                  >
                     {item.title}
                   </h4>
-                  <p className="text-sm md:text-base text-gray-500 leading-relaxed font-normal">
+                  <p className="text-gray-500 leading-relaxed font-normal" style={{ fontSize: "14px" }}>
                     {item.desc}
                   </p>
                 </div>
@@ -184,7 +188,12 @@ const UseCaseOverview = () => {
                     className="group flex items-center gap-3 py-3 px-6 rounded-md transition-all hover:brightness-110 active:scale-95 shadow-md"
                     style={{ backgroundColor: MAROON }}
                   >
-                    <span className="text-white text-[10px] font-bold uppercase tracking-widest pl-1 font-bold">Next Metric</span>
+                    <span
+                      className="text-white uppercase tracking-widest pl-1"
+                      style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px" }}
+                    >
+                      Next Metric
+                    </span>
                     <ChevronRight size={16} className="text-white group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
