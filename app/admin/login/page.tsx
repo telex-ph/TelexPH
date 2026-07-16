@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getAdminAuthenticateUrl } from '@/lib/api-base'
+import TurnstileWidget from '@/components/Turnstile/TurnstileWidget'
 import WelcomeSlideshow from './WelcomeSlideshow'
 
 function safeRedirectTarget(raw: string | null): string {
@@ -27,7 +28,7 @@ function AdminLoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [notRobot, setNotRobot] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -37,8 +38,8 @@ function AdminLoginForm() {
     e.preventDefault()
     setError('')
 
-    if (!notRobot) {
-      setError('Please confirm you are not a robot.')
+    if (!turnstileToken) {
+      setError('Please complete the human verification challenge.')
       return
     }
 
@@ -54,6 +55,7 @@ function AdminLoginForm() {
         body: JSON.stringify({
           email,
           password,
+          turnstileToken,
         }),
       })
 
@@ -123,17 +125,6 @@ function AdminLoginForm() {
         </div>
       </div>
 
-      <label className="flex items-center gap-3 text-sm text-gray-600 cursor-pointer font-open-sans border border-gray-200 rounded-xl px-4 py-2 bg-gray-50 transition-colors hover:border-[#800000]/30 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-        <input
-          type="checkbox"
-          checked={notRobot}
-          onChange={(e) => setNotRobot(e.target.checked)}
-          className="w-4 h-4 accent-[#800000] rounded border-gray-300"
-        />
-        <span className="font-normal flex-1">I&apos;m not a robot</span>
-        <span className="text-[10px] text-gray-400 leading-tight text-right">reCAPTCHA</span>
-      </label>
-
       <div className="flex items-center justify-end animate-fade-in-up" style={{ animationDelay: '0.18s' }}>
         <Link href="/admin/login/forgot-password" className="text-sm font-medium text-[#800000] hover:underline transition-colors font-poppins">
           Forgot password?
@@ -158,6 +149,13 @@ function AdminLoginForm() {
           </>
         )}
       </button>
+
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.24s' }}>
+        <TurnstileWidget
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken('')}
+        />
+      </div>
 
       <div className="relative flex items-center !mt-2">
         <div className="flex-1 border-t border-gray-200" />

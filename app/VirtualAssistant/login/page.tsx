@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Eye, EyeOff, Loader2, Activity, Lock, Shield, Mail, Check } from "lucide-react";
+import { Eye, EyeOff, Loader2, Activity, Lock, Shield, Mail } from "lucide-react";
+import TurnstileWidget from "@/components/Turnstile/TurnstileWidget";
 import WelcomeSlideshow from "./WelcomeSlideshow";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://telexph-admin.onrender.com";
@@ -25,7 +26,7 @@ export default function VALoginPage() {
   const [email,        setEmail]        = useState("");
   const [password,     setPassword]     = useState("");
   const [remember,     setRemember]     = useState(false);
-  const [notRobot,     setNotRobot]     = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [isLoading,    setIsLoading]    = useState(false);
   const [error,        setError]        = useState("");
 
@@ -51,8 +52,8 @@ export default function VALoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!notRobot) {
-      setError("Please confirm you are not a robot.");
+    if (!turnstileToken) {
+      setError("Please complete the human verification challenge.");
       return;
     }
 
@@ -62,7 +63,7 @@ export default function VALoginPage() {
         method:      "POST",
         credentials: "include",
         headers:     { "Content-Type": "application/json" },
-        body:        JSON.stringify({ email, password }),
+        body:        JSON.stringify({ email, password, turnstileToken }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -132,33 +133,7 @@ export default function VALoginPage() {
         </div>
       </div>
 
-      <label
-        className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer border border-gray-200 rounded-2xl px-4 py-2.5 bg-gray-50/70 transition-all duration-200 hover:border-[#800000]/30 hover:shadow-sm hover:bg-white animate-fade-in-up"
-        style={{ animationDelay: '0.25s' }}
-      >
-        <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ${notRobot ? 'bg-green-500 border-green-500 scale-100' : 'border-gray-300'}`}>
-          {notRobot && <Check size={14} strokeWidth={3} className="text-white" style={{ animation: 'vaPopIn 0.25s cubic-bezier(0.34,1.56,0.64,1)' }} />}
-        </span>
-        <input
-          type="checkbox"
-          checked={notRobot}
-          onChange={(e) => setNotRobot(e.target.checked)}
-          className="sr-only"
-        />
-        <span className="flex-1">
-          <span className="block font-semibold text-gray-800">Verify you are human</span>
-          <span className="block text-[11px] text-gray-400">Protection by Cloudflare</span>
-        </span>
-        <span className="flex flex-col items-end shrink-0">
-          <span className="flex items-center gap-1 text-[12px] font-extrabold tracking-wide text-[#f38020]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
-            CLOUDFLARE
-          </span>
-          <span className="text-[9px] text-gray-400 mt-0.5">Privacy &middot; Terms</span>
-        </span>
-      </label>
-
-      <div className="flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+      <div className="flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.25s' }}>
         <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
           <input
             type="checkbox"
@@ -203,6 +178,13 @@ export default function VALoginPage() {
           </>
         )}
       </button>
+
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+        <TurnstileWidget
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken('')}
+        />
+      </div>
     </form>
   )
 
@@ -589,6 +571,11 @@ export default function VALoginPage() {
                 : "Sign in"
               }
             </button>
+
+            <TurnstileWidget
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken('')}
+            />
 
             {/* Divider */}
             <div style={styles.divider}>

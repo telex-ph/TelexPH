@@ -16,17 +16,6 @@ import {
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com';
 
-// ✅ Random Profile Picture Generator
-function generateRandomProfiles(seed: string | number, count: number = 3) {
-  const profiles = [];
-  const seedNum = typeof seed === 'string' ? seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : seed;
-  for (let i = 0; i < count; i++) {
-    const randomNum = ((seedNum + i * 13) % 70) + 1;
-    profiles.push(`https://i.pravatar.cc/150?img=${randomNum}`);
-  }
-  return profiles;
-}
-
 // API Functions
 async function getAllCaseStudies() {
   try {
@@ -175,6 +164,7 @@ export default function CaseStudiesFilter() {
           description: description || "No description available.",
           fullDescription: fullDescription || "No description available.",
           image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
+          authors: Array.isArray(item.authors) ? item.authors : [],
         };
       });
 
@@ -232,6 +222,27 @@ export default function CaseStudiesFilter() {
   };
 
   const formalColor = "#4b5563";
+
+  const renderAuthorAvatars = (authors: { name: string; image?: string }[], size: string) => (
+    <div className="flex -space-x-1">
+      {authors.slice(0, 3).map((author, i) =>
+        author.image ? (
+          <div key={i} className={`${size} rounded-full border-2 border-white bg-gray-200 overflow-hidden`}>
+            <img src={author.image} alt={author.name} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div
+            key={i}
+            className={`${size} rounded-full border-2 border-white flex items-center justify-center text-[9px] md:text-[11px] font-bold`}
+            style={{ background: "rgba(128,0,0,0.12)", color: "#800000" }}
+            title={author.name}
+          >
+            {author.name?.charAt(0).toUpperCase()}
+          </div>
+        )
+      )}
+    </div>
+  );
 
   return (
     <section className="w-full">
@@ -366,7 +377,6 @@ export default function CaseStudiesFilter() {
             {paginatedCards.length > 0 ? (
               paginatedCards.map((card: any, index: number) => {
                 const isExpanded = expandedCardId === index;
-                const profilePictures = generateRandomProfiles(card.id, 3);
 
                 return (
                   <div
@@ -433,13 +443,7 @@ export default function CaseStudiesFilter() {
                         <div className="absolute bottom-0 w-full bg-white px-4 md:px-6 pt-1.5 md:pt-3 pb-2 md:pb-6 z-20">
                           <hr className="hidden md:block border-gray-100 mb-2 md:mb-3" />
                           <div className="flex justify-between items-center">
-                            <div className="flex -space-x-1">
-                              {profilePictures.map((profileUrl, i) => (
-                                <div key={i} className="w-5 h-5 md:w-7 md:h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                                  <img src={profileUrl} alt={`user-${i}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
-                            </div>
+                            {renderAuthorAvatars(card.authors, "w-5 h-5 md:w-7 md:h-7")}
                             <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`}>
                               <button
                                 title="Preview article"
@@ -482,13 +486,7 @@ export default function CaseStudiesFilter() {
                           </div>
                           <hr className="hidden md:block border-gray-100 mt-auto" />
                           <div className="mt-auto md:mt-0 pt-1 md:pt-3 flex justify-between items-center">
-                            <div className="flex -space-x-1.5">
-                              {profilePictures.map((profileUrl, i) => (
-                                <div key={i} className="w-4 h-4 md:w-7 md:h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-                                  <img src={profileUrl} alt={`user-${i}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
-                            </div>
+                            {renderAuthorAvatars(card.authors, "w-4 h-4 md:w-7 md:h-7")}
                             <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`}>
                               <button
                                 title="Preview article"

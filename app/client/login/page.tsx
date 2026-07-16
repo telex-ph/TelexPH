@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { getClientAuthenticateUrl } from '@/lib/api-base'
+import TurnstileWidget from '@/components/Turnstile/TurnstileWidget'
 import WelcomeSlideshow from './WelcomeSlideshow'
 
 export default function ClientLoginPage() {
@@ -11,6 +12,7 @@ export default function ClientLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -30,13 +32,19 @@ export default function ClientLoginPage() {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    if (!turnstileToken) {
+      setError('Please complete the human verification challenge.')
+      return
+    }
+
     setIsLoading(true)
     try {
       const response = await fetch(getClientAuthenticateUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, turnstileToken }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Authentication failed')
@@ -124,6 +132,13 @@ export default function ClientLoginPage() {
           </>
         )}
       </button>
+
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.22s' }}>
+        <TurnstileWidget
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken('')}
+        />
+      </div>
 
       <p className="text-center text-sm text-gray-500 font-open-sans !mt-3">
         Don&apos;t have an account?{' '}
