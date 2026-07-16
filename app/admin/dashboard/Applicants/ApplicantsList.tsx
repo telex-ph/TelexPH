@@ -149,7 +149,7 @@ function HeroStatCard({ label, value, sub, bgImage, icon }: { label: string; val
 }
 
 // ─── Download Analytics + Applicants List CSV ─────────────────────────────────
-function downloadAnalyticsCSV(applicants: ApplicantListItem[]) {
+function downloadAnalyticsCSV(applicants: (ApplicantListItem & Partial<Applicant>)[]) {
   const total = applicants.length
   const approved = applicants.filter((a) => a.status === 'approved').length
   const pending = applicants.filter((a) => a.status === 'pending').length
@@ -1217,8 +1217,7 @@ export default function ApplicantsList() {
     const matchSearch = !q || (
       `${a.firstName} ${a.lastName}`.toLowerCase().includes(q) ||
       a.email.toLowerCase().includes(q) ||
-      (a.services || []).some((s) => s.toLowerCase().includes(q)) ||
-      (a.confirmCode || '').toLowerCase().includes(q)
+      (a.services || []).some((s) => s.toLowerCase().includes(q))
     )
     return matchStatus && matchSearch
   })

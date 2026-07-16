@@ -61,7 +61,7 @@ const STAT_CARD_COLORS = [
   '#1e3a5a', // This year    — navy
 ]
 
-export default function adminpage() {
+export default function AdminPage() {
   const pathname = usePathname()
   const isPageViewsAnalyticsRoute = pathname === '/admin/dashboard/page-views'
   const { isdarkmode } = useDarkMode()

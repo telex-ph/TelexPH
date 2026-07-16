@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -15,6 +15,14 @@ function safeRedirectTarget(raw: string | null): string {
 }
 
 export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginForm />
+    </Suspense>
+  )
+}
+
+function AdminLoginForm() {
   const [showMobileForm, setShowMobileForm] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

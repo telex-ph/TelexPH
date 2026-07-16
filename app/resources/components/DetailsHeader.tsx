@@ -131,6 +131,9 @@ export default function DetailsHeader() {
         image: caseStudy.cover,
         tags: caseStudy.tags,
         author: formatAuthors(caseStudy.authors || []),
+        date: caseStudy.createdAt
+          ? new Date(caseStudy.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+          : "",
       }
     : FALLBACK_DATA;
 
