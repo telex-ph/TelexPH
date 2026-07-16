@@ -101,7 +101,7 @@ export default function ClientLoginPage() {
       </div>
 
       <div className="flex items-center justify-end animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-        <Link href="#" className="text-sm font-medium text-[#8b0000] hover:underline transition-colors font-poppins">
+        <Link href="/client/login/forgot-password" className="text-sm font-medium text-[#8b0000] hover:underline transition-colors font-poppins">
           Forgot password?
         </Link>
       </div>

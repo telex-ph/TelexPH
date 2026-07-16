@@ -15,3 +15,18 @@ export function getAdminAuthenticateUrl(): string {
 export function getClientAuthenticateUrl(): string {
   return `${getApiBaseUrl()}/auth/client/authenticate`
 }
+
+export function getVaAuthenticateUrl(): string {
+  return `${getApiBaseUrl()}/auth/va/authenticate`
+}
+
+// Shared by Admin, Client, and VA logins — the request body carries
+// accountType: "admin" | "client" | "va" so the backend knows which
+// account collection to check.
+export function getForgotPasswordUrl(): string {
+  return `${getApiBaseUrl()}/auth/forgot-password`
+}
+
+export function getResetPasswordUrl(): string {
+  return `${getApiBaseUrl()}/auth/reset-password`
+}

@@ -12,6 +12,11 @@ import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 
+interface CaseStudyAuthor {
+  name: string;
+  image?: string;
+}
+
 interface CaseStudy {
   _id: string;
   title: string;
@@ -20,7 +25,7 @@ interface CaseStudy {
   cover: string;
   status: string;
   tags: string[];
-  author: string;
+  authors: CaseStudyAuthor[];
   likesCount?: number;
 }
 
@@ -32,6 +37,9 @@ const FALLBACK_DATA = {
   image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
   author: "Customer Experience Team",
 };
+
+const formatAuthors = (authors: CaseStudyAuthor[]): string =>
+  authors.map(a => a.name).filter(Boolean).join(", ");
 
 async function toggleLikeCaseStudy(id: string, isLiked: boolean) {
   try {
@@ -120,7 +128,7 @@ export default function DetailsHeader() {
         subtitle: caseStudy.subtitle || "",
         image: caseStudy.cover,
         tags: caseStudy.tags,
-        author: caseStudy.author,
+        author: formatAuthors(caseStudy.authors || []),
       }
     : FALLBACK_DATA;
 

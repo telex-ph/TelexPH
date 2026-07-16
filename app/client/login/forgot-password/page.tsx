@@ -6,7 +6,7 @@ import { getForgotPasswordUrl, getResetPasswordUrl } from '@/lib/api-base'
 
 type Step = 'email' | 'reset' | 'done'
 
-export default function ForgotPasswordPage() {
+export default function ClientForgotPasswordPage() {
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
       const res = await fetch(getForgotPasswordUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, accountType: 'admin' }),
+        body: JSON.stringify({ email, accountType: 'client' }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
       const res = await fetch(getResetPasswordUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp: otp.trim(), newPassword, accountType: 'admin' }),
+        body: JSON.stringify({ email, otp: otp.trim(), newPassword, accountType: 'client' }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
           priority
           quality={90}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-[#800000]/30" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-[#8b0000]/30" />
       </div>
 
       <div className="relative z-10 w-full h-full md:max-w-5xl md:h-auto md:max-h-[600px] bg-white md:rounded-2xl shadow-[0_60px_120px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col md:flex-row border border-white/10 font-open-sans">
@@ -103,7 +103,7 @@ export default function ForgotPasswordPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" />
           <Link
-            href="/admin/login"
+            href="/client/login"
             aria-label="Back to sign in"
             className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/25 backdrop-blur-sm flex items-center justify-center text-white"
           >
@@ -117,10 +117,10 @@ export default function ForgotPasswordPage() {
             {step === 'email' && (
               <>
                 <div className="mb-6 text-center md:text-left">
-                  <p className="text-xs font-semibold text-[#800000] tracking-widest uppercase mb-1 font-poppins">
+                  <p className="text-xs font-semibold text-[#8b0000] tracking-widest uppercase mb-1 font-poppins">
                     Forgot password?
                   </p>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[#800000] tracking-tight mb-2 font-poppins">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-[#8b0000] tracking-tight mb-2 font-poppins">
                     Reset your password
                   </h1>
                   <p className="text-gray-400 text-sm font-normal font-open-sans">
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
                     <input
                       type="email"
                       placeholder="you@example.com"
-                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
+                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#8b0000]/20 focus:border-[#8b0000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -150,7 +150,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full bg-[#800000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] mt-2 font-poppins flex items-center justify-center gap-2 ${isLoading ? 'opacity-70' : ''}`}
+                    className={`w-full bg-[#8b0000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#6b0000] transition-all shadow-xl shadow-[#8b0000]/20 active:scale-[0.98] mt-2 font-poppins flex items-center justify-center gap-2 ${isLoading ? 'opacity-70' : ''}`}
                   >
                     {isLoading ? (
                       <>
@@ -161,8 +161,8 @@ export default function ForgotPasswordPage() {
                   </button>
 
                   <Link
-                    href="/admin/login"
-                    className="block text-center text-sm font-medium text-[#800000] hover:underline transition-colors font-poppins pt-1"
+                    href="/client/login"
+                    className="block text-center text-sm font-medium text-[#8b0000] hover:underline transition-colors font-poppins pt-1"
                   >
                     Back to sign in
                   </Link>
@@ -173,10 +173,10 @@ export default function ForgotPasswordPage() {
             {step === 'reset' && (
               <>
                 <div className="mb-6 text-center md:text-left">
-                  <p className="text-xs font-semibold text-[#800000] tracking-widest uppercase mb-1 font-poppins">
+                  <p className="text-xs font-semibold text-[#8b0000] tracking-widest uppercase mb-1 font-poppins">
                     Check your email
                   </p>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[#800000] tracking-tight mb-2 font-poppins">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-[#8b0000] tracking-tight mb-2 font-poppins">
                     Enter verification code
                   </h1>
                   <p className="text-gray-400 text-sm font-normal font-open-sans">
@@ -197,7 +197,7 @@ export default function ForgotPasswordPage() {
                       inputMode="numeric"
                       maxLength={6}
                       placeholder="123456"
-                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans tracking-[0.3em] text-center"
+                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#8b0000]/20 focus:border-[#8b0000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans tracking-[0.3em] text-center"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                       required
@@ -213,7 +213,7 @@ export default function ForgotPasswordPage() {
                       <input
                         type={showPassword ? 'text' : 'password'}
                         placeholder="••••••••"
-                        className="w-full px-5 py-3 pr-12 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
+                        className="w-full px-5 py-3 pr-12 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#8b0000]/20 focus:border-[#8b0000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         required
@@ -241,7 +241,7 @@ export default function ForgotPasswordPage() {
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
+                      className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#8b0000]/20 focus:border-[#8b0000] focus:bg-white outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
@@ -252,7 +252,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full bg-[#800000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] mt-2 font-poppins flex items-center justify-center gap-2 ${isLoading ? 'opacity-70' : ''}`}
+                    className={`w-full bg-[#8b0000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#6b0000] transition-all shadow-xl shadow-[#8b0000]/20 active:scale-[0.98] mt-2 font-poppins flex items-center justify-center gap-2 ${isLoading ? 'opacity-70' : ''}`}
                   >
                     {isLoading ? (
                       <>
@@ -265,7 +265,7 @@ export default function ForgotPasswordPage() {
                   <button
                     type="button"
                     onClick={() => setStep('email')}
-                    className="block w-full text-center text-sm font-medium text-[#800000] hover:underline transition-colors font-poppins pt-1"
+                    className="block w-full text-center text-sm font-medium text-[#8b0000] hover:underline transition-colors font-poppins pt-1"
                   >
                     Use a different email
                   </button>
@@ -275,18 +275,18 @@ export default function ForgotPasswordPage() {
 
             {step === 'done' && (
               <div className="text-center md:text-left">
-                <div className="mx-auto md:mx-0 mb-4 w-14 h-14 rounded-full bg-[#800000]/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#800000" strokeWidth="2" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                <div className="mx-auto md:mx-0 mb-4 w-14 h-14 rounded-full bg-[#8b0000]/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8b0000" strokeWidth="2" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#800000] tracking-tight mb-2 font-poppins">
+                <h1 className="text-2xl sm:text-3xl font-bold text-[#8b0000] tracking-tight mb-2 font-poppins">
                   Password reset
                 </h1>
                 <p className="text-gray-400 text-sm font-normal font-open-sans mb-6">
                   Your password has been updated successfully. You can now sign in with your new password.
                 </p>
                 <Link
-                  href="/admin/login"
-                  className="block w-full text-center bg-[#800000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] font-poppins"
+                  href="/client/login"
+                  className="block w-full text-center bg-[#8b0000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#6b0000] transition-all shadow-xl shadow-[#8b0000]/20 active:scale-[0.98] font-poppins"
                 >
                   Back to Sign In
                 </Link>
@@ -310,11 +310,11 @@ export default function ForgotPasswordPage() {
           </div>
           <div className="relative z-20 text-center px-10 pb-12">
             <p className="text-gray-500 text-sm font-normal max-w-[380px] mx-auto leading-relaxed font-poppins">
-              This system is strictly for administrative use. all access attempts are monitored and unauthorized entry is prohibited.
+              This portal is for registered clients only. All access attempts are monitored.
             </p>
           </div>
-          <div className="absolute top-10 right-10 w-40 h-40 border border-[#800000]/5 rounded-full" />
-          <div className="absolute bottom-[-5%] left-[-5%] w-72 h-72 bg-[#800000]/5 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-10 w-40 h-40 border border-[#8b0000]/5 rounded-full" />
+          <div className="absolute bottom-[-5%] left-[-5%] w-72 h-72 bg-[#8b0000]/5 rounded-full blur-3xl" />
         </div>
       </div>
     </div>
