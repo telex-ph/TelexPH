@@ -308,7 +308,7 @@ function NavDropdown({
   sectionLabel,
   triggerLabel,
   triggerIcon,
-  children,
+  items,
   collapsed,
   pathname,
   open,
@@ -317,7 +317,7 @@ function NavDropdown({
   sectionLabel: string
   triggerLabel: string
   triggerIcon: React.ReactNode
-  children: { label: string; href: string; badge?: string }[]
+  items: { label: string; href: string; badge?: string }[]
   collapsed: boolean
   pathname: string
   open: boolean
@@ -346,7 +346,7 @@ function NavDropdown({
       </button>
       {open && (
         <div style={{ marginLeft: collapsed ? 0 : 20 }}>
-          {children.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -543,7 +543,7 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
             sectionLabel="Services"
             triggerLabel={NAV_SERVICES_DROPDOWN.label}
             triggerIcon={NAV_SERVICES_DROPDOWN.icon}
-            children={NAV_SERVICES_DROPDOWN.children}
+            items={NAV_SERVICES_DROPDOWN.children}
             collapsed={collapsed}
             pathname={pathname}
             open={servicesOpen}
@@ -553,7 +553,7 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
             sectionLabel="Virtual Assistant"
             triggerLabel={NAV_VA_DROPDOWN.label}
             triggerIcon={NAV_VA_DROPDOWN.icon}
-            children={NAV_VA_DROPDOWN.children}
+            items={NAV_VA_DROPDOWN.children}
             collapsed={collapsed}
             pathname={pathname}
             open={vaOpen}

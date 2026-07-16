@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { url: string } }
+  { params }: { params: Promise<{ url: string }> }
 ) {
   try {
     const { searchParams } = new URL(req.url)
     const range = searchParams.get('range') || '30d'
-    const funnelUrl = decodeURIComponent(params.url)
+    const { url } = await params
+    const funnelUrl = decodeURIComponent(url)
     
     // Get the base API URL
     const raw = process.env.ADMIN_API_BASE_URL?.trim() || 

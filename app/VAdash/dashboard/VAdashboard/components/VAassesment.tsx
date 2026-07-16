@@ -178,7 +178,6 @@ function ExamModal({ exam, onClose, onSubmit }: { exam: Exam; onClose: () => voi
         return prev - 1
       })
     }, 1000)
-    // @ts-ignore
     timerRef[0] = t
     return () => clearInterval(t)
   })
