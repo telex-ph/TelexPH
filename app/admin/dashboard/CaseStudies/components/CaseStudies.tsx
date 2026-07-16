@@ -12,11 +12,24 @@ type FormSection = {
   content: string
 }
 
+type Author = {
+  name: string
+  image: string
+}
+
+// Working copy of an author row in the form. `imageFile` holds a newly picked
+// file (not yet uploaded); `image` holds the existing URL/preview to show.
+type AuthorFormRow = {
+  name: string
+  image: string
+  imageFile: File | null
+}
+
 type CaseStudyRecord = {
   _id: string
   title: string
   subtitle: string
-  author: string
+  authors: Author[]
   status: string
   tags: string[]
   start: string
@@ -30,7 +43,7 @@ type CaseStudyRecord = {
 type FormData = {
   title: string
   subtitle: string
-  author: string
+  authors: AuthorFormRow[]
   status: string
   tags: string[]
   startDate: string
@@ -53,7 +66,9 @@ const transformBackendRecord = (item: any): CaseStudyRecord => ({
   _id: item._id,
   title: item.title || '',
   subtitle: item.subtitle || '',
-  author: item.author || '',
+  authors: Array.isArray(item.authors)
+    ? item.authors.map((a: any) => ({ name: a.name || '', image: a.image || '' }))
+    : [],
   status: item.status
     ? item.status.charAt(0).toUpperCase() + item.status.slice(1)
     : 'Draft',
@@ -85,11 +100,13 @@ const CATEGORY_OPTIONS = ['Technology', 'Healthcare', 'Finance', 'Marketing', 'O
 const LIB_CATEGORIES   = ['All', 'Technology', 'Logistics', 'Analytics', 'Infrastructure']
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-const DEFAULT_FORM: FormData = {
-  title: '', subtitle: '', author: '', status: 'Draft',
+const getDefaultForm = (): FormData => ({
+  title: '', subtitle: '', authors: [{ name: '', image: '', imageFile: null }], status: 'Draft',
   tags: [], startDate: '', endDate: '', challenge: '', solution: '',
   sections: [{ topic: '', content: '' }],
-}
+})
+
+const formatAuthors = (authors: Author[]): string => authors.map(a => a.name).join(', ')
 
 const getCardCover = (record: CaseStudyRecord, allRecords: CaseStudyRecord[]): string => {
   if (record.cover) return record.cover
@@ -305,8 +322,23 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
             <span style={{ fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{data.status}</span>
           </div>
 
-          {/* Author */}
-          <p style={{ fontSize: 12, color: textMuted, margin: '0 0 16px', fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.author}</strong></p>
+          {/* Authors */}
+          {data.authors.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 16px' }}>
+              <div style={{ display: 'flex' }}>
+                {data.authors.map((a, i) => (
+                  a.image ? (
+                    <img key={i} src={a.image} alt={a.name} style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${cardBg}`, marginLeft: i === 0 ? 0 : -8, flexShrink: 0 }} />
+                  ) : (
+                    <div key={i} style={{ width: 26, height: 26, borderRadius: '50%', border: `2px solid ${cardBg}`, marginLeft: i === 0 ? 0 : -8, flexShrink: 0, background: 'rgba(128,0,0,0.12)', color: '#800000', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Poppins', sans-serif" }}>
+                      {a.name.charAt(0).toUpperCase()}
+                    </div>
+                  )
+                ))}
+              </div>
+              <p style={{ fontSize: 12, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.authors.map(a => a.name).join(', ')}</strong></p>
+            </div>
+          )}
 
           {/* Tags */}
           {data.tags.length > 0 && (
@@ -433,7 +465,7 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
                     <div key={r._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 13px', borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
                       <div>
                         <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: '0 0 2px', fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {r.author}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {formatAuthors(r.authors)}</p>
                       </div>
                       <span style={{ fontSize: 9, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                     </div>
@@ -475,7 +507,7 @@ const DateModal = ({ isOpen, dateStr, studies, onClose, onSelectStudy, cardBg, b
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                     {r.subtitle && <p style={{ fontSize: 11, color: textMuted, margin: '0 0 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
-                    <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{r.author}</strong></p>
+                    <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{formatAuthors(r.authors)}</strong></p>
                   </div>
                   <span style={{ fontSize: 9, fontWeight: 600, padding: '3px 10px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                 </div>
@@ -498,6 +530,7 @@ const Toast = ({ message, type }: { message: string; type: 'success' | 'error' }
 export default function CaseStudies() {
   const formRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const authorFileRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const { isdarkmode: dark } = useDarkMode()
 
@@ -534,7 +567,7 @@ export default function CaseStudies() {
     fetchRecords()
   }, [])
 
-  const [form, setForm] = useState<FormData>({ ...DEFAULT_FORM })
+  const [form, setForm] = useState<FormData>(getDefaultForm())
   const [coverPreview, setCoverPreview] = useState<string>('')
   const [dragOver, setDragOver] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -617,6 +650,35 @@ export default function CaseStudies() {
       tags: prev.tags.includes(tag) ? prev.tags.filter(t => t !== tag) : [...prev.tags, tag],
     }))
 
+  const addAuthor = () =>
+    setForm(prev => ({ ...prev, authors: [...prev.authors, { name: '', image: '', imageFile: null }] }))
+
+  const removeAuthor = (i: number) =>
+    setForm(prev => ({ ...prev, authors: prev.authors.filter((_, idx) => idx !== i) }))
+
+  const updateAuthorName = (i: number, name: string) =>
+    setForm(prev => {
+      const authors = [...prev.authors]; authors[i] = { ...authors[i], name }; return { ...prev, authors }
+    })
+
+  const updateAuthorImage = (i: number, file: File) => {
+    const reader = new FileReader()
+    reader.onload = e => {
+      const preview = e.target?.result as string
+      setForm(prev => {
+        const authors = [...prev.authors]
+        authors[i] = { ...authors[i], image: preview, imageFile: file }
+        return { ...prev, authors }
+      })
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeAuthorImage = (i: number) =>
+    setForm(prev => {
+      const authors = [...prev.authors]; authors[i] = { ...authors[i], image: '', imageFile: null }; return { ...prev, authors }
+    })
+
   const addSection = () => {
     if (form.sections.length < 5)
       setForm(prev => ({ ...prev, sections: [...prev.sections, { topic: '', content: '' }] }))
@@ -631,8 +693,9 @@ export default function CaseStudies() {
     })
 
   const clearForm = () => {
-    setForm({ ...DEFAULT_FORM })
+    setForm(getDefaultForm())
     setCoverPreview('')
+    authorFileRefs.current = []
     setIsEditMode(false)
     setEditingId(null)
   }
@@ -659,9 +722,11 @@ export default function CaseStudies() {
     transition: 'border-color .15s', fontFamily: "'Poppins', sans-serif", ...overrides,
   })
 
+  const validAuthors = form.authors.filter(a => a.name.trim().length >= 2)
+
   const handleSubmit = async () => {
-    if (!form.title.trim() || !form.author.trim()) {
-      showToast('Title and Author are required.', 'error')
+    if (!form.title.trim() || validAuthors.length === 0) {
+      showToast('Title and at least one author (2+ characters) are required.', 'error')
       setShowConfirm(false)
       return
     }
@@ -672,7 +737,16 @@ export default function CaseStudies() {
       const formDataToSend = new FormData()
       formDataToSend.append('title', form.title)
       if (form.subtitle) formDataToSend.append('subtitle', form.subtitle)
-      formDataToSend.append('author', form.author)
+
+      const authorsPayload = validAuthors.map(a => ({
+        name: a.name.trim(),
+        image: a.imageFile ? '__NEW_FILE__' : a.image || '',
+      }))
+      formDataToSend.append('authors', JSON.stringify(authorsPayload))
+      validAuthors.forEach(a => {
+        if (a.imageFile) formDataToSend.append('authorImages', a.imageFile)
+      })
+
       formDataToSend.append('status', form.status.toLowerCase())
       if (form.tags.length > 0) formDataToSend.append('tags', form.tags.map(t => t.toLowerCase()).join(','))
       if (form.startDate) formDataToSend.append('startDate', form.startDate)
@@ -729,7 +803,9 @@ export default function CaseStudies() {
     setForm({
       title: data.title,
       subtitle: data.subtitle,
-      author: data.author,
+      authors: data.authors.length > 0
+        ? data.authors.map(a => ({ name: a.name, image: a.image, imageFile: null }))
+        : [{ name: '', image: '', imageFile: null }],
       status: data.status,
       tags: data.tags,
       startDate: data.start,
@@ -790,7 +866,7 @@ export default function CaseStudies() {
       if (activeTab !== 'All' && r.status !== activeTab) return false
       if (activeTagFilter !== 'All' && !r.tags.includes(activeTagFilter)) return false
       const q = search.toLowerCase()
-      if (search && !r.title.toLowerCase().includes(q) && !r.author.toLowerCase().includes(q)) return false
+      if (search && !r.title.toLowerCase().includes(q) && !r.authors.some(a => a.name.toLowerCase().includes(q))) return false
       return true
     })
     .sort((a, b) => {
@@ -898,7 +974,7 @@ export default function CaseStudies() {
               <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
             </div>
             {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: '0 0 5px', fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
-            <p style={{ fontSize: 10, color: textMuted, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary }}>{r.author}</strong></p>
+            <p style={{ fontSize: 10, color: textMuted, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary }}>{formatAuthors(r.authors)}</strong></p>
             {r.start && <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>📅 {r.start}</p>}
             {r.tags.length > 0 && (
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' as const, marginTop: 7 }}>
@@ -934,12 +1010,12 @@ export default function CaseStudies() {
             <p style={{ fontSize: 12, color: textMuted, margin: '4px 0 0', fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Manage your case studies / Create, edit, and organize your research projects with ease</p>
           </div>
           {(showFormOnly || showCalendarPage) ? (
-            <button onClick={() => { setShowFormOnly(false); setShowCalendarPage(false); setIsEditMode(false); setEditingId(null); setForm({ ...DEFAULT_FORM }); setCoverPreview('') }} className="cs-header-btn" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <button onClick={() => { setShowFormOnly(false); setShowCalendarPage(false); setIsEditMode(false); setEditingId(null); setForm(getDefaultForm()); authorFileRefs.current = []; setCoverPreview('') }} className="cs-header-btn" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
               Back to Case Studies
             </button>
           ) : (
-            <button onClick={() => { setIsEditMode(false); setForm(DEFAULT_FORM); setShowFormOnly(true); setShowCalendarPage(false) }} className="cs-header-btn" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>
+            <button onClick={() => { setIsEditMode(false); setForm(getDefaultForm()); authorFileRefs.current = []; setShowFormOnly(true); setShowCalendarPage(false) }} className="cs-header-btn" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, border: 'none', background: '#800000', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap', flexShrink: 0 }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
               Add Case Study
             </button>
@@ -1026,10 +1102,6 @@ export default function CaseStudies() {
                 </div>
               </div>
               <div>
-                <span style={lbl}>Author <span style={{ color: '#800000' }}>*</span></span>
-                <input style={inp()} placeholder="Author name..." value={form.author} onChange={e => updateForm('author', e.target.value)} />
-              </div>
-              <div>
                 <span style={lbl}>Status <span style={{ color: '#800000' }}>*</span></span>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const }}>
                   {STATUS_OPTIONS.map(s => {
@@ -1042,6 +1114,50 @@ export default function CaseStudies() {
               </div>
             </div>
           </div>
+
+          {/* Authors */}
+          <div style={{ marginBottom: 13 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={lbl}>Authors <span style={{ color: '#800000' }}>*</span></span>
+              <button onClick={addAuthor} style={{ fontSize: 10, color: '#800000', background: 'rgba(128,0,0,0.07)', border: '1px solid rgba(128,0,0,0.2)', borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>+ Add author</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {form.authors.map((a, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: subtleBg, border: `1px solid ${borderColor}` }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <div onClick={() => authorFileRefs.current[i]?.click()} style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', cursor: 'pointer', border: `1.5px dashed ${borderColor}`, background: inputBg, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                      {a.image ? (
+                        <img src={a.image} alt={a.name || 'author'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <svg width="16" height="16" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      )}
+                    </div>
+                    {a.image && (
+                      <button onClick={() => removeAuthorImage(i)} style={{ position: 'absolute', top: -3, right: -3, width: 16, height: 16, borderRadius: '50%', border: 'none', background: '#dc2626', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                        <svg width="8" height="8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    )}
+                    <input
+                      ref={el => { authorFileRefs.current[i] = el }}
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) updateAuthorImage(i, f); e.target.value = '' }}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <input style={inp()} placeholder="Author name..." value={a.name} onChange={e => updateAuthorName(i, e.target.value)} />
+                  </div>
+                  {form.authors.length > 1 && (
+                    <button onClick={() => removeAuthor(i)} className="icon-btn" style={{ width: 26, height: 26, borderRadius: 6, border: `1px solid ${borderColor}`, background: 'transparent', color: textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div style={{ marginBottom: 13 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={lbl}>Categories <span style={{ color: '#800000' }}>*</span></span>
@@ -1171,7 +1287,7 @@ export default function CaseStudies() {
                           <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                           <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 7px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                         </div>
-                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {r.author}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {formatAuthors(r.authors)}</p>
                       </div>
                     )
                   })}
@@ -1294,7 +1410,7 @@ export default function CaseStudies() {
                           <span style={{ fontSize: 8, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: 'nowrap' as const, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                         </div>
                         {r.subtitle && <p style={{ fontSize: 11, color: textMuted, margin: '0 0 4px', fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
-                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By {r.author} · {r.start}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By {formatAuthors(r.authors)} · {r.start}</p>
                       </div>
                     )
                   })
@@ -1396,7 +1512,7 @@ export default function CaseStudies() {
                     <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                       {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
-                      <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>By <span style={{ color: textSecondary, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{r.author}</span></p>
+                      <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>By <span style={{ color: textSecondary, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{formatAuthors(r.authors)}</span></p>
                       {r.tags.length > 0 && (
                         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' as const }}>
                           {r.tags.slice(0, 3).map(t => <span key={t} style={{ fontSize: 8, fontWeight: 500, padding: '2px 7px', borderRadius: 4, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
@@ -1424,7 +1540,7 @@ export default function CaseStudies() {
           {!isFetchingRecords && filtered.length > 0 && viewMode === 'list' && (
             <div>
               <div className="cs-list-header" style={{ display: 'grid', gridTemplateColumns: '48px 2fr 1fr 2fr 110px 130px', gap: 14, padding: '9px 18px', background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: 'uppercase' as const, letterSpacing: '0.07em', borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
-                <span>Cover</span><span>Title</span><span>Author</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' as const }}>Actions</span>
+                <span>Cover</span><span>Title</span><span>Authors</span><span>Tags</span><span>Status</span><span style={{ textAlign: 'right' as const }}>Actions</span>
               </div>
               {filtered.map((r, i) => {
                 const st = getStatusStyle(r.status)
@@ -1438,7 +1554,7 @@ export default function CaseStudies() {
                       <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                       {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
                     </div>
-                    <p className="cs-list-row-author" style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{r.author}</p>
+                    <p className="cs-list-row-author" style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, fontFamily: "'Poppins', sans-serif" }}>{formatAuthors(r.authors)}</p>
                     <div className="cs-list-row-tags" style={{ display: 'flex', gap: 4, flexWrap: 'wrap' as const, minWidth: 0 }}>
                       {r.tags.slice(0, 2).map(t => <span key={t} style={{ fontSize: 8, padding: '2px 6px', borderRadius: 4, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
                       {r.tags.length > 2 && <span style={{ fontSize: 9, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>+{r.tags.length - 2}</span>}

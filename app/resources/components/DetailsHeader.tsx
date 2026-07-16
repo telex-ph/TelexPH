@@ -12,6 +12,11 @@ import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 
+interface CaseStudyAuthor {
+  name: string;
+  image?: string;
+}
+
 interface CaseStudy {
   _id: string;
   title: string;
@@ -20,7 +25,7 @@ interface CaseStudy {
   cover: string;
   status: string;
   tags: string[];
-  author: string;
+  authors: CaseStudyAuthor[];
   likesCount?: number;
   createdAt?: string;
 }
@@ -34,6 +39,9 @@ const FALLBACK_DATA = {
   author: "Customer Experience Team",
   date: "",
 };
+
+const formatAuthors = (authors: CaseStudyAuthor[]): string =>
+  authors.map(a => a.name).filter(Boolean).join(", ");
 
 async function toggleLikeCaseStudy(id: string, isLiked: boolean) {
   try {
@@ -122,10 +130,7 @@ export default function DetailsHeader() {
         subtitle: caseStudy.subtitle || "",
         image: caseStudy.cover,
         tags: caseStudy.tags,
-        author: caseStudy.author,
-        date: caseStudy.createdAt 
-          ? new Date(caseStudy.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) 
-          : "",
+        author: formatAuthors(caseStudy.authors || []),
       }
     : FALLBACK_DATA;
 
