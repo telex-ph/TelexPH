@@ -30,7 +30,7 @@ interface ArchivedCaseStudy {
   cover: string
   status: string
   tags: string[]
-  author: string
+  authors: { name: string; image?: string }[]
   isArchived: boolean
   createdAt: string
   updatedAt: string
@@ -266,8 +266,10 @@ export default function ListArchivedServices() {
           return `${(it as any).firstName} ${(it as any).lastName}`.toLowerCase().includes(q)
             || (it as any).email.toLowerCase().includes(q)
             || (departments[(it as any).department] || '').toLowerCase().includes(q)
-        return ((it as any).title || '').toLowerCase().includes(q)
-          || ((it as any).author || '').toLowerCase().includes(q)
+        const authorMatch = it._type === 'casestudy'
+          ? ((it as ArchivedCaseStudy).authors || []).some(a => a.name.toLowerCase().includes(q))
+          : ((it as any).author || '').toLowerCase().includes(q)
+        return ((it as any).title || '').toLowerCase().includes(q) || authorMatch
       })
     }
     return applySort(items)
@@ -720,7 +722,7 @@ export default function ListArchivedServices() {
                 const coverImage  = isAdmin ? admin?.profilePicture : isBlog ? blog?.picture : cs?.cover
                 const title       = isAdmin ? `${admin?.firstName} ${admin?.lastName}` : (item as any).title || ''
                 const subtitle    = isAdmin ? admin?.email : isBlog ? blog?.shortDescription : cs?.subtitle
-                const author      = isAdmin ? `${admin?.firstName} ${admin?.lastName}` : (item as any).author || ''
+                const author      = isAdmin ? `${admin?.firstName} ${admin?.lastName}` : isBlog ? blog?.author || '' : (cs?.authors || []).map(a => a.name).join(', ')
                 const date        = fmtDate((item as any).updatedAt || (item as any).createdAt)
                 const status      = isAdmin ? (admin?.role === 1 ? 'Main Admin' : 'Admin') : ((item as any).status || '')
                 const accentColor = isAdmin ? '#4B0082' : isBlog ? '#8B0000' : '#0066CC'
@@ -820,7 +822,7 @@ export default function ListArchivedServices() {
                 const loading    = restoringid === item._id
                 const coverImage = isAdmin ? admin?.profilePicture : isBlog ? blog?.picture : cs?.cover
                 const title      = isAdmin ? `${admin?.firstName} ${admin?.lastName}` : (item as any).title || ''
-                const author     = isAdmin ? admin?.email || '' : (item as any).author || ''
+                const author     = isAdmin ? admin?.email || '' : isBlog ? blog?.author || '' : (cs?.authors || []).map(a => a.name).join(', ')
                 const date       = fmtDate((item as any).updatedAt || (item as any).createdAt)
                 const status     = (item as any).status || ''
                 const accentColor = isAdmin ? '#4B0082' : isBlog ? '#8B0000' : '#0066CC'
