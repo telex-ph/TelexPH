@@ -90,6 +90,7 @@ function transformRelated(item: any) {
     description: description || "Read the full case study.",
     image: toHttps(item.cover) || RELATED_FALLBACK_IMG,
     author: item.author || "Customer Experience Team",
+    status: item.status || "Active",
     date: item.createdAt
       ? new Date(item.createdAt).toLocaleDateString("en-US", {
           day: "numeric",
@@ -291,6 +292,8 @@ function LoadingExperience() {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+type FolderState = "wallet" | "challenge" | "solution" | "both";
+
 function CaseStudyDetailsContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -300,6 +303,7 @@ function CaseStudyDetailsContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isApiData, setIsApiData] = useState(false);
   const [mounted, setMounted]     = useState(false);
+  const [folderState, setFolderState] = useState<FolderState>("wallet");
 
   useEffect(() => {
     async function loadCaseStudy() {
@@ -309,6 +313,7 @@ function CaseStudyDetailsContent() {
       if (apiData) {
         const transformedStudy = {
           title: apiData.title || "Case Study",
+          type: "Case Studies",
           image: toHttps(apiData.cover) || RELATED_FALLBACK_IMG,
           challenge:
             Array.isArray(apiData.challenge) && apiData.challenge.length > 0
@@ -379,34 +384,56 @@ function CaseStudyDetailsContent() {
 
   // ── Page ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white">
-
-      <div className="print:hidden"><DetailsHeader /></div>
-
-      {/* Progress bar */}
-      <div className="w-full h-[3px] bg-zinc-100 print:hidden">
-        <div className="h-full w-1/3 transition-all duration-500" style={{ backgroundColor: T.primary }} />
+    <div className="min-h-screen bg-white relative">
+      {/* ── Print-specific font sizes ── */}
+      <style>{`
+        @media screen {
+          .drop-cap-p::first-letter {
+            font-size: 4.5rem;
+            font-weight: 900;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+          }
+        }
+        @media print {
+          .print-main-title { font-size: 35px !important; line-height: 1.1 !important; }
+          .print-subtitle { font-size: 16px !important; font-family: var(--font-rubik), sans-serif !important; }
+          .print-overview-h2 { font-size: 30px !important; margin-bottom: 20px !important; }
+          .print-overview-desc { font-size: 16px !important; font-family: var(--font-rubik), sans-serif !important; }
+          .print-section-h { font-size: 18px !important; }
+          .print-section-desc { font-size: 16px !important; font-family: var(--font-rubik), sans-serif !important; }
+          nextjs-portal,
+          #__next-build-indicator,
+          [data-nextjs-dialog-overlay],
+          [data-nextjs-toast],
+          body > nextjs-portal { display: none !important; }
+        }
+      `}</style>
+      {/* ── Print Watermark ── */}
+      <div className="hidden print:flex fixed inset-0 items-center justify-center pointer-events-none z-0">
+        <span 
+          style={{ 
+            fontFamily: FONTS.poppins, 
+            fontWeight: 900, 
+            fontSize: "140px", 
+            color: "rgba(0,0,0,0.04)", 
+            transform: "rotate(-35deg)",
+            whiteSpace: "nowrap",
+            letterSpacing: "0.05em",
+          }}
+        >
+          TELEX PH
+        </span>
       </div>
 
-      {/* Breadcrumb bar */}
-      <div className="border-b border-zinc-100 print:hidden">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-16 h-12 flex items-center justify-between">
-          <Link
-            href="/resources"
-            className="flex items-center gap-2 text-sm hover:opacity-60 transition-opacity"
-            style={{ color: T.primary, fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium }}
-          >
-            <FaChevronLeft size={8} />
-            Back to Insights
-          </Link>
-          <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>
-            Industry Intelligence · 2026
-          </span>
-        </div>
-      </div>
+      <div><DetailsHeader /></div>
+
+
 
       {/* Main grid */}
-      <div className="max-w-screen-xl mx-auto px-6 md:px-16 py-16 md:py-24">
+      <div className="max-w-screen-xl mx-auto px-6 md:px-16 pt-6 md:pt-8 pb-16 md:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
           {/* ══════════════ MAIN CONTENT ══════════════ */}
@@ -441,23 +468,23 @@ function CaseStudyDetailsContent() {
                 }}
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: '16px', color: T.primary }}>Overview</span>
+                  <span className="text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary }}>Overview</span>
                   <span className="flex-1 h-[1px] bg-zinc-100" />
-                  <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>01</span>
+                  <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>01</span>
                 </div>
                 <h2
-                  className="text-2xl md:text-3xl mb-8 tracking-tight"
-                  style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: T.textDark }}
+                  className="print-overview-h2 text-[22px] md:text-[30px] mb-8 tracking-tight"
+                  style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: T.textDark, lineHeight: 1.25 }}
                 >
                   {study.body[0].title}
                 </h2>
                 <p
-                  className="leading-[1.85] mt-4 text-justify first-letter:text-[4.5rem] first-letter:font-black first-letter:float-left first-letter:leading-[0.8] first-letter:mr-3 first-letter:mt-1"
-                  style={{ fontFamily: FONTS.rubik, fontWeight: 400, fontSize: '16px', color: T.textBody }}
+                  className="drop-cap-p print-overview-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px]"
+                  style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
                 >
                   {study.body[0].text}
                 </p>
-                <p className="leading-[1.85] mt-6 text-justify" style={{ fontFamily: FONTS.rubik, fontWeight: 400, fontSize: '16px', color: T.textBody }}>
+                <p className="print-overview-desc leading-[1.85] mt-6 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
                   {FIRST_SECTION_EXTRA}
                 </p>
               </div>
@@ -475,74 +502,71 @@ function CaseStudyDetailsContent() {
                   }}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: '16px', color: T.primary }}>{item.title}</span>
+                    <span className="print-section-h text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary }}>{item.title}</span>
                     <span className="flex-1 h-[1px] bg-zinc-100" />
-                    <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>0{idx + 2}</span>
+                    <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>0{idx + 2}</span>
                   </div>
-                  <p className="leading-[1.85] mt-4 text-justify" style={{ fontFamily: FONTS.rubik, fontWeight: 400, fontSize: '16px', color: T.textBody }}>
+                  <p className="print-section-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
                     {item.text}
                   </p>
                 </div>
               ))}
 
-              {/* Challenge + Solution — stacked "folder" cards (hover to open) */}
+            </article>
+
+            {/* ── Print-only Challenge & Solution cards (hidden on screen, visible in PDF) ── */}
+            <div className="hidden print:block mt-16 pt-10 border-t border-zinc-100 space-y-6">
+              {/* Challenge */}
               <div
-                className="cs-folder"
-                title="Hover to open"
                 style={{
-                  opacity: mounted ? 1 : 0,
-                  transform: mounted ? "translateY(0)" : "translateY(24px)",
-                  transition: "opacity 0.6s ease 0.35s, transform 0.6s ease 0.35s",
+                  backgroundColor: T.primaryDark,
+                  borderRadius: "16px",
+                  padding: "28px 32px",
                 }}
               >
-                {/* Challenge — maroon, on top */}
-                <div
-                  className="cs-folder-challenge p-6 md:p-8"
-                  style={{
-                    backgroundColor: T.primaryDark,
-                    borderRadius: "20px",
-                    position: "relative",
-                    zIndex: 2,
-                    boxShadow: "0 8px 40px rgba(122,0,0,0.35)",
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.whiteAlpha40 }}>The Problem</span>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.pinkLight }} />
-                  </div>
-                  <h3 style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "22px", color: T.white, marginBottom: "6px", letterSpacing: "-0.02em" }}>Challenge</h3>
-                  <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
-                  <p className="text-justify" style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, margin: 0 }}>
-                    {study.challenge}
-                  </p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.whiteAlpha40 }}>The Problem</span>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.pinkLight, display: "inline-block" }} />
                 </div>
-
-                {/* Solution — white, slides under the maroon card (folder look) */}
-                <div
-                  className="cs-folder-solution p-6 md:p-8"
-                  style={{
-                    backgroundColor: T.white,
-                    border: `1px solid ${T.borderLight}`,
-                    borderRadius: "20px",
-                    marginTop: "-20px",
-                    position: "relative",
-                    zIndex: 1,
-                    boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
-                  }}
-                >
-                  <div className="cs-folder-spacer" style={{ height: "20px" }} />
-                  <div className="flex items-center justify-between mb-4">
-                    <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.textMuted }}>The Resolution</span>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.primary }} />
-                  </div>
-                  <h3 style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "22px", color: T.textDark, marginBottom: "6px", letterSpacing: "-0.02em" }}>Solution</h3>
-                  <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
-                  <p className="text-justify" style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, margin: 0 }}>
-                    {study.solution}
-                  </p>
+                <h3 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.white, marginBottom: "8px", letterSpacing: "-0.02em" }}>
+                  Challenge
+                </h3>
+                <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "14px" }} />
+                <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
+                  {study.challenge}
+                </p>
+                <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.whiteAlpha10}` }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.whiteAlpha30 }}>Industry Intelligence · 2026</span>
                 </div>
               </div>
-            </article>
+
+              {/* Solution */}
+              <div
+                style={{
+                  backgroundColor: T.white,
+                  border: `1px solid ${T.borderLight}`,
+                  borderRadius: "16px",
+                  padding: "28px 32px",
+                  boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.textMuted }}>The Resolution</span>
+                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.primary, display: "inline-block" }} />
+                </div>
+                <h3 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.textDark, marginBottom: "8px", letterSpacing: "-0.02em" }}>
+                  Solution
+                </h3>
+                <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "14px" }} />
+                <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
+                  {study.solution}
+                </p>
+                <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.textHint }}>Industry Intelligence · 2026</span>
+                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: T.primary, fontWeight: FONT_WEIGHTS.medium }}>Resolved ✓</span>
+                </div>
+              </div>
+            </div>
 
             <div
               className="mt-20 pt-10 border-t border-zinc-100 flex items-center print:hidden"
@@ -560,7 +584,262 @@ function CaseStudyDetailsContent() {
           </main>
 
           {/* ══════════════ SIDEBAR — Article for you ══════════════ */}
-          <aside className="lg:col-span-4 h-fit">
+          {/* print:hidden — entire aside (wallet design + article list) is excluded from PDF */}
+          <aside className="lg:col-span-4 h-fit print:hidden">
+            {/* ══ Challenge + Solution — original wallet/credit-card design ══ */}
+            <div
+              className="mb-12"
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(24px)",
+                transition: "opacity 0.6s ease 0.35s, transform 0.6s ease 0.35s",
+              }}
+            >
+              {/* ══ WALLET STATE ══ */}
+              {folderState === "wallet" && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingBottom: "48px", paddingTop: "16px" }}>
+                  <div className="cs-wallet">
+                    <div className="cs-wallet-back" />
+
+                    {/* Challenge card — maroon, sits behind */}
+                    <div
+                      className="cs-card cs-challenge"
+                      onClick={() => setFolderState("challenge")}
+                      title="Click to view Challenge"
+                    >
+                      <div className="cs-card-inner">
+                        <div className="cs-card-top">
+                          <span className="cs-card-label">Challenge</span>
+                          <div className="cs-chip" />
+                        </div>
+                        <div className="cs-card-bottom">
+                          <span className="cs-meta-label">The Problem</span>
+                          <span className="cs-meta-value">{study.challenge.slice(0, 52)}…</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Solution card — white, sits on top */}
+                    <div
+                      className="cs-card cs-solution"
+                      onClick={() => setFolderState("solution")}
+                      title="Click to view Solution"
+                    >
+                      <div className="cs-card-inner">
+                        <div className="cs-card-top">
+                          <span className="cs-card-label" style={{ color: T.primary }}>Solution</span>
+                          <div className="cs-chip cs-chip-light" />
+                        </div>
+                        <div className="cs-card-bottom">
+                          <span className="cs-meta-label" style={{ color: T.primaryDark }}>The Resolution</span>
+                          <span className="cs-meta-value" style={{ color: T.primary }}>{study.solution.slice(0, 52)}…</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pocket SVG */}
+                    <div className="cs-pocket">
+                      <svg viewBox="0 0 340 190" fill="none" style={{ width: "340px", height: "190px" }}>
+                        <path
+                          d="M 0 24 C 0 12, 6 12, 12 12 C 24 12, 30 30, 48 30 L 292 30 C 310 30, 316 12, 328 12 C 334 12, 340 12, 340 24 L 340 145 C 340 188, 316 192, 292 192 L 48 192 C 24 192, 0 188, 0 145 Z"
+                          fill={T.primary}
+                        />
+                        <path
+                          d="M 10 26 C 10 19, 14 19, 18 19 C 28 19, 33 35, 48 35 L 292 35 C 307 35, 312 19, 322 19 C 326 19, 330 19, 330 26 L 330 145 C 330 182, 314 184, 292 184 L 48 184 C 30 184, 10 184, 10 145 Z"
+                          stroke={T.primaryDark}
+                          strokeWidth="1.5"
+                          strokeDasharray="7 5"
+                        />
+                      </svg>
+                      <div className="cs-pocket-content">
+                        <div style={{ position: "relative", height: "32px", width: "100%" }}>
+                          <div className="cs-balance-stars">••••••</div>
+                          <div className="cs-balance-real">2 Insights</div>
+                        </div>
+                        <div style={{ color: T.pinkMid, fontSize: "13px", fontWeight: 500, fontFamily: FONTS.openSans }}>
+                          Industry Intelligence · 2026
+                        </div>
+                        <div className="cs-eye-wrapper">
+                          <svg className="cs-eye cs-eye-slash" width="22" height="22" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                          </svg>
+                          <svg className="cs-eye cs-eye-open" width="22" height="22" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pocket overlay */}
+                    <div className="cs-expand-trigger" onClick={() => setFolderState("both")} />
+                  </div>
+                </div>
+              )}
+
+              {/* ══ CHALLENGE SOLO — maroon, click to return to wallet ══ */}
+              {folderState === "challenge" && (
+                <div style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
+                  <div
+                    style={{
+                      backgroundColor: T.primaryDark,
+                      borderRadius: "20px",
+                      padding: "24px",
+                      position: "relative",
+                      zIndex: 2,
+                      boxShadow: `0 8px 40px rgba(122,0,0,0.40)`,
+                      transition: "transform 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setFolderState("wallet")}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"; }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase" as const, color: T.whiteAlpha40 }}>The Problem</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.pinkLight, display: "inline-block" }} />
+                    </div>
+                    <h3 style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "22px", color: T.white, marginBottom: "6px", letterSpacing: "-0.02em" }}>
+                      Challenge
+                    </h3>
+                    <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
+                      {study.challenge}
+                    </p>
+                    <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.whiteAlpha10}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" as const, color: T.whiteAlpha30 }}>Industry Intelligence · 2026</span>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase" as const, color: T.pinkLight, fontWeight: FONT_WEIGHTS.medium, opacity: 0.6 }}>click to close</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ══ SOLUTION SOLO — white, click to return to wallet ══ */}
+              {folderState === "solution" && (
+                <div style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
+                  <div
+                    style={{
+                      backgroundColor: T.white,
+                      border: `1px solid ${T.borderLight}`,
+                      borderRadius: "20px",
+                      padding: "24px",
+                      position: "relative",
+                      zIndex: 1,
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setFolderState("wallet")}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)";
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 16px rgba(0,0,0,0.06)";
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase" as const, color: T.textMuted }}>The Resolution</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.primary, display: "inline-block" }} />
+                    </div>
+                    <h3 style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "22px", color: T.textDark, marginBottom: "6px", letterSpacing: "-0.02em" }}>
+                      Solution
+                    </h3>
+                    <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
+                      {study.solution}
+                    </p>
+                    <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" as const, color: T.textHint }}>Industry Intelligence · 2026</span>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase" as const, color: T.primary, fontWeight: FONT_WEIGHTS.medium, opacity: 0.45 }}>click to close</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ══ BOTH CARDS ══ */}
+              {folderState === "both" && (
+                <div style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
+
+                  {/* Challenge card — maroon, on top */}
+                  <div
+                    style={{
+                      backgroundColor: T.primaryDark,
+                      borderRadius: "20px",
+                      padding: "24px",
+                      position: "relative",
+                      zIndex: 2,
+                      boxShadow: `0 8px 40px rgba(122,0,0,0.40)`,
+                      marginBottom: "0",
+                      transition: "transform 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setFolderState("challenge")}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"; }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase" as const, color: T.whiteAlpha40 }}>The Problem</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.pinkLight, display: "inline-block" }} />
+                    </div>
+                    <h3 style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "22px", color: T.white, marginBottom: "6px", letterSpacing: "-0.02em" }}>
+                      Challenge
+                    </h3>
+                    <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
+                      {study.challenge}
+                    </p>
+                  </div>
+
+                  {/* Solution card — white, slides under */}
+                  <div
+                    style={{
+                      backgroundColor: T.white,
+                      border: `1px solid ${T.borderLight}`,
+                      borderRadius: "20px",
+                      padding: "24px",
+                      marginTop: "-16px",
+                      position: "relative",
+                      zIndex: 1,
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setFolderState("solution")}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLDivElement).style.transform = "translateY(4px)";
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)";
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 16px rgba(0,0,0,0.06)";
+                    }}
+                  >
+                    <div style={{ height: "20px" }} />
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase" as const, color: T.textMuted }}>The Resolution</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.primary, display: "inline-block" }} />
+                    </div>
+                    <h3 style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "22px", color: T.textDark, marginBottom: "6px", letterSpacing: "-0.02em" }}>
+                      Solution
+                    </h3>
+                    <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
+                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
+                      {study.solution}
+                    </p>
+                    <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" as const, color: T.textHint }}>Industry Intelligence · 2026</span>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" as const, color: T.primary, fontWeight: FONT_WEIGHTS.medium }}>Resolved ✓</span>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+            </div>
+
             <div
               style={{
                 opacity: mounted ? 1 : 0,
@@ -568,6 +847,8 @@ function CaseStudyDetailsContent() {
                 transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s",
               }}
             >
+              {/* Top divider */}
+              <div style={{ height: '1px', backgroundColor: '#A10000', marginBottom: '20px' }} />
               <h2
                 className="mb-6"
                 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.textDark }}
@@ -598,12 +879,29 @@ function CaseStudyDetailsContent() {
                           if (t.src !== RELATED_FALLBACK_IMG) t.src = RELATED_FALLBACK_IMG;
                         }}
                       />
-                      <span
-                        className="absolute top-3 left-3 bg-white/90 px-2.5 py-1 rounded-full shadow-sm"
-                        style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px", letterSpacing: "0.06em", textTransform: "uppercase", color: T.textDark }}
-                      >
-                        Case studies
-                      </span>
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span
+                          className="bg-white/90 px-2.5 py-1 rounded-full shadow-sm"
+                          style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px", letterSpacing: "0.06em", textTransform: "uppercase", color: T.textDark }}
+                        >
+                          Case studies
+                        </span>
+                        {item.status && (
+                          <span
+                            className="bg-white/90 px-2.5 py-1 rounded-full shadow-sm"
+                            style={{ 
+                              fontFamily: FONTS.openSans, 
+                              fontWeight: FONT_WEIGHTS.bold, 
+                              fontSize: "10px", 
+                              letterSpacing: "0.06em", 
+                              textTransform: "uppercase", 
+                              color: item.status.toLowerCase() === 'active' ? '#16a34a' : item.status.toLowerCase() === 'draft' ? '#ea580c' : T.textDark 
+                            }}
+                          >
+                            {item.status}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="p-4">
@@ -638,6 +936,23 @@ function CaseStudyDetailsContent() {
                   </Link>
                 ))}
               </div>
+
+              <Link
+                href={`/resources?tab=${encodeURIComponent(study.type)}`}
+                className="flex items-center justify-center gap-2 mt-6 w-full py-3 rounded-lg border transition-colors hover:opacity-80"
+                style={{
+                  fontFamily: FONTS.openSans,
+                  fontWeight: FONT_WEIGHTS.bold,
+                  fontSize: "13px",
+                  letterSpacing: "0.04em",
+                  color: T.primary,
+                  borderColor: "rgba(161,0,0,0.25)",
+                }}
+              >
+                View All Articles
+              </Link>
+              {/* Bottom divider */}
+              <div style={{ height: '1px', backgroundColor: '#A10000', marginTop: '24px' }} />
             </div>
           </aside>
         </div>
@@ -646,37 +961,100 @@ function CaseStudyDetailsContent() {
       <div className="mt-16 print:hidden"><Footer /></div>
 
       <style jsx global>{`
+        .cs-wallet {
+          position: relative;
+          width: 340px;
+          height: 270px;
+          cursor: pointer;
+          perspective: 1200px;
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          transition: transform 0.4s ease;
+        }
+        .cs-wallet:hover { transform: translateY(-6px); }
+        @keyframes slideIntoPocket {
+          0%   { transform: translateY(-120px); opacity: 0; }
+          100% { transform: translateY(0);      opacity: 1; }
+        }
+        .cs-wallet-back {
+          position: absolute;
+          bottom: 0;
+          width: 340px;
+          height: 235px;
+          background: ${T.primaryDeep};
+          border-radius: 26px 26px 72px 72px;
+          z-index: 5;
+          box-shadow: inset 0 28px 40px rgba(0,0,0,0.4), inset 0 6px 18px rgba(0,0,0,0.5);
+        }
+        .cs-card {
+          position: absolute;
+          width: 316px;
+          height: 172px;
+          left: 12px;
+          border-radius: 18px;
+          padding: 22px;
+          color: ${T.white};
+          box-shadow: inset 0 1px 1px rgba(255,255,255,0.25), 0 -4px 18px rgba(0,0,0,0.12);
+          transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+          animation: slideIntoPocket 0.8s cubic-bezier(0.2,0.8,0.2,1) backwards;
+          cursor: pointer;
+        }
+        .cs-card-inner { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .cs-card-top   { display: flex; justify-content: space-between; align-items: center; }
+        .cs-card-label { font-size: 12px; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; }
+        .cs-chip {
+          width: 38px; height: 28px;
+          background: rgba(255,255,255,0.20);
+          border-radius: 5px;
+          border: 1px solid rgba(255,255,255,0.12);
+        }
+        .cs-chip-light { background: rgba(161,0,0,0.10); border-color: rgba(161,0,0,0.12); }
+        .cs-card-bottom { display: flex; flex-direction: column; gap: 5px; }
+        .cs-meta-label  { font-size: 9px; opacity: 0.65; text-transform: uppercase; letter-spacing: 1.2px; }
+        .cs-meta-value  { font-size: 12px; font-weight: 600; letter-spacing: 0.3px; line-height: 1.4; }
+        .cs-challenge { background: ${T.primaryDark}; bottom: 88px; z-index: 10; animation-delay: 0.1s; }
+        .cs-solution  { background: ${T.white}; color: ${T.primary}; bottom: 56px; z-index: 20; animation-delay: 0.2s; }
+        .cs-pocket {
+          position: absolute; bottom: 0; width: 340px; height: 190px; z-index: 40;
+          filter: drop-shadow(0 18px 28px rgba(161,0,0,0.40));
+        }
+        .cs-pocket-content {
+          position: absolute; top: 52px; width: 100%; text-align: center;
+          z-index: 50; display: flex; flex-direction: column; align-items: center; gap: 9px;
+        }
+        .cs-balance-stars {
+          color: ${T.pinkMid}; font-size: 24px; letter-spacing: 5px; transition: 0.3s;
+          position: absolute; left: 50%; transform: translateX(-50%);
+        }
+        .cs-balance-real {
+          color: ${T.pinkLight}; font-size: 22px; font-weight: 600; opacity: 0;
+          position: absolute; left: 50%; transform: translate(-50%, 10px);
+          transition: 0.3s; white-space: nowrap;
+        }
+        .cs-eye-wrapper { margin-top: 9px; height: 22px; width: 22px; position: relative; opacity: 0.35; transition: 0.3s; }
+        .cs-eye { position: absolute; top: 0; left: 0; stroke: ${T.pinkLight}; transition: 0.3s; }
+        .cs-eye-open { opacity: 0; }
+        .cs-expand-trigger { position: absolute; bottom: 0; left: 0; width: 100%; height: 190px; z-index: 30; cursor: pointer; }
+        .cs-wallet:hover .cs-eye-wrapper       { opacity: 1; }
+        .cs-wallet:hover .cs-challenge          { transform: translateY(-72px) rotate(-3deg); }
+        .cs-wallet:hover .cs-solution           { transform: translateY(-12px); }
+        .cs-card:hover                          { z-index: 100 !important; transition-delay: 0s !important; }
+        .cs-wallet:hover .cs-challenge:hover    { transform: translateY(-66px) scale(1.05) rotate(0); }
+        .cs-wallet:hover .cs-solution:hover     { transform: translateY(-66px) scale(1.05) rotate(0); }
+        .cs-wallet:hover .cs-balance-stars      { opacity: 0; }
+        .cs-wallet:hover .cs-balance-real       { opacity: 1; transform: translate(-50%, 0); }
+        .cs-wallet:hover .cs-eye-slash          { opacity: 0; transform: scale(0.5); }
+        .cs-wallet:hover .cs-eye-open           { opacity: 1; transform: scale(1.1); }
         @keyframes fadeSlideIn {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-
-        /* ── Challenge / Solution "folder" open-on-hover animation ── */
-        .cs-folder { cursor: pointer; }
-        .cs-folder-challenge,
-        .cs-folder-solution {
-          transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease, margin 0.45s ease;
-          will-change: transform;
-        }
-        .cs-folder-spacer {
-          transition: height 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .cs-folder:hover .cs-folder-challenge {
-          transform: translateY(-14px);
-          box-shadow: 0 20px 55px rgba(122, 0, 0, 0.45);
-        }
-        .cs-folder:hover .cs-folder-solution {
-          transform: translateY(6px);
-          box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
-        }
-        .cs-folder:hover .cs-folder-spacer { height: 6px; }
-
         @media print {
-          .cs-folder-challenge, .cs-folder-solution { transform: none !important; box-shadow: none !important; }
           @page { margin: 15mm; size: auto; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white !important; }
-          .lg\\:col-span-8 { width: 100% !important; float: none !important; }
-          .lg\\:col-span-4 { width: 100% !important; margin-top: 50px; }
+          /* Main content takes full page width; sidebar is hidden via print:hidden utility */
+          .lg\\:col-span-8 { grid-column: span 12 / span 12 !important; max-width: 100% !important; }
           h1, h2 { font-size: 22pt !important; }
           .shadow-xl, .shadow-lg, .shadow-md { box-shadow: none !important; }
           .sticky { position: static !important; }

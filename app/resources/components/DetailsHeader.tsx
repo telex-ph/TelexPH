@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { HiOutlineLink } from "react-icons/hi2";
 import { 
-  FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaHeart
+  FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaHeart, FaChevronLeft, FaRegCalendarAlt
 } from "react-icons/fa";
 import { COLORS, FONTS, TYPOGRAPHY, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/styles";
 
@@ -22,6 +22,7 @@ interface CaseStudy {
   tags: string[];
   author: string;
   likesCount?: number;
+  createdAt?: string;
 }
 
 const FALLBACK_DATA = {
@@ -31,6 +32,7 @@ const FALLBACK_DATA = {
   subtitle: "please wait while we load the content",
   image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
   author: "Customer Experience Team",
+  date: "",
 };
 
 async function toggleLikeCaseStudy(id: string, isLiked: boolean) {
@@ -121,6 +123,9 @@ export default function DetailsHeader() {
         image: caseStudy.cover,
         tags: caseStudy.tags,
         author: caseStudy.author,
+        date: caseStudy.createdAt 
+          ? new Date(caseStudy.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) 
+          : "",
       }
     : FALLBACK_DATA;
 
@@ -133,61 +138,83 @@ export default function DetailsHeader() {
 
   return (
     <>
-      <Nav openNav={() => setShowNav(true)} />
-      <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
+      <div className="print:hidden">
+        <Nav openNav={() => setShowNav(true)} />
+        <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
+      </div>
 
-      <section className="w-full bg-white overflow-hidden pt-24 md:pt-28 pb-6 md:pb-8">
+      <section className="w-full bg-white overflow-hidden pt-36 md:pt-44 pb-6 md:pb-8 print:pt-8 print:pb-2">
         <div className="max-w-screen-xl mx-auto px-6 md:px-16">
 
-          {/* Breadcrumb */}
-          <nav
-            className="flex flex-wrap items-center gap-1 mb-6 md:mb-8 text-sm"
-            style={{
-              fontFamily: FONTS.openSans,
-              fontWeight: FONT_WEIGHTS.medium,
-              color: getColorWithOpacity("dark", 0.7),
-            }}
-          >
-            <Link
-              href="/"
-              className="transition-colors"
-              style={{ color: getColorWithOpacity("dark", 0.7) }}
-              onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
-              onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
+          {/* Top Bar: Breadcrumb + Button */}
+          <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8 print:mb-4">
+            {/* Breadcrumb */}
+            <nav
+              className="flex flex-wrap items-center gap-1 print:hidden"
+              style={{
+                fontFamily: FONTS.openSans,
+                fontWeight: FONT_WEIGHTS.bold,
+                fontSize: "10px",
+                textTransform: "uppercase",
+                color: getColorWithOpacity("dark", 0.7),
+              }}
             >
-              Home
-            </Link>
-            <span className="mx-1 opacity-50">&gt;&gt;</span>
+              <Link
+                href="/"
+                className="transition-colors"
+                style={{ color: getColorWithOpacity("dark", 0.7) }}
+                onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
+                onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
+              >
+                Home
+              </Link>
+              <span className="mx-1 opacity-50">&gt;&gt;</span>
+              <Link
+                href="/resources"
+                className="transition-colors"
+                style={{ color: getColorWithOpacity("dark", 0.7) }}
+                onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
+                onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
+              >
+                Resources
+              </Link>
+              <span className="mx-1 opacity-50">&gt;&gt;</span>
+              <span
+                className="truncate max-w-[180px] md:max-w-none"
+                style={{ color: '#A10000' }}
+              >
+                {displayData.title}
+              </span>
+            </nav>
+
             <Link
               href="/resources"
-              className="transition-colors"
-              style={{ color: getColorWithOpacity("dark", 0.7) }}
-              onMouseEnter={e => (e.currentTarget.style.color = COLORS.primary)}
-              onMouseLeave={e => (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))}
+              className="print:hidden flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-5 md:py-2 rounded-full text-white text-[11px] md:text-sm hover:opacity-90 active:scale-95 transition-all w-fit self-start md:self-auto"
+              style={{
+                backgroundColor: COLORS.primary,
+                fontFamily: FONTS.openSans,
+                fontWeight: FONT_WEIGHTS.medium,
+                boxShadow: "0 2px 8px rgba(161,0,0,0.25)"
+              }}
             >
-              Resources
+              <FaChevronLeft size={10} />
+              Back
             </Link>
-            <span className="mx-1 opacity-50">&gt;&gt;</span>
-            <span
-              className="truncate max-w-[180px] md:max-w-none"
-              style={{ color: COLORS.primary }}
-            >
-              {displayData.title}
-            </span>
-          </nav>
+          </div>
 
           <div className="max-w-3xl">
 
             {/* Label */}
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-4 h-[1px]" style={{ background: getColorWithOpacity("dark", 0.2) }} />
+              <span className="w-4 h-[1px]" style={{ background: '#A10000' }} />
               <span
+                className="text-[10px] md:text-[14px]"
                 style={{
                   fontFamily: FONTS.openSans,
                   fontWeight: FONT_WEIGHTS.bold,
-                  fontSize: '16px',
-                  color: getColorWithOpacity("dark", 0.5),
+                  color: '#A10000',
                   letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
                 }}
               >
                 {displayData.type}
@@ -196,7 +223,7 @@ export default function DetailsHeader() {
 
             {/* Title */}
             <h1
-              className="text-[36px] md:text-[48px] mb-3 tracking-tight"
+              className="print-main-title text-[28px] md:text-[48px] mb-3 tracking-tight"
               style={{
                 fontFamily: FONTS.poppins,
                 fontWeight: 900,
@@ -214,11 +241,10 @@ export default function DetailsHeader() {
             {/* Subtitle */}
             {displayData.subtitle && (
               <p
-                className="mb-5"
+                className="print-subtitle mb-5 text-[14px] md:text-[16px]"
                 style={{
                   fontFamily: FONTS.rubik,
-                  fontWeight: 400,
-                  fontSize: '16px',
+                  fontWeight: FONT_WEIGHTS.regular,
                   color: getColorWithOpacity("dark", 0.7),
                   lineHeight: 1.65,
                 }}
@@ -227,66 +253,74 @@ export default function DetailsHeader() {
               </p>
             )}
 
-            {/* Author */}
-            <p
-              className="mb-6 md:mb-7"
-              style={{
-                fontFamily: FONTS.openSans,
-                fontSize: '13px',
-                color: getColorWithOpacity("dark", 0.5),
-                letterSpacing: '0.04em',
-              }}
-            >
-              By {displayData.author || "Customer Experience Team"}
-            </p>
+          </div>{/* end max-w-3xl */}
 
-            {/* Social + Like */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 pt-5 md:pt-6 border-t border-zinc-100">
-              <div className="flex items-center gap-2">
-                {[
-                  { icon: <FaFacebookF size={11} />, label: 'Facebook' },
-                  { icon: <FaTwitter size={11} />, label: 'Twitter' },
-                  { icon: <FaLinkedinIn size={11} />, label: 'LinkedIn' },
-                  { icon: <FaEnvelope size={11} />, label: 'Email' },
-                  { icon: <HiOutlineLink size={14} />, label: 'Copy' },
-                ].map((social, idx) => (
-                  <button
-                    key={idx}
-                    aria-label={social.label}
-                    className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all"
-                    style={{
-                      background: getColorWithOpacity("dark", 0.04),
-                      color: getColorWithOpacity("dark", 0.4),
-                      border: `0.5px solid ${getColorWithOpacity("dark", 0.1)}`,
-                    }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.08);
-                      (e.currentTarget as HTMLButtonElement).style.color = COLORS.black;
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.04);
-                      (e.currentTarget as HTMLButtonElement).style.color = getColorWithOpacity("dark", 0.4);
-                    }}
-                  >
-                    {social.icon}
-                  </button>
-                ))}
+          {/* Author row & Socials */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8">
+            {/* Left: Avatar + Name & Date */}
+            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-0">
+              <img
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayData.author || "Customer Experience Team")}&background=f3f4f6&color=374151`}
+                alt={displayData.author || "Customer Experience Team"}
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
+              />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[13px] md:text-[15px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: '#282828' }}>
+                  {displayData.author || "Customer Experience Team"}
+                </span>
+                <div className="flex items-center gap-1.5 text-[11px] md:text-[13px]" style={{ fontFamily: FONTS.openSans, color: getColorWithOpacity("dark", 0.6) }}>
+                  <FaRegCalendarAlt size={11} />
+                  <span>
+                    {displayData.date ? `${displayData.date} • ` : ""}4 min read
+                  </span>
+                </div>
               </div>
+            </div>
 
+            {/* Right (Desktop) / Bottom (Mobile): Social icons + Like — print:hidden */}
+            <div className="flex items-center gap-2 print:hidden mt-2 md:mt-0">
+              {[
+                { icon: <FaFacebookF size={11} />, label: 'Facebook' },
+                { icon: <FaTwitter size={11} />, label: 'Twitter' },
+                { icon: <FaLinkedinIn size={11} />, label: 'LinkedIn' },
+                { icon: <FaEnvelope size={11} />, label: 'Email' },
+                { icon: <HiOutlineLink size={14} />, label: 'Copy' },
+              ].map((social, idx) => (
+                <button
+                  key={idx}
+                  aria-label={social.label}
+                  className="w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all"
+                  style={{
+                    background: getColorWithOpacity("dark", 0.04),
+                    color: '#A10000',
+                    border: `0.5px solid rgba(161,0,0,0.2)`,
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'rgba(161,0,0,0.08)';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#A10000';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background = getColorWithOpacity("dark", 0.04);
+                    (e.currentTarget as HTMLButtonElement).style.color = '#A10000';
+                  }}
+                >
+                  {social.icon}
+                </button>
+              ))}
               <button
                 onClick={handleLikeToggle}
                 disabled={isLiking}
-                className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
+                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-all ml-1 md:ml-2"
                 style={{
                   background: 'rgba(161,0,0,0.04)',
                   border: '0.5px solid rgba(161,0,0,0.15)',
                 }}
               >
-                <FaHeart size={12} style={{ color: COLORS.primary }} />
+                <FaHeart size={10} className="md:w-3 md:h-3" style={{ color: COLORS.primary }} />
                 <span
+                  className="text-[11px] md:text-[13px]"
                   style={{
                     fontFamily: FONTS.openSans,
-                    fontSize: '13px',
                     color: COLORS.primary,
                     letterSpacing: '0.02em',
                   }}
@@ -295,7 +329,6 @@ export default function DetailsHeader() {
                 </span>
               </button>
             </div>
-
           </div>
         </div>
       </section>

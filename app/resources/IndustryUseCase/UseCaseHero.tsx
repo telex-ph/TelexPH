@@ -18,15 +18,18 @@ export default function CaseStudiesHero() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className={`${FONT_CLASSES.openSansBold} text-5xl md:text-6xl text-gray-900 leading-[0.9] uppercase tracking-tighter mb-8`}>
+          <h1
+            className={`${FONT_CLASSES.poppinsBlack} text-5xl md:text-6xl leading-[0.9] uppercase tracking-tighter mb-8`}
+            style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.black, color: COLORS.dark }}
+          >
             Industry <span style={{ color: COLORS.primary }}>Use Case</span>
           </h1>
 
-          <p className="text-md md:text-lg max-w-2xl mx-auto mb-8 font-normal" style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.7) }}>
+          <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px", color: "rgba(0,0,0,0.60)" }}>
             Explore how our integrated outsourcing solutions empower different industries to achieve operational excellence and sustainable growth through data-driven strategies.
           </p>
 
-          <div className="text-sm uppercase tracking-widest" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: getColorWithOpacity("dark", 0.7) }}>
+          <div className="uppercase tracking-widest" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "12px", color: getColorWithOpacity("dark", 0.7) }}>
             <Link href="/" className="transition-colors" style={{ color: getColorWithOpacity("dark", 0.7) }}>Home</Link>
             <span className="mx-2">&gt;&gt;</span>
             <span style={{ color: COLORS.primary }}>Industry Use Case</span>

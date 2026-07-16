@@ -109,6 +109,16 @@ export default function CaseStudiesFilter() {
     { name: "White Papers" },
   ];
 
+  // Activate a specific tab when arriving via ?tab=<Name> (e.g. from a case study's "View All Articles" link)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    if (tab && navItems.some((item) => item.name === tab)) {
+      setActiveTab(tab);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Fetch case studies from API on component mount
   useEffect(() => {
     async function fetchData() {
