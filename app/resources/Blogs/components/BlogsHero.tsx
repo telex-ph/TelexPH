@@ -41,7 +41,7 @@ export default function BlogsHero() {
             style={{
               fontFamily: TYPOGRAPHY.heading.fontFamily,
               fontWeight: TYPOGRAPHY.heading.fontWeight,
-              color: COLORS.black,
+              color: COLORS.dark,
             }}
           >
             OUR BLOGS
@@ -49,9 +49,10 @@ export default function BlogsHero() {
 
           {/* Description */}
           <p
-            className="text-md md:text-lg max-w-1xl mx-auto mb-8"
+            className="max-w-1xl mx-auto mb-8"
             style={{
               fontFamily: FONTS.rubik,
+              fontSize: "16px",
               color: getColorWithOpacity("dark", 0.7),
             }}
           >
@@ -61,22 +62,23 @@ export default function BlogsHero() {
 
           {/* Breadcrumbs */}
           <div
-            className="text-sm"
+            className="uppercase tracking-wide"
             style={{
               fontFamily: FONTS.openSans,
-              fontWeight: FONT_WEIGHTS.medium,
-              color: getColorWithOpacity("dark", 0.7),
+              fontWeight: FONT_WEIGHTS.bold,
+              fontSize: "12px",
+              color: COLORS.dark,
             }}
           >
             <Link
               href="/"
               className="transition-colors"
-              style={{ color: getColorWithOpacity("dark", 0.7) }}
+              style={{ color: COLORS.dark }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.color = COLORS.primary)
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))
+                (e.currentTarget.style.color = COLORS.dark)
               }
             >
               Home

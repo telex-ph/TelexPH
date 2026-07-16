@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { COLORS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, FONTS, FONT_WEIGHTS, FONT_CLASSES } from "@/constant/styles";
 
 const UseCaseSolution = () => {
   const secondarySolutions = [
@@ -38,23 +38,23 @@ const UseCaseSolution = () => {
           <div className="flex flex-col items-start text-left">
             <div className="inline-block mb-4">
               <span
-                className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block font-bold`}
-                style={{ color: COLORS.primary }}
+                className="uppercase tracking-[0.25em] py-2 inline-block"
+                style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "14px", color: COLORS.primary }}
               >
                 — Solution Architecture
               </span>
             </div>
-            
+
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
-              style={{ color: COLORS.black }}
+              className="mb-6 uppercase tracking-tighter leading-none"
+              style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "48px", color: "#282828" }}
             >
-              Intelligent 
+              Intelligent
               <br />
               <span style={{ color: COLORS.primary }}>Orchestration.</span>
             </h2>
 
-            <p className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed`}>
+            <p className="max-w-2xl leading-relaxed text-gray-500" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px" }}>
               Our framework integrates cognitive computing with enterprise-grade infrastructure to deliver autonomous operational excellence across every touchpoint.
             </p>
           </div>
@@ -65,20 +65,29 @@ const UseCaseSolution = () => {
           <div className="md:col-span-8 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row overflow-hidden group min-h-[550px]">
             <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
               <div className="mb-8">
-                <span className="inline-block text-[10px] font-bold py-2 px-5 rounded-md bg-gray-50 text-gray-500 uppercase tracking-widest mb-6">
+                <span
+                  className="inline-block py-2 px-5 rounded-md bg-gray-50 text-gray-500 uppercase tracking-widest mb-6"
+                  style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px" }}
+                >
                   Neural Engine v2.0
                 </span>
-                <h3 className={`${FONT_CLASSES.openSansBold} text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight uppercase tracking-tight`}>
+                <h3
+                  className="mb-6 leading-tight uppercase tracking-tight"
+                  style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "28px", color: "#282828" }}
+                >
                   Cognitive Operational Layer
                 </h3>
-                <p className="text-gray-500 leading-relaxed text-sm md:text-base mb-10 font-normal">
+                <p className="text-gray-500 leading-relaxed mb-10" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px" }}>
                   Analyze historical patterns to forecast future trends, allowing for proactive resource allocation. Unstructured data transitions meet industry standards.
                 </p>
                 <div className="space-y-4 mt-6">
                   {["Low-Latency API Gateway", "Dynamic API Gateway", "Dynamic Load Balancing"].map((item, idx) => (
                     <div key={idx} className="flex items-center gap-5 p-4 rounded-lg bg-gray-50/80 border border-gray-100 shadow-sm transition-transform group-hover:translate-x-1">
                       <div className="w-3 h-3 rounded-full shadow-inner flex-shrink-0" style={{ backgroundColor: COLORS.primary }}></div>
-                      <p className={`${FONT_CLASSES.openSansBold} text-[13px] md:text-sm font-bold text-gray-800 uppercase tracking-wider`}>
+                      <p
+                        className="uppercase tracking-wider"
+                        style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "12px", color: "#282828" }}
+                      >
                         {item}
                       </p>
                     </div>
@@ -143,7 +152,7 @@ const UseCaseSolution = () => {
               <h4 className={`${FONT_CLASSES.openSansBold} text-lg font-bold text-gray-800 mb-3 uppercase tracking-tight`}>
                 {item.title}
               </h4>
-              <p className="text-sm text-gray-500 leading-relaxed flex-grow font-normal">
+              <p className="text-gray-500 leading-relaxed flex-grow font-normal" style={{ fontSize: "14px" }}>
                 {item.description}
               </p>
             </div>

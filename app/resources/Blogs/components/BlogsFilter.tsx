@@ -86,24 +86,26 @@ export default function BlogsFilter({
   return (
     <div className="w-full mb-10">
       {/* Category Tabs with Dropdowns */}
-      <div className="flex flex-wrap justify-center gap-x-6 border-b border-gray-100 mb-8 pb-1">
-        {categories.map((item) => (
-          <div key={item.value} className="relative group">
+      <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-x-4 md:gap-x-10 border-b border-gray-100 mb-8 overflow-x-auto no-scrollbar">
+        {categories.map((item) => {
+          const isActive = activeTab === item.value || item.subcategories.includes(activeTab);
+          return (
+          <div key={item.value} className="relative group flex-shrink-0">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleCategoryClick(item.value)}
-                className="relative pb-3 text-[13px] font-bold uppercase tracking-tight transition-all duration-200 hover:text-[#800000]"
-                style={{ 
-                  color: activeTab === item.value || item.subcategories.includes(activeTab) ? COLORS.black : "#6b7280", 
-                  fontFamily: FONTS.openSans 
+                className="relative pb-3 md:pb-4 text-[11px] md:text-[14px] font-bold whitespace-nowrap uppercase tracking-tight transition-all duration-200"
+                style={{
+                  color: isActive ? COLORS.dark : "#6b7280",
+                  fontFamily: FONTS.openSans
                 }}
               >
                 {item.label}
-                {(activeTab === item.value || item.subcategories.includes(activeTab)) && (
-                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#800000] rounded-full"></span>
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-[#800000]"></span>
                 )}
               </button>
-              
+
               {/* Dropdown trigger - More visible */}
               {item.subcategories.length > 0 && (
                 <button
@@ -111,7 +113,7 @@ export default function BlogsFilter({
                     e.stopPropagation();
                     toggleDropdown(item.value);
                   }}
-                  className="pb-3 text-gray-500 hover:text-[#800000] transition-colors"
+                  className="pb-3 md:pb-4 text-gray-500 hover:text-[#800000] transition-colors"
                 >
                   <HiChevronDown className={`w-4 h-4 transition-transform duration-200 ${openDropdown === item.value ? 'rotate-180' : ''}`} />
                 </button>
@@ -140,7 +142,8 @@ export default function BlogsFilter({
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Search and Toggle Controls */}

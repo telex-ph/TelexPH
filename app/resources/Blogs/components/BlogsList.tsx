@@ -106,14 +106,14 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
               <div 
                 key={post._id} 
                 onClick={() => onArticleClick(post)}
-                className="group cursor-pointer flex gap-4 items-center bg-white p-3 rounded-[25px] border border-gray-50 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_35px_-8px_rgba(0,0,0,0.15)] transition-all"
+                className="group cursor-pointer flex gap-4 items-center bg-white p-3 rounded-[10px] border border-gray-50 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_35px_-8px_rgba(0,0,0,0.15)] transition-all"
               >
-                <div className="w-16 h-16 rounded-[18px] overflow-hidden flex-shrink-0">
+                <div className="w-16 h-16 rounded-[8px] overflow-hidden flex-shrink-0">
                   <img src={post.picture} className="w-full h-full object-cover" alt="Thumb" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[10px] font-normal text-[#800000] uppercase tracking-widest mb-0.5">{post.mainCategory}</span>
-                  <h4 className="text-[13px] font-bold leading-snug text-gray-900 group-hover:text-[#800000] line-clamp-2 transition-colors">
+                  <h4 className="text-[13px] font-bold leading-snug group-hover:text-[#800000] line-clamp-2 transition-colors" style={{ color: "#282828" }}>
                     {post.title}
                   </h4>
                 </div>

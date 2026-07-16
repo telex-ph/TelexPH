@@ -80,8 +80,8 @@ const UseCaseOverview = () => {
           </h2>
 
           <p
-            className="max-w-2xl leading-relaxed text-gray-500 font-normal"
-            style={{ fontSize: "16px" }}
+            className="max-w-2xl leading-relaxed"
+            style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px", color: "#4B5563" }}
           >
             We transcend traditional outsourcing by integrating <strong>high-velocity technology</strong> with <strong>emotional intelligence</strong> to drive long-term brand loyalty.
           </p>

@@ -25,7 +25,7 @@ export default function CaseStudiesHero() {
             Industry <span style={{ color: COLORS.primary }}>Use Case</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px", color: "rgba(0,0,0,0.60)" }}>
+          <p className="max-w-2xl mx-auto mb-8" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px", color: "#4B5563" }}>
             Explore how our integrated outsourcing solutions empower different industries to achieve operational excellence and sustainable growth through data-driven strategies.
           </p>
 

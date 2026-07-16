@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronRight, ArrowUpRight } from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowUpRight } from "lucide-react";
 
 const T = {
   primary:      "#a10000",
@@ -114,7 +114,6 @@ const UseCaseChallenges = () => {
           paddingTop: "72px", paddingBottom: "56px",
           display: "flex", alignItems: "flex-end", justifyContent: "space-between",
           flexWrap: "wrap", gap: "24px",
-          borderBottom: `1px solid ${T.borderLight}`,
         }}>
           <div>
             <span style={{
@@ -143,81 +142,84 @@ const UseCaseChallenges = () => {
           </p>
         </div>
 
-        {/* TAB NAV */}
+        {/* CARD (tabs + content share one bordered surface, so there's no seam between them) */}
         <div style={{
-          display: "flex",
-          borderBottom: `1px solid ${T.borderLight}`,
-          overflowX: "auto",
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-        }}
-          className="no-scrollbar"
-        >
-          {challenges.map((c, i) => (
-            <button key={i} onClick={() => setActive(i)} style={{
-              fontFamily: F.sans,
-              fontWeight: active === i ? FW.medium : FW.normal,
-              fontSize: "14px",
-              letterSpacing: "0.04em",
-              color: active === i ? T.primary : T.textMuted,
-              background: "none", border: "none",
-              borderBottom: active === i ? `2px solid ${T.primary}` : "2px solid transparent",
-              padding: "18px 24px", cursor: "pointer",
-              transition: "color 0.2s, border-color 0.2s",
-              whiteSpace: "nowrap", marginBottom: "-1px",
-            }}>
-              <span style={{
-                fontFamily: F.sans, fontWeight: FW.medium,
-                fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
-                color: active === i ? T.primary : T.textHint,
-                marginRight: "8px",
+          borderRadius: "12px", overflow: "hidden",
+          backgroundColor: T.white,
+        }}>
+
+        {/* TAB BAR (chrome-style: active tab pops up white from a muted strip) */}
+        <div style={{ position: "relative", backgroundColor: T.offwhite }}>
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "1px", backgroundColor: T.borderLight }} />
+          <div className="challenges-tabs no-scrollbar" style={{
+            display: "flex", gap: "4px", position: "relative",
+            padding: "10px 10px 0",
+            overflowX: "auto", msOverflowStyle: "none", scrollbarWidth: "none",
+          }}>
+            {challenges.map((c, i) => (
+              <button key={i} onClick={() => setActive(i)} className="challenges-tab" style={{
+                fontFamily: F.sans,
+                fontWeight: active === i ? FW.medium : FW.normal,
+                fontSize: "14px",
+                letterSpacing: "0.04em",
+                color: active === i ? T.primary : T.textMuted,
+                backgroundColor: active === i ? T.white : "transparent",
+                borderTop: active === i ? `1px solid ${T.borderLight}` : "1px solid transparent",
+                borderLeft: active === i ? `1px solid ${T.borderLight}` : "1px solid transparent",
+                borderRight: active === i ? `1px solid ${T.borderLight}` : "1px solid transparent",
+                borderBottom: "none",
+                borderRadius: "10px 10px 0 0",
+                padding: "12px 20px", cursor: "pointer",
+                transition: "color 0.2s, background-color 0.2s",
+                whiteSpace: "nowrap",
               }}>
-                {c.index}
-              </span>
-              {c.tag}
-            </button>
-          ))}
+                {c.tag}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* MAIN SPLIT LAYOUT */}
-        <div key={active} style={{
+        <div key={active} className="challenges-split" style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
-          minHeight: "560px", animation: "challengeFadeIn 0.45s ease",
+          animation: "challengeFadeIn 0.45s ease",
         }}>
 
           {/* Image panel */}
-          <div style={{ position: "relative", overflow: "hidden", borderRight: `1px solid ${T.borderLight}` }}>
-            <img
-              src={IMGS[current.imgKey]}
-              alt={current.tag}
-              style={{
-                width: "100%", height: "100%",
-                objectFit: "cover", objectPosition: "center", display: "block",
-                transition: "transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94)",
-              }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
-            />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 55%, transparent 100%)" }} />
+          <div className="challenges-image-panel" style={{ padding: "16px", backgroundColor: T.white }}>
+            <div style={{ position: "relative", overflow: "hidden", borderRadius: "10px", height: "100%" }}>
+              <img
+                src={IMGS[current.imgKey]}
+                alt={current.tag}
+                style={{
+                  width: "100%", height: "100%",
+                  objectFit: "cover", objectPosition: "center", display: "block",
+                  transition: "transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94)",
+                }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
+              />
+              <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "65%", background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 55%, transparent 100%)" }} />
 
-            <div style={{ position: "absolute", bottom: "32px", left: "32px", right: "32px" }}>
-              <div style={{ display: "inline-block", backgroundColor: T.primary, padding: "4px 12px", borderRadius: "3px", marginBottom: "10px" }}>
-                <span style={{ fontFamily: F.sans, fontWeight: FW.bold, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: T.white }}>
-                  By the numbers
-                </span>
+              <div style={{ position: "absolute", bottom: "32px", left: "32px", right: "32px" }}>
+                <div style={{ display: "inline-block", backgroundColor: T.primary, padding: "4px 12px", borderRadius: "3px", marginBottom: "10px" }}>
+                  <span style={{ fontFamily: F.sans, fontWeight: FW.bold, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: T.white }}>
+                    By the numbers
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: "14px" }}>
+                  <span style={{ fontFamily: F.heading, fontWeight: FW.bold, fontSize: "clamp(2.6rem,5vw,3.8rem)", color: T.white, lineHeight: 1, letterSpacing: "-0.03em" }}>
+                    {current.stat}
+                  </span>
+                  <span style={{ fontFamily: F.body, fontWeight: FW.normal, fontSize: "12px", color: T.whiteAlpha75, lineHeight: "1.5", maxWidth: "200px", paddingBottom: "6px" }}>
+                    {current.statLabel}
+                  </span>
+                </div>
               </div>
-              <div style={{ display: "flex", alignItems: "flex-end", gap: "14px" }}>
-                <span style={{ fontFamily: F.heading, fontWeight: FW.bold, fontSize: "clamp(2.6rem,5vw,3.8rem)", color: T.white, lineHeight: 1, letterSpacing: "-0.03em" }}>
-                  {current.stat}
-                </span>
-                <span style={{ fontFamily: F.body, fontWeight: FW.normal, fontSize: "12px", color: T.whiteAlpha75, lineHeight: "1.5", maxWidth: "200px", paddingBottom: "6px" }}>
-                  {current.statLabel}
-                </span>
-              </div>
-            </div>
 
-            <div style={{ position: "absolute", top: "20px", right: "20px", fontFamily: F.heading, fontWeight: FW.bold, fontSize: "88px", color: T.whiteAlpha08, lineHeight: 1, letterSpacing: "-0.05em", userSelect: "none" }}>
-              {current.index}
+              <div style={{ position: "absolute", top: "20px", right: "20px", fontFamily: F.heading, fontWeight: FW.bold, fontSize: "88px", color: T.whiteAlpha08, lineHeight: 1, letterSpacing: "-0.05em", userSelect: "none" }}>
+                {current.index}
+              </div>
             </div>
           </div>
 
@@ -281,77 +283,48 @@ const UseCaseChallenges = () => {
                 ))}
               </div>
 
-              <button
-                onClick={() => setActive((p) => (p + 1) % challenges.length)}
-                style={{
-                  display: "flex", alignItems: "center", gap: "8px",
-                  padding: "12px 24px",
-                  backgroundColor: T.primary, color: T.white,
-                  border: "none", borderRadius: "0",
-                  cursor: "pointer",
-                  fontFamily: F.sans, fontWeight: FW.bold,
-                  fontSize: "14px",
-                  boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
-                  transition: "opacity 0.2s, transform 0.15s",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
-                onMouseDown={(e)  => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.96)"; }}
-                onMouseUp={(e)    => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
-              >
-                Next Challenge <ChevronRight size={14} />
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button
+                  aria-label="Previous challenge"
+                  onClick={() => setActive((p) => (p === 0 ? challenges.length - 1 : p - 1))}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "44px", height: "44px",
+                    backgroundColor: T.white, color: T.primary,
+                    border: `1.5px solid ${T.primary}`, borderRadius: "6px",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s, transform 0.15s",
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(161,0,0,0.06)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = T.white; }}
+                  onMouseDown={(e)  => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.96)"; }}
+                  onMouseUp={(e)    => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  aria-label="Next challenge"
+                  onClick={() => setActive((p) => (p + 1) % challenges.length)}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "44px", height: "44px",
+                    backgroundColor: T.white, color: T.primary,
+                    border: `1.5px solid ${T.primary}`, borderRadius: "6px",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s, transform 0.15s",
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(161,0,0,0.06)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = T.white; }}
+                  onMouseDown={(e)  => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.96)"; }}
+                  onMouseUp={(e)    => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* THUMBNAIL STRIP */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", borderTop: `1px solid ${T.borderLight}` }}>
-          {challenges.map((c, i) => (
-            <button key={i} onClick={() => setActive(i)} style={{
-              position: "relative", height: "140px", overflow: "hidden",
-              border: "none", borderRight: i < 3 ? `1px solid ${T.borderLight}` : "none",
-              cursor: "pointer", padding: 0, background: "none",
-            }}>
-              <img
-                src={IMGS[c.imgKey]}
-                alt={c.tag}
-                style={{
-                  width: "100%", height: "100%",
-                  objectFit: "cover", objectPosition: "center",
-                  transition: "transform 0.5s ease",
-                  filter: active === i ? "none" : "grayscale(60%) brightness(0.72)",
-                }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.06)")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
-              />
-              <div style={{
-                position: "absolute", inset: 0,
-                background: active === i
-                  ? "linear-gradient(to top, rgba(161,0,0,0.55) 0%, transparent 60%)"
-                  : "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)",
-                transition: "background 0.3s",
-              }} />
-              {active === i && (
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", backgroundColor: T.primary }} />
-              )}
-              <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px", textAlign: "left" }}>
-                <span style={{
-                  display: "block", fontFamily: F.sans, fontWeight: FW.medium,
-                  fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
-                  color: active === i ? T.pinkLight : T.whiteAlpha40, marginBottom: "3px",
-                }}>
-                  {c.index}
-                </span>
-                <span style={{
-                  fontFamily: F.sans, fontWeight: FW.medium,
-                  fontSize: "14px", color: T.white, lineHeight: 1.3,
-                }}>
-                  {c.tag}
-                </span>
-              </div>
-            </button>
-          ))}
         </div>
 
         {/* FOOTER CTA */}
@@ -378,7 +351,7 @@ const UseCaseChallenges = () => {
             textDecoration: "none",
             fontFamily: F.sans, fontWeight: FW.bold,
             fontSize: "14px",
-            borderRadius: "0",
+            borderRadius: "6px",
             boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
             transition: "opacity 0.2s", whiteSpace: "nowrap",
           }}
@@ -398,9 +371,19 @@ const UseCaseChallenges = () => {
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        .challenges-split { min-height: 560px; }
         @media (max-width: 768px) {
-          .challenges-split  { grid-template-columns: 1fr !important; }
+          .challenges-split  { grid-template-columns: 1fr !important; min-height: 0; }
+          .challenges-image-panel { min-height: 320px; }
           .challenges-thumbs { grid-template-columns: repeat(2, 1fr) !important; }
+          .challenges-tabs { overflow-x: visible !important; }
+          .challenges-tab {
+            flex: 1 1 0 !important;
+            padding: 10px 4px !important;
+            font-size: 11px !important;
+            text-align: center !important;
+            white-space: normal !important;
+          }
         }
       `}</style>
     </section>
