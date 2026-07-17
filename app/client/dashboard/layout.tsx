@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import LogoutOverlay from '@/components/LogoutOverlay'
 
 // ─── BASE ICON ────────────────────────────────────────────────────────────────
 const Ico = ({ d, d2, size = 16, sw = 1.2 }: { d: string; d2?: string; size?: number; sw?: number }) => (
@@ -442,6 +443,9 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
   const handleLogout = async () => {
     if (loggingOut) return
+    // Show the logout overlay immediately, then clear the session in the
+    // background. The overlay owns the redirect (via onDone) so it stays
+    // covering the screen the whole time — no dashboard flash before leaving.
     setLoggingOut(true)
     try {
       await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
@@ -449,8 +453,6 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
       // proceed regardless
     } finally {
       setClientInfo(null)
-      setLoggingOut(false)
-      router.push('/client/login')
     }
   }
 
@@ -460,6 +462,9 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#ffffff', overflow: 'hidden' }}>
+      {loggingOut && (
+        <LogoutOverlay portalLabel="Client" accent="#8b0000" onDone={() => router.push('/client/login')} />
+      )}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; font-weight: 400; }

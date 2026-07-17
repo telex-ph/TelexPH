@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import LogoutOverlay from '@/components/LogoutOverlay'
 
 const Ico = ({ d, d2, size = 16, sw = 1.5 }: { d: string; d2?: string; size?: number; sw?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
@@ -387,13 +388,14 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
   const handleLogout = async () => {
     if (loggingOut) return
+    // Show the logout overlay immediately, then clear the session in the
+    // background. The overlay owns the redirect (via onDone) so it stays
+    // covering the screen the whole time — no dashboard flash before leaving.
     setLoggingOut(true)
     try {
       await fetch(`${API_BASE}/auth/va/logout`, { method: 'POST', credentials: 'include' })
     } catch { /* proceed */ } finally {
       setClientInfo(null)
-      setLoggingOut(false)
-      router.push('/VirtualAssistant/login')
     }
   }
 
@@ -403,6 +405,9 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: BG_SOFT, overflow: 'hidden' }}>
+      {loggingOut && (
+        <LogoutOverlay portalLabel="Virtual Assistant" accent="#800000" onDone={() => router.push('/VirtualAssistant/login')} />
+      )}
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 4px; }

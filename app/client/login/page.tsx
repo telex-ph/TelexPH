@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { getClientAuthenticateUrl } from '@/lib/api-base'
+import { getClientAuthenticateUrl, getVerifyLoginOtpUrl } from '@/lib/api-base'
 import TurnstileWidget from '@/components/Turnstile/TurnstileWidget'
 import WelcomeSlideshow from './WelcomeSlideshow'
 
@@ -13,10 +13,15 @@ export default function ClientLoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [mounted, setMounted] = useState(false)
+  const [step, setStep] = useState<'credentials' | 'otp'>('credentials')
+  const [otp, setOtp] = useState('')
+  const [otpEmail, setOtpEmail] = useState('')
+  const [isResending, setIsResending] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -44,16 +49,76 @@ export default function ClientLoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, password, turnstileToken }),
+        body: JSON.stringify({ email, password, turnstileToken, rememberMe }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Authentication failed')
-      router.push('/client/dashboard')
+
+      if (data.requiresOtp) {
+        setOtpEmail(data.email)
+        setStep('otp')
+        setIsLoading(false)
+        return
+      }
+
+      router.push('/client/dashboard?welcome=1')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during login')
-    } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+
+    try {
+      const response = await fetch(getVerifyLoginOtpUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: otpEmail,
+          otp,
+          rememberMe,
+          accountType: 'client',
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Verification failed')
+      router.push('/client/dashboard?welcome=1')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during verification')
+      setIsLoading(false)
+    }
+  }
+
+  const handleResendOtp = async () => {
+    setError('')
+    setIsResending(true)
+
+    try {
+      const response = await fetch(getClientAuthenticateUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, turnstileToken, rememberMe }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Failed to resend code')
+      if (data.requiresOtp) setOtpEmail(data.email)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while resending the code')
+    } finally {
+      setIsResending(false)
+    }
+  }
+
+  const handleBackToCredentials = () => {
+    setError('')
+    setOtp('')
+    setStep('credentials')
   }
 
   if (!mounted) return null
@@ -108,7 +173,16 @@ export default function ClientLoginPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-end animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+      <div className="flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+        <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer font-open-sans">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="w-3.5 h-3.5 accent-[#8b0000] rounded border-gray-300 cursor-pointer"
+          />
+          Remember me
+        </label>
         <Link href="/client/login/forgot-password" className="text-sm font-medium text-[#8b0000] hover:underline transition-colors font-poppins">
           Forgot password?
         </Link>
@@ -146,6 +220,65 @@ export default function ClientLoginPage() {
           Create one
         </Link>
       </p>
+    </form>
+  )
+
+  const otpForm = (
+    <form onSubmit={handleVerifyOtp} className="space-y-2">
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
+        <label className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
+          Verification code
+        </label>
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="000000"
+          className="w-full px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#8b0000]/20 focus:border-[#8b0000] focus:bg-white focus:scale-[1.01] outline-none transition-all text-gray-800 text-center text-lg tracking-[0.4em] font-semibold shadow-sm font-open-sans"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+          required
+          disabled={isLoading}
+        />
+        <p className="text-xs text-gray-400 mt-1.5 ml-1 font-open-sans">
+          We sent a 6-digit code to {otpEmail}.
+        </p>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isLoading || otp.length !== 6}
+        className={`w-full bg-[#8b0000] text-white py-2.5 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#6b0000] hover:-translate-y-0.5 hover:shadow-2xl transition-all shadow-xl shadow-[#8b0000]/20 active:scale-[0.98] font-poppins flex items-center justify-center gap-2 animate-fade-in-up ${isLoading || otp.length !== 6 ? 'opacity-70' : ''}`}
+        style={{ animationDelay: '0.1s' }}
+      >
+        {isLoading ? (
+          <>
+            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Verifying...
+          </>
+        ) : (
+          'Verify Code'
+        )}
+      </button>
+
+      <div className="flex items-center justify-between !mt-3 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+        <button
+          type="button"
+          onClick={handleBackToCredentials}
+          disabled={isLoading}
+          className="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors font-poppins"
+        >
+          &larr; Back
+        </button>
+        <button
+          type="button"
+          onClick={handleResendOtp}
+          disabled={isResending || isLoading}
+          className="text-sm font-medium text-[#8b0000] hover:underline transition-colors font-poppins disabled:opacity-60"
+        >
+          {isResending ? 'Resending...' : 'Resend code'}
+        </button>
+      </div>
     </form>
   )
 
@@ -258,11 +391,22 @@ export default function ClientLoginPage() {
                     Welcome back!
                   </p>
                   <h1 className="text-xl font-bold tracking-tight mb-1 font-poppins">
-                    <span className="text-gray-900">Sign in </span>
-                    <span className="text-[#8b0000]">to continue</span>
+                    {step === 'otp' ? (
+                      <>
+                        <span className="text-gray-900">Verify </span>
+                        <span className="text-[#8b0000]">your identity</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-gray-900">Sign in </span>
+                        <span className="text-[#8b0000]">to continue</span>
+                      </>
+                    )}
                   </h1>
                   <p className="text-gray-400 text-xs font-normal font-open-sans">
-                    Enter your client credentials to access your account
+                    {step === 'otp'
+                      ? 'Enter the code sent to your email'
+                      : 'Enter your client credentials to access your account'}
                   </p>
                   {success && (
                     <p className="text-green-600 text-xs mt-2 font-semibold tracking-tight">{success}</p>
@@ -271,7 +415,7 @@ export default function ClientLoginPage() {
                     <p className="text-red-500 text-xs mt-2 font-bold tracking-tight">{error}</p>
                   )}
                 </div>
-                {loginForm}
+                {step === 'otp' ? otpForm : loginForm}
               </div>
             </div>
           </div>
@@ -285,11 +429,22 @@ export default function ClientLoginPage() {
                 Welcome back!
               </p>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2 font-poppins">
-                <span className="text-gray-900">Sign in </span>
-                <span className="text-[#8b0000]">to continue</span>
+                {step === 'otp' ? (
+                  <>
+                    <span className="text-gray-900">Verify </span>
+                    <span className="text-[#8b0000]">your identity</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-gray-900">Sign in </span>
+                    <span className="text-[#8b0000]">to continue</span>
+                  </>
+                )}
               </h1>
               <p className="text-gray-400 text-sm font-normal font-open-sans">
-                Enter your client credentials to access your account
+                {step === 'otp'
+                  ? 'Enter the code sent to your email'
+                  : 'Enter your client credentials to access your account'}
               </p>
               {success && (
                 <p className="text-green-600 text-xs mt-2 font-semibold tracking-tight">{success}</p>
@@ -298,7 +453,7 @@ export default function ClientLoginPage() {
                 <p className="text-red-500 text-xs mt-2 font-bold tracking-tight">{error}</p>
               )}
             </div>
-            {loginForm}
+            {step === 'otp' ? otpForm : loginForm}
           </div>
         </div>
 
