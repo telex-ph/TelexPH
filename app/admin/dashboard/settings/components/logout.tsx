@@ -21,7 +21,7 @@ export default function Logout({ isdarkmode }: logoutprops) {
     setIsLoggingOut(true)
     try {
       // Call the logout API endpoint
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      await fetch(`https://telexph-admin.onrender.com/api/auth/logout`, {
         method: 'POST',
         credentials: 'include', // Important: includes cookies
         headers: {

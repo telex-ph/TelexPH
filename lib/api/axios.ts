@@ -5,7 +5,7 @@ import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'ax
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+  baseURL: 'https://telexph-admin.onrender.com/api',
   withCredentials: true, // IMPORTANT: Para ma-send ang cookies
   headers: {
     'Content-Type': 'application/json',

@@ -13,12 +13,12 @@ import {
 } from "react-icons/hi2";
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com';
+const API_BASE_URL = 'https://telexph-admin.onrender.com/api';
 
 // API Functions
 async function getAllCaseStudies() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/casestudies`);
+    const response = await fetch(`${API_BASE_URL}/casestudies`);
     if (!response.ok) throw new Error('Failed to fetch case studies');
     return response.json();
   } catch (error) {

@@ -522,7 +522,7 @@ function ApplicantModal({
   modalToast: { message: string; type: 'success' | 'error' } | null
 }) {
   const dm = isdarkmode
-  const resumeHref = `${process.env.NEXT_PUBLIC_API_URL}${applicant.resumeUrl}`
+  const resumeHref = `https://telexph-admin.onrender.com${applicant.resumeUrl}`
 
   const currentStageIndex = PIPELINE_STAGES.findIndex((s) => s.key === (applicant.pipelineStage || 'details'))
   const currentStage = PIPELINE_STAGES[currentStageIndex]
@@ -1116,7 +1116,7 @@ export default function ApplicantsList() {
   const fetchApplicants = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applicants`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
       if (response.ok) setApplicants(await response.json())
     } catch (error) { console.error('Error fetching applicants:', error) } finally { setIsLoading(false) }
   }
@@ -1126,7 +1126,7 @@ export default function ApplicantsList() {
   const openApplicant = async (item: ApplicantListItem) => {
     setSelectedApplicantLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applicants/${item._id}`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants/${item._id}`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
       if (response.ok) {
         setSelectedApplicant(await response.json())
       } else {
@@ -1143,7 +1143,7 @@ export default function ApplicantsList() {
   const handleAction = async (id: string, action: 'approve' | 'reject') => {
     setActionLoading(`${id}-${action}`)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applicants/${id}/${action}`, { method: 'PATCH', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants/${id}/${action}`, { method: 'PATCH', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
       if (response.ok) {
         showSmartToast(action === 'approve' ? 'Applicant has been successfully approved.' : 'Applicant application has been rejected.', 'success')
         setApplicants((prev) => prev.map((a) => a._id === id ? { ...a, status: action === 'approve' ? 'approved' : 'rejected' } : a))
@@ -1170,7 +1170,7 @@ export default function ApplicantsList() {
     const startTime = Date.now()
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applicants/${id}/pipeline`, {
+      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants/${id}/pipeline`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

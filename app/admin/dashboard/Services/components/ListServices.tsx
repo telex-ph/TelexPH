@@ -6,7 +6,7 @@ import { useDarkMode } from '../../layout'
 
 // ── API BASE ──────────────────────────────────────────────────────────────────
 // Points directly to the Express backend to avoid Next.js intercepting /api/* routes.
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
+const API_BASE = 'https://telexph-admin.onrender.com/api'
 
 interface Service {
   _id: string
@@ -1132,7 +1132,7 @@ function AddServiceModal({
       if (formData.coverPhotoFile) fd.append('coverPhoto', formData.coverPhotoFile)
       if (formData.inactivePhotoFile) fd.append('inactivePhoto', formData.inactivePhotoFile)
 
-      const response = await fetch(`${API_BASE}/api/services`, {
+      const response = await fetch(`${API_BASE}/services`, {
         method: 'POST',
         // ⚠️ Do NOT set Content-Type header — browser sets it automatically with boundary for FormData
         credentials: 'include',
@@ -1369,7 +1369,7 @@ function EditServiceModal({
         fd.append('inactivePhoto', '')
       }
 
-      const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
+      const response = await fetch(`${API_BASE}/services/${service._id}`, {
         method: 'PATCH',
         // ⚠️ Do NOT set Content-Type header — browser sets it automatically with boundary for FormData
         credentials: 'include',
@@ -1400,7 +1400,7 @@ function EditServiceModal({
     setDeleting(true)
     setError('')
     try {
-      const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
+      const response = await fetch(`${API_BASE}/services/${service._id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
@@ -1642,7 +1642,7 @@ export default function ListServices() {
   const fetchServices = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${API_BASE}/api/services`, { credentials: 'include' })
+      const response = await fetch(`${API_BASE}/services`, { credentials: 'include' })
       if (!response.ok) throw new Error('Failed to fetch')
       setServices(await response.json())
     } catch (err) {
@@ -1657,7 +1657,7 @@ export default function ListServices() {
     const service = services.find((s) => s.serviceId === serviceId)
     if (!service) return
     try {
-      const response = await fetch(`${API_BASE}/api/services/${service._id}/toggle`, {
+      const response = await fetch(`${API_BASE}/services/${service._id}/toggle`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -1682,7 +1682,7 @@ export default function ListServices() {
       // FIX: getAllServices no longer returns coverPhoto/inactivePhoto to reduce
       // payload size. Fetch the full service document before opening the edit modal
       // so the uploader can display the existing images correctly.
-      const response = await fetch(`${API_BASE}/api/services/${service._id}`, {
+      const response = await fetch(`${API_BASE}/services/${service._id}`, {
         credentials: 'include',
       })
       if (response.ok) {

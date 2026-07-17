@@ -1516,7 +1516,7 @@ const VAJobApplicationForm: React.FC = () => {
       if (formData.resume.resume?.file) payload.append("resume", formData.resume.resume.file);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/applicants`,
+        `https://telexph-admin.onrender.com/api/applicants`,
         { method: "POST", body: payload, credentials: "include" }
       );
 

@@ -45,7 +45,7 @@ type ClientInfo = {
   profilePicture?: string | null
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
+const API_BASE = 'https://telexph-admin.onrender.com/api'
 
 // ─── NAV DATA ─────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [

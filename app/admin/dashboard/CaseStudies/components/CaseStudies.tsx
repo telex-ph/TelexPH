@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useDarkMode } from '../../layout'
 
 // ── API Config ─────────────────────────────────────────────────────────────────
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
+const API_BASE_URL = 'https://telexph-admin.onrender.com/api'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type FormSection = {
@@ -550,7 +550,7 @@ export default function CaseStudies() {
   const fetchRecords = async () => {
     try {
       setIsFetchingRecords(true)
-      const res = await fetch(`${API_BASE_URL}/api/casestudies`, {
+      const res = await fetch(`${API_BASE_URL}/casestudies`, {
         credentials: 'include',
       })
       if (!res.ok) throw new Error('Failed to fetch')
@@ -587,7 +587,7 @@ export default function CaseStudies() {
   const fetchFullRecord = async (id: string): Promise<CaseStudyRecord | null> => {
     try {
       setIsFetchingFull(true)
-      const res = await fetch(`${API_BASE_URL}/api/casestudies/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/casestudies/${id}`, {
         credentials: 'include',
       })
       if (!res.ok) throw new Error('Failed to fetch record')
@@ -762,8 +762,8 @@ export default function CaseStudies() {
       }
 
       const url = isEditMode && editingId
-        ? `${API_BASE_URL}/api/casestudies/${editingId}`
-        : `${API_BASE_URL}/api/casestudies`
+        ? `${API_BASE_URL}/casestudies/${editingId}`
+        : `${API_BASE_URL}/casestudies`
       const method = isEditMode ? 'PATCH' : 'POST'
 
       const res = await fetch(url, { method, body: formDataToSend, credentials: 'include' })
@@ -827,7 +827,7 @@ export default function CaseStudies() {
     if (!deleteTarget) return
     setIsDeleting(true)
     try {
-      const res = await fetch(`${API_BASE_URL}/api/casestudies/${deleteTarget._id}/archive`, {
+      const res = await fetch(`${API_BASE_URL}/casestudies/${deleteTarget._id}/archive`, {
         method: 'PATCH',
         credentials: 'include',
       })

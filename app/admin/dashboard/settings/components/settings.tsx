@@ -95,7 +95,7 @@ export default function AdminSettings() {
   const fetchUserData = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+      const response = await fetch(`https://telexph-admin.onrender.com/api/users/me`, {
         method: 'GET', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -123,7 +123,7 @@ export default function AdminSettings() {
       if (!userData) return
       const updateData: any = { firstName, lastName, email, contactNumber, department }
       if (profilePicture) updateData.profilePicture = profilePicture
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userData._id}`, {
+      const response = await fetch(`https://telexph-admin.onrender.com/api/users/${userData._id}`, {
         method: 'PATCH', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
@@ -158,7 +158,7 @@ export default function AdminSettings() {
         setPasswordError('New password must be at least 8 characters long'); return
       }
       setSaving(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/change-password`, {
+      const response = await fetch(`https://telexph-admin.onrender.com/api/users/change-password`, {
         method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword, newPassword }),

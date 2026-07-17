@@ -87,7 +87,7 @@ export default function ListArchivedServices() {
   } | null>(null)
 
   const isMainAdmin = currentRole === 1
-  const API = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api'
+  const API = 'https://telexph-admin.onrender.com/api'
 
   // ── Theme tokens — identical to ActivityLogs ──────────────────────────────
   const pageBg      = isdarkmode ? '#0f0f0f'                : '#f8f9fa'

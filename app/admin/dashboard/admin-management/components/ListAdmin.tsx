@@ -23,7 +23,7 @@ export default function ListAdmin() {
   const cardsPerPage = 8
   const { isdarkmode } = useDarkMode()
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api'
+  const API_BASE_URL = 'https://telexph-admin.onrender.com/api'
 
   const pageBg      = isdarkmode ? '#0f0f0f'                : '#f8f9fa'
   const cardBg      = isdarkmode ? '#1a1a1a'                : '#ffffff'

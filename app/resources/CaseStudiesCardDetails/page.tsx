@@ -29,11 +29,11 @@ const T = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://telexph-admin.onrender.com";
+  'https://telexph-admin.onrender.com/api';
 
 async function getCaseStudyById(id: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/casestudies/${id}`);
+    const response = await fetch(`${API_BASE_URL}/casestudies/${id}`);
     if (!response.ok) throw new Error("Failed to fetch case study");
     return response.json();
   } catch (error) {
@@ -44,7 +44,7 @@ async function getCaseStudyById(id: string) {
 
 async function getAllCaseStudies() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/casestudies`);
+    const response = await fetch(`${API_BASE_URL}/casestudies`);
     if (!response.ok) throw new Error("Failed to fetch case studies");
     return response.json();
   } catch (error) {

@@ -177,7 +177,7 @@ function SaveBtn({ onClick, saved }: { onClick: () => void; saved: boolean }) {
   )
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
+const API_BASE = 'https://telexph-admin.onrender.com/api'
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function AccountSettings() {

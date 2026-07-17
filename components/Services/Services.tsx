@@ -9,7 +9,7 @@ import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://telexph-admin.onrender.com";
+const API_BASE_URL = 'https://telexph-admin.onrender.com/api';
 const GAP = 24;
 const SLIDE_DURATION = 520;
 const AUTO_INTERVAL = 3800;
@@ -584,7 +584,7 @@ function ServicesGrid() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/api/services`, {
+      const response = await fetch(`${API_BASE_URL}/services`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

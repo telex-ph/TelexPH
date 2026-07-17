@@ -120,7 +120,7 @@ export default function EditAdmin({ admin, onClose, onSave }: EditAdminProps) {
       if (selectedImage && selectedImage !== admin.profilePicture) payload.profilePicture = selectedImage
       else if (removeImage) payload.profilePicture = ''
 
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api'
+      const API_BASE_URL = 'https://telexph-admin.onrender.com/api'
       const response = await fetch(`${API_BASE_URL}/users/${admin._id}`, {
         method: 'PATCH', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

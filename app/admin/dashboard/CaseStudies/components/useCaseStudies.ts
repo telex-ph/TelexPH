@@ -4,7 +4,7 @@ import { CaseStudy, CaseStudyFormData, ModalState, FilterState, EditState, Loadi
 import { getCurrentDate, validateScheduleTime as validateTime, filterRecords } from './helpers';
 
 // API Base URL - adjust this to your backend URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api';
+const API_BASE_URL = 'https://telexph-admin.onrender.com/api';
 
 // Transform backend data to frontend format
 const transformBackendToFrontend = (backendData: any): CaseStudy => {

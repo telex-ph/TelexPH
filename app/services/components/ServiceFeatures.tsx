@@ -27,7 +27,7 @@ import {
 import { COLORS, FONT_CLASSES, FONTS, getColorWithOpacity } from "@/constant/styles";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
  
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE_URL = 'https://telexph-admin.onrender.com/api';
 
 /* ─── Per-service GHL Funnel URLs ────────────────────────────── */
 const GHL_SERVICE_URLS: Record<string, string> = {
@@ -812,7 +812,7 @@ export default function ServiceFeatures() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/api/services`, {
+      const response = await fetch(`${API_BASE_URL}/services`, {
         headers: { "Content-Type": "application/json" },
       });
       if (!response.ok) throw new Error(`Failed to load services (${response.status})`);

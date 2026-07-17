@@ -174,12 +174,12 @@ export default function EditBlogs({ blog, onClose, onSave }: EditBlogsProps) {
         formData.append('status', status)
         formData.append('picture', actualFileRef.current)
         if (status === 'scheduled' && scheduledDate) formData.append('scheduledDate', new Date(scheduledDate).toISOString())
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${blog._id}`, { method: 'PATCH', credentials: 'include', body: formData })
+        const response = await fetch(`https://telexph-admin.onrender.com/api/blogs/${blog._id}`, { method: 'PATCH', credentials: 'include', body: formData })
         if (!response.ok) { const e = await response.json(); throw new Error(e.error || 'Failed to update blog') }
       } else {
         const payload: any = { title: title.trim(), author: authorName.trim(), mainCategory, subcategory, shortDescription: shortDescription.trim(), mainContent: allMainContent, status }
         if (status === 'scheduled' && scheduledDate) payload.scheduledDate = new Date(scheduledDate).toISOString()
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${blog._id}`, { method: 'PATCH', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        const response = await fetch(`https://telexph-admin.onrender.com/api/blogs/${blog._id}`, { method: 'PATCH', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         if (!response.ok) { const e = await response.json(); throw new Error(e.error || 'Failed to update blog') }
       }
 
