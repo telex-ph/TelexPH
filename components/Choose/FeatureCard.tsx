@@ -1,6 +1,6 @@
 import React from 'react';
 import { Rubik } from "next/font/google";
-import { COLORS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, FONT_CLASSES, getColorWithOpacity } from "@/constant/styles";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -105,7 +105,7 @@ const FeatureCard = ({ feature }: FeatureCardProps) => {
           </h3>
           <p
             className={`${rubik.className} text-sm leading-relaxed`}
-            style={{ color: COLORS.dark }}
+            style={{ color: getColorWithOpacity("dark", 0.7) }}
           >
             {feature.description}
           </p>

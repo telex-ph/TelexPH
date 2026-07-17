@@ -44,7 +44,7 @@ const ContactSupport = () => {
 
             <div className="flex-1 md:pl-4 lg:pl-6 text-center md:text-left w-full">
               <h2
-                className={`text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl ${FONT_CLASSES.openSansBold} text-gray-900 mb-2 sm:mb-3 md:mb-4`}
+                className={`text-2xl md:text-[30px] ${FONT_CLASSES.poppinsBold} text-[${COLORS.dark}] mb-2 sm:mb-3 md:mb-4`}
               >
                 Have Any Questions? Call Us
               </h2>
@@ -65,7 +65,7 @@ const ContactSupport = () => {
               </div>
 
               <p
-                className={`${FONT_CLASSES.rubikRegular} text-gray-500 text-xs sm:text-sm md:text-sm leading-relaxed sm:leading-snug max-w-full sm:max-w-xl md:max-w-lg mx-auto md:mx-0 mt-1`}
+                className={`${FONT_CLASSES.rubikRegular} text-gray-500 text-base leading-relaxed max-w-full sm:max-w-xl md:max-w-lg mx-auto md:mx-0 mt-1`}
               >
                 Start scaling your business the smarter way with Telex
                 Philippines, your partner in smart support services.

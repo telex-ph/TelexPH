@@ -103,7 +103,7 @@ const ChooseHeader: React.FC = () => {
           WHY CHOOSE US
         </p>
         <h2
-          className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.poppinsBlack} leading-tight`}
+          className={`text-[1.75rem] md:text-[2.5rem] lg:text-[3rem] ${FONT_CLASSES.poppinsBold} leading-tight`}
           style={{ color: COLORS.dark }}
         >
           We Use Proven Smart Technologies

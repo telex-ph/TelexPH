@@ -116,24 +116,23 @@ const UseCaseChallenges = () => {
           flexWrap: "wrap", gap: "24px",
         }}>
           <div>
-            <span style={{
+            <span className="text-[10px] md:text-[14px]" style={{
               fontFamily: F.sans, fontWeight: FW.bold,
-              fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.25em",
+              textTransform: "uppercase", letterSpacing: "0.25em",
               color: T.primary, display: "block", marginBottom: "14px",
             }}>
               — Industry Challenges
             </span>
-            <h2 style={{
-              fontFamily: F.heading, fontWeight: FW.bold,
-              fontSize: "30px",
+            <h2 className="text-3xl md:text-[40px] uppercase" style={{
+              fontFamily: F.poppins, fontWeight: FW.bold,
               color: "#282828", letterSpacing: "-0.025em", lineHeight: 1.15, margin: 0,
             }}>
-              The Obstacles We Solve Daily.
+              The Obstacles <span style={{ color: T.primary }}>We Solve Daily.</span>
             </h2>
           </div>
-          <p style={{
+          <p className="text-[14px] md:text-[16px]" style={{
             fontFamily: F.body, fontWeight: FW.normal,
-            fontSize: "16px", color: T.textBody,
+            color: T.textBody,
             lineHeight: "1.85", maxWidth: "400px", margin: 0,
           }}>
             Modern customer service is riddled with structural pain points. We identify
@@ -256,9 +255,9 @@ const UseCaseChallenges = () => {
 
               <div style={{ height: "2px", width: "2rem", backgroundColor: T.primary, marginBottom: "24px" }} />
 
-              <p style={{
+              <p className="text-[14px] md:text-[16px]" style={{
                 fontFamily: F.body, fontWeight: FW.normal,
-                fontSize: "1rem", color: T.textBody,
+                color: T.textBody,
                 lineHeight: "1.85", textAlign: "justify",
               }}>
                 {current.body}
@@ -328,14 +327,10 @@ const UseCaseChallenges = () => {
         </div>
 
         {/* FOOTER CTA */}
-        <div style={{
-          paddingTop: "48px", paddingBottom: "72px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          flexWrap: "wrap", gap: "20px",
-        }}>
-          <p style={{
+        <div className="flex flex-col items-stretch md:flex-row md:items-center md:justify-between gap-5 pt-12 pb-[72px]">
+          <p className="text-[14px] md:text-[16px]" style={{
             fontFamily: F.body, fontWeight: FW.normal,
-            fontSize: "16px", color: T.textBody,
+            color: T.textBody,
             lineHeight: "1.85", maxWidth: "540px", margin: 0,
           }}>
             Every challenge above has a documented resolution. See how Telex Philippines
@@ -344,21 +339,21 @@ const UseCaseChallenges = () => {
             {" "}for clients across industries.
           </p>
 
-          <a href="/resources" style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            padding: "12px 24px",
-            backgroundColor: T.primary, color: T.white,
-            textDecoration: "none",
-            fontFamily: F.sans, fontWeight: FW.bold,
-            fontSize: "14px",
-            borderRadius: "6px",
-            boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
-            transition: "opacity 0.2s", whiteSpace: "nowrap",
-          }}
+          <a href="/resources"
+            className="mx-auto md:mx-0 w-fit text-[12px] md:text-[14px] px-5 py-2.5 md:px-6 md:py-3"
+            style={{
+              display: "flex", alignItems: "center", gap: "8px",
+              backgroundColor: T.primary, color: T.white,
+              textDecoration: "none",
+              fontFamily: F.sans, fontWeight: FW.bold,
+              borderRadius: "6px",
+              boxShadow: "0 4px 16px rgba(161,0,0,0.25)",
+              transition: "opacity 0.2s", whiteSpace: "nowrap",
+            }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.85")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
           >
-            View Case Studies <ArrowUpRight size={14} />
+            View Case Studies <ArrowUpRight size={13} />
           </a>
         </div>
 

@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { HiOutlineArrowRight, HiOutlineArrowLeft, HiOutlineArrowUpRight } from "react-icons/hi2";
+import { HiOutlineArrowRight, HiOutlineArrowUpRight } from "react-icons/hi2";
+import { FONTS, FONT_WEIGHTS } from "@/constant/styles";
 
 // Define the Blog interface para mag-match sa database fields
 interface IContentSection {
@@ -29,10 +30,57 @@ interface BlogsListProps {
   onArticleClick: (post: IBlog) => void;
   searchQuery: string;
   viewMode: 'grid' | 'list'; // ADDED viewMode prop
+  activeTab: string;
+  categoryFilter: string | null;
 }
 
-export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode }: BlogsListProps) {
-  
+// Per-tab label/headline/description — mirrors the category groups in BlogsFilter.tsx
+const TAB_CONTENT: { value: string; subcategories: string[]; label: string; headline: string; description: string }[] = [
+  {
+    value: "All",
+    subcategories: [],
+    label: "our journal",
+    headline: "Founders Corner",
+    description: "A curated mix of insights, playbooks, and updates from every corner of TelexPH — for teams building smarter, leaner operations.",
+  },
+  {
+    value: "Main Service Categories",
+    subcategories: ["Customer Experience (CX)", "Back Office Solutions", "Virtual Assistance", "Sales & Lead Generation"],
+    label: "our services",
+    headline: "Service Deep Dives",
+    description: "Explore how our Customer Experience, Back Office, Virtual Assistance, and Sales teams turn outsourcing into a growth advantage.",
+  },
+  {
+    value: "Industry-Specific Insights",
+    subcategories: ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling"],
+    label: "industry insights",
+    headline: "Industry Intelligence",
+    description: "Sector-specific playbooks on E-commerce, Real Estate, Healthcare, and Tech & SaaS — built from real client outcomes.",
+  },
+  {
+    value: "Business Growth & Strategy",
+    subcategories: ["Scale Smarter", "Outsourcing 101", "Cost Optimization"],
+    label: "business growth",
+    headline: "Growth & Strategy",
+    description: "Practical frameworks for scaling smarter, optimizing costs, and turning outsourcing into a strategic growth lever.",
+  },
+  {
+    value: "Company Culture & Updates",
+    subcategories: ["TelexPH Life", "News & Press Releases"],
+    label: "company culture",
+    headline: "Life at TelexPH",
+    description: "Behind-the-scenes stories, team milestones, and the latest news shaping the TelexPH culture.",
+  },
+];
+
+export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, categoryFilter }: BlogsListProps) {
+
+  // While on the ALL tab, a picked categoryFilter drives the label/headline/description
+  // instead of activeTab, so the tab itself can stay on "All".
+  const effectiveCategoryValue = activeTab === "All" && categoryFilter ? categoryFilter : activeTab;
+  const activeTabContent =
+    TAB_CONTENT.find((t) => t.value === effectiveCategoryValue || t.subcategories.includes(effectiveCategoryValue)) || TAB_CONTENT[0];
+
   // Helper function para sa date formatting
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -47,11 +95,11 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
   // 1. Featured Post: Ang pinakabagong blog
   const featuredPost = blogs.length > 0 ? blogs[0] : null;
   
-  // 2. Latest Updates (Sidebar): Susunod na 4 na blogs
-  const latestUpdates = blogs.slice(1, 5);
+  // 2. Latest Updates (Sidebar): Susunod na 5 na blogs
+  const latestUpdates = blogs.slice(1, 6);
 
-  // 3. Founders Corner / Grid: Ang mga natitirang blogs
-  const gridBlogs = blogs.slice(1); 
+  // 3. Founders Corner / Grid: Ang mga natitirang blogs (hindi na kasama yung nasa Latest Updates), max 6
+  const gridBlogs = blogs.slice(6, 12);
 
   // Kung walang data, wag mag-error, magpakita ng simple message
   if (!blogs || blogs.length === 0) {
@@ -63,8 +111,32 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto px-10 py-12 bg-white font-['Poppins',_sans-serif]">
-      
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12 bg-white font-['Poppins',_sans-serif]">
+
+      {/* Tab-specific label, headline, and description */}
+      <div className="max-w-4xl mb-10">
+        <span
+          className="uppercase tracking-[0.2em] mb-1 block"
+          style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "14px", color: "#800000" }}
+        >
+          {activeTabContent.label}
+        </span>
+        <h2
+          className="tracking-tight mb-2 text-[26px] sm:text-[32px] md:text-[40px] lg:text-[48px]"
+          style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: "#282828" }}
+        >
+          {searchQuery ? `Results for "${searchQuery}"` : activeTabContent.headline}
+        </h2>
+        {!searchQuery && (
+          <p
+            className="leading-relaxed text-gray-500"
+            style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px" }}
+          >
+            {activeTabContent.description}
+          </p>
+        )}
+      </div>
+
       {/* Featured & Latest Updates Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-24">
         
@@ -72,25 +144,25 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
         <div className="lg:col-span-8 relative group mb-20 lg:mb-0">
           {featuredPost && (
             <>
-              <div className="relative h-[450px] w-full overflow-hidden rounded-[40px] shadow-[0_35px_70px_-15px_rgba(0,0,0,0.3)]">
-                <img 
-                  src={featuredPost.picture} 
-                  className="w-full h-full object-cover" 
-                  alt={featuredPost.title} 
+              <div className="relative h-[220px] sm:h-[300px] md:h-[380px] lg:h-[450px] w-full overflow-hidden rounded-lg shadow-[0_35px_70px_-15px_rgba(0,0,0,0.3)]">
+                <img
+                  src={featuredPost.picture}
+                  className="w-full h-full object-cover object-top"
+                  alt={featuredPost.title}
                 />
               </div>
-              <div className="absolute bottom-8 left-8 bg-white px-8 py-5 rounded-[20px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] w-[85%] max-w-[600px] border border-gray-50 flex items-center justify-between gap-6">
-                <div className="flex-grow">
-                  <span className="text-[#800000] font-normal text-[10px] uppercase tracking-[0.2em] mb-2 block">featured blog</span>
-                  <h1 className="text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2">{featuredPost.title}</h1>
+              <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:bottom-6 sm:left-6 md:bottom-8 md:left-8 bg-white px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5 rounded-lg shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] sm:w-[85%] max-w-[600px] border border-gray-50 flex items-center justify-between gap-3 sm:gap-6">
+                <div className="flex-grow min-w-0">
+                  <span className="text-[#800000] font-normal text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mb-1 sm:mb-2 block">featured blog</span>
+                  <h1 className="text-sm sm:text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2">{featuredPost.title}</h1>
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0">
                   <p className="text-[11px] text-gray-400 font-normal whitespace-nowrap hidden sm:block">{formatDate(featuredPost.createdAt)}</p>
-                  <div 
+                  <div
                     onClick={() => onArticleClick(featuredPost)}
-                    className="w-10 h-10 bg-[#800000] rounded-full flex items-center justify-center text-white cursor-pointer hover:rotate-45 transition-all shadow-lg"
+                    className="w-8 h-8 sm:w-10 sm:h-10 bg-[#800000] rounded-full flex items-center justify-center text-white cursor-pointer hover:rotate-45 transition-all shadow-lg flex-shrink-0"
                   >
-                      <HiOutlineArrowUpRight className="text-base" />
+                      <HiOutlineArrowUpRight className="text-sm sm:text-base" />
                   </div>
                 </div>
               </div>
@@ -123,19 +195,20 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
         </div>
       </div>
 
-      {/* Grid Header */}
-      <div className="flex justify-between items-end mb-8">
-        <div>
-           <span className="text-[#800000] font-normal text-[12px] uppercase tracking-[0.2em] mb-1 block">our journal</span>
-           <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-             {searchQuery ? `Results for "${searchQuery}"` : "Founders Corner"}
-           </h2>
+      {/* Grid Section Label + Title — only when there's actually more to show */}
+      {(searchQuery ? blogs : gridBlogs).length > 0 && (
+        <div className="mb-6">
+          <span
+            className="uppercase tracking-[0.2em] mb-1 block"
+            style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "12px", color: "#800000" }}
+          >
+            keep exploring
+          </span>
+          <h3 className="text-xl font-bold text-gray-900 tracking-tight border-b border-gray-100 pb-2">
+            More from the Journal
+          </h3>
         </div>
-        <div className="flex gap-3">
-          <button className="w-10 h-10 rounded-xl border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:bg-[#800000] hover:text-white transition-all shadow-sm"><HiOutlineArrowLeft className="text-lg" /></button>
-          <button className="w-10 h-10 rounded-xl border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:bg-[#800000] hover:text-white transition-all shadow-sm"><HiOutlineArrowRight className="text-lg" /></button>
-        </div>
-      </div>
+      )}
 
       {/* CONDITIONAL RENDERING: List View or Grid View */}
       {viewMode === 'list' ? (
@@ -144,7 +217,7 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
           {(searchQuery ? blogs : gridBlogs).map((blog) => (
             <div 
               key={blog._id} 
-              className="group bg-white rounded-[30px] overflow-hidden shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col md:flex-row transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] hover:translate-y-[-3px]"
+              className="group bg-white rounded-xl overflow-hidden shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col md:flex-row transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] hover:translate-y-[-3px]"
             >
               <div className="relative md:w-[320px] aspect-[2.6/1] md:aspect-auto md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
                 <img 
@@ -203,9 +276,9 @@ export default function BlogsList({ blogs, onArticleClick, searchQuery, viewMode
           {(searchQuery ? blogs : gridBlogs).map((blog) => (
             <div 
               key={blog._id} 
-              className="group bg-white rounded-[40px] overflow-hidden shadow-[0_35px_70px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col transition-all duration-500 hover:translate-y-[-5px] w-full"
+              className="group bg-white rounded-xl overflow-hidden shadow-[0_35px_70px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col transition-all duration-500 hover:translate-y-[-5px] w-full"
             >
-              <div className="relative aspect-[2.6/1] m-4 overflow-hidden rounded-[25px] bg-gray-50">
+              <div className="relative aspect-[2.6/1] m-4 overflow-hidden rounded-lg bg-gray-50">
                 <img src={blog.picture} className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" alt="Blog" />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                   <span className="bg-white/95 backdrop-blur-sm text-[#800000] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-md">

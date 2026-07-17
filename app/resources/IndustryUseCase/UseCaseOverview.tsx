@@ -64,15 +64,15 @@ const UseCaseOverview = () => {
         <div className="mb-20 text-left">
           <div className="inline-block mb-4">
             <span
-              className="uppercase tracking-[0.25em] py-2 inline-block"
-              style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "14px", color: COLORS.primary }}
+              className="text-[10px] md:text-[14px] uppercase tracking-[0.25em] py-2 inline-block"
+              style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: COLORS.primary }}
             >
               — Strategic Overview
             </span>
           </div>
           <h2
-            className="mb-6 uppercase tracking-tighter leading-none"
-            style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "48px", color: "#282828" }}
+            className="text-3xl md:text-[48px] mb-6 uppercase tracking-tighter leading-none"
+            style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: "#282828" }}
           >
             Redefining the
             <br />
@@ -80,25 +80,25 @@ const UseCaseOverview = () => {
           </h2>
 
           <p
-            className="max-w-2xl leading-relaxed"
-            style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, fontSize: "16px", color: "#4B5563" }}
+            className="text-[14px] md:text-[16px] max-w-2xl leading-relaxed"
+            style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: "#4B5563" }}
           >
             We transcend traditional outsourcing by integrating <strong>high-velocity technology</strong> with <strong>emotional intelligence</strong> to drive long-term brand loyalty.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-6 mb-24">
-          <div className="lg:col-span-8 overflow-hidden bg-gray-50 border border-gray-100 h-[400px] rounded-xl shadow-sm group">
-            <img 
-              src="/images/usecase3.jpg" 
+        <div className="grid lg:grid-cols-12 gap-4 md:gap-6 mb-16 md:mb-24">
+          <div className="lg:col-span-8 overflow-hidden bg-gray-50 border border-gray-100 h-[200px] md:h-[400px] rounded-xl shadow-sm group">
+            <img
+              src="/images/usecase3.jpg"
               alt="Operations Command Center"
               className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
             />
           </div>
-                    
-          <div className="lg:col-span-4 overflow-hidden bg-gray-50 border border-gray-100 h-[400px] rounded-xl shadow-sm group">
-            <img 
-              src="/images/usecase5.jpg" 
+
+          <div className="lg:col-span-4 overflow-hidden bg-gray-50 border border-gray-100 h-[200px] md:h-[400px] rounded-xl shadow-sm group">
+            <img
+              src="/images/usecase5.jpg"
               alt="Data Infrastructure"
               className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
             />
@@ -119,12 +119,12 @@ const UseCaseOverview = () => {
                 </div>
                 <div>
                   <h4
-                    className="uppercase tracking-tight mb-3 group-hover:text-[#800000] transition-colors"
-                    style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "18px", color: "#282828" }}
+                    className="text-[16px] md:text-[18px] uppercase tracking-tight mb-3 group-hover:text-[#800000] transition-colors"
+                    style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: "#282828" }}
                   >
                     {item.title}
                   </h4>
-                  <p className="text-gray-500 leading-relaxed font-normal" style={{ fontSize: "14px" }}>
+                  <p className="text-[12px] md:text-[14px] text-gray-500 leading-relaxed font-normal">
                     {item.desc}
                   </p>
                 </div>
@@ -143,7 +143,7 @@ const UseCaseOverview = () => {
                   <div className="flex justify-between items-center mb-12">
                     <div className="flex items-center gap-2">
                       <Activity size={16} style={{ color: MAROON }} />
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-bold">
+                      <span className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest font-bold">
                         Benchmark {activeStep + 1} of 3
                       </span>
                     </div>
@@ -160,16 +160,16 @@ const UseCaseOverview = () => {
                   </div>
 
                   <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                    <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 font-bold">
+                    <p className="text-[9px] md:text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 font-bold">
                       {benchmarks[activeStep].label}
                     </p>
                     <h3 
-                      className={`${FONT_CLASSES.openSansBold} text-6xl font-bold tracking-tighter mb-6 font-bold`}
+                      className={`${FONT_CLASSES.openSansBold} text-5xl md:text-6xl font-bold tracking-tighter mb-6`}
                       style={{ color: MAROON }}
                     >
                       {benchmarks[activeStep].val}
                     </h3>
-                    <p className="text-base text-gray-600 leading-relaxed font-normal">
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed font-normal">
                       {benchmarks[activeStep].desc}
                     </p>
                   </div>
@@ -178,7 +178,7 @@ const UseCaseOverview = () => {
                 <div className="flex items-center justify-between pt-10 border-t border-gray-50">
                   <button 
                     onClick={handlePrev}
-                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors font-bold"
+                    className="flex items-center gap-2 text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors font-bold"
                   >
                     <ChevronLeft size={16} /> Prev
                   </button>
@@ -189,8 +189,8 @@ const UseCaseOverview = () => {
                     style={{ backgroundColor: MAROON }}
                   >
                     <span
-                      className="text-white uppercase tracking-widest pl-1"
-                      style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px" }}
+                      className="text-[8px] md:text-[10px] text-white uppercase tracking-widest pl-1"
+                      style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold }}
                     >
                       Next Metric
                     </span>

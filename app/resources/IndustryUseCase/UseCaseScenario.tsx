@@ -76,19 +76,19 @@ const UseCaseScenario = () => {
         <div className="mb-16">
           <div className="flex flex-col items-start text-left">
             <span
-              className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] mb-4`}
+              className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[14px] uppercase tracking-[0.25em] mb-4`}
               style={{ color: COLORS.primary }}
             >
               — Use Case Scenario
             </span>
             
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none`}
-              style={{ color: COLORS.black }}
+              className={`font-poppins font-bold text-3xl md:text-[48px] mb-6 uppercase tracking-tighter leading-none`}
+              style={{ color: '#282828' }}
             >
               A Day In The
               <br />
-              <span style={{ color: COLORS.primary }}>Life Of Success.</span>
+              <span style={{ color: '#a10000' }}>Life Of Success.</span>
             </h2>
 
             <div className="flex flex-wrap gap-3 mb-8">
@@ -98,12 +98,12 @@ const UseCaseScenario = () => {
               ].map((pill, idx) => (
                 <div key={idx} className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-md border border-gray-100 shadow-sm">
                   <pill.icon size={12} style={{ color: COLORS.primary }} />
-                  <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">{pill.label}</span>
+                  <span className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase tracking-wider">{pill.label}</span>
                 </div>
               ))}
             </div>
 
-            <p className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed`}>
+            <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 max-w-2xl font-normal leading-relaxed`}>
               Experience the synergy of human expertise and machine intelligence in a unified ecosystem designed for peak efficiency and friction-less delivery.
             </p>
           </div>
@@ -121,11 +121,11 @@ const UseCaseScenario = () => {
                 <div className="flex-1 w-full flex">
                   <div className={`bg-white p-8 md:p-10 rounded-xl border border-gray-100 shadow-lg w-full flex flex-col justify-center ${i % 2 !== 0 ? 'md:text-right' : 'md:text-left'}`}>
                     <div className={`flex flex-col ${i % 2 !== 0 ? 'md:items-end' : 'md:items-start'}`}>
-                      <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1 block">Stage 0{step.id}</span>
-                      <h4 className={`${FONT_CLASSES.openSansBold} text-xl md:text-2xl text-gray-900 mb-1 uppercase tracking-tight`}>{step.title}</h4>
-                      <p className="text-[10px] font-bold uppercase tracking-widest mb-6" style={{ color: COLORS.primary }}>{step.subtitle}</p>
+                      <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[14px] text-gray-300 uppercase tracking-[0.2em] mb-1 block`}>Stage 0{step.id}</span>
+                      <h4 className={`font-poppins font-bold text-xl md:text-2xl mb-1 uppercase tracking-tight`} style={{ color: '#282828' }}>{step.title}</h4>
+                      <p className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] uppercase tracking-widest mb-6`} style={{ color: COLORS.primary }}>{step.subtitle}</p>
                       
-                      <p className="text-sm md:text-base text-gray-500 leading-relaxed mb-8 font-normal">
+                      <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-8 font-normal`}>
                         {step.desc}
                       </p>
 
@@ -133,7 +133,7 @@ const UseCaseScenario = () => {
                         {step.details.map((detail, dIdx) => (
                           <div key={dIdx} className="flex items-center gap-1.5">
                             <CheckCircle2 size={14} style={{ color: COLORS.primary }} className="flex-shrink-0" />
-                            <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wide">{detail}</span>
+                            <span className={`${FONT_CLASSES.openSansBold} text-[8px] md:text-[10px] text-gray-700 uppercase tracking-wide`}>{detail}</span>
                           </div>
                         ))}
                       </div>
@@ -162,7 +162,7 @@ const UseCaseScenario = () => {
                     <div className={`absolute bottom-6 ${i % 2 !== 0 ? 'left-6' : 'right-6'}`}>
                       <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-md flex items-center gap-3 border border-white shadow-xl">
                         <TrendingUp size={14} style={{ color: COLORS.primary }} />
-                        <span className="text-[10px] font-black text-gray-900 uppercase tracking-tight">{step.metric}</span>
+                        <span className="text-[8px] md:text-[10px] font-black text-gray-900 uppercase tracking-tight">{step.metric}</span>
                       </div>
                     </div>
                   </div>
@@ -173,35 +173,35 @@ const UseCaseScenario = () => {
         </div>
 
         <div className="mt-32 relative rounded-2xl p-1 bg-gray-50 shadow-inner">
-          <div className="relative z-10 bg-white rounded-2xl p-10 md:p-16 overflow-hidden border border-gray-100 shadow-sm">
+          <div className="relative z-10 bg-white rounded-2xl p-6 md:p-16 overflow-hidden border border-gray-100 shadow-sm">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               <div className="max-w-2xl text-left">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 bg-gray-50 rounded-md">
                     <Database size={20} style={{ color: COLORS.primary }} />
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-400">Outcome Summary</span>
+                  <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[14px] uppercase tracking-[0.4em] text-gray-400`}>Outcome Summary</span>
                 </div>
-                <h3 className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl text-gray-900 mb-6 uppercase tracking-tighter leading-tight`}>
+                <h3 className={`font-poppins font-bold text-2xl md:text-4xl mb-6 uppercase tracking-tighter leading-tight`} style={{ color: '#282828' }}>
                   Seamless Resolution 
                   <br />
-                  <span style={{ color: COLORS.primary }}>Achieved In Minutes.</span>
+                  <span style={{ color: '#a10000' }}>Achieved In Minutes.</span>
                 </h3>
                 
-                <p className="text-base text-gray-500 leading-relaxed max-w-lg font-normal">
-                  Our orchestration layer ensures that neither the agent nor the customer experiences friction, leading to a <span className="text-gray-900 font-bold uppercase text-[11px]">superior service delivery model</span>.
+                <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed max-w-lg font-normal`}>
+                  Our orchestration layer ensures that neither the agent nor the customer experiences friction, leading to a <span className="text-gray-900 font-bold uppercase text-[9px] md:text-[11px]">superior service delivery model</span>.
                 </p>
               </div>
 
-              <div className="flex flex-row lg:flex-col gap-6 w-full lg:w-auto">
+              <div className="flex flex-row lg:flex-col gap-3 md:gap-6 w-full lg:w-auto">
                 {[
                   { label: "Efficiency", value: "+85%" },
                   { label: "Cost Saving", value: "40%" }
                 ].map((stat, sIdx) => (
-                  <div key={sIdx} className="flex-1 lg:flex-none bg-white border border-gray-100 p-8 md:p-10 rounded-xl text-center lg:min-w-[220px] shadow-sm">
-                    <p className={`${FONT_CLASSES.openSansBold} text-4xl md:text-5xl text-gray-900 mb-2 tracking-tighter`}>{stat.value}</p>
-                    <div className="h-1 w-10 mx-auto mb-4 rounded-full" style={{ backgroundColor: `${COLORS.primary}20` }}></div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">{stat.label}</p>
+                  <div key={sIdx} className="flex-1 lg:flex-none bg-white border border-gray-100 p-4 md:p-10 rounded-xl text-center lg:min-w-[220px] shadow-sm">
+                    <p className={`${FONT_CLASSES.openSansBold} text-2xl md:text-5xl text-gray-900 mb-2 tracking-tighter`}>{stat.value}</p>
+                    <div className="h-1 w-10 mx-auto mb-2 md:mb-4 rounded-full" style={{ backgroundColor: `${COLORS.primary}20` }}></div>
+                    <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">{stat.label}</p>
                   </div>
                 ))}
               </div>

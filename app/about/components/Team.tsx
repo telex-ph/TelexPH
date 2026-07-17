@@ -110,7 +110,7 @@ export default function Team() {
           </span>
 
           <h2
-            className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+            className={`${FONT_CLASSES.poppinsBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
             style={{ color: SEMANTIC_COLORS.text.primary }}
           >
             The Team That Helps You <br className="hidden lg:inline" />
@@ -119,7 +119,7 @@ export default function Team() {
 
           <p
             className={`${rubik.className} max-w-3xl mx-auto`}
-            style={{ color: SEMANTIC_COLORS.text.secondary }}
+            style={{ color: "rgba(40, 40, 40, 0.7)" }}
           >
             Behind Telix Philippines is a team of dedicated professionals
             passionate about delivering world-class support services. Our people

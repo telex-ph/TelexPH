@@ -71,6 +71,11 @@ body {
     font-family: var(--font-open-sans), sans-serif;
   }
 
+  .font-rubik-regular {
+    font-family: var(--font-rubik), sans-serif;
+    font-weight: 400;
+  }
+
 }
 
 @keyframes gentle-float {

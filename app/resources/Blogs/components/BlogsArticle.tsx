@@ -293,7 +293,8 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
   if (isLoading) return <LoadingExperience />;
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" });
-  const latestUpdates = allBlogs ? allBlogs.filter(b => b._id !== post._id).slice(0, 4) : [];
+  const MAX_MORE_ARTICLES = 5;
+  const latestUpdates = allBlogs ? allBlogs.filter(b => b._id !== post._id).slice(0, MAX_MORE_ARTICLES) : [];
   const mins = readingTime(post);
 
   return (
@@ -359,10 +360,9 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
             >
               <path d="M10 3L5 8L10 13" stroke="rgba(255,255,255,0.75)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span style={{
+            <span className="text-[10px] md:text-[14px]" style={{
               fontFamily: FONTS.openSans,
-              fontWeight: FONT_WEIGHTS.medium,
-              fontSize: "12px",
+              fontWeight: FONT_WEIGHTS.bold,
               color: "rgba(255,255,255,0.75)",
               textTransform: "uppercase",
               letterSpacing: "0.06em",
@@ -373,11 +373,11 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
 
           {/* Category + subcategory pills */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "11px", color: T.white, background: T.primary, padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase" }}>
-              {post.mainCategory}
+            <span className="text-[9px] md:text-[11px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.white, background: T.primary, padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase" }}>
+              {post.mainCategory || "General"}
             </span>
             {post.subcategory && (
-              <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "11px", color: "rgba(255,255,255,0.8)", padding: "4px 14px", borderRadius: "100px", border: "1px solid rgba(255,255,255,0.3)" }}>
+              <span className="text-[9px] md:text-[11px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: "rgba(255,255,255,0.8)", padding: "4px 14px", borderRadius: "100px", border: "1px solid rgba(255,255,255,0.3)" }}>
                 {post.subcategory}
               </span>
             )}
@@ -385,8 +385,8 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
 
           {/* Title */}
           <h1
-            className="tracking-tight mb-5"
-            style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: T.white, fontSize: "clamp(22px, 4vw, 46px)", lineHeight: 1.18, maxWidth: "800px" }}
+            className="tracking-tight mb-5 text-[22px] sm:text-[28px] md:text-[36px] lg:text-[48px]"
+            style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: T.white, lineHeight: 1.18, maxWidth: "800px" }}
           >
             {post.title}
           </h1>
@@ -424,7 +424,7 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
             >
               <div style={{ borderLeft: `3px solid ${T.primary}`, paddingLeft: "20px" }}>
                 <p
-                  className="text-base md:text-lg leading-[1.85] text-justify first-letter:text-[4rem] first-letter:font-black first-letter:float-left first-letter:leading-[0.85] first-letter:mr-3 first-letter:mt-1"
+                  className="text-[14px] sm:text-base md:text-lg leading-[1.85] text-justify first-letter:text-[2.5rem] md:first-letter:text-[4rem] first-letter:font-black first-letter:float-left first-letter:leading-[0.85] first-letter:mr-3 first-letter:mt-1"
                   style={{ fontFamily: FONTS.rubik, color: T.textBody }}
                 >
                   {post.shortDescription}
@@ -449,8 +449,8 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
                             <h2
-                              className="text-xl sm:text-2xl tracking-tight"
-                              style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: T.textDark, margin: 0 }}
+                              className="tracking-tight text-[19px] md:text-[30px]"
+                              style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: "#282828", margin: 0 }}
                             >
                               {section.title}
                             </h2>
@@ -463,8 +463,8 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
                       </div>
                     )}
                     <div
-                      className="text-base md:text-lg leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_script]:hidden"
-                      style={{ fontFamily: FONTS.rubik, color: T.textBody }}
+                      className="text-[14px] md:text-[16px] leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828] [&_script]:hidden"
+                      style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
                       dangerouslySetInnerHTML={{ __html: section.content }}
                     />
                   </div>
@@ -555,11 +555,21 @@ export default function BlogsArticle({ post, onBack, onArticleClick, allBlogs }:
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", fontWeight: FONT_WEIGHTS.medium, textTransform: "uppercase", color: T.primary, display: "block", marginBottom: "3px" }}>
-                            {item.mainCategory}
+                            {item.mainCategory || "General"}
                           </span>
                           <h4 className="line-clamp-2" style={{ fontFamily: FONTS.openSans, fontSize: "13px", fontWeight: FONT_WEIGHTS.bold, lineHeight: 1.4, color: T.textDark }}>
                             {item.title}
                           </h4>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "6px" }}>
+                            <div style={{ width: 16, height: 16, borderRadius: "50%", background: T.primary, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                              <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "8px", color: T.white }}>
+                                {(item.author || "T").charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", color: T.textMuted }}>
+                              {item.author || "TelexPH Admin"}
+                            </span>
+                          </div>
                         </div>
                         <span style={{ color: T.textHint, fontSize: "18px", flexShrink: 0 }}>›</span>
                       </div>

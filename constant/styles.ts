@@ -110,6 +110,7 @@ export const TYPOGRAPHY = {
 
 export const FONT_CLASSES = {
   poppinsBlack: 'font-poppins-black',
+  poppinsBold: 'font-poppins-bold',
   openSansBold: 'font-open-sans-bold',
   rubikRegular: 'font-rubik-regular',
 } as const;

@@ -64,7 +64,7 @@ const UseCaseToolsAndTechnology = () => {
           <div className="flex flex-col items-start text-left">
             <div className="inline-block mb-4">
               <span
-                className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block font-bold`}
+                className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[14px] uppercase tracking-[0.25em] py-2 inline-block`}
                 style={{ color: COLORS.primary }}
               >
                 — Performance Report 2026
@@ -72,15 +72,15 @@ const UseCaseToolsAndTechnology = () => {
             </div>
             
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
-              style={{ color: COLORS.black }}
+              className={`font-poppins font-bold text-3xl md:text-[48px] mb-6 uppercase tracking-tighter leading-none`}
+              style={{ color: '#282828' }}
             >
               Operational
               <br />
-              <span style={{ color: COLORS.primary }}>Impact Analysis.</span>
+              <span style={{ color: '#a10000' }}>Impact Analysis.</span>
             </h2>
 
-            <p className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-bold leading-relaxed`}>
+            <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 max-w-2xl font-normal leading-relaxed`}>
               Comprehensive breakdown of key performance indicators and audited operational improvements post-implementation.
             </p>
           </div>
@@ -90,7 +90,7 @@ const UseCaseToolsAndTechnology = () => {
           
           <div className="w-full md:w-[35%] p-6 md:p-8 flex flex-col justify-center bg-white z-30 relative font-bold">
             <div className="flex items-center gap-2 mb-3">
-              <span className="px-2 py-0.5 rounded-full bg-red-50 text-[#800000] text-[9px] font-black uppercase tracking-widest font-bold border border-red-100">
+              <span className="px-2 py-0.5 rounded-full bg-red-50 text-[#800000] text-[7px] md:text-[9px] font-black uppercase tracking-widest font-bold border border-red-100">
                 Live Audit Active
               </span>
             </div>
@@ -106,14 +106,14 @@ const UseCaseToolsAndTechnology = () => {
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2 group">
                   <CheckCircle2 size={12} className="text-green-500 flex-shrink-0" />
-                  <span className="text-[9px] font-bold text-gray-700 uppercase tracking-wide font-bold">{item}</span>
+                  <span className="text-[7px] md:text-[9px] font-bold text-gray-700 uppercase tracking-wide font-bold">{item}</span>
                 </div>
               ))}
             </div>
 
             <div className="flex items-center gap-6 pt-3 border-t border-gray-100">
               <div>
-                <p className="text-xl font-black text-[#800000] font-bold">99.8%</p>
+                <p className="text-lg md:text-xl font-black text-[#800000] font-bold">99.8%</p>
                 <p className="text-[8px] text-gray-400 uppercase font-black font-bold tracking-widest">Accuracy</p>
               </div>
               <div className="w-px h-8 bg-gray-100" />
@@ -148,8 +148,8 @@ const UseCaseToolsAndTechnology = () => {
                   className="w-32 h-24 rounded-t-2xl rounded-bl-2xl p-5 text-white flex flex-col justify-between shadow-[0_20px_40px_rgba(128,0,0,0.25)] relative z-10"
                   style={{ backgroundColor: MAROON }}
                 >
-                  <span className="text-3xl font-black leading-none font-bold">{tech.id}</span>
-                  <span className="text-[8px] font-bold tracking-widest uppercase opacity-70 font-bold">UNIT</span>
+                  <span className="text-2xl md:text-3xl font-black leading-none font-bold">{tech.id}</span>
+                  <span className="text-[7px] md:text-[8px] font-bold tracking-widest uppercase opacity-70 font-bold">UNIT</span>
                 </div>
                 <div className="ml-6 mb-4 text-gray-300 group-hover:text-[#800000] transition-all duration-500 group-hover:scale-110 font-bold">
                   {tech.icon}
@@ -157,19 +157,19 @@ const UseCaseToolsAndTechnology = () => {
               </div>
 
               <div 
-                className="rounded-b-2xl rounded-tr-2xl px-8 py-9 shadow-[0_15px_45px_rgba(0,0,0,0.08)] border border-gray-100 relative z-0 -mt-[1px] group-hover:border-gray-300 transition-all duration-500 font-bold"
+                className="rounded-b-2xl rounded-tr-2xl px-6 py-6 md:px-8 md:py-9 shadow-[0_15px_45px_rgba(0,0,0,0.08)] border border-gray-100 relative z-0 -mt-[1px] group-hover:border-gray-300 transition-all duration-500 font-bold"
                 style={{ backgroundColor: CARD_BG }}
               >
                 <div className="flex items-center gap-2 mb-4" style={{ color: MAROON }}>
                   <PlusCircle size={18} fill={MAROON} className="text-white" />
-                  <span className="text-[10px] font-black uppercase tracking-widest font-bold">{tech.tag}</span>
+                  <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] uppercase tracking-widest`}>{tech.tag}</span>
                 </div>
 
-                <h4 className={`${FONT_CLASSES.openSansBold} text-2xl text-gray-900 uppercase tracking-tight mb-3 font-bold`}>
+                <h4 className={`font-poppins font-bold text-xl md:text-2xl uppercase tracking-tight mb-3`} style={{ color: '#282828' }}>
                   {tech.name}
                 </h4>
 
-                <p className="text-sm text-gray-500 font-normal leading-relaxed mb-8">
+                <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 font-normal leading-relaxed mb-8`}>
                   {tech.desc}
                 </p>
 
@@ -178,7 +178,7 @@ const UseCaseToolsAndTechnology = () => {
                     {tech.specs.map((spec, idx) => (
                       <span 
                         key={idx} 
-                        className="text-[9px] font-black text-[#800000] uppercase tracking-wider px-3 py-1 rounded-md border border-red-200 bg-red-50/50 font-bold"
+                        className={`${FONT_CLASSES.openSansBold} text-[8px] md:text-[10px] text-[#800000] uppercase tracking-wider px-3 py-1 rounded-md border border-red-200 bg-red-50/50`}
                       >
                         {spec}
                       </span>
@@ -187,7 +187,7 @@ const UseCaseToolsAndTechnology = () => {
                   
                   <div className="bg-white px-4 py-2 rounded-lg flex items-center gap-2 border border-gray-200 font-bold shadow-sm shrink-0">
                     <Zap size={14} className="text-yellow-500 fill-yellow-500" />
-                    <span className="text-[10px] font-black text-gray-700 uppercase font-bold tracking-tight">{tech.metric}</span>
+                    <span className={`${FONT_CLASSES.openSansBold} text-[8px] md:text-[10px] text-gray-700 uppercase tracking-tight`}>{tech.metric}</span>
                   </div>
                 </div>
 

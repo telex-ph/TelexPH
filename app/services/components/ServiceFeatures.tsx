@@ -1,6 +1,6 @@
 "use client";
  
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import {
   Headphones,
@@ -24,7 +24,7 @@ import {
   Layers,
   Clock,
 } from "lucide-react";
-import { COLORS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, FONT_CLASSES, FONTS, getColorWithOpacity } from "@/constant/styles";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
  
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -105,12 +105,10 @@ interface ServiceType {
 const ServiceCard: React.FC<{
   service: ServiceType;
   index: number;
-  onMouseEnterCard: () => void;
-  onMouseLeaveCard: () => void;
   onSelect: () => void;
   onAuditClick: (service: ServiceType) => void;
   isSelected: boolean;
-}> = ({ service, index, onMouseEnterCard, onMouseLeaveCard, onSelect, onAuditClick, isSelected }) => {
+}> = ({ service, index, onSelect, onAuditClick, isSelected }) => {
   const [hovered, setHovered] = useState(false);
   const IconComponent = service.icon;
  
@@ -121,10 +119,10 @@ const ServiceCard: React.FC<{
  
   return (
     <article
-      className="group relative flex flex-col overflow-hidden cursor-pointer flex-shrink-0"
+      className="group relative flex flex-col overflow-hidden cursor-pointer flex-shrink-0 w-[calc(100%-28px)] sm:w-[340px]"
       onClick={onSelect}
       style={{
-        width: "340px",
+        scrollSnapAlign: "center",
         borderRadius: "18px",
         background: "#fff",
         boxShadow: isSelected
@@ -138,8 +136,8 @@ const ServiceCard: React.FC<{
           ? "2px solid #a1000040"
           : `1px solid ${hovered ? "rgba(0,0,0,0.12)" : "rgba(0,0,0,0.06)"}`,
       }}
-      onMouseEnter={() => { setHovered(true);  onMouseEnterCard(); }}
-      onMouseLeave={() => { setHovered(false); onMouseLeaveCard(); }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       {/* ── Image block ── */}
       <div className="relative overflow-hidden" style={{ height: "220px", flexShrink: 0 }}>
@@ -395,15 +393,16 @@ const FilterButton: React.FC<{
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: "6px",
-        padding: "8px 16px",
+        flexShrink: 0,
+        gap: "5px",
+        padding: "clamp(6px, 2vw, 8px) clamp(8px, 3vw, 16px)",
         borderRadius: "10px",
         border: active ? "none" : `1px solid ${accentColor}22`,
         background: active ? accentColor : hovered ? `${accentColor}0d` : "rgba(255,255,255,0.8)",
         color: active ? "#fff" : hovered ? accentColor : "#64748b",
         fontFamily: FONT_BODY,
         fontWeight: 400,
-        fontSize: "12.5px",
+        fontSize: "clamp(10.5px, 3vw, 12.5px)",
         cursor: "pointer",
         transition: "all 0.22s ease",
         boxShadow: active ? `0 6px 16px ${accentColor}33` : hovered ? `0 2px 8px ${accentColor}18` : "none",
@@ -435,7 +434,7 @@ const FilterButton: React.FC<{
   );
 };
  
-/* ─── Auto-Scrolling Carousel Panel ──────────────────────────── */
+/* ─── Swipeable Carousel Panel ────────────────────────────────── */
 const ServiceCarouselPanel: React.FC<{
   services: ServiceType[];
   loading: boolean;
@@ -445,19 +444,19 @@ const ServiceCarouselPanel: React.FC<{
   selectedService: ServiceType | null;
   onAuditClick: (service: ServiceType) => void;
 }> = ({ services, loading, error, onRetry, onSelectService, selectedService, onAuditClick }) => {
-  const scrollRef    = useRef<HTMLDivElement>(null);
-  const rafRef       = useRef<number | null>(null);
-  const isPausedRef  = useRef(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [filterMode, setFilterMode]   = useState<FilterMode>("all");
+  const scrollRef      = useRef<HTMLDivElement>(null);
+  const isDraggingRef  = useRef(false);
+  const draggedRef     = useRef(false);
+  const dragStartXRef  = useRef(0);
+  const dragScrollLeftRef = useRef(0);
+  const [filterMode, setFilterMode] = useState<FilterMode>("all");
 
- 
+
   const CARD_WIDTH = 340;
   const GAP        = 20;
   const STEP       = CARD_WIDTH + GAP;
-  const SPEED      = 0.55;
 
- 
+
   const filteredServices = services.filter((s) => {
     if (filterMode === "active")      return s.isActive;
     if (filterMode === "coming-soon") return !s.isActive;
@@ -466,37 +465,56 @@ const ServiceCarouselPanel: React.FC<{
 
   const activeCount     = services.filter((s) =>  s.isActive).length;
   const comingSoonCount = services.filter((s) => !s.isActive).length;
-  const dotCount        = Math.min(filteredServices.length, 12);
 
-  const runScroll = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    const tick = () => {
-      const el = scrollRef.current;
-      if (el && !isPausedRef.current) {
-        el.scrollLeft += SPEED;
-        const halfWidth = el.scrollWidth / 2;
-        if (el.scrollLeft >= halfWidth) el.scrollLeft -= halfWidth;
-        const pos = el.scrollLeft % halfWidth;
-        setActiveIndex(Math.round(pos / STEP));
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }, [STEP]);
- 
-  useEffect(() => {
-    if (!loading && !error && filteredServices.length > 0) runScroll();
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [loading, error, filteredServices.length, runScroll]);
- 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollLeft = 0;
-    setActiveIndex(0);
   }, [filterMode]);
- 
+
   const manualScroll = (dir: "left" | "right") => {
-    if (scrollRef.current)
-      scrollRef.current.scrollBy({ left: dir === "left" ? -STEP * 2 : STEP * 2, behavior: "smooth" });
+    const el = scrollRef.current;
+    if (!el) return;
+    const firstCard = el.firstElementChild as HTMLElement | null;
+    const step = firstCard ? firstCard.getBoundingClientRect().width + GAP : STEP;
+    el.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    draggedRef.current = false;
+    dragStartXRef.current = e.clientX;
+    dragScrollLeftRef.current = el.scrollLeft;
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!isDraggingRef.current || !el) return;
+    const delta = e.clientX - dragStartXRef.current;
+    if (Math.abs(delta) > 5) draggedRef.current = true;
+    el.scrollLeft = dragScrollLeftRef.current - delta;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    isDraggingRef.current = false;
+    el?.releasePointerCapture?.(e.pointerId);
+
+    if (el && draggedRef.current) {
+      const firstCard = el.firstElementChild as HTMLElement | null;
+      const step = firstCard ? firstCard.getBoundingClientRect().width + GAP : STEP;
+      const nearest = Math.round(el.scrollLeft / step) * step;
+      el.scrollTo({ left: nearest, behavior: "smooth" });
+    }
+  };
+
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (draggedRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      draggedRef.current = false;
+    }
   };
  
   const NavBtn: React.FC<{ dir: "left" | "right" }> = ({ dir }) => {
@@ -533,8 +551,11 @@ const ServiceCarouselPanel: React.FC<{
     <div style={{ display: "flex", flexDirection: "column", gap: "18px", minWidth: 0 }}>
       {/* Filter bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <FilterButton label="All Services" icon={<Layers size={12} />} active={filterMode === "all"} count={services.length} onClick={() => setFilterMode("all")} accentColor="#a10000" />
+        <div
+          className="scrollbar-hide"
+          style={{ display: "flex", gap: "6px", flexWrap: "nowrap", overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          <FilterButton label="All" icon={<Layers size={12} />} active={filterMode === "all"} count={services.length} onClick={() => setFilterMode("all")} accentColor="#a10000" />
           <FilterButton
             label="Active"
             icon={<span style={{ width: "6px", height: "6px", borderRadius: "50%", background: filterMode === "active" ? "#fff" : "#16a34a", display: "inline-block", flexShrink: 0 }} />}
@@ -546,7 +567,7 @@ const ServiceCarouselPanel: React.FC<{
           <FilterButton label="Coming Soon" icon={<Clock size={12} />} active={filterMode === "coming-soon"} count={comingSoonCount} onClick={() => setFilterMode("coming-soon")} accentColor="#64748b" />
         </div>
         {!loading && !error && filteredServices.length > 0 && (
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div className="hidden sm:flex" style={{ gap: "8px" }}>
             <NavBtn dir="left" />
             <NavBtn dir="right" />
           </div>
@@ -585,6 +606,13 @@ const ServiceCarouselPanel: React.FC<{
           >
             <div
               ref={scrollRef}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={endDrag}
+              onPointerLeave={endDrag}
+              onPointerCancel={endDrag}
+              onClickCapture={onClickCapture}
+              className="select-none"
               style={{
                 display: "flex",
                 gap: `${GAP}px`,
@@ -593,27 +621,16 @@ const ServiceCarouselPanel: React.FC<{
                 msOverflowStyle: "none",
                 paddingBottom: "14px",
                 paddingTop: "8px",
+                cursor: "grab",
+                touchAction: "pan-y",
+                scrollSnapType: "x mandatory",
               }}
             >
               {filteredServices.map((service, index) => (
                 <ServiceCard
-                  key={`a-${service._id}`}
+                  key={service._id}
                   service={service}
                   index={index}
-                  onMouseEnterCard={() => { isPausedRef.current = true;  }}
-                  onMouseLeaveCard={() => { isPausedRef.current = false; }}
-                  onSelect={() => onSelectService(service)}
-                  onAuditClick={onAuditClick}
-                  isSelected={selectedService?._id === service._id}
-                />
-              ))}
-              {filteredServices.map((service, index) => (
-                <ServiceCard
-                  key={`b-${service._id}`}
-                  service={service}
-                  index={index}
-                  onMouseEnterCard={() => { isPausedRef.current = true;  }}
-                  onMouseLeaveCard={() => { isPausedRef.current = false; }}
                   onSelect={() => onSelectService(service)}
                   onAuditClick={onAuditClick}
                   isSelected={selectedService?._id === service._id}
@@ -621,26 +638,10 @@ const ServiceCarouselPanel: React.FC<{
               ))}
             </div>
           </div>
- 
-          {/* Maroon dots */}
-          <div style={{ display: "flex", justifyContent: "flex-start", gap: "6px" }}>
-            {Array.from({ length: dotCount }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => { if (scrollRef.current) scrollRef.current.scrollTo({ left: i * STEP, behavior: "smooth" }); }}
-                style={{
-                  width:      i === activeIndex % dotCount ? "28px" : "6px",
-                  height:     "6px",
-                  borderRadius: "99px",
-                  background: i === activeIndex % dotCount ? MAROON : "#d1d5db",
-                  border:     "none",
-                  cursor:     "pointer",
-                  transition: "all 0.3s ease",
-                  padding:    0,
-                }}
-                aria-label={`Go to service ${i + 1}`}
-              />
-            ))}
+
+          <div className="flex sm:hidden justify-center" style={{ gap: "8px" }}>
+            <NavBtn dir="left" />
+            <NavBtn dir="right" />
           </div>
         </>
       )}
@@ -699,7 +700,7 @@ const CSRPanel: React.FC<{
           <IconComponent size={28} color="#fff" />
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          <span style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "22px", letterSpacing: "-0.02em", color: "#0f172a", lineHeight: 1.2 }}>
+          <span style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "22px", letterSpacing: "-0.02em", color: "#282828", lineHeight: 1.2 }}>
             {firstWord}
           </span>
           {restWords && (
@@ -717,13 +718,13 @@ const CSRPanel: React.FC<{
         <div style={{ width: "5px",  height: "3px", borderRadius: "99px", background: "#a1000028" }} />
       </div>
 
-      <p style={{ fontFamily: FONT_BODY, fontSize: "15px", fontWeight: 400, color: "#64748b", lineHeight: 1.75, margin: "0 0 28px 0", maxWidth: "370px", transition: "all 0.3s ease" }}>
+      <p style={{ fontFamily: FONTS.rubik, fontSize: "16px", fontWeight: 400, color: getColorWithOpacity("dark", 0.7), lineHeight: 1.75, margin: "0 0 28px 0", maxWidth: "370px", transition: "all 0.3s ease" }}>
         {displayDescription}
       </p>
 
       <ul style={{ listStyle: "none", padding: 0, margin: "0 0 36px 0", display: "flex", flexDirection: "column", gap: "10px" }}>
         {defaultFeatures.map((f, i) => (
-          <li key={i} style={{ display: "flex", alignItems: "center", gap: "10px", fontFamily: FONT_BODY, fontSize: "13.5px", color: "#0f172a", fontWeight: 500 }}>
+          <li key={i} style={{ display: "flex", alignItems: "center", gap: "10px", fontFamily: FONT_BODY, fontSize: "16px", color: "#282828", fontWeight: 700 }}>
             <div style={{ width: "20px", height: "20px", borderRadius: "6px", background: "#a1000014", border: "1px solid #a1000025", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                 <path d="M1.5 5L3.8 7.5L8.5 2.5" stroke="#a10000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -913,16 +914,16 @@ export default function ServiceFeatures() {
         <div style={{ marginBottom: "64px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
             <div style={{ width: "36px", height: "2px", background: "#a10000", borderRadius: "99px" }} />
-            <span style={{ fontFamily: FONT_MONO, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#a10000", fontWeight: 600 }}>
+            <span style={{ fontFamily: FONTS.openSans, fontSize: "14px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#a10000", fontWeight: 700 }}>
               Our Services
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "24px" }}>
-            <h2 style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "clamp(32px, 4vw, 52px)", letterSpacing: "-0.03em", color: "#0f172a", lineHeight: 1.1, margin: 0 }}>
+            <h2 style={{ fontFamily: FONT_HEADING, fontWeight: 700, fontSize: "clamp(26px, 7vw, 48px)", letterSpacing: "-0.03em", color: "#282828", lineHeight: 1.15, margin: 0 }}>
               Services Designed to<br />
               <span style={{ color: "#a10000" }}>Meet Every Need</span>
             </h2>
-            <p style={{ fontFamily: FONT_BODY, fontSize: "15px", fontWeight: 400, color: "#64748b", lineHeight: 1.75, maxWidth: "400px", margin: 0 }}>
+            <p style={{ fontFamily: FONTS.rubik, fontSize: "16px", fontWeight: 400, color: getColorWithOpacity("dark", 0.7), lineHeight: 1.75, maxWidth: "400px", margin: 0 }}>
               From customer support to technical assistance, we provide comprehensive solutions that drive your business forward.
             </p>
           </div>
