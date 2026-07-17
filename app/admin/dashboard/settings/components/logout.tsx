@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import LogoutOverlay from '@/components/LogoutOverlay'
 
 interface logoutprops {
   isdarkmode: boolean
@@ -13,41 +14,37 @@ export default function Logout({ isdarkmode }: logoutprops) {
 
   const handlelogout = async () => {
     if (isLoggingOut) return // Prevent multiple clicks
-    
+
+    // Show the logout overlay immediately, then clear the session in the
+    // background. The overlay owns the redirect (via onDone) so it stays
+    // covering the screen the whole time — no dashboard flash before leaving.
+    setIsLoggingOut(true)
     try {
-      setIsLoggingOut(true)
-      
       // Call the logout API endpoint
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include', // Important: includes cookies
         headers: {
           'Content-Type': 'application/json',
         },
       })
-
-      if (response.ok) {
-        // Successfully logged out on server
-        // Redirect to login page
-        router.push('/admin/login')
-        router.refresh() // Force refresh to clear any cached data
-      } else {
-        // Even if server fails, still redirect (token might be expired)
-        console.error('Logout failed on server, but redirecting anyway')
-        router.push('/admin/login')
-        router.refresh()
-      }
     } catch (error) {
+      // Even on error we still redirect (token might be expired) — the overlay
+      // handles that after its animation.
       console.error('Logout error:', error)
-      // Even on error, redirect to login
-      router.push('/admin/login')
-      router.refresh()
-    } finally {
-      setIsLoggingOut(false)
     }
   }
 
+  const finishLogout = () => {
+    router.push('/admin/login')
+    router.refresh() // Force refresh to clear any cached data
+  }
+
   return (
+    <>
+      {isLoggingOut && (
+        <LogoutOverlay portalLabel="Admin" accent="#800000" onDone={finishLogout} />
+      )}
     <button 
       onClick={handlelogout}
       disabled={isLoggingOut}
@@ -64,5 +61,6 @@ export default function Logout({ isdarkmode }: logoutprops) {
       </svg>
       {isLoggingOut ? 'Logging out...' : 'logout'}
     </button>
+    </>
   )
 }

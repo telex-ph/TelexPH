@@ -20,6 +20,16 @@ export function getVaAuthenticateUrl(): string {
   return `${getApiBaseUrl()}/auth/va/authenticate`
 }
 
+// Login OTP (2FA) — second step of login, called when the password-check
+// response comes back with { requiresOtp: true, email }.
+export function getVerifyLoginOtpUrl(): string {
+  return `${getApiBaseUrl()}/auth/verify-login-otp`
+}
+
+export function getVaVerifyLoginOtpUrl(): string {
+  return `${getApiBaseUrl()}/auth/va/verify-login-otp`
+}
+
 // Shared by Admin, Client, and VA logins — the request body carries
 // accountType: "admin" | "client" | "va" so the backend knows which
 // account collection to check.

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import ClientDashboard from './clientDashboard'
+import LoginWelcomeGate from '@/components/LoginWelcomeGate'
 
 export const metadata: Metadata = {
   title: 'Client Portal | Dashboard',
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <ClientDashboard />
+  return (
+    <>
+      <LoginWelcomeGate portalLabel="Client" accent="#8b0000" />
+      <ClientDashboard />
+    </>
+  )
 }

@@ -29,6 +29,10 @@ export default function VALoginPage() {
   const [turnstileToken, setTurnstileToken] = useState("");
   const [isLoading,    setIsLoading]    = useState(false);
   const [error,        setError]        = useState("");
+  const [step,         setStep]         = useState<"credentials" | "otp">("credentials");
+  const [otp,          setOtp]          = useState("");
+  const [otpEmail,     setOtpEmail]     = useState("");
+  const [isResending,  setIsResending]  = useState(false);
 
   const goToMobileForm = () => {
     if (isScreenLeaving) return;
@@ -63,19 +67,80 @@ export default function VALoginPage() {
         method:      "POST",
         credentials: "include",
         headers:     { "Content-Type": "application/json" },
-        body:        JSON.stringify({ email, password, turnstileToken }),
+        body:        JSON.stringify({ email, password, turnstileToken, rememberMe: remember }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || data.message || "Invalid email or password.");
+        setIsLoading(false);
         return;
       }
-      router.push("/VirtualAssistant/dashboard");
+
+      if (data.requiresOtp) {
+        setOtpEmail(data.email);
+        setStep("otp");
+        setIsLoading(false);
+        return;
+      }
+
+      router.push("/VirtualAssistant/dashboard?welcome=1");
+    } catch {
+      setError("Unable to connect. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/auth/va/verify-login-otp`, {
+        method:      "POST",
+        credentials: "include",
+        headers:     { "Content-Type": "application/json" },
+        body:        JSON.stringify({ email: otpEmail, otp, rememberMe: remember }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || data.message || "Verification failed.");
+        setIsLoading(false);
+        return;
+      }
+      router.push("/VirtualAssistant/dashboard?welcome=1");
+    } catch {
+      setError("Unable to connect. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError("");
+    setIsResending(true);
+    try {
+      const res = await fetch(`${API_BASE}/auth/va/authenticate`, {
+        method:      "POST",
+        credentials: "include",
+        headers:     { "Content-Type": "application/json" },
+        body:        JSON.stringify({ email, password, turnstileToken, rememberMe: remember }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || data.message || "Failed to resend code.");
+        return;
+      }
+      if (data.requiresOtp) setOtpEmail(data.email);
     } catch {
       setError("Unable to connect. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsResending(false);
     }
+  };
+
+  const handleBackToCredentials = () => {
+    setError("");
+    setOtp("");
+    setStep("credentials");
   };
 
   const mobileLoginForm = (
@@ -184,6 +249,74 @@ export default function VALoginPage() {
           onVerify={setTurnstileToken}
           onExpire={() => setTurnstileToken('')}
         />
+      </div>
+    </form>
+  )
+
+  const mobileOtpForm = (
+    <form onSubmit={handleVerifyOtp} className="space-y-3">
+      <div className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+        <label className="block text-[13px] font-semibold text-gray-800 mb-1.5">
+          Verification code
+        </label>
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          required
+          placeholder="000000"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+          className="w-full px-3 py-3 rounded-2xl border border-gray-200 bg-gray-50/70 text-center text-lg tracking-[0.4em] font-semibold text-gray-800 outline-none focus:border-[#800000] focus:bg-white focus:ring-4 focus:ring-[#800000]/10 focus:shadow-md transition-all duration-200"
+        />
+        <p className="text-[12px] text-gray-500 mt-1.5">
+          We sent a 6-digit code to {otpEmail}.
+        </p>
+      </div>
+
+      {error && (
+        <div
+          className="px-4 py-3 rounded-xl bg-[#fff5f5] border border-red-200"
+          style={{ animation: 'vaShake 0.4s ease-in-out' }}
+        >
+          <p className="text-xs text-red-700 font-medium m-0">{error}</p>
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={isLoading || otp.length !== 6}
+        className={`relative overflow-hidden w-full bg-gradient-to-br from-[#5c0000] via-[#800000] to-[#a10000] text-white py-3.5 rounded-2xl font-semibold text-[15px] tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-[#800000]/35 transition-all duration-200 animate-fade-in-up ${isLoading || otp.length !== 6 ? 'opacity-65 cursor-not-allowed' : 'cursor-pointer hover:brightness-110 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#800000]/45 active:translate-y-0 active:scale-[0.98]'}`}
+        style={{ animationDelay: '0.2s' }}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 size={16} className="animate-spin" /> Verifying…
+          </>
+        ) : (
+          <>
+            <Lock size={16} /> Verify Code
+          </>
+        )}
+      </button>
+
+      <div className="flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.25s' }}>
+        <button
+          type="button"
+          onClick={handleBackToCredentials}
+          disabled={isLoading}
+          className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          &larr; Back
+        </button>
+        <button
+          type="button"
+          onClick={handleResendOtp}
+          disabled={isResending || isLoading}
+          className="text-xs font-medium text-[#800000] hover:opacity-80 transition-opacity disabled:opacity-60"
+        >
+          {isResending ? "Resending…" : "Resend code"}
+        </button>
       </div>
     </form>
   )
@@ -403,10 +536,10 @@ export default function VALoginPage() {
 
               <div className="animate-fade-in-up" style={{ animationDelay: '0.12s' }}>
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">
-                  Welcome back!
+                  {step === "otp" ? "Verify your identity" : "Welcome back!"}
                 </h1>
                 <p className="text-gray-600 text-[13px] font-normal">
-                  Sign in to continue to your account
+                  {step === "otp" ? "Enter the code sent to your email" : "Sign in to continue to your account"}
                 </p>
               </div>
             </div>
@@ -424,7 +557,7 @@ export default function VALoginPage() {
 
           {/* ── FORM CONTAINER ── solid white, holds every login field so nothing overlaps the header photo. min-h-0 lets it shrink inside the fixed-height screen instead of pushing content off-screen; justify-center keeps the form vertically balanced in whatever space remains below the header instead of leaving dead space at the bottom. */}
           <div className="relative z-10 flex flex-col flex-1 min-h-0 px-6 pt-3 pb-4 bg-white overflow-y-auto">
-            {mobileLoginForm}
+            {step === "otp" ? mobileOtpForm : mobileLoginForm}
 
             {/* footer trust badge */}
             <div className="mt-3 relative overflow-hidden flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#fdeaea]/80 to-[#fdeaea]/30 border border-[#f5caca] px-3.5 py-2.5 shrink-0 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
@@ -462,43 +595,26 @@ export default function VALoginPage() {
             <span style={styles.brandBadge}>Secure</span>
           </div>
 
-          <h1 style={styles.heading}>Welcome back</h1>
-          <p style={styles.subhead}>Sign in to your Virtual Assistant account</p>
+          <h1 style={styles.heading}>{step === "otp" ? "Verify your identity" : "Welcome back"}</h1>
+          <p style={styles.subhead}>
+            {step === "otp" ? "Enter the code sent to your email" : "Sign in to your Virtual Assistant account"}
+          </p>
 
-          <form onSubmit={handleSignIn} style={styles.form}>
+          {step === "otp" ? (
+            <form onSubmit={handleVerifyOtp} style={styles.form}>
 
-            {/* Email */}
-            <div style={styles.fieldGroup}>
-              <label style={styles.fieldLabel}>Email address</label>
-              <input
-                type="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                style={styles.input}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "#800000";
-                  e.currentTarget.style.background  = "#fff";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "#f0e8e8";
-                  e.currentTarget.style.background  = "#fdf8f8";
-                }}
-              />
-            </div>
-
-            {/* Password */}
-            <div style={styles.fieldGroup}>
-              <label style={styles.fieldLabel}>Password</label>
-              <div style={styles.passWrap}>
+              {/* OTP code */}
+              <div style={styles.fieldGroup}>
+                <label style={styles.fieldLabel}>Verification code</label>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
                   required
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
-                  style={{ ...styles.input, paddingRight: "44px" }}
+                  placeholder="000000"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  style={{ ...styles.input, textAlign: "center", letterSpacing: "0.4em", fontWeight: 600 }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = "#800000";
                     e.currentTarget.style.background  = "#fff";
@@ -508,95 +624,197 @@ export default function VALoginPage() {
                     e.currentTarget.style.background  = "#fdf8f8";
                   }}
                 />
+                <p style={{ fontSize: 12, color: "#aaa", marginTop: 6 }}>
+                  We sent a 6-digit code to {otpEmail}.
+                </p>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div style={styles.errorBox}>
+                  <p style={styles.errorText}>{error}</p>
+                </div>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isLoading || otp.length !== 6}
+                style={{
+                  ...styles.submitBtn,
+                  opacity: isLoading || otp.length !== 6 ? 0.65 : 1,
+                  cursor: isLoading || otp.length !== 6 ? "not-allowed" : "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  if (isLoading || otp.length !== 6) return;
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(128,0,0,0.35)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                {isLoading
+                  ? <><Loader2 size={15} className="animate-spin" /> Verifying…</>
+                  : "Verify Code"
+                }
+              </button>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: -6 }}>
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={styles.eyeBtn}
+                  onClick={handleBackToCredentials}
+                  disabled={isLoading}
+                  style={{ ...styles.forgotBtn, color: "#888" }}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  &larr; Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={isResending || isLoading}
+                  style={styles.forgotBtn}
+                >
+                  {isResending ? "Resending…" : "Resend code"}
                 </button>
               </div>
-            </div>
 
-            {/* Remember + Forgot */}
-            <div style={styles.rowMeta}>
-              <label style={styles.rememberLabel}>
+            </form>
+          ) : (
+            <form onSubmit={handleSignIn} style={styles.form}>
+
+              {/* Email */}
+              <div style={styles.fieldGroup}>
+                <label style={styles.fieldLabel}>Email address</label>
                 <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                  style={{ accentColor: "#800000", width: 14, height: 14, cursor: "pointer" }}
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                  style={styles.input}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#800000";
+                    e.currentTarget.style.background  = "#fff";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#f0e8e8";
+                    e.currentTarget.style.background  = "#fdf8f8";
+                  }}
                 />
-                Remember me
-              </label>
-              <button
-                type="button"
-                onClick={() => router.push("/VirtualAssistant/forgot-password")}
-                style={styles.forgotBtn}
-              >
-                Forgot password?
-              </button>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div style={styles.errorBox}>
-                <p style={styles.errorText}>{error}</p>
               </div>
-            )}
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{
-                ...styles.submitBtn,
-                opacity: isLoading ? 0.65 : 1,
-                cursor: isLoading ? "not-allowed" : "pointer",
-              }}
-              onMouseEnter={(e) => {
-                if (isLoading) return;
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 8px 20px rgba(128,0,0,0.35)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-              onMouseDown={(e) => { if (!isLoading) e.currentTarget.style.transform = "translateY(0) scale(0.98)"; }}
-              onMouseUp={(e) => { if (!isLoading) e.currentTarget.style.transform = "translateY(-2px) scale(1)"; }}
-            >
-              {isLoading
-                ? <><Loader2 size={15} className="animate-spin" /> Signing in…</>
-                : "Sign in"
-              }
-            </button>
+              {/* Password */}
+              <div style={styles.fieldGroup}>
+                <label style={styles.fieldLabel}>Password</label>
+                <div style={styles.passWrap}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                    style={{ ...styles.input, paddingRight: "44px" }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = "#800000";
+                      e.currentTarget.style.background  = "#fff";
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = "#f0e8e8";
+                      e.currentTarget.style.background  = "#fdf8f8";
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={styles.eyeBtn}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
 
-            <TurnstileWidget
-              onVerify={setTurnstileToken}
-              onExpire={() => setTurnstileToken('')}
-            />
+              {/* Remember + Forgot */}
+              <div style={styles.rowMeta}>
+                <label style={styles.rememberLabel}>
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                    style={{ accentColor: "#800000", width: 14, height: 14, cursor: "pointer" }}
+                  />
+                  Remember me
+                </label>
+                <button
+                  type="button"
+                  onClick={() => router.push("/VirtualAssistant/forgot-password")}
+                  style={styles.forgotBtn}
+                >
+                  Forgot password?
+                </button>
+              </div>
 
-            {/* Divider */}
-            <div style={styles.divider}>
-              <div style={styles.dividerLine} />
-              <span style={styles.dividerText}>or</span>
-              <div style={styles.dividerLine} />
-            </div>
+              {/* Error */}
+              {error && (
+                <div style={styles.errorBox}>
+                  <p style={styles.errorText}>{error}</p>
+                </div>
+              )}
 
-            {/* Apply link */}
-            <p style={styles.applyText}>
-              New here?{" "}
+              {/* Submit */}
               <button
-                type="button"
-                onClick={() => router.push("/VirtualAssistant/VAforms")}
-                style={styles.applyLink}
+                type="submit"
+                disabled={isLoading}
+                style={{
+                  ...styles.submitBtn,
+                  opacity: isLoading ? 0.65 : 1,
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  if (isLoading) return;
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(128,0,0,0.35)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+                onMouseDown={(e) => { if (!isLoading) e.currentTarget.style.transform = "translateY(0) scale(0.98)"; }}
+                onMouseUp={(e) => { if (!isLoading) e.currentTarget.style.transform = "translateY(-2px) scale(1)"; }}
               >
-                Apply as a Virtual Assistant
+                {isLoading
+                  ? <><Loader2 size={15} className="animate-spin" /> Signing in…</>
+                  : "Sign in"
+                }
               </button>
-            </p>
 
-          </form>
+              <TurnstileWidget
+                onVerify={setTurnstileToken}
+                onExpire={() => setTurnstileToken('')}
+              />
+
+              {/* Divider */}
+              <div style={styles.divider}>
+                <div style={styles.dividerLine} />
+                <span style={styles.dividerText}>or</span>
+                <div style={styles.dividerLine} />
+              </div>
+
+              {/* Apply link */}
+              <p style={styles.applyText}>
+                New here?{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("/VirtualAssistant/VAforms")}
+                  style={styles.applyLink}
+                >
+                  Apply as a Virtual Assistant
+                </button>
+              </p>
+
+            </form>
+          )}
         </div>
 
         {/* ── RIGHT: Stats & Charts ── */}
