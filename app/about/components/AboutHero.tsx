@@ -39,7 +39,7 @@ export default function WhatWeOfferHero() {
             style={{
               fontFamily: TYPOGRAPHY.heading.fontFamily,
               fontWeight: TYPOGRAPHY.heading.fontWeight,
-              color: COLORS.black,
+              color: "#282828",
             }}
           >
             OUR ABOUT

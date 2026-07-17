@@ -5,6 +5,7 @@ import {
   COLORS,
   SEMANTIC_COLORS,
   FONT_CLASSES,
+  getColorWithOpacity,
 } from "@/constant/styles";
 
 const testimonials = [
@@ -43,10 +44,10 @@ const TestimonialCard: React.FC<{
   return (
     <div
       key={index}
-      className="relative p-8 rounded-2xl shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl bg-white flex flex-col justify-between h-full"
+      className="relative p-5 sm:p-6 rounded-2xl shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl bg-white flex flex-col justify-between h-full"
     >
       <span
-        className="absolute top-0 right-0 text-[10rem] font-black opacity-10 leading-none pointer-events-none transform translate-x-3 -translate-y-3"
+        className="absolute top-0 right-0 text-[5rem] sm:text-[6rem] font-black opacity-10 leading-none pointer-events-none transform translate-x-2 -translate-y-2"
         style={{ color: primaryColor, zIndex: 0 }}
         aria-hidden="true"
       >
@@ -55,19 +56,16 @@ const TestimonialCard: React.FC<{
 
       <div className="flex flex-col flex-grow">
         <p
-          className={`relative text-lg italic leading-relaxed z-10 ${FONT_CLASSES.rubikRegular} transition-all duration-500`}
-          style={{
-            color: COLORS.dark,
-            minHeight: "8rem",
-          }}
+          className={`relative text-sm sm:text-base italic leading-relaxed z-10 min-h-[5rem] sm:min-h-[6rem] ${FONT_CLASSES.rubikRegular} transition-all duration-500`}
+          style={{ color: COLORS.dark }}
         >
           “{isExpanded ? testimonial.quote : shortQuote}”
         </p>
 
-        <div className="mt-2 h-6 flex items-start z-10">
+        <div className="mt-1 h-5 flex items-start z-10">
           {needsExpansion && (
             <button
-              className="text-sm font-semibold hover:underline"
+              className="text-xs font-semibold hover:underline"
               style={{ color: primaryColor }}
               onClick={() => toggleExpand(index)}
             >
@@ -78,23 +76,23 @@ const TestimonialCard: React.FC<{
       </div>
 
       <div
-        className="relative pt-6 border-t flex items-center mt-6 z-10"
+        className="relative pt-4 border-t flex items-center mt-4 z-10"
         style={{ borderColor: COLORS.primaryLightBorder }}
       >
         <div
-          className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-white font-bold text-base flex-shrink-0"
           style={{ backgroundColor: primaryColor }}
         >
           {testimonial.name.charAt(0)}
         </div>
-        <div className="ml-4">
+        <div className="ml-3">
           <p
-            className={`text-lg ${FONT_CLASSES.openSansBold}`}
+            className={`text-sm sm:text-base ${FONT_CLASSES.openSansBold}`}
             style={{ color: primaryColor }}
           >
             {testimonial.name}
           </p>
-          <p className="text-sm mt-0.5" style={{ color: COLORS.dark }}>
+          <p className="text-xs mt-0.5" style={{ color: COLORS.dark }}>
             {testimonial.company}
           </p>
         </div>
@@ -110,6 +108,53 @@ const TestimonialCarousel: React.FC<{
 }> = ({ testimonials, expanded, toggleExpand }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const isDraggingRef = useRef(false);
+  const draggedRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragScrollLeftRef = useRef(0);
+  const SPACE_WIDTH = 32;
+
+  const snapToNearest = () => {
+    const el = scrollRef.current;
+    const item = el?.querySelector(":scope > div") as HTMLElement | null;
+    if (!el || !item) return;
+    const step = item.clientWidth + SPACE_WIDTH;
+    const nearest = Math.round(el.scrollLeft / step) * step;
+    el.scrollTo({ left: nearest, behavior: "smooth" });
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    draggedRef.current = false;
+    dragStartXRef.current = e.clientX;
+    dragScrollLeftRef.current = el.scrollLeft;
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!isDraggingRef.current || !el) return;
+    const delta = e.clientX - dragStartXRef.current;
+    if (Math.abs(delta) > 5) draggedRef.current = true;
+    el.scrollLeft = dragScrollLeftRef.current - delta;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    isDraggingRef.current = false;
+    el?.releasePointerCapture?.(e.pointerId);
+    if (draggedRef.current) snapToNearest();
+  };
+
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (draggedRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      draggedRef.current = false;
+    }
+  };
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -156,8 +201,14 @@ const TestimonialCarousel: React.FC<{
       <div
         ref={scrollRef}
         onScroll={handleScroll}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
         className="
-          relative 
+          relative select-none
           flex snap-x snap-mandatory overflow-x-scroll overflow-y-visible
           space-x-8 -mx-4 px-4 pb-4
           scrollbar-hide
@@ -165,6 +216,8 @@ const TestimonialCarousel: React.FC<{
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
+          cursor: "grab",
+          touchAction: "pan-y",
         }}
       >
         {testimonials.map((testimonial, index) => (
@@ -198,7 +251,7 @@ const TestimonialCarousel: React.FC<{
             `}
             style={{
               backgroundColor:
-                index === activeIndex ? COLORS.primary : undefined,
+                index === activeIndex ? COLORS.primary : "#e2e2e2",
             }}
             aria-label={`Go to testimonial ${index + 1}`}
           />
@@ -243,13 +296,14 @@ export default function ServiceTestimonials() {
             </span>
           </div>
           <h2
-            className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-4`}
-            style={{ color: SEMANTIC_COLORS.text.primary }}
+            className={`${FONT_CLASSES.poppinsBold} text-3xl sm:text-4xl md:text-5xl mb-4`}
+            style={{ color: COLORS.dark }}
           >
             What Our Clients <span style={{ color: COLORS.primary }}>Say</span>
           </h2>
           <p
-            className={`${FONT_CLASSES.rubikRegular} text-lg text-gray-600 mt-4 max-w-3xl mx-auto`}
+            className={`${FONT_CLASSES.rubikRegular} text-base mt-4 max-w-3xl mx-auto`}
+            style={{ color: getColorWithOpacity("dark", 0.7) }}
           >
             Hear directly from the partners who have scaled their operations and
             achieved success with our dedicated BPO teams.

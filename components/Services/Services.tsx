@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Layout, Loader2, AlertCircle } from "lucide-react";
+import { ArrowUpRight, Layout, Loader2, AlertCircle, Clock } from "lucide-react";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
 
 const DARK_RED = "#a10000";
@@ -156,6 +156,35 @@ const ServiceCard = ({ service, index = 0 }: { service: ServiceType; index?: num
     >
       {/* Image */}
       <div className="relative w-full overflow-hidden aspect-[16/10] sm:aspect-[4/3]">
+        {!service.isActive && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.62)",
+              zIndex: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
+            <Clock size={22} color="#fbbf24" />
+            <span
+              style={{
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: "11px",
+                letterSpacing: "0.14em",
+                color: "#fbbf24",
+                fontWeight: 600,
+                textTransform: "uppercase",
+              }}
+            >
+              Coming Soon
+            </span>
+          </div>
+        )}
         {useNativeImg ? (
           <img
             src={service.imageSrc}
@@ -390,6 +419,7 @@ function TrackSlider({ extended, index, animated, cardsVisible, busy, onSwipePre
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (busy || cardWidth === 0) return;
+    if ((e.target as HTMLElement).closest("button, a")) return;
     isDraggingRef.current = true;
     draggedRef.current = false;
     startXRef.current = e.clientX;

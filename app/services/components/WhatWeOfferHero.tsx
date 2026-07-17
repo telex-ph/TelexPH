@@ -10,7 +10,7 @@ export default function WhatWeOfferHero() {
     >
       <div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[85%]
-                   text-[5rem] md:text-[7rem] lg:text-[8rem]
+                   text-[4rem] sm:text-[4.75rem] md:text-[7rem] lg:text-[8rem]
                    opacity-15 select-none pointer-events-none
                    leading-none z-0 whitespace-nowrap"
         style={{
@@ -32,20 +32,21 @@ export default function WhatWeOfferHero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1
-            className="text-5xl md:text-6xl mb-6 tracking-tight"
+            className="text-[48px] md:text-6xl mb-6 tracking-tight"
             style={{
               fontFamily: TYPOGRAPHY.heading.fontFamily,
               fontWeight: TYPOGRAPHY.heading.fontWeight,
-              color: COLORS.black,
+              color: COLORS.dark,
             }}
           >
             OUR SERVICES
           </h1>
 
           <p
-            className="text-md md:text-lg max-w-1xl mx-auto mb-8"
+            className="max-w-1xl mx-auto mb-8 text-[14px] md:text-[16px]"
             style={{
               fontFamily: FONTS.rubik,
+              fontWeight: FONT_WEIGHTS.regular,
               color: getColorWithOpacity("dark", 0.7),
             }}
           >
@@ -55,10 +56,10 @@ export default function WhatWeOfferHero() {
           </p>
 
           <div
-            className="text-sm"
+            className="text-xs uppercase"
             style={{
               fontFamily: FONTS.openSans,
-              fontWeight: FONT_WEIGHTS.medium,
+              fontWeight: FONT_WEIGHTS.bold,
               color: getColorWithOpacity("dark", 0.7),
             }}
           >

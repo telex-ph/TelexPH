@@ -1,7 +1,7 @@
 import React from "react";
 import { Target, Eye, Users, Award, TrendingUp, Heart } from "lucide-react";
 import { Rubik } from "next/font/google";
-import { COLORS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, FONT_CLASSES, getColorWithOpacity } from "@/constant/styles";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -57,7 +57,7 @@ export default function MissionVision() {
                   </h2>
                   <p
                     className={`${rubik.className} text-sm sm:text-base leading-relaxed`}
-                    style={{ color: COLORS.dark }}
+                    style={{ color: getColorWithOpacity("dark", 0.7) }}
                   >
                     To empower businesses through innovative outsourcing
                     solutions, cutting-edge technology, and adaptive strategies
@@ -95,7 +95,7 @@ export default function MissionVision() {
                   </h2>
                   <p
                     className={`${rubik.className} text-sm sm:text-base leading-relaxed`}
-                    style={{ color: COLORS.dark }}
+                    style={{ color: getColorWithOpacity("dark", 0.7) }}
                   >
                     To be a global leader in business process solutions,
                     recognized for harnessing innovation, people, and technology

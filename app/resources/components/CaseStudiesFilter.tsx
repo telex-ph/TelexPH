@@ -10,7 +10,6 @@ import {
   HiListBullet, 
   HiSquares2X2,
   HiEye,
-  HiEllipsisVertical
 } from "react-icons/hi2";
 
 // API Configuration
@@ -34,7 +33,6 @@ export default function CaseStudiesFilter() {
   const [statusFilter, setStatusFilter] = useState("Active");
   const [tagFilter, setTagFilter] = useState("Filter by tag");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 8;
   const [apiCaseStudies, setApiCaseStudies] = useState([]);
@@ -217,29 +215,41 @@ export default function CaseStudiesFilter() {
 
   const [modalCard, setModalCard] = useState<any | null>(null);
 
-  const toggleExpand = (id: number) => {
-    setExpandedCardId(expandedCardId === id ? null : id);
-  };
+  useEffect(() => {
+    if (modalCard) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = previousOverflow; };
+    }
+  }, [modalCard]);
 
   const formalColor = "#4b5563";
 
-  const renderAuthorAvatars = (authors: { name: string; image?: string }[], size: string) => (
-    <div className="flex -space-x-1">
-      {authors.slice(0, 3).map((author, i) =>
-        author.image ? (
-          <div key={i} className={`${size} rounded-full border-2 border-white bg-gray-200 overflow-hidden`}>
-            <img src={author.image} alt={author.name} className="w-full h-full object-cover" />
-          </div>
-        ) : (
-          <div
-            key={i}
-            className={`${size} rounded-full border-2 border-white flex items-center justify-center text-[9px] md:text-[11px] font-bold`}
-            style={{ background: "rgba(128,0,0,0.12)", color: "#800000" }}
-            title={author.name}
-          >
-            {author.name?.charAt(0).toUpperCase()}
-          </div>
-        )
+  const renderAuthorAvatars = (authors: { name: string; image?: string }[], size: string, textSize: string = "text-[9px] md:text-[11px]") => (
+    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+      <div className="flex -space-x-1 flex-shrink-0">
+        {authors.slice(0, 3).map((author, i) =>
+          author.image ? (
+            <div key={i} className={`${size} rounded-full border-2 border-white bg-gray-200 overflow-hidden`}>
+              <img src={author.image} alt={author.name} className="w-full h-full object-cover" />
+            </div>
+          ) : (
+            <div
+              key={i}
+              className={`${size} rounded-full border-2 border-white flex items-center justify-center ${textSize} font-bold`}
+              style={{ background: "rgba(128,0,0,0.12)", color: "#800000" }}
+              title={author.name}
+            >
+              {author.name?.charAt(0).toUpperCase()}
+            </div>
+          )
+        )}
+      </div>
+      {authors.length > 0 && (
+        <span className={`${textSize} font-medium text-gray-500 truncate`}>
+          {authors[0]?.name}
+          {authors.length > 1 ? ` +${authors.length - 1}` : ""}
+        </span>
       )}
     </div>
   );
@@ -376,19 +386,83 @@ export default function CaseStudiesFilter() {
           <div className={`max-w-7xl mx-auto ${viewMode === "grid" ? "grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6 justify-items-center" : "flex flex-col gap-6 items-center"}`}>
             {paginatedCards.length > 0 ? (
               paginatedCards.map((card: any, index: number) => {
-                const isExpanded = expandedCardId === index;
+                if (viewMode === "grid") {
+                  return (
+                    <div
+                      key={card.id ?? index}
+                      className="group bg-white rounded-2xl overflow-hidden shadow-[0_20px_45px_-20px_rgba(0,0,0,0.2)] md:shadow-[0_35px_70px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col h-full w-full max-w-[260px] md:max-w-[300px] transition-all duration-500 hover:translate-y-[-5px]"
+                    >
+                      <div className="relative aspect-[2.6/1] overflow-hidden bg-gray-50">
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (target.src !== "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800") {
+                              target.src = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800";
+                            }
+                          }}
+                        />
+                        <span
+                          className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-[#800000] px-2 py-0.5 md:px-3 md:py-1 rounded-lg text-[8px] md:text-[9px] font-bold uppercase tracking-widest shadow-md"
+                          style={{ fontFamily: FONTS.openSans }}
+                        >
+                          {card.type}
+                        </span>
+                      </div>
+
+                      <div className="px-4 md:px-6 pt-3 md:pt-4 pb-3 md:pb-5 flex flex-col flex-grow">
+                        <p className="text-gray-400 text-[9px] md:text-[10px] font-normal mb-1.5 uppercase tracking-widest flex flex-wrap items-center gap-x-1.5 gap-y-0.5" style={{ fontFamily: FONTS.rubik }}>
+                          <span className="whitespace-nowrap">{card.date}</span>
+                          <span className={`px-1.5 py-0.5 rounded font-semibold ${
+                            card.status === 'Active' ? 'bg-green-100 text-green-700' :
+                            card.status === 'Completed' ? 'bg-blue-100 text-blue-700' :
+                            card.status === 'Draft' ? 'bg-gray-100 text-gray-700' :
+                            'bg-orange-100 text-orange-700'
+                          }`}>
+                            {card.status}
+                          </span>
+                        </p>
+
+                        <h4
+                          onClick={() => setModalCard(card)}
+                          className="text-[13px] md:text-[17px] font-bold text-[#282828] leading-tight mb-2 group-hover:text-[#800000] transition-colors cursor-pointer line-clamp-2"
+                          style={{ fontFamily: FONTS.poppins }}
+                        >
+                          {card.title}
+                        </h4>
+
+                        <p className="text-gray-500 text-[10px] md:text-[12px] leading-relaxed mb-3 md:mb-4 line-clamp-2 flex-grow">
+                          {card.description}
+                        </p>
+
+                        <div className="mt-auto flex justify-between items-center gap-2 border-t border-gray-50 pt-3">
+                          {renderAuthorAvatars(card.authors, "w-5 h-5 md:w-7 md:h-7", "text-[9px] md:text-[11px]")}
+                          <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`} className="flex-shrink-0">
+                            <button
+                              title="Preview article"
+                              className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
+                            >
+                              <HiEye className="w-3 h-3 md:w-4 md:h-4" />
+                            </button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
 
                 return (
                   <div
                     key={card.id ?? index}
-                    className={`relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300
-                      ${viewMode === "grid" ? "w-full max-w-[260px] md:max-w-[300px] h-[215px] md:h-[290px]" : "w-full max-w-5xl min-h-[88px] md:min-h-[200px] flex flex-row"}`}
+                    className="relative bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 w-full max-w-5xl min-h-[88px] md:min-h-[200px] flex flex-row"
                   >
-                    <div className={viewMode === "grid" ? "absolute top-0 w-full h-[105px] md:h-[120px]" : "relative w-[80px] md:w-[300px] flex-shrink-0"}>
-                      <img 
-                        src={card.image} 
-                        alt={card.title} 
-                        className={viewMode === "grid" ? "w-full h-full object-cover" : "absolute inset-0 w-full h-full object-cover"}
+                    <div className="relative w-[80px] md:w-[300px] flex-shrink-0">
+                      <img
+                        src={card.image}
+                        alt={card.title}
+                        className="absolute inset-0 w-full h-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           if (target.src !== "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800") {
@@ -397,66 +471,14 @@ export default function CaseStudiesFilter() {
                         }}
                       />
                       <span
-                        className={`absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 text-gray-800 text-[10px] md:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full shadow-sm ${viewMode === "list" ? "hidden md:block" : ""}`}
+                        className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 text-gray-800 text-[10px] md:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full shadow-sm hidden md:block"
                         style={{ fontFamily: FONTS.openSans }}
                       >
                         {card.type}
                       </span>
                     </div>
 
-                    {viewMode === "grid" ? (
-                      <>
-                        <div
-                          className={`absolute bottom-[35px] md:bottom-[81px] w-full bg-white transition-all duration-500 ease-in-out px-4 md:px-6 pt-3 md:pt-6 rounded-t-xl overflow-hidden ${isExpanded ? "h-[135px] md:h-[200px]" : "h-[75px] md:h-[100px]"}`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div className="min-w-0">
-                              <p className="text-gray-400 text-[10px] md:text-[11px] font-normal mb-1 uppercase tracking-wider flex flex-wrap items-center gap-x-1.5 gap-y-0.5" style={{ fontFamily: FONTS.rubik }}>
-                                <span className="whitespace-nowrap">{card.date}</span>
-                                <span className={`px-1.5 py-0.5 rounded font-semibold ${
-                                  card.status === 'Active' ? 'bg-green-100 text-green-700' :
-                                  card.status === 'Completed' ? 'bg-blue-100 text-blue-700' :
-                                  card.status === 'Draft' ? 'bg-gray-100 text-gray-700' :
-                                  'bg-orange-100 text-orange-700'
-                                }`}>
-                                  {card.status}
-                                </span>
-                              </p>
-                              <h4
-                                onClick={() => { if (typeof window !== "undefined" && window.innerWidth < 768) setModalCard(card); }}
-                                className="text-[12px] md:text-[18px] font-bold text-[#282828] leading-tight mb-2 md:mb-3 line-clamp-2 cursor-pointer md:cursor-auto"
-                                style={{ fontFamily: FONTS.poppins }}
-                              >
-                                {card.title}
-                              </h4>
-                            </div>
-                            <button onClick={() => toggleExpand(index)} className="hidden md:flex bg-gray-100 hover:bg-gray-200 text-gray-500 p-1.5 rounded-full flex-shrink-0">
-                              <HiEllipsisVertical className={`w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
-                            </button>
-                          </div>
-                          <hr className="border-gray-50 mb-2 md:mb-3" />
-                          <div className={isExpanded ? "max-h-24 opacity-100 transition-opacity duration-300" : "max-h-0 opacity-0 overflow-hidden"}>
-                            <p className="text-gray-500 text-[10px] md:text-[13px] leading-relaxed line-clamp-3">{card.description}</p>
-                          </div>
-                        </div>
-
-                        <div className="absolute bottom-0 w-full bg-white px-4 md:px-6 pt-1.5 md:pt-3 pb-2 md:pb-6 z-20">
-                          <hr className="hidden md:block border-gray-100 mb-2 md:mb-3" />
-                          <div className="flex justify-between items-center">
-                            {renderAuthorAvatars(card.authors, "w-5 h-5 md:w-7 md:h-7")}
-                            <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`}>
-                              <button
-                                title="Preview article"
-                                className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
-                              >
-                                <HiEye className="w-3 h-3 md:w-4 md:h-4" />
-                              </button>
-                            </Link>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex-grow min-w-0 bg-white px-2.5 py-2 md:px-8 md:pt-6 md:pb-4">
+                    <div className="flex-grow min-w-0 bg-white px-2.5 py-2 md:px-8 md:pt-6 md:pb-4">
                         <div className="relative z-10 flex flex-col h-full">
                           <div className="flex justify-between items-start">
                             <div className="min-w-0">
@@ -472,8 +494,8 @@ export default function CaseStudiesFilter() {
                                 </span>
                               </p>
                               <h4
-                                onClick={() => { if (typeof window !== "undefined" && window.innerWidth < 768) setModalCard(card); }}
-                                className="text-[12px] md:text-[18px] font-bold text-[#282828] leading-tight mb-1 md:mb-3 line-clamp-1 md:line-clamp-1 cursor-pointer md:cursor-auto"
+                                onClick={() => setModalCard(card)}
+                                className="text-[12px] md:text-[18px] font-bold text-[#282828] leading-tight mb-1 md:mb-3 line-clamp-1 md:line-clamp-1 cursor-pointer"
                                 style={{ fontFamily: FONTS.poppins }}
                               >
                                 {card.title}
@@ -485,9 +507,9 @@ export default function CaseStudiesFilter() {
                             <p className="text-gray-500 text-[10px] md:text-[13px] leading-snug md:leading-relaxed line-clamp-1 md:line-clamp-3">{card.description}</p>
                           </div>
                           <hr className="hidden md:block border-gray-100 mt-auto" />
-                          <div className="mt-auto md:mt-0 pt-1 md:pt-3 flex justify-between items-center">
-                            {renderAuthorAvatars(card.authors, "w-4 h-4 md:w-7 md:h-7")}
-                            <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`}>
+                          <div className="mt-auto md:mt-0 pt-1 md:pt-3 flex justify-between items-center gap-2">
+                            {renderAuthorAvatars(card.authors, "w-4 h-4 md:w-7 md:h-7", "text-[8px] md:text-[11px]")}
+                            <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`} className="flex-shrink-0">
                               <button
                                 title="Preview article"
                                 className="w-5 h-5 md:w-8 md:h-8 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
@@ -498,7 +520,6 @@ export default function CaseStudiesFilter() {
                           </div>
                         </div>
                       </div>
-                    )}
                   </div>
                 );
               })
@@ -536,11 +557,11 @@ export default function CaseStudiesFilter() {
 
       {modalCard && (
         <div
-          className="md:hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-[100] flex items-start md:items-center justify-center bg-black/50 p-4 pt-[130px] md:pt-4 overflow-y-auto"
           onClick={() => setModalCard(null)}
         >
           <div
-            className="relative w-full max-w-lg max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="relative w-full max-w-lg h-[75vh] max-h-[620px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -588,6 +609,11 @@ export default function CaseStudiesFilter() {
               <h4 className="text-[20px] font-bold text-[#282828] leading-tight mb-3 flex-shrink-0" style={{ fontFamily: FONTS.poppins }}>
                 {modalCard.title}
               </h4>
+              {modalCard.authors && modalCard.authors.length > 0 && (
+                <div className="mb-3 flex-shrink-0">
+                  {renderAuthorAvatars(modalCard.authors, "w-6 h-6", "text-[11px]")}
+                </div>
+              )}
               <div className="flex items-center gap-2 mb-2 flex-shrink-0">
                 <span style={{ fontFamily: FONTS.openSans, fontWeight: 700, fontSize: '16px', color: '#282828', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
                   About

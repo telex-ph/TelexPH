@@ -14,6 +14,9 @@ export default function BlogsPage() {
   const [showNav, setShowNav] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeTab, setActiveTab] = useState('All');
+  // Category picked from the "Category" dropdown while on the ALL tab —
+  // filters content by category without switching the active tab itself.
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Article View States
@@ -51,10 +54,10 @@ export default function BlogsPage() {
 
   // Filtering Logic (Applying search and tabs to the fetched data)
   const filteredBlogs = blogs.filter((blog) => {
-    const matchesTab = activeTab === "All" || 
-                       blog.mainCategory === activeTab || 
-                       blog.subcategory === activeTab;
-    
+    const matchesTab = activeTab === "All"
+      ? (categoryFilter ? blog.mainCategory === categoryFilter : true)
+      : (blog.mainCategory === activeTab || blog.subcategory === activeTab);
+
     const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           blog.shortDescription.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -93,11 +96,13 @@ export default function BlogsPage() {
           <>
             <BlogsHero />
             <div className="max-w-[1400px] mx-auto px-4">
-              <BlogsFilter 
-                viewMode={viewMode} 
-                setViewMode={setViewMode} 
-                activeTab={activeTab} 
+              <BlogsFilter
+                viewMode={viewMode}
+                setViewMode={setViewMode}
+                activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                categoryFilter={categoryFilter}
+                setCategoryFilter={setCategoryFilter}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
               />
@@ -107,11 +112,13 @@ export default function BlogsPage() {
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#800000]"></div>
                 </div>
               ) : (
-                <BlogsList 
+                <BlogsList
                   blogs={filteredBlogs} // Gamit na ang actual filtered data
                   onArticleClick={handleArticleClick}
                   searchQuery={searchQuery}
                   viewMode={viewMode} // Added missing viewMode prop
+                  activeTab={activeTab}
+                  categoryFilter={categoryFilter}
                 />
               )}
             </div>

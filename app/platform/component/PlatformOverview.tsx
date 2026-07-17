@@ -1832,8 +1832,8 @@ function TabIndustries({ onTabSwitch }: { onTabSwitch: (tab: string) => void }) 
               </div>
             </div>
           </div>
-          <div className="hidden md:flex flex-1 items-center justify-center py-10 relative overflow-hidden">
-            <div className="relative w-full" style={{ height: 420 }} id="ind-hero-mosaic" />
+          <div className="flex flex-1 items-center justify-center py-6 md:py-10 relative overflow-hidden w-full">
+            <div className="relative w-full h-[260px] md:h-[420px]" id="ind-hero-mosaic" />
           </div>
         </div>
       </section>

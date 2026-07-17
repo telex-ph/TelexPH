@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   COLORS,
   SEMANTIC_COLORS,
   FONTS,
   FONT_CLASSES,
-  FONT_WEIGHTS,
-  TYPOGRAPHY,
+  getColorWithOpacity,
 } from "@/constant/styles";
 
 const processSteps = [
@@ -25,7 +25,6 @@ const processSteps = [
     description:
       "After assessing your requirements, we create a customized strategy tailored to your business model. This includes identifying key service areas, defining workflows, setting KPIs, and determining the right team structure. Every plan we build is data-driven and focused on delivering measurable results.",
     image: "/images/process2.webp",
-    dark: true,
   },
   {
     number: "03",
@@ -40,7 +39,6 @@ const processSteps = [
     description:
       "This is where strategy turns into action. Your assigned team begins delivering services according to the agreed workflow and KPIs. We ensure consistency, quality, and professionalism in every task—backed by advanced tools, supervision, and continuous performance monitoring.",
     image: "/images/process4.webp",
-    dark: true,
   },
   {
     number: "05",
@@ -55,223 +53,75 @@ const processSteps = [
     description:
       "Our partnership doesn't stop at delivery. We continuously evaluate performance metrics, gather feedback, and apply process improvements to enhance efficiency and outcomes. Through innovation and proactive management, we help you scale smarter and stay ahead in an ever-changing market.",
     image: "/images/process6.webp",
-    dark: true,
   },
 ];
 
-const ProcessCard: React.FC<{ step: typeof processSteps[0]; index: number }> = ({
-  step,
-  index,
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div
-      className={`group relative flex flex-col lg:flex-row items-center gap-4 lg:gap-6 py-8 md:py-10 px-4 md:px-8 rounded-3xl transition-all duration-500 h-full overflow-hidden ${
-        step.dark
-          ? "bg-[#282828] hover:bg-[#2f2f2f]"
-          : "bg-white shadow-lg hover:shadow-2xl"
-      }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{
-          background: step.dark
-            ? "linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 50%)"
-            : "linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, transparent 50%)",
-        }}
-      />
-
-      <div
-        className="absolute top-0 right-0 w-32 h-32 opacity-10 transition-transform duration-500 group-hover:scale-110"
-        style={{
-          background: `radial-gradient(circle at top right, ${COLORS.primary} 0%, transparent 70%)`,
-        }}
-      />
-
-      {/* Number */}
-      <div className="relative flex-shrink-0 w-20 md:w-24 mx-auto lg:mx-0 text-center lg:text-left">
-        <div
-          className={`text-4xl md:text-5xl font-extrabold ${FONT_CLASSES.poppinsBlack} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 relative z-10`}
-          style={{
-            color: step.dark
-              ? SEMANTIC_COLORS.text.inverse
-              : SEMANTIC_COLORS.text.primary,
-          }}
-        >
-          {step.number}
-        </div>
-        <div
-          className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-xl"
-          style={{
-            background: COLORS.primary,
-            transform: "scale(1.5)",
-          }}
-        />
-      </div>
-
-      {/* Title */}
-      <div className="relative flex-shrink-0 w-full max-w-sm mx-auto text-center lg:w-32 lg:text-left lg:max-w-none">
-        <h3
-          className={`text-xl md:text-2xl font-bold ${FONT_CLASSES.openSansBold} relative z-10`}
-          style={{
-            color: step.dark
-              ? SEMANTIC_COLORS.text.inverse
-              : SEMANTIC_COLORS.text.primary,
-          }}
-        >
-          {step.title}
-        </h3>
-      </div>
-
-      {/* Arrow - hidden on mobile/mid */}
-      <div className="flex-shrink-0 w-10 md:w-12 relative mx-auto lg:mx-0 hidden lg:flex">
-        <svg
-          width="48"
-          height="24"
-          viewBox="0 0 48 24"
-          fill="none"
-          className="transition-all duration-500 group-hover:translate-x-2"
-          style={{
-            opacity: step.dark ? 0.6 : 0.4,
-          }}
-        >
-          <path
-            d="M2 12h40m0 0l-8-8m8 8l-8 8"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={step.dark ? "stroke-white" : "stroke-gray-800"}
-          />
-        </svg>
-      </div>
-
-      {/* Description */}
-      <p
-        className={`text-sm md:text-base leading-relaxed flex-grow text-center lg:text-left ${FONT_CLASSES.rubikRegular} relative z-10`}
-        style={{
-          color: step.dark
-            ? "rgba(255,255,255,0.75)"
-            : SEMANTIC_COLORS.text.secondary,
-          maxWidth: "38rem",
-          fontFamily: FONTS.rubik,
-        }}
-      >
-        {step.description}
-      </p>
-
-      {/* Image */}
-      <div className="flex-shrink-0 w-full md:w-80 h-40 md:h-32 rounded-2xl overflow-hidden relative group/image mx-auto lg:mx-0">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500 z-10" />
-        <Image
-          src={step.image}
-          alt={step.title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover/image:scale-110"
-          sizes="(max-width: 768px) 100vw, 320px"
-          priority={index < 2}
-        />
-      </div>
-
-      <div
-        className="absolute bottom-0 left-0 right-0 h-1 transform origin-left transition-transform duration-700 scale-x-0 group-hover:scale-x-100"
-        style={{ backgroundColor: COLORS.primary }}
-      />
-    </div>
-  );
-};
-
-const CarouselPagination: React.FC<{
-  steps: typeof processSteps;
+const ProcessTabs: React.FC<{
   activeIndex: number;
-  scrollTo: (index: number) => void;
-}> = ({ steps, activeIndex, scrollTo }) => {
+  onSelect: (index: number) => void;
+}> = ({ activeIndex, onSelect }) => {
   return (
-    <div className="flex justify-center mt-8 space-x-3">
-      {steps.map((_, index) => (
-        <button
-          key={index}
-          onClick={() => scrollTo(index)}
-          className={`
-            h-2.5 rounded-full transition-all duration-300 ease-out
-            hover:opacity-100
-            ${index === activeIndex ? "w-8 opacity-100" : "bg-gray-300 w-2.5 opacity-50 hover:opacity-70"}
-          `}
-          style={{
-            backgroundColor: index === activeIndex ? COLORS.primary : undefined,
-          }}
-          aria-label={`Go to process step ${index + 1}`}
-        />
-      ))}
-    </div>
-  );
-};
-
-const ProcessCarousel: React.FC<{ steps: typeof processSteps }> = ({ steps }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const itemWidth =
-        (scrollRef.current.querySelector(":scope > div")?.clientWidth || 1) + 16;
-      const newIndex = Math.round(scrollLeft / itemWidth);
-      if (newIndex !== activeIndex) setActiveIndex(newIndex);
-    }
-  };
-
-  const scrollTo = (index: number) => {
-    if (scrollRef.current) {
-      const itemWidth =
-        (scrollRef.current.querySelector(":scope > div")?.clientWidth || 1) + 16;
-      scrollRef.current.scrollTo({
-        left: index * itemWidth,
-        behavior: "smooth",
-      });
-      setActiveIndex(index);
-    }
-  };
-
-  useEffect(() => {
-    const currentRef = scrollRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", handleScroll);
-      return () => currentRef.removeEventListener("scroll", handleScroll);
-    }
-  }, [activeIndex]);
-
-  return (
-    <>
+    <div>
       <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="
-          relative 
-          flex snap-x snap-mandatory overflow-x-scroll overflow-y-visible
-          space-x-4 px-4 pb-4
-          scrollbar-hide
-        "
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
+        className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {steps.map((step, index) => (
-          <div key={index} className="flex-shrink-0 w-full snap-start">
-            <ProcessCard step={step} index={index} />
-          </div>
-        ))}
+        {processSteps.map((step, index) => {
+          const isActive = index === activeIndex;
+          return (
+            <button
+              key={step.number}
+              onClick={() => onSelect(index)}
+              className={`flex flex-shrink-0 items-center gap-2 rounded-full px-4 md:px-5 py-2.5 md:py-3 transition-all duration-300 border ${
+                isActive
+                  ? "shadow-lg"
+                  : "bg-white border-gray-200 text-gray-500 hover:text-[#a10000] hover:border-[#a10000]/30 hover:bg-red-50/50"
+              }`}
+              style={
+                isActive
+                  ? {
+                      backgroundColor: COLORS.primary,
+                      borderColor: COLORS.primary,
+                      color: COLORS.white,
+                      boxShadow: "0 10px 24px -8px rgba(161,0,0,0.45)",
+                    }
+                  : undefined
+              }
+            >
+              <span className={`text-sm ${FONT_CLASSES.poppinsBold}`}>
+                {step.number}
+              </span>
+              <span
+                className={`hidden sm:inline text-sm ${FONT_CLASSES.openSansBold}`}
+              >
+                {step.title}
+              </span>
+            </button>
+          );
+        })}
       </div>
-      <CarouselPagination steps={steps} activeIndex={activeIndex} scrollTo={scrollTo} />
-    </>
+
+      <div className="h-1 w-full rounded-full bg-gray-200 overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-500 ease-out"
+          style={{
+            width: `${((activeIndex + 1) / processSteps.length) * 100}%`,
+            backgroundColor: COLORS.primary,
+          }}
+        />
+      </div>
+    </div>
   );
 };
 
 export default function ServiceProcess() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const step = processSteps[activeIndex];
+
+  const goPrev = () => setActiveIndex((i) => Math.max(0, i - 1));
+  const goNext = () =>
+    setActiveIndex((i) => Math.min(processSteps.length - 1, i + 1));
+
   return (
     <section
       className="py-20 md:py-24 relative overflow-hidden"
@@ -297,24 +147,78 @@ export default function ServiceProcess() {
             Our Work <span style={{ color: COLORS.primary }}>Process</span>
           </h2>
           <p
-            className={`${FONT_CLASSES.rubikRegular} text-lg text-gray-600 mt-4 max-w-2xl mx-auto md:mx-0`}
-            style={{ fontFamily: FONTS.rubik }}
+            className={`${FONT_CLASSES.rubikRegular} text-lg mt-4 max-w-2xl mx-auto md:mx-0`}
+            style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.7) }}
           >
             From consultation to optimization, we follow a proven methodology
             that ensures exceptional results every step of the way
           </p>
         </div>
 
-        {/* Mobile carousel */}
-        <div className="lg:hidden pb-2 overflow-visible">
-          <ProcessCarousel steps={processSteps} />
-        </div>
+        <ProcessTabs activeIndex={activeIndex} onSelect={setActiveIndex} />
 
-        {/* Desktop grid */}
-        <div className="hidden lg:block space-y-6">
-          {processSteps.map((step, index) => (
-            <ProcessCard key={index} step={step} index={index} />
-          ))}
+        <div
+          key={activeIndex}
+          className="animate-fade-in-up mt-10 bg-white rounded-3xl shadow-xl overflow-hidden"
+        >
+          <div className="flex flex-col lg:flex-row">
+            <div className="order-2 lg:order-1 flex-1 p-6 sm:p-8 md:p-12 flex flex-col justify-center">
+              <span
+                className={`${FONT_CLASSES.poppinsBold} text-4xl sm:text-5xl md:text-7xl leading-none mb-2 select-none`}
+                style={{ color: COLORS.primary, opacity: 0.15 }}
+              >
+                {step.number}
+              </span>
+              <h3
+                className={`${FONT_CLASSES.openSansBold} text-xl sm:text-2xl md:text-3xl mb-4`}
+                style={{ color: SEMANTIC_COLORS.text.primary }}
+              >
+                {step.title}
+              </h3>
+              <p
+                className={`${FONT_CLASSES.rubikRegular} text-base leading-relaxed`}
+                style={{ fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.7) }}
+              >
+                {step.description}
+              </p>
+
+              <div className="flex items-center justify-between mt-8">
+                <button
+                  onClick={goPrev}
+                  disabled={activeIndex === 0}
+                  aria-label="Previous step"
+                  className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 transition-colors duration-200 hover:border-[#a10000] hover:text-[#a10000] disabled:opacity-30 disabled:hover:border-gray-200 disabled:hover:text-gray-500"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <span
+                  className={`${FONT_CLASSES.rubikRegular} text-sm text-gray-400`}
+                >
+                  {activeIndex + 1} / {processSteps.length}
+                </span>
+                <button
+                  onClick={goNext}
+                  disabled={activeIndex === processSteps.length - 1}
+                  aria-label="Next step"
+                  className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 transition-colors duration-200 hover:border-[#a10000] hover:text-[#a10000] disabled:opacity-30 disabled:hover:border-gray-200 disabled:hover:text-gray-500"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2 relative w-full lg:w-[440px] h-64 lg:h-auto flex-shrink-0">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent z-10 lg:bg-gradient-to-l" />
+              <Image
+                src={step.image}
+                alt={step.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 440px"
+                priority
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

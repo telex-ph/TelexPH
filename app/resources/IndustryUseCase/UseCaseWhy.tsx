@@ -16,7 +16,7 @@ const UseCaseWhy = () => {
           <div className="flex flex-col items-start text-left">
             <div className="inline-block mb-4">
               <span
-                className={`${FONT_CLASSES.openSansBold} text-[11px] uppercase tracking-[0.25em] py-2 inline-block font-bold`}
+                className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[14px] uppercase tracking-[0.25em] py-2 inline-block`}
                 style={{ color: COLORS.primary }}
               >
                 — Why Choose Us
@@ -24,16 +24,16 @@ const UseCaseWhy = () => {
             </div>
             
             <h2
-              className={`${FONT_CLASSES.openSansBold} text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-tighter leading-none font-bold`}
-              style={{ color: COLORS.black }}
+              className={`font-poppins font-bold text-3xl md:text-[48px] mb-6 uppercase tracking-tighter leading-none`}
+              style={{ color: '#282828' }}
             >
               Expertise That
               <br />
-              <span style={{ color: COLORS.primary }}>Redefines BPO</span>
+              <span style={{ color: '#a10000' }}>Redefines BPO</span>
             </h2>
 
             <p
-              className={`${FONT_CLASSES.rubikRegular} text-base text-gray-500 max-w-2xl font-normal leading-relaxed`}
+              className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 max-w-2xl font-normal leading-relaxed`}
             >
               We combine deep industry knowledge with next-generation AI orchestration to solve the most complex friction points in modern business operations.
             </p>
@@ -48,18 +48,18 @@ const UseCaseWhy = () => {
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-transform group-hover:rotate-6" style={{ backgroundColor: COLORS.primary }}>
                 <Award size={24} />
               </div>
-              <h3 className={`${FONT_CLASSES.openSansBold} text-lg text-gray-900 mb-2 uppercase tracking-tight font-bold`}>Industry Mastery</h3>
-              <p className="text-base text-gray-500 leading-relaxed mb-4 font-light">Specialized in BPO friction points and workflow optimization.</p>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-bold">10+ Years Experience</span>
+              <h3 className={`font-poppins font-bold text-base md:text-lg mb-2 uppercase tracking-tight`} style={{ color: '#282828' }}>Industry Mastery</h3>
+              <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>Specialized in BPO friction points and workflow optimization.</p>
+              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>10+ Years Experience</span>
             </div>
 
             <div className="p-10 rounded-[2.5rem] bg-white border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col justify-center min-h-[260px] group cursor-default">
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-transform group-hover:rotate-6" style={{ backgroundColor: COLORS.primary }}>
                 <Cpu size={24} />
               </div>
-              <h3 className={`${FONT_CLASSES.openSansBold} text-lg text-gray-900 mb-2 uppercase tracking-tight font-bold`}>AI Excellence</h3>
-              <p className="text-base text-gray-500 leading-relaxed mb-4 font-light">Advanced orchestration layer for complex legacy systems.</p>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-bold">State-of-the-art tech</span>
+              <h3 className={`font-poppins font-bold text-base md:text-lg mb-2 uppercase tracking-tight`} style={{ color: '#282828' }}>AI Excellence</h3>
+              <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>Advanced orchestration layer for complex legacy systems.</p>
+              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>State-of-the-art tech</span>
             </div>
           </div>
 
@@ -72,10 +72,10 @@ const UseCaseWhy = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
               <div className="absolute bottom-12 left-0 right-0 text-center px-10">
-                <p className={`${FONT_CLASSES.openSansBold} text-2xl text-white mb-4 uppercase tracking-tighter font-bold`}>Intelligent Infrastructure</p>
+                <p className={`${FONT_CLASSES.openSansBold} text-xl md:text-2xl text-white mb-4 uppercase tracking-tighter font-bold`}>Intelligent Infrastructure</p>
                 <div className="flex justify-center gap-3">
-                  <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-xl text-white text-[10px] font-black uppercase tracking-[0.2em] border border-white/20 font-bold">High Speed</span>
-                  <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-xl text-white text-[10px] font-black uppercase tracking-[0.2em] border border-white/20 font-bold">Global Scalable</span>
+                  <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-xl text-white text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] border border-white/20 font-bold">High Speed</span>
+                  <span className="px-5 py-2 rounded-full bg-white/10 backdrop-blur-xl text-white text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] border border-white/20 font-bold">Global Scalable</span>
                 </div>
               </div>
             </div>
@@ -87,18 +87,18 @@ const UseCaseWhy = () => {
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-transform group-hover:rotate-6" style={{ backgroundColor: COLORS.primary }}>
                 <ShieldCheck size={24} />
               </div>
-              <h3 className={`${FONT_CLASSES.openSansBold} text-lg text-gray-900 mb-2 uppercase tracking-tight font-bold`}>Compliance</h3>
-              <p className="text-base text-gray-500 leading-relaxed mb-4 font-light">Global SOC2 Type II and ISO 27001 certifications.</p>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-bold">Military-Grade Security</span>
+              <h3 className={`font-poppins font-bold text-base md:text-lg mb-2 uppercase tracking-tight`} style={{ color: '#282828' }}>Compliance</h3>
+              <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>Global SOC2 Type II and ISO 27001 certifications.</p>
+              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>Military-Grade Security</span>
             </div>
 
             <div className="p-10 rounded-[2.5rem] bg-white border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col justify-center min-h-[260px] group cursor-default">
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-transform group-hover:rotate-6" style={{ backgroundColor: COLORS.primary }}>
                 <Zap size={24} />
               </div>
-              <h3 className={`${FONT_CLASSES.openSansBold} text-lg text-gray-900 mb-2 uppercase tracking-tight font-bold`}>Orchestration</h3>
-              <p className="text-base text-gray-500 leading-relaxed mb-4 font-light">Seamless bridge between LLMs and enterprise legacy data.</p>
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-bold">{"< 200ms Latency"}</span>
+              <h3 className={`font-poppins font-bold text-base md:text-lg mb-2 uppercase tracking-tight`} style={{ color: '#282828' }}>Orchestration</h3>
+              <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>Seamless bridge between LLMs and enterprise legacy data.</p>
+              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>{"< 200ms Latency"}</span>
             </div>
           </div>
         </div>
@@ -126,10 +126,10 @@ const UseCaseWhy = () => {
                   {item.icon}
                 </div>
                 <div>
-                  <h5 className={`${FONT_CLASSES.openSansBold} text-[11px] text-gray-900 uppercase tracking-widest mb-1 font-bold`}>
+                  <h5 className={`font-poppins font-bold text-[14px] md:text-[16px] text-gray-900 uppercase tracking-widest mb-1`}>
                     {item.title}
                   </h5>
-                  <p className="text-base text-gray-500 leading-relaxed font-light">
+                  <p className={`${FONT_CLASSES.rubikRegular} text-[12px] md:text-[14px] text-gray-500 leading-relaxed`}>
                     {item.text}
                   </p>
                 </div>

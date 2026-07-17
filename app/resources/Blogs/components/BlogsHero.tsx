@@ -13,7 +13,7 @@ export default function BlogsHero() {
       {/* Background Stroke Text */}
       <div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[85%]
-                   text-[5rem] md:text-[7rem] lg:text-[8rem]
+                   text-[4rem] sm:text-[4.75rem] md:text-[7rem] lg:text-[8rem]
                    opacity-15 select-none pointer-events-none
                    leading-none z-0 whitespace-nowrap"
         style={{
@@ -37,11 +37,11 @@ export default function BlogsHero() {
         <div className="max-w-4xl mx-auto text-center">
           {/* Main Title */}
           <h1
-            className="text-5xl md:text-6xl mb-6 tracking-tight"
+            className="text-[48px] md:text-6xl mb-6 tracking-tight"
             style={{
               fontFamily: TYPOGRAPHY.heading.fontFamily,
               fontWeight: TYPOGRAPHY.heading.fontWeight,
-              color: COLORS.black,
+              color: COLORS.dark,
             }}
           >
             OUR BLOGS
@@ -49,7 +49,7 @@ export default function BlogsHero() {
 
           {/* Description */}
           <p
-            className="text-md md:text-lg max-w-1xl mx-auto mb-8"
+            className="max-w-1xl mx-auto mb-8 text-[14px] md:text-[16px]"
             style={{
               fontFamily: FONTS.rubik,
               color: getColorWithOpacity("dark", 0.7),
@@ -61,22 +61,23 @@ export default function BlogsHero() {
 
           {/* Breadcrumbs */}
           <div
-            className="text-sm"
+            className="uppercase tracking-wide"
             style={{
               fontFamily: FONTS.openSans,
-              fontWeight: FONT_WEIGHTS.medium,
-              color: getColorWithOpacity("dark", 0.7),
+              fontWeight: FONT_WEIGHTS.bold,
+              fontSize: "10px",
+              color: COLORS.dark,
             }}
           >
             <Link
               href="/"
               className="transition-colors"
-              style={{ color: getColorWithOpacity("dark", 0.7) }}
+              style={{ color: COLORS.dark }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.color = COLORS.primary)
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color = getColorWithOpacity("dark", 0.7))
+                (e.currentTarget.style.color = COLORS.dark)
               }
             >
               Home

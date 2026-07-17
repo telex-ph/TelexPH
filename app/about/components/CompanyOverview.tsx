@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Check, PhoneCall } from "lucide-react";
 import { Rubik } from "next/font/google";
-import { COLORS, SEMANTIC_COLORS, FONT_CLASSES } from "@/constant/styles";
+import { COLORS, SEMANTIC_COLORS, FONT_CLASSES, getColorWithOpacity } from "@/constant/styles";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -46,7 +46,7 @@ export default function CompanyOverview() {
 
             {/* HEADING */}
             <h2
-              className={`${FONT_CLASSES.poppinsBlack} text-2xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
+              className={`${FONT_CLASSES.poppinsBold} text-2xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
               style={{ color: COLORS.dark }}
             >
               Powering Your Business <br className="hidden lg:inline" />
@@ -56,7 +56,7 @@ export default function CompanyOverview() {
             {/* DESCRIPTION */}
             <p
               className={`${rubik.className} mb-5 leading-relaxed text-base sm:text-lg`}
-              style={{ color: SEMANTIC_COLORS.text.secondary }}
+              style={{ color: getColorWithOpacity("dark", 0.7) }}
             >
               At Telex Philippines, we provide innovative and cost-efficient
               outsourcing solutions that help businesses thrive in today's

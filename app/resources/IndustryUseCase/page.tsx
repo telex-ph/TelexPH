@@ -9,7 +9,6 @@ import UseCaseChallenges from "./UseCaseChallenges";
 import UseCaseSolution from "./UseCaseSolution";
 import UseCaseScenario from "./UseCaseScenario";
 import UseCaseBenefitsAndResults from "./UseCaseBenefitsAndResults";
-import UseCaseToolsAndTechnology from "./UseCaseToolsAndTechnology";
 import UseCaseWhy from "./UseCaseWhy";
 import UseCaseHero from "./UseCaseHero";
 
@@ -49,10 +48,6 @@ export default function IndustryUseCasePage() {
         
         <section id="results">
           <UseCaseBenefitsAndResults />
-        </section>
-        
-        <section id="tools">
-          <UseCaseToolsAndTechnology />
         </section>
         
         <section id="why-telex">
