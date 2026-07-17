@@ -948,7 +948,7 @@ export default function AppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      const res = await fetch(`https://telexph-admin.onrender.com/api/appointments`, { method: 'GET', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
       if (res.ok) { const data = await res.json(); setAppointments(Array.isArray(data) ? data : data.appointments || []) }
     } catch (e) { console.error(e) } finally { setIsLoading(false) }
   }
@@ -956,7 +956,7 @@ export default function AppointmentsPage() {
   const handleResync = async () => {
     try {
       setIsSyncing(true); setSyncMessage(null)
-      const res  = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments/sync`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      const res  = await fetch(`https://telexph-admin.onrender.com/api/appointments/sync`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
       const data = await res.json()
       if (res.ok) { setSyncMessage({ type: 'success', text: data.message || `✅ Synced ${data.count} appointments` }); await fetchAppointments() }
       else setSyncMessage({ type: 'error', text: data.error || 'Sync failed. Please try again.' })
@@ -972,7 +972,7 @@ export default function AppointmentsPage() {
     }
     try {
       setConfirmingId(appt.ghlAppointmentId)
-      const res  = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/appointments/${appt.ghlAppointmentId}/confirm`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
+      const res  = await fetch(`https://telexph-admin.onrender.com/api/appointments/${appt.ghlAppointmentId}/confirm`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' } })
       const data = await res.json()
       if (res.ok && data.credentials) { setCredentialsModal(data.credentials); setConfirmedIds(prev => new Set([...prev, appt.ghlAppointmentId])); setDisplayCount(prev => prev + 1) }
       else {

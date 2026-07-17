@@ -40,7 +40,7 @@ function ActivateContent() {
   useEffect(() => {
     if (!token) { setPageState("invalid"); return; }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/va-users/activate?token=${token}`)
+    fetch(`https://telexph-admin.onrender.com/api/va-users/activate?token=${token}`)
       .then(r => r.json())
       .then(data => {
         if (data.valid) {
@@ -64,7 +64,7 @@ function ActivateContent() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/va-users/activate`, {
+      const res = await fetch(`https://telexph-admin.onrender.com/api/va-users/activate`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ token, password }),

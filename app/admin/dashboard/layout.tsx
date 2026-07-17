@@ -75,7 +75,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setisdarkmode(newMode)
     localStorage.setItem('theme', newMode ? 'dark' : 'light')
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiUrl = 'https://telexph-admin.onrender.com/api'
       await fetch(`${apiUrl}/users/theme`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

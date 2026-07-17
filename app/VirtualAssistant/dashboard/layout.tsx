@@ -59,7 +59,7 @@ type Notification = {
   createdAt: string
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com'
+const API_BASE = 'https://telexph-admin.onrender.com/api'
 
 const NAV_ITEMS = [
   { label: 'Dashboard',  href: '/VirtualAssistant/dashboard',             icon: (a: boolean) => <DashIco a={a} /> },
@@ -80,7 +80,7 @@ function NotificationBell({ userId }: { userId: string | undefined }) {
     if (!userId) return
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/notifications?userId=${userId}&userType=va`, { credentials: 'include' })
+      const res = await fetch(`${API_BASE}/notifications?userId=${userId}&userType=va`, { credentials: 'include' })
       if (res.ok) setNotifications(await res.json())
     } catch (err) {
       console.error('Failed to fetch notifications:', err)
@@ -103,7 +103,7 @@ function NotificationBell({ userId }: { userId: string | undefined }) {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(`${API_BASE}/api/notifications/${id}/read`, { method: 'PUT', credentials: 'include' })
+      await fetch(`${API_BASE}/notifications/${id}/read`, { method: 'PUT', credentials: 'include' })
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n))
     } catch (err) { console.error(err) }
   }
@@ -111,14 +111,14 @@ function NotificationBell({ userId }: { userId: string | undefined }) {
   const markAllAsRead = async () => {
     if (!userId) return
     try {
-      await fetch(`${API_BASE}/api/notifications/read-all?userId=${userId}&userType=va`, { method: 'PUT', credentials: 'include' })
+      await fetch(`${API_BASE}/notifications/read-all?userId=${userId}&userType=va`, { method: 'PUT', credentials: 'include' })
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
     } catch (err) { console.error(err) }
   }
 
   const deleteNotification = async (id: string) => {
     try {
-      await fetch(`${API_BASE}/api/notifications/${id}`, { method: 'DELETE', credentials: 'include' })
+      await fetch(`${API_BASE}/notifications/${id}`, { method: 'DELETE', credentials: 'include' })
       setNotifications(prev => prev.filter(n => n._id !== id))
     } catch (err) { console.error(err) }
   }

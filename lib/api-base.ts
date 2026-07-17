@@ -1,11 +1,11 @@
 /**
- * Build API URLs from NEXT_PUBLIC_API_URL (no trailing slash).
- * Examples: http://localhost:3000, https://host.onrender.com/api
+ * Absolute base URL of the admin backend.
+ *
+ * Server-side callers (route handlers under app/api/*) read ADMIN_API_BASE_URL
+ * instead — they run in Node and have their own config.
  */
 export function getApiBaseUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_API_URL?.trim()
-  if (!raw) return 'https://telexph-admin.onrender.com/api'
-  return raw.replace(/\/$/, '')
+  return 'https://telexph-admin.onrender.com/api'
 }
 
 export function getAdminAuthenticateUrl(): string {

@@ -36,7 +36,7 @@ export default function ListBlogs() {
   const [selectedsubcategory, setselectedsubcategory] = useState<string>('All')
   const { isdarkmode } = useDarkMode()
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://telexph-admin.onrender.com/api';
+  const API_BASE_URL = 'https://telexph-admin.onrender.com/api';
 
   const categories = {
     'Main Service Categories': ['Customer Experience (CX)', 'Back Office Solutions', 'Virtual Assistance', 'Sales & Lead Generation'],

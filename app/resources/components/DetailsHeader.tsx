@@ -47,7 +47,7 @@ const formatAuthors = (authors: CaseStudyAuthor[]): string =>
 async function toggleLikeCaseStudy(id: string, isLiked: boolean) {
   try {
     const method = isLiked ? 'DELETE' : 'POST';
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/${id}/like`, {
+    const response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/${id}/like`, {
       method,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -61,7 +61,7 @@ async function toggleLikeCaseStudy(id: string, isLiked: boolean) {
 
 async function checkLikeStatus(id: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/${id}/like-status`);
+    const response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/${id}/like-status`);
     return await response.json();
   } catch {
     return { hasLiked: false, likesCount: 0 };
@@ -88,9 +88,9 @@ export default function DetailsHeader() {
         setError(false);
         let response;
         if (slug) {
-          response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/fetch/${slug}`);
+          response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/fetch/${slug}`);
         } else if (id) {
-          response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/casestudies/${id}`);
+          response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/${id}`);
         } else {
           setError(true);
           setLoading(false);
