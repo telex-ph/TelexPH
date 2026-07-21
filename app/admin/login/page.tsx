@@ -15,6 +15,29 @@ function safeRedirectTarget(raw: string | null): string {
   return raw
 }
 
+const REQUEST_TIMEOUT_MS = 15000
+
+// Wraps fetch with a timeout so a slow/unreachable backend (e.g. a cold
+// Render instance) fails with a clear error instead of hanging the UI.
+// Races a plain setTimeout alongside the abort signal: on some
+// browser/network combinations abort() doesn't unstick an already-sent
+// request, so the timer alone still has to be able to resolve this promise
+// and let the UI recover even if the underlying connection stays open.
+function fetchWithTimeout(input: string, init: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  const fetchPromise = fetch(input, { ...init, signal: controller.signal }).finally(() => {
+    clearTimeout(timeoutId)
+  })
+
+  const timeoutPromise = new Promise<Response>((_, reject) => {
+    setTimeout(() => reject(new DOMException('Request timed out', 'AbortError')), REQUEST_TIMEOUT_MS)
+  })
+
+  return Promise.race([fetchPromise, timeoutPromise])
+}
+
 export default function AdminLoginPage() {
   return (
     <Suspense fallback={null}>
@@ -51,7 +74,7 @@ function AdminLoginForm() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(getAdminAuthenticateUrl(), {
+      const response = await fetchWithTimeout(getAdminAuthenticateUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +104,9 @@ function AdminLoginForm() {
       goToDashboard()
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during login')
+      setError(err instanceof DOMException && err.name === 'AbortError'
+        ? 'The server took too long to respond. Please try again.'
+        : err instanceof Error ? err.message : 'An error occurred during login')
       setIsLoading(false)
     }
   }
@@ -92,7 +117,7 @@ function AdminLoginForm() {
     setIsLoading(true)
 
     try {
-      const response = await fetch(getVerifyLoginOtpUrl(), {
+      const response = await fetchWithTimeout(getVerifyLoginOtpUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -112,7 +137,9 @@ function AdminLoginForm() {
 
       goToDashboard()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during verification')
+      setError(err instanceof DOMException && err.name === 'AbortError'
+        ? 'The server took too long to respond. Please try again.'
+        : err instanceof Error ? err.message : 'An error occurred during verification')
       setIsLoading(false)
     }
   }
@@ -122,7 +149,7 @@ function AdminLoginForm() {
     setIsResending(true)
 
     try {
-      const response = await fetch(getAdminAuthenticateUrl(), {
+      const response = await fetchWithTimeout(getAdminAuthenticateUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -144,7 +171,9 @@ function AdminLoginForm() {
         setOtpEmail(data.email)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while resending the code')
+      setError(err instanceof DOMException && err.name === 'AbortError'
+        ? 'The server took too long to respond. Please try again.'
+        : err instanceof Error ? err.message : 'An error occurred while resending the code')
     } finally {
       setIsResending(false)
     }
@@ -167,14 +196,17 @@ function AdminLoginForm() {
   const loginForm = (
     <form onSubmit={handlelogin} className="space-y-2">
       <div className="animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
-        <label className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
+        <label htmlFor="admin-email" className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
           Email
         </label>
         <div className="relative">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0-.414.336-.75.75-.75h18c.414 0 .75.336.75.75v10.5a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75V6.75z" /><path strokeLinecap="round" strokeLinejoin="round" d="M3 7l9 6 9-6" /></svg>
           <input
+            id="admin-email"
             type="email"
             placeholder="you@example.com"
+            autoComplete="email"
+            autoFocus
             className="w-full pl-11 pr-5 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white focus:scale-[1.01] outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -185,14 +217,16 @@ function AdminLoginForm() {
       </div>
 
       <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <label className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
+        <label htmlFor="admin-password" className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
           Password
         </label>
         <div className="relative">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 10.5h10.5a1.5 1.5 0 001.5-1.5v-7.5a1.5 1.5 0 00-1.5-1.5H6.75a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5z" /></svg>
           <input
+            id="admin-password"
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
+            autoComplete="current-password"
             className="w-full pl-11 pr-12 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white focus:scale-[1.01] outline-none transition-all text-gray-800 text-sm font-normal shadow-sm font-open-sans"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -231,8 +265,8 @@ function AdminLoginForm() {
 
       <button
         type="submit"
-        disabled={isLoading}
-        className={`w-full bg-[#800000] text-white py-2.5 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#600000] hover:-translate-y-0.5 hover:shadow-2xl transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] font-poppins flex items-center justify-center gap-2 animate-fade-in-up ${isLoading ? 'opacity-70' : ''}`}
+        disabled={isLoading || !email || !password}
+        className={`w-full bg-[#800000] text-white py-2.5 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#600000] hover:-translate-y-0.5 hover:shadow-2xl transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98] font-poppins flex items-center justify-center gap-2 animate-fade-in-up disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-xl ${isLoading ? 'opacity-70' : ''}`}
         style={{ animationDelay: '0.22s' }}
       >
         {isLoading ? (
@@ -276,14 +310,17 @@ function AdminLoginForm() {
   const otpForm = (
     <form onSubmit={handleVerifyOtp} className="space-y-2">
       <div className="animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
-        <label className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
+        <label htmlFor="admin-otp" className="block text-sm font-medium text-gray-700 mb-1 ml-1 font-poppins">
           Verification code
         </label>
         <input
+          id="admin-otp"
           type="text"
           inputMode="numeric"
           maxLength={6}
           placeholder="000000"
+          autoComplete="one-time-code"
+          autoFocus
           className="w-full px-5 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] focus:bg-white focus:scale-[1.01] outline-none transition-all text-gray-800 text-center text-lg tracking-[0.4em] font-semibold shadow-sm font-open-sans"
           value={otp}
           onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -333,7 +370,7 @@ function AdminLoginForm() {
   )
 
   return (
-    <div className="h-screen w-full relative flex items-center justify-center p-0 md:p-8 overflow-hidden bg-black">
+    <div className="h-dvh w-full relative flex items-center justify-center p-0 md:p-8 overflow-hidden bg-black">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/background.webp"
@@ -382,7 +419,10 @@ function AdminLoginForm() {
             <div className="relative z-10 w-full px-6 pb-10 flex flex-col items-center text-center animate-fade-in-up" style={{ animationDelay: '0.45s' }}>
               <button
                 type="button"
-                onClick={() => setShowMobileForm(true)}
+                onClick={() => {
+                  setError('')
+                  setShowMobileForm(true)
+                }}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#800000] to-[#a10000] text-white py-4 rounded-xl font-semibold text-sm tracking-wide hover:brightness-110 transition-all shadow-xl shadow-[#800000]/40 active:scale-[0.98] font-poppins animate-pulse-glow"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 10.5h10.5a1.5 1.5 0 001.5-1.5v-7.5a1.5 1.5 0 00-1.5-1.5H6.75a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5z" /></svg>
@@ -411,7 +451,10 @@ function AdminLoginForm() {
               />
               <button
                 type="button"
-                onClick={() => setShowMobileForm(false)}
+                onClick={() => {
+                  setError('')
+                  setShowMobileForm(false)
+                }}
                 aria-label="Back"
                 className="absolute top-3 left-4 w-8 h-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white z-20"
               >
@@ -435,7 +478,7 @@ function AdminLoginForm() {
 
             {/* curved white form panel, pulled up so its top edge sits mid-illustration — basis is 70% PLUS the 2.5rem it loses to -mt-10 (the negative margin that pulls it up over the header), so the panel's visible height still comes out to exactly 70% of the container instead of leaving a gap of background color at the very bottom */}
             <div className="relative bg-white rounded-t-[40px] -mt-10 basis-[calc(70%_+_2.5rem)] shrink-0">
-              <div className="px-6 pt-[90px] pb-4 animate-fade-in-up">
+              <div className="px-6 pt-16 sm:pt-[90px] pb-4 animate-fade-in-up">
                 <div className="mb-3 text-center">
                   <p className="text-xs font-semibold text-[#800000] tracking-widest uppercase mb-1 font-poppins">
                     Welcome back!
@@ -494,7 +537,7 @@ function AdminLoginForm() {
                   : 'Enter your credentials to access your account'}
               </p>
               {error && (
-                <p className="text-red-500 text-xs mt-2 font-bold tracking-tight">{error}</p>
+                <p role="alert" className="text-red-500 text-xs mt-2 font-bold tracking-tight">{error}</p>
               )}
             </div>
             {step === 'otp' ? otpForm : loginForm}

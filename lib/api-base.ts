@@ -5,7 +5,7 @@
  * instead — they run in Node and have their own config.
  */
 export function getApiBaseUrl(): string {
-  return 'https://telexph-admin.onrender.com/api'
+  return 'http://localhost:5000/api'
 }
 
 export function getAdminAuthenticateUrl(): string {
