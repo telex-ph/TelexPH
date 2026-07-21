@@ -40,5 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# generated image variants — rebuild with:
+#   node scripts/generate-image-variants.mjs
+public/images-opt/
+
 # claude code local settings
 .claude/settings.local.json
