@@ -1,0 +1,143 @@
+const DURATION_OPTIONS = ["1 Month", "3 Months", "6 Months", "12 Months"];
+const START_OPTIONS = ["As soon as possible", "Next Monday", "Start of next month", "Custom date"];
+const STATUS_CFG = {
+  active: { label: "Active", dot: "#16a34a", color: "#15803d", bg: "#dcfce7" },
+  ending: { label: "Ending Soon", dot: "#d97706", color: "#b45309", bg: "#fef3c7" },
+  ended: { label: "Inactive", dot: "#9ca3af", color: "#4b5563", bg: "#f3f4f6" }
+};
+const GROUPS = [
+  { key: "ended", label: "Recently Ended" },
+  { key: "ending", label: "Ending Soon" },
+  { key: "active", label: "Active" }
+];
+const FILTER_CHIPS = [
+  { key: "all", label: "All" },
+  { key: "active", label: "Active" },
+  { key: "ending", label: "Ending" },
+  { key: "ended", label: "Ended" }
+];
+const SERVICE_CATEGORIES = [
+  {
+    key: "staff",
+    label: "Dedicated Staff",
+    icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
+    services: [
+      {
+        id: "s1",
+        name: "Customer Service\nRepresentative",
+        short: "CSR",
+        icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
+        price: 1400,
+        priceLabel: "$1,400",
+        period: "/ month",
+        tag: "Starting at",
+        featured: false,
+        description: "A dedicated full-time Customer Service Representative who handles all client-facing communications \u2014 from resolving issues to maintaining your brand voice across every touchpoint.",
+        inclusions: ["Dedicated full-time agent (8hrs/day)", "Email, live chat & phone support", "CRM documentation & ticketing", "QA monitoring & call recording review", "Weekly performance reporting", "Team lead oversight & escalation path"],
+        addons: [{ label: "Extended hours (+4hrs/day)", price: 400 }, { label: "Weekend coverage", price: 300 }, { label: "Multilingual support", price: 250 }],
+        note: null
+      },
+      {
+        id: "s2",
+        name: "Technical Support\nRepresentative",
+        short: "TSR",
+        icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+        price: 1800,
+        priceLabel: "$1,800",
+        period: "/ month",
+        tag: "Starting at",
+        featured: true,
+        description: "A specialized technical support agent trained to handle Tier 1\u20132 troubleshooting for SaaS platforms, eCommerce backends, and digital tools \u2014 keeping your customers unblocked and satisfied.",
+        inclusions: ["Tier 1\u20132 technical troubleshooting", "SaaS / eCommerce backend support", "Escalation handling & documentation", "System & knowledge base documentation", "KPI tracking & QA monitoring"],
+        addons: [{ label: "Tier 3 escalation handling", price: 500 }, { label: "API / integration support", price: 400 }, { label: "Extended coverage hours", price: 350 }],
+        note: "Advanced technical roles: custom pricing"
+      },
+      {
+        id: "s3",
+        name: "Web Development\n(Dedicated Developer)",
+        short: "DEV",
+        icon: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z",
+        price: 2500,
+        priceLabel: "$2,500",
+        period: "/ month",
+        tag: "Starting at",
+        featured: false,
+        description: "A dedicated web developer focused on building, maintaining, and optimizing your online presence \u2014 from landing pages to full platform builds.",
+        inclusions: ["WordPress / Shopify / Webflow development", "Site maintenance & performance optimization", "Landing page design & build", "Third-party tool integrations", "Ongoing content & feature updates"],
+        addons: [{ label: "Full-stack backend dev", price: 800 }, { label: "Custom API development", price: 600 }, { label: "Monthly SEO audit", price: 300 }],
+        note: "Full-stack / custom system builds: custom quote"
+      },
+      {
+        id: "s4",
+        name: "Social Media\nManagement",
+        short: "SMM",
+        icon: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14",
+        price: 1800,
+        priceLabel: "$1,800",
+        period: "/ month",
+        tag: "Starting at",
+        featured: false,
+        description: "End-to-end social media management \u2014 strategy, content creation, scheduling, and community engagement \u2014 all handled by a dedicated social media manager.",
+        inclusions: ["Content calendar strategy (monthly)", "Copywriting for all platforms", "Scheduling & publishing", "Community engagement management", "Monthly analytics & performance report", "Creative direction coordination"],
+        addons: [{ label: "Paid ads management", price: 600 }, { label: "Influencer coordination", price: 400 }, { label: "Story / Reel production", price: 350 }],
+        note: "Ads management available as add-on."
+      },
+      {
+        id: "s5",
+        name: "Video & Graphics\nDesign",
+        short: "VGD",
+        icon: "M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.889L15 14M3 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+        price: 2200,
+        priceLabel: "$2,200",
+        period: "/ month",
+        tag: "Starting at",
+        featured: false,
+        description: "A creative specialist producing scroll-stopping short-form video content, ad creatives, and brand visuals tailored to your audience and platform.",
+        inclusions: ["Short-form videos (Reels / TikTok / Shorts)", "Ad creative design & production", "Brand asset creation", "Thumbnails & campaign visuals", "Creative strategy alignment sessions"],
+        addons: [{ label: "Long-form video editing", price: 500 }, { label: "Motion graphics / animation", price: 600 }, { label: "Extra revision rounds (\xD73)", price: 200 }],
+        note: "High-volume production: custom quote"
+      }
+    ]
+  },
+  {
+    key: "digital",
+    label: "Digital Systems & Automation",
+    icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+    services: [
+      { id: "d1", name: "Funnel Builder", short: "FB", icon: "M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12", price: 3500, priceLabel: "$3,500", period: "setup", tag: "From", featured: false, description: "A complete sales funnel built and configured for your business \u2014 from strategy and copy to automation and conversion tracking.", inclusions: ["Strategy & funnel mapping", "Landing page design & build", "Email automation sequences", "CRM integration & pipeline setup", "Conversion tracking & analytics"], addons: [{ label: "A/B testing setup", price: 400 }, { label: "Upsell / downsell pages", price: 500 }, { label: "Monthly funnel management", price: 800 }], note: "Maintenance from $800 / month" },
+      { id: "d2", name: "Website Builder", short: "WB", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 0-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1m-6 0h16", price: 4500, priceLabel: "$4,500", period: "setup", tag: "From", featured: false, description: "A custom, conversion-focused website built for your brand \u2014 mobile-optimized, fast, and ready to attract and convert visitors.", inclusions: ["Custom website design & build", "Mobile-responsive optimization", "Conversion-focused page structure", "Basic on-page SEO setup", "Contact forms & lead capture"], addons: [{ label: "E-commerce integration", price: 3e3 }, { label: "Blog setup & migration", price: 600 }, { label: "Monthly maintenance retainer", price: 500 }], note: "E-commerce builds: from $7,500" },
+      { id: "d3", name: "AI Builder\n(Chatbots / AI Systems)", short: "AI", icon: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2", price: 5e3, priceLabel: "$5,000", period: "setup", tag: "From", featured: true, description: "A custom AI chatbot or automation system built to qualify leads, answer queries, and streamline workflows \u2014 without adding headcount.", inclusions: ["AI chatbot design & deployment", "Lead qualification automation logic", "CRM connection & data routing", "Workflow automation setup", "Custom training & knowledge base"], addons: [{ label: "Voice AI integration", price: 1200 }, { label: "Multi-channel deployment", price: 800 }, { label: "Monthly AI maintenance", price: 1200 }], note: "Enterprise AI systems: custom quote. Maintenance from $1,200 / month" },
+      { id: "d4", name: "Surveys &\nForms System", short: "SF", icon: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4", price: 900, priceLabel: "$900", period: "setup", tag: "From", featured: false, description: "A smart survey and form system to capture leads, gather feedback, and route responses automatically into your CRM.", inclusions: ["Lead capture form system", "CRM integration & tagging", "Automated response routing", "Data reporting dashboard setup"], addons: [{ label: "Custom logic branching", price: 300 }, { label: "Payment-linked forms", price: 400 }], note: null },
+      { id: "d5", name: "Document Signing\nSystem", short: "DS", icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z", price: 800, priceLabel: "$800", period: "setup", tag: "From", featured: false, description: "A seamless digital document signing workflow \u2014 automated, tracked, and connected to your CRM.", inclusions: ["Digital contract workflow setup", "Automated document triggers", "CRM-connected signing system"], addons: [{ label: "Template library (\xD75 docs)", price: 300 }, { label: "Bulk send automation", price: 400 }], note: null },
+      { id: "d6", name: "Email Marketing\nManagement", short: "EM", icon: "M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z", price: 1500, priceLabel: "$1,500", period: "/ month", tag: "From", featured: false, description: "Full-service email marketing management \u2014 strategy, automation, list management, and reporting to keep your audience engaged and converting.", inclusions: ["Campaign strategy & planning", "Automation flow setup & management", "List segmentation & hygiene", "A/B testing & optimization", "Monthly performance reporting"], addons: [{ label: "SMS marketing add-on", price: 400 }, { label: "Dedicated IP warm-up", price: 300 }], note: null },
+      { id: "d7", name: "CRM System Setup\n& Management", short: "CRM", icon: "M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0z", price: 2500, priceLabel: "$2,500", period: "setup", tag: "From", featured: false, description: "A fully configured CRM system built around your sales process \u2014 with pipelines, automations, and dashboards ready from day one.", inclusions: ["Pipeline & stage configuration", "Automation workflow setup", "Custom dashboard & reporting", "Data structuring & migration"], addons: [{ label: "Monthly CRM management", price: 1500 }, { label: "Team training session", price: 600 }], note: "Ongoing management from $1,500 / month" },
+      { id: "d8", name: "Booking &\nAppointment System", short: "BK", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z", price: 1200, priceLabel: "$1,200", period: "setup", tag: "From", featured: false, description: "An automated booking system that handles scheduling, reminders, and payments \u2014 reducing no-shows and freeing up your team.", inclusions: ["Calendar automation & sync", "Reminder email/SMS sequences", "Payment integration setup", "CRM connection & lead tagging"], addons: [{ label: "Group booking setup", price: 400 }, { label: "Intake form integration", price: 300 }], note: null },
+      { id: "d9", name: "Courses & Digital\nProducts System", short: "CDP", icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", price: 4e3, priceLabel: "$4,000", period: "setup", tag: "From", featured: false, description: "A complete digital product delivery system \u2014 from course hosting and payment processing to access management and student automation.", inclusions: ["LMS platform configuration", "Payment gateway setup", "Automation workflows for enrollment", "Student access & drip content management"], addons: [{ label: "Affiliate system setup", price: 600 }, { label: "Certificate automation", price: 400 }], note: null },
+      { id: "d10", name: "Automation Builder\n(Advanced Workflows)", short: "AUTO", icon: "M13 10V3L4 14h7v7l9-11h-7z", price: 4500, priceLabel: "$4,500", period: "setup", tag: "From", featured: false, description: "Complex, cross-platform automation architecture connecting your tools, eliminating manual work, and scaling your operations.", inclusions: ["Zapier / Make / API integrations", "Cross-platform automation flows", "Custom workflow logic & conditionals", "System optimization & QA"], addons: [{ label: "Custom API webhook dev", price: 800 }, { label: "Monthly automation management", price: 1e3 }], note: "Complex automation architecture: custom quote" }
+    ]
+  },
+  {
+    key: "saas",
+    label: "SaaS & Platform Licensing",
+    icon: "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z",
+    services: [
+      { id: "p1", name: "Gray-Label\nPlatform", short: "GL", icon: "M4 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5zm0 8a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6zm12 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2zm0 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v0a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v0z", price: 3e3, priceLabel: "$3,000", period: "/ month", tag: "Starting at", featured: false, description: "Access to our fully-built platform under your brand identity \u2014 get up and running fast without building from scratch.", inclusions: ["Powered by Telex infrastructure", "Multi-user access management", "Automation capability included", "Support & maintenance covered"], addons: [{ label: "Additional user seats (\xD75)", price: 300 }, { label: "Custom subdomain", price: 200 }], note: null },
+      { id: "p2", name: "White-Label\nPlatform", short: "WL", icon: "M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18", price: 7500, priceLabel: "$7,500", period: "/ month", tag: "Starting at", featured: true, description: "A fully rebranded, enterprise-ready platform under your name \u2014 custom domain, full CRM and automation system, and dedicated support.", inclusions: ["Fully rebranded platform UI", "Custom domain & branding", "Full CRM + automation system", "Dedicated support team", "Scalable user seat model"], addons: [{ label: "White-label mobile app", price: 2e3 }, { label: "Custom feature development", price: 3e3 }, { label: "Priority SLA support", price: 800 }], note: "Enterprise licensing: custom pricing" }
+    ]
+  }
+];
+const INITIAL_PLANS = [
+  { id: 1, name: "CSR", tier: "Customer Service Representative", price: 1400, priceLabel: "$1,400", billing: "Monthly", renewDate: "Jun 30, 2025", daysLeft: null, status: "ended", sessions: 0, totalSessions: 0, perks: ["Dedicated full-time agent (8hrs/day)", "Email, live chat & phone support", "CRM documentation & ticketing", "Weekly performance reporting"], color: "#6b7280", bg: "#f9fafb", isService: true },
+  { id: 2, name: "SMM", tier: "Social Media Management", price: 1800, priceLabel: "$1,800", billing: "Monthly", renewDate: "Jul 3, 2025", daysLeft: 2, status: "ending", sessions: 0, totalSessions: 0, perks: ["Content calendar strategy (monthly)", "Copywriting for all platforms", "Scheduling & publishing", "Community engagement management"], color: "#b45309", bg: "#fffbeb", isService: true },
+  { id: 3, name: "TSR", tier: "Technical Support Representative", price: 1800, priceLabel: "$1,800", billing: "Monthly", renewDate: "Jul 15, 2025", daysLeft: 14, status: "active", sessions: 0, totalSessions: 0, perks: ["Tier 1\u20132 technical troubleshooting", "SaaS / eCommerce backend support", "Escalation handling & documentation", "KPI tracking & QA monitoring"], color: "#800000", bg: "#fff5f5", isService: true },
+  { id: 4, name: "WL", tier: "White-Label Platform", price: 7500, priceLabel: "$7,500", billing: "Monthly", renewDate: "Jan 1, 2026", daysLeft: 210, status: "active", sessions: 0, totalSessions: 0, perks: ["Fully rebranded platform UI", "Custom domain & branding", "Full CRM + automation system", "Dedicated support team"], color: "#1d4ed8", bg: "#eff6ff", isService: true }
+];
+export {
+  DURATION_OPTIONS,
+  FILTER_CHIPS,
+  GROUPS,
+  INITIAL_PLANS,
+  SERVICE_CATEGORIES,
+  START_OPTIONS,
+  STATUS_CFG
+};

@@ -1,0 +1,17 @@
+
+> telexph-client@1.0.0 dev
+> npm run images && vite
+
+
+> telexph-client@1.0.0 images
+> node scripts/generate-image-variants.mjs
+
+
+sources: 272 files, 305.5 MB
+variants: 0 written, 683 up-to-date, 34.0 MB total
+
+  VITE v6.4.3  ready in 441 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
