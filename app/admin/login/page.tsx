@@ -2,18 +2,14 @@
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { getAdminAuthenticateUrl, getVerifyLoginOtpUrl } from '@/lib/api-base'
 import TurnstileWidget from '@/components/Turnstile/TurnstileWidget'
 import WelcomeSlideshow from './WelcomeSlideshow'
 
-function safeRedirectTarget(raw: string | null): string {
-  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/admin/dashboard'
-  if (raw.startsWith('/admin/login') || raw.startsWith('/admin/register')) {
-    return '/admin/dashboard'
-  }
-  return raw
-}
+// Login always lands on the dashboard root. Nothing sets a ?redirect= param
+// any more — login URLs are kept clean — so there is no per-page target to
+// restore.
+const POST_LOGIN_TARGET = '/admin/dashboard'
 
 const REQUEST_TIMEOUT_MS = 15000
 
@@ -59,8 +55,6 @@ function AdminLoginForm() {
   const [otp, setOtp] = useState('')
   const [otpEmail, setOtpEmail] = useState('')
   const [isResending, setIsResending] = useState(false)
-  const router = useRouter()
-  const searchParams = useSearchParams()
 
   const handlelogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -187,10 +181,13 @@ function AdminLoginForm() {
 
   // Redirect to the post-login target with ?welcome=1 so the destination page
   // shows the "Login successful" overlay before its own content.
+  //
+  // Full navigation rather than router.push: the session cookie was just set by
+  // the login response, and a hard load guarantees middleware evaluates the new
+  // cookie jar. A soft navigation can be resolved against stale client state,
+  // which left the button spinning on "Processing..." with nothing to recover it.
   const goToDashboard = () => {
-    const next = safeRedirectTarget(searchParams.get('redirect'))
-    const sep = next.includes('?') ? '&' : '?'
-    router.push(`${next}${sep}welcome=1`)
+    window.location.href = `${POST_LOGIN_TARGET}?welcome=1`
   }
 
   const loginForm = (

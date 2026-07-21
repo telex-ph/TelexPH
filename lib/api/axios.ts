@@ -3,9 +3,17 @@
 
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-// Create axios instance with default config
+// Create axios instance with default config.
+//
+// baseURL is the RELATIVE '/api' so browser calls are same-origin to the
+// Next.js app and get proxied to the backend via the rewrite in
+// next.config.ts. Using the absolute backend URL here makes every call
+// cross-site, and the auth cookies are SameSite=Lax in dev — which the
+// browser refuses to attach to cross-site XHR/fetch. That mismatch made
+// /users/me 401 in the browser (no cookie sent) even though the token was
+// valid, which triggered the admin-dashboard ↔ login redirect loop.
 const api = axios.create({
-  baseURL: 'https://telexph-admin.onrender.com/api',
+  baseURL: '/api',
   withCredentials: true, // IMPORTANT: Para ma-send ang cookies
   headers: {
     'Content-Type': 'application/json',
@@ -58,7 +66,8 @@ api.interceptors.response.use(
           else if (path.startsWith('/VirtualAssistant') || path.startsWith('/VAdash')) {
             loginBase = '/VirtualAssistant/login';
           }
-          window.location.href = `${loginBase}?redirect=${encodeURIComponent(path)}`;
+          // No ?redirect= param — keeps the login URL clean.
+          window.location.href = loginBase;
         }
       }
       

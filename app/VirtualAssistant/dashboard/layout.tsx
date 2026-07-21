@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import LogoutOverlay from '@/components/LogoutOverlay'
+import LogoutConfirmModal from '@/components/LogoutConfirmModal'
 
 const Ico = ({ d, d2, size = 16, sw = 1.5 }: { d: string; d2?: string; size?: number; sw?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
@@ -367,6 +368,8 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
   const [mobileOpen, setMobileOpen] = useState(false)
   const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
   const [loggingOut, setLoggingOut] = useState(false)
+  const [confirmLogout, setConfirmLogout] = useState(false)
+  const [logoutDone, setLogoutDone] = useState(false)
 
   const isMessaging = pathname === '/VirtualAssistant/dashboard/VAmessaging'
 
@@ -388,14 +391,18 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
   const handleLogout = async () => {
     if (loggingOut) return
+    setConfirmLogout(false)
     // Show the logout overlay immediately, then clear the session in the
     // background. The overlay owns the redirect (via onDone) so it stays
     // covering the screen the whole time — no dashboard flash before leaving.
     setLoggingOut(true)
     try {
-      await fetch(`${API_BASE}/auth/va/logout`, { method: 'POST', credentials: 'include' })
+      // Same-origin '/api' proxy: the absolute backend URL is cross-site, and
+      // SameSite=Lax auth cookies aren't attached to cross-site requests.
+      await fetch(`/api/auth/va/logout`, { method: 'POST', credentials: 'include' })
     } catch { /* proceed */ } finally {
       setClientInfo(null)
+      setLogoutDone(true)
     }
   }
 
@@ -405,8 +412,21 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: BG_SOFT, overflow: 'hidden' }}>
+      {confirmLogout && (
+        <LogoutConfirmModal
+          portalLabel="Virtual Assistant"
+          accent="#800000"
+          onConfirm={handleLogout}
+          onCancel={() => setConfirmLogout(false)}
+        />
+      )}
       {loggingOut && (
-        <LogoutOverlay portalLabel="Virtual Assistant" accent="#800000" onDone={() => router.push('/VirtualAssistant/login')} />
+        <LogoutOverlay
+          portalLabel="Virtual Assistant"
+          accent="#800000"
+          ready={logoutDone}
+          onDone={() => { window.location.href = '/VirtualAssistant/login' }}
+        />
       )}
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Poppins', sans-serif; }
@@ -556,7 +576,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
                   </div>
                 </div>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => setConfirmLogout(true)}
                   disabled={loggingOut}
                   title="Logout"
                   style={{
@@ -578,7 +598,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
       {/* ── Main content ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
+        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={() => setConfirmLogout(true)} />
         <main style={{
           flex: 1, overflowY: 'auto',
           padding: isMessaging ? '0' : '20px',

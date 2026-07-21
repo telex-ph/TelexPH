@@ -44,7 +44,10 @@ export interface PageViewsOverviewResponse {
   topPages: TopPageRow[];
   trafficSources: { name: string; value: number; color: string }[];
   devices: { device: string; views: number }[];
-  funnels: any[]; // handled in FunnelsTab
+  // Funnels come from a separate endpoint (/page-views/funnels), so the
+  // overview response does NOT carry them — optional here so callers are
+  // forced to handle their absence instead of crashing on .length.
+  funnels?: any[]; // handled in FunnelsTab
 }
 
 export const F = "'DM Sans', 'Outfit', 'system-ui', sans-serif";

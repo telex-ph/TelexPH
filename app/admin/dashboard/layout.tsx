@@ -3,7 +3,9 @@
 import { ReactNode, useState, useRef, useEffect, createContext, useContext } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import Logout from './settings/components/logout'
+import Logout, { performAdminLogout, goToAdminLogin } from './settings/components/logout'
+import LogoutConfirmModal from '@/components/LogoutConfirmModal'
+import LogoutOverlay from '@/components/LogoutOverlay'
 import SettingsMenu from './settings/components/SettingsMenu'
 import MiniActivityLogs from './MiniActivityLogs'
 import api from '@/lib/api/axios'
@@ -61,6 +63,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [isheaderdropdownopen, setisheaderdropdownopen] = useState(false)
   const dropdownref = useRef<HTMLDivElement>(null)
   const activitylogsref = useRef<HTMLDivElement>(null)
+  // Logout confirm/overlay state lives here, not in <Logout>: that button sits
+  // inside the header dropdown, and clicking it closes the dropdown, unmounting
+  // the button's subtree. A modal owned down there would vanish on open.
+  const [confirmLogout, setConfirmLogout] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+  const [logoutDone, setLogoutDone] = useState(false)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [isLoadingUser, setIsLoadingUser] = useState(true)
   const [authError, setAuthError] = useState(false)
@@ -69,6 +77,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark') setisdarkmode(true)
   }, [])
+
+  const handleConfirmLogout = async () => {
+    if (loggingOut) return
+    setConfirmLogout(false)
+    setLoggingOut(true)
+    await performAdminLogout()
+    setLogoutDone(true)
+  }
 
   const toggledarkmode = async () => {
     const newMode = !isdarkmode
@@ -116,15 +132,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         setAuthError(false)
       } catch (error: any) {
         console.error('Error fetching user data:', error)
-        // Immediate redirect on any error to prevent hanging
-        setAuthError(true)
-        router.push('/admin/login')
+        // Only bounce to login on a genuine auth failure (401). Timeouts and
+        // transient network errors must NOT redirect — doing so on any error
+        // is what let a flaky request kick off the dashboard ↔ login loop.
+        // The axios interceptor already owns the 401 redirect, so we just
+        // surface the error state here and let it drive navigation.
+        if (error?.response?.status === 401) {
+          setAuthError(true)
+        }
       } finally {
         setIsLoadingUser(false)
       }
     }
     fetchUserData()
-  }, [router])
+  }, [])
 
   useEffect(() => {
     const fetchUnreadCount = async () => {
@@ -483,6 +504,22 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <DarkModeContext.Provider value={{ isdarkmode, toggledarkmode }}>
+      {confirmLogout && (
+        <LogoutConfirmModal
+          portalLabel="Admin"
+          accent="#800000"
+          onConfirm={handleConfirmLogout}
+          onCancel={() => setConfirmLogout(false)}
+        />
+      )}
+      {loggingOut && (
+        <LogoutOverlay
+          portalLabel="Admin"
+          accent="#800000"
+          ready={logoutDone}
+          onDone={goToAdminLogin}
+        />
+      )}
       <div
         className={`flex h-[100dvh] overflow-hidden antialiased transition-colors duration-500 ${isdarkmode ? 'bg-[#0f0f0f] text-gray-400' : 'bg-[#f8f9fa] text-gray-600'}`}
         style={poppins}
@@ -597,7 +634,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     </div>
                     <div className={`h-[1px] mx-4 sm:mx-6 my-2 ${isdarkmode ? 'bg-white/5' : 'bg-gray-50'}`} />
                     <div onClick={() => setisheaderdropdownopen(false)}>
-                      <Logout isdarkmode={isdarkmode} />
+                      <Logout isdarkmode={isdarkmode} onRequestConfirm={() => setConfirmLogout(true)} />
                     </div>
                   </div>
                 )}
