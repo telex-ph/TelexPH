@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import LogoutConfirmModal from '@/components/LogoutConfirmModal'
 
 const Ico = ({ d, d2, size = 16, sw = 1.2 }: { d: string; d2?: string; size?: number; sw?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
@@ -139,6 +140,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
   const [mobileOpen, setMobileOpen] = useState(false)
   const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null)
   const [loggingOut, setLoggingOut] = useState(false)
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -158,13 +160,17 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
   const handleLogout = async () => {
     if (loggingOut) return
+    setConfirmLogout(false)
     setLoggingOut(true)
     try {
-      await fetch(`${API_BASE}/auth/va/logout`, { method: 'POST', credentials: 'include' })
+      // Same-origin '/api' proxy: the absolute backend URL is cross-site, and
+      // SameSite=Lax auth cookies aren't attached to cross-site requests.
+      await fetch(`/api/auth/va/logout`, { method: 'POST', credentials: 'include' })
     } catch { /* proceed */ } finally {
       setClientInfo(null)
       setLoggingOut(false)
-      router.push('/VirtualAssistant/login')
+      // Full navigation so middleware re-evaluates the cleared cookie jar.
+      window.location.href = '/VirtualAssistant/login'
     }
   }
 
@@ -174,6 +180,14 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: BG, overflow: 'hidden' }}>
+      {confirmLogout && (
+        <LogoutConfirmModal
+          portalLabel="Virtual Assistant"
+          accent="#800000"
+          onConfirm={handleLogout}
+          onCancel={() => setConfirmLogout(false)}
+        />
+      )}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         html, body, #__next, #root { background-color: #ffffff !important; }
@@ -261,7 +275,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
                   <div style={{ fontSize: 11.5, color: TEXT_MAIN, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', fontWeight: 600 }}>{sidebarName}</div>
                   <div style={{ fontSize: 10, color: TEXT_SUB, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>{sidebarEmail}</div>
                 </div>
-                <button onClick={handleLogout} disabled={loggingOut} title="Logout"
+                <button onClick={() => setConfirmLogout(true)} disabled={loggingOut} title="Logout"
                   style={{ background: 'none', border: 'none', cursor: loggingOut ? 'not-allowed' : 'pointer', color: loggingOut ? '#ccc' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6, flexShrink: 0 }}>
                   <LogoutIco />
                 </button>
@@ -272,7 +286,7 @@ export default function VADashboardLayout({ children }: { children: React.ReactN
       </aside>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
+        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={() => setConfirmLogout(true)} />
         <main style={{ flex: 1, overflowY: 'auto', padding: '20px', background: BG }}>{children}</main>
       </div>
     </div>

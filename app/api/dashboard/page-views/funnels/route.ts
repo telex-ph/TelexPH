@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import api from '@/lib/api/axios';
+import { backendGet } from '@/lib/api/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,9 +9,11 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get('sortBy') || 'views';
 
     // Fetch real funnel data from backend
-    const response = await api.get(`/api/page-views/funnels?range=${range}&search=${search}&sortBy=${sortBy}`);
-    
-    return NextResponse.json(response.data.funnels || []);
+    const data = await backendGet<{ funnels?: unknown[] }>(
+      `/api/page-views/funnels?range=${range}&search=${search}&sortBy=${sortBy}`
+    );
+
+    return NextResponse.json(data.funnels || []);
   } catch (error) {
     console.error('Error fetching funnel data:', error);
     return NextResponse.json(

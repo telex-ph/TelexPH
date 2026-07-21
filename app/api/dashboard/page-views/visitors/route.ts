@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import api from '@/lib/api/axios';
+import { backendGet } from '@/lib/api/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,9 +7,9 @@ export async function GET(request: NextRequest) {
     const range = searchParams.get('range') || '7d';
 
     // Fetch real visitor data from backend
-    const response = await api.get(`/api/page-views/dashboard/page-views/visitors?range=${range}`);
-    
-    return NextResponse.json(response.data);
+    const data = await backendGet(`/api/page-views/dashboard/page-views/visitors?range=${range}`);
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching visitor data:', error);
     return NextResponse.json(

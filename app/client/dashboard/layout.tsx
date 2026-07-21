@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import LogoutOverlay from '@/components/LogoutOverlay'
+import LogoutConfirmModal from '@/components/LogoutConfirmModal'
 
 // ─── BASE ICON ────────────────────────────────────────────────────────────────
 const Ico = ({ d, d2, size = 16, sw = 1.2 }: { d: string; d2?: string; size?: number; sw?: number }) => (
@@ -424,6 +425,8 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
   const [billingOpen,   setBillingOpen]   = useState(false)
   const [clientInfo,    setClientInfo]    = useState<ClientInfo | null>(null)
   const [loggingOut,    setLoggingOut]    = useState(false)
+  const [confirmLogout, setConfirmLogout] = useState(false)
+  const [logoutDone,    setLogoutDone]    = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -443,16 +446,22 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
   const handleLogout = async () => {
     if (loggingOut) return
+    setConfirmLogout(false)
     // Show the logout overlay immediately, then clear the session in the
     // background. The overlay owns the redirect (via onDone) so it stays
     // covering the screen the whole time — no dashboard flash before leaving.
     setLoggingOut(true)
     try {
-      await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
+      // Same-origin '/api' proxy (next.config.ts rewrite): the absolute backend
+      // URL is cross-site, and the SameSite=Lax auth cookies aren't attached to
+      // cross-site requests — so the backend would never see the session and
+      // never clear the cookies.
+      await fetch(`/api/auth/logout`, { method: 'POST', credentials: 'include' })
     } catch {
       // proceed regardless
     } finally {
       setClientInfo(null)
+      setLogoutDone(true)
     }
   }
 
@@ -462,8 +471,21 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#ffffff', overflow: 'hidden' }}>
+      {confirmLogout && (
+        <LogoutConfirmModal
+          portalLabel="Client"
+          accent="#8b0000"
+          onConfirm={handleLogout}
+          onCancel={() => setConfirmLogout(false)}
+        />
+      )}
       {loggingOut && (
-        <LogoutOverlay portalLabel="Client" accent="#8b0000" onDone={() => router.push('/client/login')} />
+        <LogoutOverlay
+          portalLabel="Client"
+          accent="#8b0000"
+          ready={logoutDone}
+          onDone={() => { window.location.href = '/client/login' }}
+        />
       )}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
@@ -589,7 +611,7 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
                   <div style={{ fontSize: 10, color: '#aaa', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginTop: 1 }}>{sidebarEmail}</div>
                 </div>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => setConfirmLogout(true)}
                   disabled={loggingOut}
                   title="Logout"
                   style={{ background: 'none', border: 'none', cursor: loggingOut ? 'not-allowed' : 'pointer', color: loggingOut ? '#ccc' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6, flexShrink: 0 }}
@@ -604,7 +626,7 @@ export default function ClientDashboardLayout({ children }: { children: React.Re
 
       {/* ── MAIN CONTENT ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={handleLogout} />
+        <Header onMenuClick={() => setMobileOpen(true)} clientInfo={clientInfo} onLogout={() => setConfirmLogout(true)} />
         <main style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
           {children}
         </main>

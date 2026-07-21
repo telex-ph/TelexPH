@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import api from '@/lib/api/axios';
+import { backendGet } from '@/lib/api/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,8 +7,10 @@ export async function GET(request: NextRequest) {
     const range = searchParams.get('range') || '7d';
 
     // Fetch real top pages data from backend
-    const response = await api.get(`/api/page-views/dashboard/page-views?range=${range}`);
-    return NextResponse.json(response.data.topPages || []);
+    const data = await backendGet<{ topPages?: unknown[] }>(
+      `/api/page-views/dashboard/page-views?range=${range}`
+    );
+    return NextResponse.json(data.topPages || []);
   } catch (error) {
     console.error('Error fetching top pages data:', error);
     return NextResponse.json(

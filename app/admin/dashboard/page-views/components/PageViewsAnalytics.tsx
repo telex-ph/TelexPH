@@ -157,6 +157,48 @@ const MOCK_OVERVIEW: PageViewsOverviewResponse = {
   ],
 };
 
+// ── API response normalisation ────────────────────────────────────────────────
+//
+// The backend's overview payload doesn't match PageViewsOverviewResponse: it
+// nests the summary under `overview` (with different field names) instead of
+// `totals`, and omits `funnels` entirely — those have their own endpoint.
+// Feeding the raw response straight into state is what made `overview.funnels`
+// and `overview.totals` undefined at render time, so map it here, once.
+interface ApiOverviewResponse {
+  range?: string;
+  overview?: {
+    totalViews?: number;
+    uniqueViews?: number;
+    sessions?: number;
+    avgPagesPerVisit?: number;
+    bounceRate?: number;
+  };
+  changes?: PageViewsOverviewResponse["changes"];
+  daily?: PageViewsOverviewResponse["daily"];
+  topPages?: PageViewsOverviewResponse["topPages"];
+  trafficSources?: PageViewsOverviewResponse["trafficSources"];
+  devices?: PageViewsOverviewResponse["devices"];
+}
+
+function normalizeOverview(data: ApiOverviewResponse): PageViewsOverviewResponse {
+  const summary = data.overview ?? {};
+  return {
+    range: data.range ?? MOCK_OVERVIEW.range,
+    daily: data.daily ?? [],
+    totals: {
+      views: summary.totalViews ?? 0,
+      uniqueVisitors: summary.uniqueViews ?? 0,
+      sessions: summary.sessions ?? 0,
+      avgPagesPerVisit: summary.avgPagesPerVisit ?? 0,
+      bounceRate: summary.bounceRate ?? 0,
+    },
+    changes: data.changes ?? { views: 0, unique: 0, sessions: 0, bounceRate: 0 },
+    topPages: data.topPages ?? [],
+    trafficSources: data.trafficSources ?? [],
+    devices: data.devices ?? [],
+  };
+}
+
 export default function PageViewsAnalytics() {
   const [tab, setTab] = useState<Tab>("visitors");
   const [range, setRange] = useState<Range>("30d");
@@ -170,10 +212,10 @@ export default function PageViewsAnalytics() {
     setLoading(true);
     setLoadError(null);
     api
-      .get<PageViewsOverviewResponse>("/dashboard/page-views", { params: { range } })
+      .get<ApiOverviewResponse>("/dashboard/page-views", { params: { range } })
       .then((res) => {
         if (!cancelled) {
-          setOverview(res.data);
+          setOverview(normalizeOverview(res.data));
           setLoading(false);
         }
       })
@@ -186,8 +228,12 @@ export default function PageViewsAnalytics() {
     return () => { cancelled = true; };
   }, [range]);
 
-  // Fallback to mock data if there are no real funnel views yet
-  const funnels = overview.funnels.length > 0 ? overview.funnels : MOCK_OVERVIEW.funnels;
+  // Fallback to mock data if there are no real funnel views yet. The overview
+  // endpoint doesn't return funnels at all (they have their own endpoint), so
+  // this must tolerate the key being absent, not just empty.
+  const funnels: any[] = overview.funnels?.length
+    ? overview.funnels
+    : MOCK_OVERVIEW.funnels ?? [];
 
   const handleDownloadPageViews = () => {
     const rows: (string | number)[][] = [

@@ -1,11 +1,20 @@
 /**
- * Absolute base URL of the admin backend.
+ * Base URL of the admin backend for BROWSER callers.
+ *
+ * Relative '/api' on purpose: it makes these calls same-origin, so they're
+ * proxied to the backend by the rewrite in next.config.ts. Calling the absolute
+ * backend URL from the browser makes every request cross-site, and the auth
+ * cookies then don't survive — the backend (running NODE_ENV=production on
+ * Render) issues them as `Secure; SameSite=None`, which browsers reject over
+ * plain http://localhost. Login appeared to hang at "Processing..." because the
+ * session cookie was never stored.
  *
  * Server-side callers (route handlers under app/api/*) read ADMIN_API_BASE_URL
- * instead — they run in Node and have their own config.
+ * instead — they run in Node, where a relative URL has no origin to resolve
+ * against. See lib/api/server.ts.
  */
 export function getApiBaseUrl(): string {
-  return 'http://localhost:5000/api'
+  return '/api'
 }
 
 export function getAdminAuthenticateUrl(): string {

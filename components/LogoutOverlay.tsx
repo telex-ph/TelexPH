@@ -7,10 +7,18 @@ import Image from 'next/image'
 type LogoutOverlayProps = {
   portalLabel: string
   accent?: string
-  /** Fired once the overlay has been shown for its full duration — do the
-   *  redirect to the login page here. */
+  /** Fired once the overlay has been shown for its minimum duration AND the
+   *  logout request has settled — do the redirect to the login page here. */
   onDone: () => void
+  /** Set to true once the logout request has finished. The overlay waits for
+   *  this instead of burning a fixed timer, so a fast logout leaves quickly.
+   *  Defaults to true to preserve the old timer-only behaviour for callers
+   *  that don't report request state. */
+  ready?: boolean
 }
+
+/** Minimum time the overlay stays up so the animation doesn't just flash. */
+const MIN_VISIBLE_MS = 650
 
 /**
  * Fullscreen "Logging out…" animation shown on the dashboard while the logout
@@ -25,6 +33,7 @@ export default function LogoutOverlay({
   portalLabel,
   accent = '#800000',
   onDone,
+  ready = true,
 }: LogoutOverlayProps) {
   // Keep the latest onDone in a ref so the timer effect runs exactly once on
   // mount without re-firing when the parent passes a fresh onDone on re-render.
@@ -35,12 +44,22 @@ export default function LogoutOverlay({
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
+  // Timestamp of mount, so the minimum-visible window is measured from when
+  // the overlay actually appeared rather than from when `ready` flipped.
+  const shownAtRef = useRef(Date.now())
+
   useEffect(() => {
-    // Hold the overlay for its full duration, THEN redirect while it's still
-    // fully opaque so the dashboard never flashes back into view.
-    const finish = setTimeout(() => onDoneRef.current(), 1600)
+    // Wait for the logout request to settle, then hold just long enough for the
+    // animation to read as intentional. Previously this burned a flat 1600ms
+    // regardless of how fast the request finished, which is what made logout
+    // feel slow. Redirect happens while the overlay is still fully opaque so
+    // the dashboard never flashes back into view.
+    if (!ready) return
+    const elapsed = Date.now() - shownAtRef.current
+    const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed)
+    const finish = setTimeout(() => onDoneRef.current(), remaining)
     return () => clearTimeout(finish)
-  }, [])
+  }, [ready])
 
   if (!mounted) return null
 

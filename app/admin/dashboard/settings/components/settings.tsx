@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDarkMode } from '../../layout'
+import api from '@/lib/api/axios'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const getDepartmentName = (dept: number): string => {
@@ -95,12 +96,7 @@ export default function AdminSettings() {
   const fetchUserData = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`https://telexph-admin.onrender.com/api/users/me`, {
-        method: 'GET', credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!response.ok) throw new Error('Failed to fetch user data')
-      const data = await response.json()
+      const { data } = await api.get('/users/me')
       setUserData(data)
       setFirstName(data.firstName || '')
       setLastName(data.lastName || '')
@@ -123,21 +119,13 @@ export default function AdminSettings() {
       if (!userData) return
       const updateData: any = { firstName, lastName, email, contactNumber, department }
       if (profilePicture) updateData.profilePicture = profilePicture
-      const response = await fetch(`https://telexph-admin.onrender.com/api/users/${userData._id}`, {
-        method: 'PATCH', credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData),
-      })
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null)
-        throw new Error(errorBody?.error || errorBody?.message || `Failed to update profile (${response.status})`)
-      }
-      const updatedUser = await response.json()
+      const { data: updatedUser } = await api.patch(`/users/${userData._id}`, updateData)
       setUserData(updatedUser)
       showToast('Profile updated successfully!', true)
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating profile:', err)
-      showToast(err instanceof Error ? err.message : 'Failed to update profile', false)
+      const message = err.response?.data?.error || err.response?.data?.message || (err instanceof Error ? err.message : 'Failed to update profile')
+      showToast(message, false)
     } finally {
       setSaving(false)
     }
@@ -158,19 +146,14 @@ export default function AdminSettings() {
         setPasswordError('New password must be at least 8 characters long'); return
       }
       setSaving(true)
-      const response = await fetch(`https://telexph-admin.onrender.com/api/users/change-password`, {
-        method: 'POST', credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.message || data.error || 'Failed to change password')
+      const { data } = await api.post('/users/change-password', { currentPassword, newPassword })
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
       setPasswordSuccess(data.message || 'Password changed successfully!')
       showToast(data.message || 'Password changed successfully!', true)
     } catch (err: any) {
       console.error('Error changing password:', err)
-      setPasswordError(err.message || 'Failed to change password. Please try again.')
+      const message = err.response?.data?.message || err.response?.data?.error || 'Failed to change password. Please try again.'
+      setPasswordError(message)
     } finally {
       setSaving(false)
     }

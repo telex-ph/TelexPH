@@ -1,14 +1,11 @@
 import { redirect } from 'next/navigation'
 
-type Props = {
-  searchParams: Promise<{ redirect?: string }>
-}
-
-export default async function LegacyLoginRedirect({ searchParams }: Props) {
-  const sp = await searchParams
-  const r = sp.redirect
-  if (typeof r === 'string' && r.startsWith('/') && !r.startsWith('//')) {
-    redirect(`/admin/login?redirect=${encodeURIComponent(r)}`)
-  }
+/**
+ * Legacy /login entry point — forwards to the real admin login.
+ *
+ * Any ?redirect= param is intentionally dropped: login URLs are kept clean, so
+ * signing in always lands on the dashboard root.
+ */
+export default async function LegacyLoginRedirect() {
   redirect('/admin/login')
 }
