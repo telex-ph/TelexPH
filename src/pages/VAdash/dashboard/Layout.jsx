@@ -26,7 +26,8 @@ const BellIco = () => <Ico d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 
 const LogoutIco = () => <Ico d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" size={13} />;
 const MenuIco = () => <Ico d="M3 12h18M3 6h18M3 18h18" size={18} />;
 const ProfileIco = () => <Ico d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" size={13} />;
-const API_BASE = "https://telexph-admin.onrender.com/api";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/VirtualAssistant/dashboard", icon: (a) => <DashIco a={a} /> },
   { label: "Assessment", href: "/VirtualAssistant/dashboard/VAassesment", icon: (a) => <AssessIco a={a} /> }

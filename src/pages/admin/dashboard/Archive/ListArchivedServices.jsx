@@ -28,7 +28,7 @@ function ListArchivedServices() {
   const [currentRole, setcurrentRole] = useState(null);
   const [confirmrestore, setconfirmrestore] = useState(null);
   const isMainAdmin = currentRole === 1;
-  const API = "https://telexph-admin.onrender.com/api";
+  const API = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
   const pageBg = isdarkmode ? "#0f0f0f" : "#f8f9fa";
   const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
   const subtleBg = isdarkmode ? "#202020" : "#f9fafb";

@@ -153,7 +153,8 @@ function SaveBtn({ onClick, saved }) {
       {saved ? <><Ico d="M20 6L9 17l-5-5" size={14} /> Saved!</> : <><Ico d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v14a2 2 0 0 1-2 2z" d2="M17 21v-8H7v8M7 3v5h8" size={14} /> Save Changes</>}
     </button>;
 }
-const API_BASE = "https://telexph-admin.onrender.com/api";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
 function AccountSettings() {
   const rootRef = useRef(null);
   const [bp, setBp] = useState(null);

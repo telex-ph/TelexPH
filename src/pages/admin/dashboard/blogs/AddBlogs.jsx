@@ -1,6 +1,9 @@
 ﻿
 import React, { useState, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 const MAIN_CATEGORIES = {
   MAIN_SERVICE: "Main Service Categories",
   INDUSTRY_INSIGHTS: "Industry-Specific Insights",
@@ -401,7 +404,7 @@ Return ONLY JSON:
       if (status === "scheduled" && scheduledDate) {
         formData.append("scheduledDate", new Date(scheduledDate).toISOString());
       }
-      const response = await fetch(`https://telexph-admin.onrender.com/api/blogs`, { method: "POST", credentials: "include", body: formData });
+      const response = await fetch(`${API_BASE}/api/blogs`, { method: "POST", credentials: "include", body: formData });
       if (!response.ok) {
         const e = await response.json();
         throw new Error(e.error || "Failed to create blog");

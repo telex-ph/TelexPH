@@ -67,7 +67,7 @@ function DashboardLayout() {
     setisdarkmode(newMode);
     localStorage.setItem("theme", newMode ? "dark" : "light");
     try {
-      const apiUrl = "https://telexph-admin.onrender.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
       await fetch(`${apiUrl}/users/theme`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

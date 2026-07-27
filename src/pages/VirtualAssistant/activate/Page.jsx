@@ -2,6 +2,9 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ShieldCheck, Loader2, XCircle } from "lucide-react";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 function ActivateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,7 +34,7 @@ function ActivateContent() {
       setPageState("invalid");
       return;
     }
-    fetch(`https://telexph-admin.onrender.com/api/va-users/activate?token=${token}`).then((r) => r.json()).then((data) => {
+    fetch(`${API_BASE}/api/va-users/activate?token=${token}`).then((r) => r.json()).then((data) => {
       if (data.valid) {
         setVaName(`${data.firstName} ${data.lastName}`);
         setVaEmail(data.email);
@@ -58,7 +61,7 @@ function ActivateContent() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch(`https://telexph-admin.onrender.com/api/va-users/activate`, {
+      const res = await fetch(`${API_BASE}/api/va-users/activate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password })

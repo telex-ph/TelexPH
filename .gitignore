@@ -46,3 +46,6 @@ public/images-opt/
 
 # claude code local settings
 .claude/settings.local.json
+
+# build output
+dist/

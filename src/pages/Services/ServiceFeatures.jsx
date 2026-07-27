@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { FONTS, getColorWithOpacity } from "@/constant/styles";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
-const API_BASE_URL = "https://telexph-admin.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
 const GHL_SERVICE_URLS = {
   "ai-builder": "https://sites.leadconnectorhq.com/preview/raEir4at50loPjRFkige",
   "csr-customer-service": "https://sites.leadconnectorhq.com/preview/RtlLpk1ZCNSQqgGfLlsJ",

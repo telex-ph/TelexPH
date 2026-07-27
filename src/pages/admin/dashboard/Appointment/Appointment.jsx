@@ -1,6 +1,9 @@
 ﻿
 import { useState, useEffect, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -907,7 +910,7 @@ function AppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`https://telexph-admin.onrender.com/api/appointments`, { method: "GET", credentials: "include", headers: { "Content-Type": "application/json" } });
+      const res = await fetch(`${API_BASE}/api/appointments`, { method: "GET", credentials: "include", headers: { "Content-Type": "application/json" } });
       if (res.ok) {
         const data = await res.json();
         setAppointments(Array.isArray(data) ? data : data.appointments || []);
@@ -922,7 +925,7 @@ function AppointmentsPage() {
     try {
       setIsSyncing(true);
       setSyncMessage(null);
-      const res = await fetch(`https://telexph-admin.onrender.com/api/appointments/sync`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" } });
+      const res = await fetch(`${API_BASE}/api/appointments/sync`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" } });
       const data = await res.json();
       if (res.ok) {
         setSyncMessage({ type: "success", text: data.message || `\u2705 Synced ${data.count} appointments` });
@@ -947,7 +950,7 @@ function AppointmentsPage() {
     }
     try {
       setConfirmingId(appt.ghlAppointmentId);
-      const res = await fetch(`https://telexph-admin.onrender.com/api/appointments/${appt.ghlAppointmentId}/confirm`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" } });
+      const res = await fetch(`${API_BASE}/api/appointments/${appt.ghlAppointmentId}/confirm`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" } });
       const data = await res.json();
       if (res.ok && data.credentials) {
         setCredentialsModal(data.credentials);

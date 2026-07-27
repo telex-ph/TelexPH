@@ -1,6 +1,9 @@
 ﻿
 import { useState, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 const MAIN_CATEGORIES = {
   MAIN_SERVICE: "Main Service Categories",
   INDUSTRY_INSIGHTS: "Industry-Specific Insights",
@@ -136,7 +139,7 @@ function EditBlogs({ blog, onClose, onSave }) {
         formData.append("status", status);
         formData.append("picture", actualFileRef.current);
         if (status === "scheduled" && scheduledDate) formData.append("scheduledDate", new Date(scheduledDate).toISOString());
-        const response = await fetch(`https://telexph-admin.onrender.com/api/blogs/${blog._id}`, { method: "PATCH", credentials: "include", body: formData });
+        const response = await fetch(`${API_BASE}/api/blogs/${blog._id}`, { method: "PATCH", credentials: "include", body: formData });
         if (!response.ok) {
           const e = await response.json();
           throw new Error(e.error || "Failed to update blog");
@@ -144,7 +147,7 @@ function EditBlogs({ blog, onClose, onSave }) {
       } else {
         const payload = { title: title.trim(), author: authorName.trim(), mainCategory, subcategory, shortDescription: shortDescription.trim(), mainContent: allMainContent, status };
         if (status === "scheduled" && scheduledDate) payload.scheduledDate = new Date(scheduledDate).toISOString();
-        const response = await fetch(`https://telexph-admin.onrender.com/api/blogs/${blog._id}`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        const response = await fetch(`${API_BASE}/api/blogs/${blog._id}`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
         if (!response.ok) {
           const e = await response.json();
           throw new Error(e.error || "Failed to update blog");

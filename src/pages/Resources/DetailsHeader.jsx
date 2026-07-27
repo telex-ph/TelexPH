@@ -15,6 +15,9 @@ import {
 import { COLORS, FONTS, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/styles";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 const FALLBACK_DATA = {
   id: 1,
   type: "case studies",
@@ -29,7 +32,7 @@ const formatAuthors = (authors) => authors.map((a) => a.name).filter(Boolean).jo
 async function toggleLikeCaseStudy(id, isLiked) {
   try {
     const method = isLiked ? "DELETE" : "POST";
-    const response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/${id}/like`, {
+    const response = await fetch(`${API_BASE}/api/casestudies/${id}/like`, {
       method,
       headers: { "Content-Type": "application/json" }
     });
@@ -42,7 +45,7 @@ async function toggleLikeCaseStudy(id, isLiked) {
 }
 async function checkLikeStatus(id) {
   try {
-    const response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/${id}/like-status`);
+    const response = await fetch(`${API_BASE}/api/casestudies/${id}/like-status`);
     return await response.json();
   } catch {
     return { hasLiked: false, likesCount: 0 };
@@ -66,9 +69,9 @@ function DetailsHeader() {
         setError(false);
         let response;
         if (slug) {
-          response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/fetch/${slug}`);
+          response = await fetch(`${API_BASE}/api/casestudies/fetch/${slug}`);
         } else if (id) {
-          response = await fetch(`https://telexph-admin.onrender.com/api/casestudies/${id}`);
+          response = await fetch(`${API_BASE}/api/casestudies/${id}`);
         } else {
           setError(true);
           setLoading(false);

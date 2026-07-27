@@ -48,7 +48,7 @@ function MiniActivityLogs({
   const fetchRecentLogs = useCallback(async () => {
     try {
       setisloading(true);
-      const apiUrl = "https://telexph-admin.onrender.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
       const response = await fetch(`${apiUrl}/activity-logs?limit=10&order=desc`, {
         method: "GET",
         credentials: "include",
@@ -65,7 +65,7 @@ function MiniActivityLogs({
   }, []);
   const markAllAsRead = useCallback(async () => {
     try {
-      const apiUrl = "https://telexph-admin.onrender.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
       await fetch(`${apiUrl}/activity-logs/mark-as-read`, {
         method: "POST",
         credentials: "include",

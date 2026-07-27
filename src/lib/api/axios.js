@@ -1,6 +1,8 @@
 import axios from "axios";
 const api = axios.create({
-  baseURL: "/api",
+  // Absolute URL in production (the backend is a separate deploy); the bare
+  // "/api" fallback keeps the Vite dev proxy working locally.
+  baseURL: import.meta.env.VITE_API_URL || "/api",
   withCredentials: true,
   // IMPORTANT: Para ma-send ang cookies
   headers: {

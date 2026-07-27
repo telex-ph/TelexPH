@@ -9,7 +9,7 @@ import {
   HiSquares2X2,
   HiEye
 } from "react-icons/hi2";
-const API_BASE_URL = "https://telexph-admin.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
 async function getAllCaseStudies() {
   try {
     const response = await fetch(`${API_BASE_URL}/casestudies`);

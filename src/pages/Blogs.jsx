@@ -7,6 +7,9 @@ import BlogsHero from "./Blogs/BlogsHero";
 import BlogsFilter from "./Blogs/BlogsFilter";
 import BlogsList from "./Blogs/BlogsList";
 import BlogsArticle from "./Blogs/BlogsArticle";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 function BlogsPage() {
   const [showNav, setShowNav] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
@@ -23,7 +26,7 @@ function BlogsPage() {
     const getBlogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch("https://telexph-admin.onrender.com/api/blogs");
+        const response = await fetch(`${API_BASE}/api/blogs`);
         const data = await response.json();
         const publishedOnly = data.filter((b) => b.status === "published");
         setBlogs(publishedOnly);
