@@ -27,14 +27,14 @@ import { FONTS, getColorWithOpacity } from "@/constant/styles";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
 const API_BASE_URL = "https://telexph-admin.onrender.com/api";
 const GHL_SERVICE_URLS = {
-  "ai-builder": "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
-  csr: "https://app.gohighlevel.com/v2/preview/ibY6nU0jCLIQNHOgScWG",
-  automation: "https://app.gohighlevel.com/v2/preview/n6hA9geZeMpPR4znvPAm",
-  "funnel-builder": "https://app.gohighlevel.com/v2/preview/oMEKJgm8HwQDG47bxMbc",
-  "tech-support": "https://app.gohighlevel.com/v2/preview/DTmridl6UOnMYfnEgY2b",
-  "web-development": "https://app.gohighlevel.com/v2/preview/CslyXVQZdPxdsrtvohsu"
+  "ai-builder": "https://sites.leadconnectorhq.com/preview/raEir4at50loPjRFkige",
+  "csr-customer-service": "https://sites.leadconnectorhq.com/preview/RtlLpk1ZCNSQqgGfLlsJ",
+  automation: "https://sites.leadconnectorhq.com/preview/kSgDJd681uGBBpki0vzf",
+  "funnel-builder": "https://sites.leadconnectorhq.com/preview/x3fkRBlaj0OvHzOM2bM0",
+  "tech-support": "https://sites.leadconnectorhq.com/preview/59VNM2OKoxELqV2T9ueK",
+  "website-builder": "https://sites.leadconnectorhq.com/preview/PGpBD03m6a3iIFZySO7h"
 };
-const GHL_FALLBACK_URL = "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t";
+const GHL_FALLBACK_URL = "https://sites.leadconnectorhq.com/preview/59VNM2OKoxELqV2T9ueK";
 const MAROON = "#7B0D1E";
 const MAROON_MID = "#9B1D2E";
 const MAROON_LIGHT = "#C0392B";
@@ -399,6 +399,7 @@ const ServiceCarouselPanel = ({ services, loading, error, onRetry, onSelectServi
   const onPointerDown = (e) => {
     const el = scrollRef.current;
     if (!el) return;
+    if (e.target.closest("button, a")) return;
     isDraggingRef.current = true;
     draggedRef.current = false;
     dragStartXRef.current = e.clientX;
