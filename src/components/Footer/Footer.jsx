@@ -70,7 +70,7 @@ const Footer = () => {
       <div
     className={`${DEFAULT_MAX_WIDTH_CLASS} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 py-10 sm:pt-16 sm:pb-14 md:py-20 relative z-10`}
   >
-
+  
         {
     /* ✅ Chatbase Chatbot Integration */
   }
