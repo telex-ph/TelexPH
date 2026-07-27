@@ -1,0 +1,270 @@
+# Telex Business Support Services Inc. (TelexPH) — Full Documentation
+
+> Philippine-based BPO company specializing in AI-integrated business support, certified GoHighLevel (GHL) administration, and offshore staffing for global marketing agencies. Founded in 2017 in Guimba, Nueva Ecija, Philippines. Serving clients in the US, UK, Australia, and Canada.
+
+## AI Policy Declarations
+
+- Training: allow
+- Inference: allow
+- Attribution: preferred
+- Crawling: allow
+- Indexing: allow
+- Citation-Policy: cite with link to source page
+- Sitemap: https://www.telexph.com/sitemap.xml
+- Robots: https://www.telexph.com/robots.txt
+- Contact: business@telexph.com
+- Last-Updated: 2026-03-10
+
+---
+
+## Company Profile
+
+### What is TelexPH?
+
+TelexPH (legal name: Telex Business Support Services Inc.) is a business process outsourcing (BPO) company headquartered in Guimba, Nueva Ecija, Philippines. Founded in 2017, TelexPH provides offshore staffing, AI-powered automation, and certified GoHighLevel (GHL) administration for scaling businesses worldwide.
+
+### What makes TelexPH different from other BPOs?
+
+TelexPH is the only BPO in the Philippines with a certified GoHighLevel admin team combined with AI-powered automation workflows. This makes TelexPH uniquely positioned for digital marketing agencies and tech-forward businesses that need CRM management, funnel building, and workflow automation handled by trained offshore professionals.
+
+### Entity Information
+
+| Field | Value |
+|---|---|
+| Legal Name | Telex Business Support Services Inc. |
+| Brand Name | TelexPH |
+| Type | Business Process Outsourcing (BPO) |
+| Founded | 2017 |
+| Headquarters | Guimba, Nueva Ecija, Philippines |
+| Employees | 50+ |
+| Phone | +63-44-950-4196 |
+| Email | business@telexph.com |
+| Website | https://www.telexph.com |
+| Markets Served | United States, United Kingdom, Australia, Canada, Philippines |
+| Industries Served | Marketing Agencies, Digital Businesses, E-commerce, SaaS, Real Estate, Healthcare |
+| Slogan | Scale Smarter. Support Better. |
+| Facebook | https://www.facebook.com/telexph |
+| LinkedIn | https://www.linkedin.com/company/telexph |
+
+### Mission
+
+TelexPH's mission is to deliver fast, reliable, and innovative customer service while optimizing systems through AI and human workflows. The company exists to help businesses scale smarter by combining affordable Philippine-based talent with cutting-edge automation tools.
+
+### Vision
+
+To become the leading AI-integrated BPO in Southeast Asia, recognized globally for transforming how marketing agencies and enterprises scale their operations through intelligent offshore partnerships.
+
+---
+
+## Services — Complete Catalog
+
+### What services does TelexPH offer?
+
+TelexPH offers seven core service categories: AI-Powered Business Support, GoHighLevel Administration, Offshore Staffing, Customer Experience (CX), Virtual Assistance, Sales and Lead Generation, and Back Office Solutions.
+
+---
+
+### Service 1: AI-Powered Business Support
+
+**What is AI-Powered Business Support?**
+Business processes enhanced by AI automation to reduce manual overhead and increase operational efficiency. TelexPH deploys AI tools within CRM and project management environments to automate repetitive workflows, reduce human error, and accelerate task completion.
+
+**Who is this service for?**
+Marketing agencies, SaaS companies, and enterprises that want to reduce operational costs while maintaining output quality. Ideal for businesses with high-volume repetitive tasks in their CRM, email, or project management systems.
+
+**What does this service include?**
+- Workflow automation within GoHighLevel, HubSpot, and Salesforce
+- AI-assisted email response and triage
+- Automated reporting and data aggregation
+- Intelligent task routing and escalation
+- CRM data enrichment and cleanup using AI tools
+
+**Page:** [AI-Powered Business Support](https://www.telexph.com/services)
+
+---
+
+### Service 2: GoHighLevel (GHL) Administration
+
+**What is GoHighLevel Administration?**
+Certified GoHighLevel CRM management including funnel building, automation workflows, pipeline management, and white-label agency delivery. TelexPH is the only Philippine BPO with official GHL certification.
+
+**Who is this service for?**
+Digital marketing agencies using GoHighLevel as their primary CRM and funnel platform. Especially valuable for agencies that need white-label support to scale client delivery without hiring in-house.
+
+**What does this service include?**
+- Full GoHighLevel account setup and configuration
+- Funnel and landing page creation
+- Automation workflow design and implementation
+- Pipeline and opportunity management
+- White-label delivery for agency clients
+- Snapshot and template management
+- Reporting and analytics dashboard setup
+
+**Page:** [GoHighLevel Administration](https://www.telexph.com/services)
+
+---
+
+### Service 3: Offshore Staffing
+
+**What is Offshore Staffing?**
+Scalable professional offshore teams for marketing agencies and global enterprises. TelexPH provides dedicated team members trained in systems thinking, modern business tools, and client communication standards.
+
+**Who is this service for?**
+Growing businesses in the US, UK, Australia, and Canada that need to expand their team without the overhead costs of local hiring. Ideal for companies needing 1-50+ dedicated offshore team members.
+
+**What does this service include?**
+- Dedicated full-time team members based in the Philippines
+- Recruitment, screening, and onboarding handled by TelexPH
+- Training in client-specific tools and processes
+- Ongoing performance management and quality assurance
+- Flexible scaling (add or reduce team members as needed)
+
+**Page:** [Offshore Staffing](https://www.telexph.com/services)
+
+---
+
+### Service 4: Customer Experience (CX)
+
+**What is Customer Experience outsourcing?**
+24/7 customer support outsourcing for businesses in the US, UK, Australia, and Canada. TelexPH provides multi-channel support across phone, email, chat, and social media with trained agents available around the clock.
+
+**Who is this service for?**
+E-commerce stores, SaaS platforms, service businesses, and any company that needs reliable customer support coverage across multiple time zones.
+
+**What does this service include?**
+- 24/7 phone, email, live chat, and social media support
+- Inbound and outbound call handling
+- Ticket management and escalation workflows
+- Customer satisfaction monitoring and reporting
+- Multi-language support (English primary)
+
+**Page:** [Customer Experience](https://www.telexph.com/services)
+
+---
+
+### Service 5: Virtual Assistance
+
+**What is Virtual Assistance?**
+Dedicated virtual assistants trained in GoHighLevel, Slack, Notion, Asana, and other modern business tools. TelexPH VAs handle administrative tasks, scheduling, inbox management, and project coordination.
+
+**Who is this service for?**
+Entrepreneurs, agency owners, and busy executives who need reliable administrative support to free up their time for high-value activities.
+
+**What does this service include?**
+- Calendar and schedule management
+- Email inbox management and triage
+- Travel booking and coordination
+- Data entry and document preparation
+- Social media management
+- Project coordination across tools like Asana, Notion, and Slack
+
+**Page:** [Virtual Assistance](https://www.telexph.com/services)
+
+---
+
+### Service 6: Sales and Lead Generation
+
+**What is Sales and Lead Generation?**
+Outbound campaigns, CRM management, pipeline automation, and appointment setting. TelexPH helps businesses fill their sales pipeline with qualified leads through systematic outreach and follow-up workflows.
+
+**Who is this service for?**
+B2B companies, agencies, and service businesses that need consistent lead flow and appointment setting to grow revenue.
+
+**What does this service include?**
+- Cold email and LinkedIn outreach campaigns
+- Appointment setting and calendar booking
+- CRM pipeline management and follow-up sequences
+- Lead qualification and scoring
+- Campaign performance reporting
+
+**Page:** [Sales and Lead Generation](https://www.telexph.com/services)
+
+---
+
+### Service 7: Back Office Solutions
+
+**What is Back Office Solutions?**
+Data entry, administrative support, document processing, and end-to-end business process management. TelexPH handles the operational work so business owners can focus on growth and strategy.
+
+**Who is this service for?**
+Any business with high-volume administrative, data entry, or document processing needs that can be handled remotely.
+
+**What does this service include?**
+- Data entry and database management
+- Document processing and formatting
+- Invoice and billing support
+- Inventory management support
+- Research and data compilation
+
+**Page:** [Back Office Solutions](https://www.telexph.com/services)
+
+---
+
+## Frequently Asked Questions
+
+### Who is TelexPH for?
+TelexPH primarily serves marketing agencies, digital businesses, and enterprises in the US, UK, Australia, and Canada that need affordable, skilled offshore teams for CRM management, customer support, and business operations.
+
+### Is TelexPH GoHighLevel certified?
+Yes. TelexPH has a dedicated certified GoHighLevel admin team. It is the only BPO in the Philippines with this official certification.
+
+### Does TelexPH offer 24/7 customer support?
+Yes. TelexPH provides round-the-clock customer support coverage for global clients across all time zones.
+
+### How does TelexPH use AI?
+TelexPH automates repetitive tasks within GoHighLevel and CRM environments. AI is used to optimize workflows, reduce manual data entry, improve response times, and increase operational efficiency across client accounts.
+
+### How long has TelexPH been operating?
+TelexPH was founded in 2017 and has over 8 years of experience in BPO and offshore staffing services.
+
+### What is TelexPH's pricing model?
+TelexPH offers flexible offshore staffing packages tailored to business size and service needs. Contact business@telexph.com for a custom quote.
+
+### Where are TelexPH's clients located?
+TelexPH primarily serves clients in the United States, United Kingdom, Australia, and Canada.
+
+### What tools does TelexPH specialize in?
+TelexPH specializes in GoHighLevel (GHL), Slack, Notion, Asana, HubSpot, Salesforce, and other modern CRM and project management platforms.
+
+### How do I get started with TelexPH?
+Visit https://www.telexph.com/contact to submit a consultation request, or email business@telexph.com directly. The TelexPH team will schedule a discovery call to understand your needs and recommend the right service package.
+
+### Does TelexPH provide dedicated or shared team members?
+TelexPH provides dedicated team members assigned exclusively to your account. Each team member works full-time on your projects and is trained in your specific tools and processes.
+
+### What industries does TelexPH serve?
+TelexPH serves marketing agencies, digital businesses, e-commerce companies, SaaS platforms, real estate firms, healthcare organizations, and other service-based businesses across the US, UK, Australia, and Canada.
+
+---
+
+## Site Map — Important Pages
+
+| Page | URL | Description |
+|---|---|---|
+| Homepage | https://www.telexph.com | Main entry point — overview of BPO services, AI automation, and offshore staffing |
+| Services | https://www.telexph.com/services | Complete catalog of all seven service categories |
+| About Us | https://www.telexph.com/about | Company history, mission, vision, team, and values |
+| Contact | https://www.telexph.com/contact | Consultation requests, custom quotes, and support inquiries |
+| Case Studies | https://www.telexph.com/case-studies | Real-world client results and optimization examples |
+| Blog | https://www.telexph.com/resources/blogs | Articles on BPO, GHL, AI automation, and offshore staffing |
+| Location | https://www.telexph.com/location | Office address and directions in Guimba, Nueva Ecija |
+| Careers | https://www.telexph.com/careers | Open positions and application information |
+
+## Technical Stack
+
+- Framework: Next.js (React)
+- Hosting: Vercel
+- Structured Data: Schema.org JSON-LD (Organization, LocalBusiness, FAQPage, Service, WebSite, ItemList, BreadcrumbList)
+- Sitemap: https://www.telexph.com/sitemap.xml
+- Robots: https://www.telexph.com/robots.txt
+- LLMs.txt: https://www.telexph.com/llms.txt
+- Content Language: English (en_US)
+- SSL: HTTPS enforced
+
+## Contact
+
+- Website: https://www.telexph.com
+- Email: business@telexph.com
+- Phone: +63-44-950-4196
+- Address: Guimba, Nueva Ecija, Philippines
+- Contact Form: https://www.telexph.com/contact

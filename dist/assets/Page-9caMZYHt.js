@@ -1,0 +1,1 @@
+import{j as t}from"./charts-CZnqqKLy.js";import{D as a}from"./Dashboard-Bn_47nNd.js";import"./react-D15L_eJl.js";const o={title:"Client Portal | Virtual Assistant Dashboard",description:"Manage your Virtual Assistant team — hiring, performance, tasks, and billing."};function n(){return t.jsx(a,{})}export{n as default,o as metadata};

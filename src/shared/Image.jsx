@@ -50,6 +50,9 @@ const localVariant = (url, width) => {
  * Existing transforms are left alone so hand-tuned URLs keep working.
  */
 export const cloudinaryUrl = (url, width, quality) => {
+  // API records store some Cloudinary URLs as plain http://; on the HTTPS
+  // site the browser blocks those as mixed content, so upgrade them here.
+  url = url.replace(/^http:\/\//, "https://");
   const [head, ...tail] = url.split("/upload/");
   if (!tail.length) return url;
   const rest = tail.join("/upload/");
