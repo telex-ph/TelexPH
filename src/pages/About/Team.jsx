@@ -113,13 +113,13 @@ function Team() {
         </div>
 
         {
-    /* Executive Committee */
+    /* Executive Leadership */
   }
         <h2
     className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
     style={{ color: SEMANTIC_COLORS.text.primary }}
   >
-          Executive Committee
+          Executive Leadership
         </h2>
         <div className="flex justify-center mb-16">
           <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
@@ -141,55 +141,20 @@ function Team() {
         </div>
 
         {
-    /* Executive Office */
+    /* Executive Assistant Office */
   }
         <h2
     className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
     style={{ color: SEMANTIC_COLORS.text.primary }}
   >
-          Executive Office
+          Executive Coordination Office
         </h2>
         <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-1 md:gap-8 md:max-w-xs md:justify-center md:overflow-x-visible">
             <MemberCard
-    img="images/fatima_01.webp"
-    name="Fatima M. Guzman"
-    title="Executive Director for Admin/HR"
-    linkedinUrl="https://www.linkedin.com/in/fatima-guzman"
-    imagePositionClass="object-center translate-y-5 scale-130"
-  />
-            <MemberCard
-    img="images/anjeaneth_01.webp"
-    name="Anjanneth P. Bilas"
-    title="Head of Finance"
-    linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas"
-    imagePositionClass="object-center translate-y-3 scale-150"
-  />
-          </div>
-        </div>
-
-        {
-    /* Operations Division */
-  }
-        <h2
-    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
-    style={{ color: SEMANTIC_COLORS.text.primary }}
-  >
-          Operations Division
-        </h2>
-        <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
-            <MemberCard
-    img="images/joanne_01.webp"
-    name="Joanne P. Corpuz"
-    title="Operations and Talent Acquisition Manager"
-    linkedinUrl="https://www.linkedin.com/in/joanne-corpuz"
-    imagePositionClass="object-center translate-y-13 scale-130"
-  />
-            <MemberCard
-    img="images/mitch_01.webp"
+    img="images/Michelle.png"
     name="Michelle D. Soliman"
-    title="Client Relations Manager"
+    title="Executive Coordination Officer"
     linkedinUrl="https://www.linkedin.com/in/michelle-soliman"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
@@ -197,22 +162,22 @@ function Team() {
         </div>
 
         {
-    /* Governance & Technology Division */
+    /* Administration & Governance */
   }
         <h2
     className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
     style={{ color: SEMANTIC_COLORS.text.primary }}
   >
-          Governance & Technology Division
+          Administration & Governance
         </h2>
         <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:max-w-4xl md:justify-center md:overflow-x-visible">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
             <MemberCard
-    img="images/mark_01.webp"
-    name="Mark Jayson G. Robes"
-    title="Information Technology Head"
-    linkedinUrl="https://www.linkedin.com/in/mark-robes"
-    imagePositionClass="object-center translate-y-12 scale-125"
+    img="images/fatima_01.webp"
+    name="Fatima M. Guzman"
+    title="Head of People and Administration"
+    linkedinUrl="https://www.linkedin.com/in/fatima-guzman"
+    imagePositionClass="object-center translate-y-5 scale-130"
   />
             <MemberCard
     img="images/maybelle_01.webp"
@@ -221,12 +186,89 @@ function Team() {
     linkedinUrl="https://www.linkedin.com/in/maybelle-cabalar"
     imagePositionClass="object-center translate-y-12 scale-125"
   />
+          </div>
+        </div>
+
+        {
+    /* Finance & Operations */
+  }
+        <h2
+    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+    style={{ color: SEMANTIC_COLORS.text.primary }}
+  >
+          Finance & Operations
+        </h2>
+        <div className="flex justify-center mb-16">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:max-w-4xl md:justify-center md:overflow-x-visible">
             <MemberCard
-    img="images/jayro_01.webp"
-    name="Jayro DG. Gabriel"
-    title="Innovation and Digital Development Manager"
-    linkedinUrl="https://www.linkedin.com/in/jayro-gabriel"
-    imagePositionClass="object-center -translate-y-2 scale-125"
+    img="images/anjeaneth_01.webp"
+    name="Anjanneth P. Bilas"
+    title="Head of Finance"
+    linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas"
+    imagePositionClass="object-center translate-y-3 scale-150"
+  />
+            <MemberCard
+    img="images/joanne_01.webp"
+    name="Joanne P. Corpuz"
+    title="Senior Operations / Head of Operations"
+    linkedinUrl="https://www.linkedin.com/in/joanne-corpuz"
+    imagePositionClass="object-center translate-y-13 scale-130"
+  />
+            <MemberCard
+    img="images/Marj.png"
+    name="Marjorie Curamen"
+    title="Senior Operations"
+    linkedinUrl="https://www.linkedin.com/in/marjorie-curamen"
+    imagePositionClass="object-center translate-y-5 scale-130"
+  />
+          </div>
+        </div>
+
+        {
+    /* Technology & Innovation */
+  }
+        <h2
+    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+    style={{ color: SEMANTIC_COLORS.text.primary }}
+  >
+          Technology & Digital Innovation
+        </h2>
+        <div className="flex justify-center mb-16">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
+            <MemberCard
+    img="images/mark_01.webp"
+    name="Mark Jayson G. Robes"
+    title="Information Technology Head"
+    linkedinUrl="https://www.linkedin.com/in/mark-robes"
+    imagePositionClass="object-center translate-y-12 scale-125"
+  />
+            <MemberCard
+    img="images/HJ.png"
+    name="Hannah D. Joy Reyes"
+    title="Head of Innovation"
+    linkedinUrl="https://www.linkedin.com/in/hannah-reyes"
+    imagePositionClass="object-center translate-y-5 scale-130"
+  />
+          </div>
+        </div>
+
+        {
+    /* Creatives & Marketing */
+  }
+        <h2
+    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+    style={{ color: SEMANTIC_COLORS.text.primary }}
+  >
+          Creatives & Marketing
+        </h2>
+        <div className="flex justify-center mb-16">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-1 md:gap-8 md:max-w-xs md:justify-center md:overflow-x-visible">
+            <MemberCard
+    img="images/RJ.png"
+    name="Rocel J. Fernandez"
+    title="Head of Growth"
+    linkedinUrl="https://www.linkedin.com/in/rocel-fernandez"
+    imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>
         </div>

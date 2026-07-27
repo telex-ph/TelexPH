@@ -88,13 +88,6 @@ const Nav = ({ openNav }) => {
       items: [
         { label: "Expertise Overview", url: "/platform" }
       ]
-    },
-    {
-      id: "tools",
-      label: "Tools",
-      items: [
-        { label: "Tools Overview", url: "/about/tools" }
-      ]
     }
   ];
   const resourcesMegaData = [

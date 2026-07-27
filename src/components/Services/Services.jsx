@@ -12,14 +12,14 @@ const GAP = 24;
 const SLIDE_DURATION = 520;
 const AUTO_INTERVAL = 3800;
 const GHL_SERVICE_URLS = {
-  "ai-builder": "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t",
-  csr: "https://app.gohighlevel.com/v2/preview/ibY6nU0jCLIQNHOgScWG",
-  automation: "https://app.gohighlevel.com/v2/preview/n6hA9geZeMpPR4znvPAm",
-  "funnel-builder": "https://app.gohighlevel.com/v2/preview/oMEKJgm8HwQDG47bxMbc",
-  "tech-support": "https://app.gohighlevel.com/v2/preview/DTmridl6UOnMYfnEgY2b",
-  "web-development": "https://app.gohighlevel.com/v2/preview/CslyXVQZdPxdsrtvohsu"
+  "ai-builder": "https://sites.leadconnectorhq.com/preview/raEir4at50loPjRFkige",
+  "csr-customer-service": "https://sites.leadconnectorhq.com/preview/RtlLpk1ZCNSQqgGfLlsJ",
+  automation: "https://sites.leadconnectorhq.com/preview/kSgDJd681uGBBpki0vzf",
+  "funnel-builder": "https://sites.leadconnectorhq.com/preview/x3fkRBlaj0OvHzOM2bM0",
+  "tech-support": "https://sites.leadconnectorhq.com/preview/59VNM2OKoxELqV2T9ueK",
+  "website-builder": "https://sites.leadconnectorhq.com/preview/PGpBD03m6a3iIFZySO7h"
 };
-const GHL_FALLBACK_URL = "https://app.gohighlevel.com/v2/preview/he3Ot8ymGgW3kL2QxH9t";
+const GHL_FALLBACK_URL = "https://sites.leadconnectorhq.com/preview/59VNM2OKoxELqV2T9ueK";
 function getCardsVisible(width) {
   if (width < 640) return 1;
   if (width < 1024) return 2;
