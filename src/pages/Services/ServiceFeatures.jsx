@@ -667,7 +667,9 @@ function ServiceFeatures() {
       const p = photo.trim();
       if (p.startsWith("data:image")) return p;
       if (p.match(/^[A-Za-z0-9+/]+=*$/) && p.length > 100) return `data:image/jpeg;base64,${p}`;
-      if (p.startsWith("http://") || p.startsWith("https://")) return p;
+      // http:// URLs are blocked as mixed content on the HTTPS site — upgrade.
+      if (p.startsWith("http://")) return p.replace(/^http:\/\//, "https://");
+      if (p.startsWith("https://")) return p;
       if (p.startsWith("/")) return p;
     }
     return IMAGE_MAP[serviceId] || "/images/services1.webp";

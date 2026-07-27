@@ -496,7 +496,10 @@ function ServicesGrid() {
       const t = photo.trim();
       if (t.startsWith("data:image")) return t;
       if (t.match(/^[A-Za-z0-9+/]+={0,2}$/) && t.length > 100) return `data:image/jpeg;base64,${t}`;
-      if (t.startsWith("http://") || t.startsWith("https://")) return t;
+      // Some records store http:// URLs; the deployed site is HTTPS, so the
+      // browser blocks those as mixed content. Upgrade them.
+      if (t.startsWith("http://")) return t.replace(/^http:\/\//, "https://");
+      if (t.startsWith("https://")) return t;
       if (t.startsWith("/")) return t;
     }
     return IMAGE_MAP[item.serviceId] || "/images/services1.webp";
