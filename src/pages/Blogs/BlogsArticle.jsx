@@ -2,6 +2,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 const T = {
   primary: "#a10000",
   primaryDark: "#7a0000",
@@ -235,7 +238,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
       setMounted(false);
       setLikeCount(post.likeCount || 0);
       checkLikeStatus();
-      fetch(`https://telexph-admin.onrender.com/api/blogs/${post._id}`).catch(() => {
+      fetch(`${API_BASE}/api/blogs/${post._id}`).catch(() => {
       });
       const timer = setTimeout(() => {
         setIsLoading(false);
@@ -246,7 +249,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
   }, [post?._id]);
   const checkLikeStatus = async () => {
     try {
-      const res = await fetch(`https://telexph-admin.onrender.com/api/blogs/${post._id}/like-status`);
+      const res = await fetch(`${API_BASE}/api/blogs/${post._id}/like-status`);
       const data = await res.json();
       setHasLiked(data.hasLiked);
       setLikeCount(data.likeCount);
@@ -257,7 +260,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
     if (isLiking) return;
     setIsLiking(true);
     try {
-      const res = await fetch(`https://telexph-admin.onrender.com/api/blogs/${post._id}/like`, { method: hasLiked ? "DELETE" : "POST" });
+      const res = await fetch(`${API_BASE}/api/blogs/${post._id}/like`, { method: hasLiked ? "DELETE" : "POST" });
       const data = await res.json();
       if (res.ok) {
         setLikeCount(data.likeCount);

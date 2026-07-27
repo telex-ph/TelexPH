@@ -1,6 +1,10 @@
 ﻿
 import { useState, useEffect } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+
+const API_ORIGIN =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+const API_BASE = API_ORIGIN;
 const poppins = {
   fontFamily: "'Poppins', sans-serif",
   fontWeight: 400
@@ -434,7 +438,7 @@ function ApplicantModal({
   modalToast
 }) {
   const dm = isdarkmode;
-  const resumeHref = `https://telexph-admin.onrender.com${applicant.resumeUrl}`;
+  const resumeHref = `${API_ORIGIN}${applicant.resumeUrl}`;
   const currentStageIndex = PIPELINE_STAGES.findIndex((s) => s.key === (applicant.pipelineStage || "details"));
   const currentStage = PIPELINE_STAGES[currentStageIndex];
   const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
@@ -1057,7 +1061,7 @@ function ApplicantsList() {
   const fetchApplicants = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants`, { method: "GET", credentials: "include", headers: { "Content-Type": "application/json" } });
+      const response = await fetch(`${API_BASE}/api/applicants`, { method: "GET", credentials: "include", headers: { "Content-Type": "application/json" } });
       if (response.ok) setApplicants(await response.json());
     } catch (error) {
       console.error("Error fetching applicants:", error);
@@ -1071,7 +1075,7 @@ function ApplicantsList() {
   const openApplicant = async (item) => {
     setSelectedApplicantLoading(true);
     try {
-      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants/${item._id}`, { method: "GET", credentials: "include", headers: { "Content-Type": "application/json" } });
+      const response = await fetch(`${API_BASE}/api/applicants/${item._id}`, { method: "GET", credentials: "include", headers: { "Content-Type": "application/json" } });
       if (response.ok) {
         setSelectedApplicant(await response.json());
       } else {
@@ -1087,7 +1091,7 @@ function ApplicantsList() {
   const handleAction = async (id, action) => {
     setActionLoading(`${id}-${action}`);
     try {
-      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants/${id}/${action}`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" } });
+      const response = await fetch(`${API_BASE}/api/applicants/${id}/${action}`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" } });
       if (response.ok) {
         showSmartToast(action === "approve" ? "Applicant has been successfully approved." : "Applicant application has been rejected.", "success");
         setApplicants((prev) => prev.map((a) => a._id === id ? { ...a, status: action === "approve" ? "approved" : "rejected" } : a));
@@ -1115,7 +1119,7 @@ function ApplicantsList() {
     const MIN_DISPLAY_MS = 1500;
     const startTime = Date.now();
     try {
-      const response = await fetch(`https://telexph-admin.onrender.com/api/applicants/${id}/pipeline`, {
+      const response = await fetch(`${API_BASE}/api/applicants/${id}/pipeline`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 function ClientRegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -28,7 +31,7 @@ function ClientRegisterPage() {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(`https://telexph-admin.onrender.com/api/auth/client/register`, {
+      const response = await fetch(`${API_BASE}/api/auth/client/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

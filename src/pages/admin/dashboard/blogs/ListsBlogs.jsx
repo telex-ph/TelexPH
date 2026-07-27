@@ -37,7 +37,7 @@ function ListBlogs() {
   const [selectedmaincategory, setselectedmaincategory] = useState("All");
   const [selectedsubcategory, setselectedsubcategory] = useState("All");
   const { isdarkmode } = useDarkMode();
-  const API_BASE_URL = "https://telexph-admin.onrender.com/api";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
   const categories = {
     "Main Service Categories": ["Customer Experience (CX)", "Back Office Solutions", "Virtual Assistance", "Sales & Lead Generation"],
     "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling"],

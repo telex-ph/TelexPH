@@ -36,7 +36,7 @@ function ActivityLogs() {
       if (activetab !== "All") params.append("action", activetab);
       if (filteredmodules.length > 0) params.append("module", filteredmodules[0]);
       if (searchquery) params.append("admin", searchquery);
-      const apiUrl = "https://telexph-admin.onrender.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
       const response = await fetch(`${apiUrl}/activity-logs?${params.toString()}`, {
         method: "GET",
         credentials: "include",
@@ -57,7 +57,7 @@ function ActivityLogs() {
   };
   const fetchActivityStats = async () => {
     try {
-      const apiUrl = "https://telexph-admin.onrender.com/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
       const response = await fetch(`${apiUrl}/activity-logs/stats`, {
         method: "GET",
         credentials: "include",

@@ -1,7 +1,7 @@
 ﻿
 import React, { useState, useRef, useEffect } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
-const API_BASE_URL = "https://telexph-admin.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
 const PLACEHOLDER_COVERS = [
   "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80",
   "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&q=80",

@@ -1,6 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useDashboardTheme } from "./useDashboardTheme";
+
+const API_BASE =
+  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
 function formatAppointmentDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -29,7 +32,7 @@ function RecentTransactions() {
       try {
         setLoading(true);
         const token = localStorage.getItem("authToken") || localStorage.getItem("token") || "";
-        const res = await fetch("https://telexph-admin.onrender.com/api/appointments/upcoming", {
+        const res = await fetch(`${API_BASE}/api/appointments/upcoming`, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
           credentials: "include"
         });
