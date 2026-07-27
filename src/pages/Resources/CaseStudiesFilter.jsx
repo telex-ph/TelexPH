@@ -3,7 +3,6 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { COLORS, FONTS } from "@/constant/styles";
 import {
-  HiChevronDown,
   HiMagnifyingGlass,
   HiXMark,
   HiListBullet,
@@ -24,17 +23,11 @@ async function getAllCaseStudies() {
 function CaseStudiesFilter() {
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("Active");
-  const [tagFilter, setTagFilter] = useState("Filter by tag");
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 8;
   const [apiCaseStudies, setApiCaseStudies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [tagOpen, setTagOpen] = useState(false);
-  const statusRef = useRef(null);
-  const tagRef = useRef(null);
   const tabsRef = useRef(null);
   const dragState = useRef({ isDragging: false, startX: 0, startScrollLeft: 0, moved: false });
   const handleTabsPointerDown = (e) => {
@@ -57,29 +50,13 @@ function CaseStudiesFilter() {
     if (dragState.current.moved) return;
     setActiveTab(name);
   };
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (statusRef.current && !statusRef.current.contains(e.target)) {
-        setStatusOpen(false);
-      }
-      if (tagRef.current && !tagRef.current.contains(e.target)) {
-        setTagOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-  const statusOptions = ["All Status", "Active", "Completed", "Draft", "Scheduled"];
-  const tagOptions = ["Filter by tag", "Technology", "Logistics", "Analytics", "Infrastructure"];
-  const hasActiveFilters = searchQuery !== "" || statusFilter !== "All Status" || tagFilter !== "Filter by tag";
+  const hasActiveFilters = searchQuery !== "";
   const navItems = [
     { name: "All" },
-    { name: "Case Studies" },
-    { name: "Events" },
-    { name: "Guides" },
-    { name: "Videos" },
-    { name: "Webinars" },
-    { name: "White Papers" }
+    { name: "Technology" },
+    { name: "Logistics" },
+    { name: "Analytics" },
+    { name: "Infrastructure" }
   ];
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -92,7 +69,9 @@ function CaseStudiesFilter() {
     async function fetchData() {
       setIsLoading(true);
       const apiData = await getAllCaseStudies();
-      const transformedApiData = apiData.map((item) => {
+      // Public site shows published work only — draft/scheduled/completed stay internal.
+      const activeOnly = apiData.filter((item) => item.status === "active");
+      const transformedApiData = activeOnly.map((item) => {
         let description = "";
         if (Array.isArray(item.challenge) && item.challenge.length > 0) {
           description = item.challenge[0]?.text || "";
@@ -117,10 +96,11 @@ function CaseStudiesFilter() {
           "analytics": "Analytics",
           "infrastructure": "Infrastructure"
         };
-        const firstTag = Array.isArray(item.tags) && item.tags.length > 0 ? tagMap[item.tags[0]] || "Technology" : "Technology";
+        const tags = Array.isArray(item.tags) ? item.tags.map((t) => tagMap[t]).filter(Boolean) : [];
         return {
           id: item._id,
           type: "Case Studies",
+          tags,
           title: item.title || "Untitled Case Study",
           date: new Date(item.createdAt).toLocaleDateString("en-US", {
             month: "short",
@@ -128,7 +108,6 @@ function CaseStudiesFilter() {
             year: "numeric"
           }),
           status: statusMap[item.status] || "Active",
-          tag: firstTag,
           description: description || "No description available.",
           fullDescription: fullDescription || "No description available.",
           image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
@@ -143,30 +122,22 @@ function CaseStudiesFilter() {
   const filteredCards = useMemo(() => {
     let cards = apiCaseStudies;
     if (activeTab !== "All") {
-      cards = cards.filter((r) => r.type === activeTab);
+      cards = cards.filter((r) => r.tags.includes(activeTab));
     }
     if (searchQuery) {
       cards = cards.filter(
         (r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    if (statusFilter !== "All Status") {
-      cards = cards.filter((r) => r.status === statusFilter);
-    }
-    if (tagFilter !== "Filter by tag") {
-      cards = cards.filter((r) => r.tag === tagFilter);
-    }
     return cards;
-  }, [apiCaseStudies, activeTab, searchQuery, statusFilter, tagFilter]);
+  }, [apiCaseStudies, activeTab, searchQuery]);
   const handleReset = () => {
     setSearchQuery("");
-    setStatusFilter("All Status");
-    setTagFilter("Filter by tag");
     setCurrentPage(1);
   };
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, searchQuery, statusFilter, tagFilter]);
+  }, [activeTab, searchQuery]);
   const totalPages = Math.ceil(filteredCards.length / ITEMS_PER_PAGE);
   const paginatedCards = filteredCards.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
   const [modalCard, setModalCard] = useState(null);
@@ -228,9 +199,9 @@ function CaseStudiesFilter() {
   })}
         </div>
 
-        <div className="flex justify-center w-full mb-12">
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full max-w-7xl">
-            <div className="relative w-full md:w-auto md:flex-grow md:max-w-[400px]">
+        <div className="max-w-7xl mx-auto mb-12">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="relative flex-1 min-w-0">
               <HiMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
     type="text"
@@ -242,74 +213,27 @@ function CaseStudiesFilter() {
   />
             </div>
 
-          <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto md:flex-1">
-            <div className="relative" ref={statusRef}>
-              <button
-    type="button"
-    onClick={() => setStatusOpen((v) => !v)}
-    className="w-auto min-w-[95px] md:min-w-[140px] flex items-center justify-between gap-1.5 md:gap-2 bg-white px-2.5 md:px-4 py-2 md:py-2.5 rounded-lg text-[12px] md:text-[14px] font-bold cursor-pointer outline-none shadow-sm hover:shadow-md transition-shadow"
-    style={{ fontFamily: FONTS.openSans, color: formalColor }}
-  >
-                {statusFilter}
-                <HiChevronDown className={`text-gray-400 w-4 h-4 transition-transform ${statusOpen ? "rotate-180" : ""}`} />
-              </button>
-              {statusOpen && <div className="absolute z-20 top-full mt-2 w-full min-w-[160px] bg-white rounded-xl shadow-lg overflow-hidden py-1">
-                  {statusOptions.map((option) => <button
-    key={option}
-    type="button"
-    onClick={() => {
-      setStatusFilter(option);
-      setStatusOpen(false);
-    }}
-    className={`w-full text-left px-4 py-2.5 text-[14px] font-bold transition-colors ${statusFilter === option ? "bg-gray-100 text-black" : "text-gray-600 hover:bg-gray-50"}`}
-    style={{ fontFamily: FONTS.openSans }}
-  >
-                      {option}
-                    </button>)}
-                </div>}
-            </div>
-
-            <div className="relative" ref={tagRef}>
-              <button
-    type="button"
-    onClick={() => setTagOpen((v) => !v)}
-    className="w-auto min-w-[105px] md:min-w-[160px] flex items-center justify-between gap-1.5 md:gap-2 bg-white px-2.5 md:px-4 py-2 md:py-2.5 rounded-lg text-[12px] md:text-[14px] font-bold cursor-pointer outline-none shadow-sm hover:shadow-md transition-shadow"
-    style={{ fontFamily: FONTS.openSans, color: formalColor }}
-  >
-                {tagFilter}
-                <HiChevronDown className={`text-gray-400 w-4 h-4 transition-transform ${tagOpen ? "rotate-180" : ""}`} />
-              </button>
-              {tagOpen && <div className="absolute z-20 top-full mt-2 w-full min-w-[180px] bg-white rounded-xl shadow-lg overflow-hidden py-1">
-                  {tagOptions.map((option) => <button
-    key={option}
-    type="button"
-    onClick={() => {
-      setTagFilter(option);
-      setTagOpen(false);
-    }}
-    className={`w-full text-left px-4 py-2.5 text-[14px] font-bold transition-colors ${tagFilter === option ? "bg-gray-100 text-black" : "text-gray-600 hover:bg-gray-50"}`}
-    style={{ fontFamily: FONTS.openSans }}
-  >
-                      {option}
-                    </button>)}
-                </div>}
-            </div>
-
             {hasActiveFilters && <button
     onClick={handleReset}
     title="Clear filters"
-    className="flex items-center gap-2 text-[12px] md:text-[14px] font-bold bg-white border border-red-500 text-red-500 hover:bg-red-50 transition-colors p-2 md:px-3 md:py-2.5 rounded-lg whitespace-nowrap"
+    className="flex-shrink-0 flex items-center gap-2 text-[12px] md:text-[14px] font-bold bg-white border border-red-500 text-red-500 hover:bg-red-50 transition-colors p-2 md:px-3 md:py-2.5 rounded-lg whitespace-nowrap"
     style={{ fontFamily: FONTS.openSans }}
   >
                 <HiXMark className="w-4 h-4" />
                 <span className="hidden md:inline">Clear</span>
               </button>}
 
-            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100 ml-auto">
+            {!isLoading && <span
+    className="flex-shrink-0 hidden sm:block text-[12px] md:text-[13px] font-semibold text-gray-400 whitespace-nowrap"
+    style={{ fontFamily: FONTS.openSans }}
+  >
+                {filteredCards.length} {filteredCards.length === 1 ? "result" : "results"}
+              </span>}
+
+            <div className="flex-shrink-0 flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
               <button onClick={() => setViewMode("list")} className={`p-1.5 md:p-2 rounded-md transition-all ${viewMode === "list" ? "bg-white shadow-sm text-gray-700" : "text-gray-400"}`}><HiListBullet className="w-4 h-4 md:w-5 md:h-5" /></button>
               <button onClick={() => setViewMode("grid")} className={`p-1.5 md:p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-white shadow-sm text-gray-700" : "text-gray-400"}`}><HiSquares2X2 className="w-4 h-4 md:w-5 md:h-5" /></button>
             </div>
-          </div>
           </div>
         </div>
 
@@ -317,7 +241,7 @@ function CaseStudiesFilter() {
             <p className="text-gray-400 text-lg">Loading case studies...</p>
           </div>}
 
-        {!isLoading && <div className={`max-w-7xl mx-auto ${viewMode === "grid" ? "grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6 justify-items-center" : "flex flex-col gap-6 items-center"}`}>
+        {!isLoading && <div className={`max-w-7xl mx-auto ${viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 justify-items-start" : "flex flex-col gap-6 items-center"}`}>
             {paginatedCards.length > 0 ? paginatedCards.map((card, index) => {
     if (viewMode === "grid") {
       return <div
@@ -340,16 +264,13 @@ function CaseStudiesFilter() {
         className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-[#800000] px-2 py-0.5 md:px-3 md:py-1 rounded-lg text-[8px] md:text-[9px] font-bold uppercase tracking-widest shadow-md"
         style={{ fontFamily: FONTS.openSans }}
       >
-                          {card.type}
+                          {card.tags[0] || card.type}
                         </span>
                       </div>
 
                       <div className="px-4 md:px-6 pt-3 md:pt-4 pb-3 md:pb-5 flex flex-col flex-grow">
                         <p className="text-gray-400 text-[9px] md:text-[10px] font-normal mb-1.5 uppercase tracking-widest flex flex-wrap items-center gap-x-1.5 gap-y-0.5" style={{ fontFamily: FONTS.rubik }}>
                           <span className="whitespace-nowrap">{card.date}</span>
-                          <span className={`px-1.5 py-0.5 rounded font-semibold ${card.status === "Active" ? "bg-green-100 text-green-700" : card.status === "Completed" ? "bg-blue-100 text-blue-700" : card.status === "Draft" ? "bg-gray-100 text-gray-700" : "bg-orange-100 text-orange-700"}`}>
-                            {card.status}
-                          </span>
                         </p>
 
                         <h4
@@ -398,7 +319,7 @@ function CaseStudiesFilter() {
       className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/90 text-gray-800 text-[10px] md:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-full shadow-sm hidden md:block"
       style={{ fontFamily: FONTS.openSans }}
     >
-                        {card.type}
+                        {card.tags[0] || card.type}
                       </span>
                     </div>
 
@@ -408,9 +329,6 @@ function CaseStudiesFilter() {
                             <div className="min-w-0">
                               <p className="text-gray-400 text-[10px] md:text-[11px] font-normal mb-0.5 md:mb-1 uppercase tracking-wider flex flex-wrap items-center gap-x-1 md:gap-x-1.5 gap-y-0.5" style={{ fontFamily: FONTS.rubik }}>
                                 <span className="whitespace-nowrap">{card.date}</span>
-                                <span className={`px-1 md:px-1.5 py-0.5 rounded font-semibold ${card.status === "Active" ? "bg-green-100 text-green-700" : card.status === "Completed" ? "bg-blue-100 text-blue-700" : card.status === "Draft" ? "bg-gray-100 text-gray-700" : "bg-orange-100 text-orange-700"}`}>
-                                  {card.status}
-                                </span>
                               </p>
                               <h4
       onClick={() => setModalCard(card)}
@@ -501,18 +419,13 @@ function CaseStudiesFilter() {
     className="absolute top-3 left-3 bg-white/90 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm"
     style={{ fontFamily: FONTS.openSans, color: "#282828" }}
   >
-                {modalCard.type}
+                {modalCard.tags[0] || modalCard.type}
               </span>
             </div>
 
             <div className="flex flex-col flex-1 min-h-0 px-5 pt-4 pb-5">
               <p className="text-gray-400 text-[11px] font-normal mb-2 uppercase tracking-wider flex items-center gap-1.5 flex-shrink-0" style={{ fontFamily: FONTS.rubik }}>
                 <span>{modalCard.date}</span>
-                <span
-    className={`px-1.5 py-0.5 rounded font-semibold ${modalCard.status === "Active" ? "bg-green-100 text-green-700" : modalCard.status === "Completed" ? "bg-blue-100 text-blue-700" : modalCard.status === "Draft" ? "bg-gray-100 text-gray-700" : "bg-orange-100 text-orange-700"}`}
-  >
-                  {modalCard.status}
-                </span>
               </p>
               <h4 className="text-[20px] font-bold text-[#282828] leading-tight mb-3 flex-shrink-0" style={{ fontFamily: FONTS.poppins }}>
                 {modalCard.title}
