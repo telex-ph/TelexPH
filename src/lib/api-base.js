@@ -1,5 +1,7 @@
 function getApiBaseUrl() {
-  return "/api";
+  // Absolute URL in production (the backend is a separate deploy); the bare
+  // "/api" fallback keeps the Vite dev proxy working locally.
+  return import.meta.env.VITE_API_URL || "/api";
 }
 function getAdminAuthenticateUrl() {
   return `${getApiBaseUrl()}/auth/authenticate`;

@@ -1,1 +1,0 @@
-import{j as t}from"./charts-CZnqqKLy.js";import{O as e}from"./react-D15L_eJl.js";function n(){return t.jsx("section",{className:"min-h-screen bg-white font-poppins antialiased text-black",children:t.jsx(e,{})})}export{n as default};
