@@ -1,0 +1,1 @@
+import{j as t}from"./charts-CZnqqKLy.js";import{D as r}from"./Dashboard-Bn_47nNd.js";import{L as o}from"./LoginWelcomeGate-B_e3PhRX.js";import"./react-D15L_eJl.js";import"./index-WTr94d4F.js";import"./pdf-ckwbz45p.js";function p(){return t.jsxs(t.Fragment,{children:[t.jsx(o,{portalLabel:"Virtual Assistant",accent:"#800000"}),t.jsx(r,{})]})}export{p as default};
