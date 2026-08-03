@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
+  import.meta.env.VITE_API_URL || "/api";
 async function getAllCaseStudies() {
   const response = await fetch(`${API_BASE_URL}/casestudies`);
   if (!response.ok) throw new Error("Failed to fetch case studies");

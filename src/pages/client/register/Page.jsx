@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+  import.meta.env.VITE_API_ORIGIN || "/api";
 function ClientRegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

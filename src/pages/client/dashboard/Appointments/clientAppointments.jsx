@@ -27,7 +27,7 @@ const MapPinIco = () => <Ico d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" 
 const SearchIco = () => <Ico d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" size={13} sw={1.5} />;
 const EmptyIco = () => <Ico d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" size={38} sw={1} />;
 const API_BASE =
-  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
+  import.meta.env.VITE_API_URL || "/api";
 const STATUS_CONFIG = {
   confirmed: { label: "Confirmed", bg: "#fff5f5", color: "#800000", dot: "#800000" },
   showed: { label: "Completed", bg: "#f5f2f2", color: "#4a0000", dot: "#4a0000" },

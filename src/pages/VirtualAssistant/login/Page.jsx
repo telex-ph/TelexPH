@@ -6,7 +6,7 @@ import { Eye, EyeOff, Loader2, Activity, Lock, Shield, Mail } from "lucide-react
 import TurnstileWidget from "@/components/Turnstile/TurnstileWidget";
 import WelcomeSlideshow from "./WelcomeSlideshow";
 const API_BASE =
-  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
+  import.meta.env.VITE_API_URL || "/api";
 const STATS = [
   { num: "2,400+", lbl: "Active VAs" },
   { num: "98%", lbl: "Satisfaction" },

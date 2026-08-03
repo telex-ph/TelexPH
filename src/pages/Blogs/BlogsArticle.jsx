@@ -4,7 +4,7 @@ import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
 
 const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+  import.meta.env.VITE_API_ORIGIN || "/api";
 const T = {
   primary: "#a10000",
   primaryDark: "#7a0000",

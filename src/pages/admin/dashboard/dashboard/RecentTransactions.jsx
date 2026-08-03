@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useDashboardTheme } from "./useDashboardTheme";
 
 const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+  import.meta.env.VITE_API_ORIGIN || "/api";
 function formatAppointmentDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });

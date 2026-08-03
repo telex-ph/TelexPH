@@ -154,7 +154,7 @@ function SaveBtn({ onClick, saved }) {
     </button>;
 }
 const API_BASE =
-  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
+  import.meta.env.VITE_API_URL || "/api";
 function AccountSettings() {
   const rootRef = useRef(null);
   const [bp, setBp] = useState(null);
