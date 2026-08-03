@@ -14,3 +14,11 @@ variants: 0 written, 683 up-to-date, 34.0 MB total
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
 [2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m11:39:28 AM[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/activity-logs/unread-count[39m
+Error: connect ECONNREFUSED 127.0.0.1:5000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2m11:39:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Home/Navbar/MobileNav.jsx, /src/globals.css[22m
+[2m11:39:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Services/Services.jsx, /src/globals.css[22m
+[2m11:39:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Home/Navbar/Nav.jsx, /src/globals.css[22m
+[2m11:39:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/About/Team.jsx[22m
+[2m11:39:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/pages/Services/ServiceFeatures.jsx[22m
