@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
@@ -914,7 +914,7 @@ function CoverPhotoUploader({
     className={`text-[10px] ${isdarkmode ? "text-gray-600" : "text-gray-400"}`}
     style={{ fontFamily: "'Poppins', sans-serif" }}
   >
-            PNG, JPG, WEBP Â· Max 5MB
+            PNG, JPG, WEBP · Max 5MB
           </p>
         </div>}
 
@@ -981,7 +981,7 @@ function AddServiceModal({
       if (formData.inactivePhotoFile) fd.append("inactivePhoto", formData.inactivePhotoFile);
       const response = await fetch(`${API_BASE}/services`, {
         method: "POST",
-        // âš ï¸ Do NOT set Content-Type header â€” browser sets it automatically with boundary for FormData
+        // âš ï¸ Do NOT set Content-Type header — browser sets it automatically with boundary for FormData
         credentials: "include",
         body: fd
       });
@@ -1029,7 +1029,7 @@ function AddServiceModal({
           {error && <p className="text-[10px] text-red-500 bg-red-500/10 p-2 rounded">{error}</p>}
 
           {
-    /* Cover photo â€” FIX: removed redundant double-border wrapper */
+    /* Cover photo — FIX: removed redundant double-border wrapper */
   }
           <div>
             <label className={getLabelCls(isdarkmode)}>Cover Photo (optional)</label>
@@ -1158,7 +1158,7 @@ function EditServiceModal({
         name: service.name ?? "",
         description: service.description ?? "",
         badge: service.badge ?? "",
-        // FIX: coerce undefined â†’ null
+        // FIX: coerce undefined → null
         coverPhoto: service.coverPhoto ?? null,
         inactivePhoto: service.inactivePhoto ?? null,
         coverPhotoFile: null,
@@ -1190,7 +1190,7 @@ function EditServiceModal({
       }
       const response = await fetch(`${API_BASE}/services/${service._id}`, {
         method: "PATCH",
-        // âš ï¸ Do NOT set Content-Type header â€” browser sets it automatically with boundary for FormData
+        // âš ï¸ Do NOT set Content-Type header — browser sets it automatically with boundary for FormData
         credentials: "include",
         body: fd
       });
@@ -1265,7 +1265,7 @@ function EditServiceModal({
           {error && <p className="text-[10px] text-red-500 bg-red-500/10 p-2 rounded">{error}</p>}
 
           {
-    /* Cover photo â€” FIX: removed redundant double-border wrapper */
+    /* Cover photo — FIX: removed redundant double-border wrapper */
   }
           <div>
             <label className={getLabelCls(isdarkmode)}>Cover Photo (optional)</label>
@@ -1531,7 +1531,7 @@ function ListServices() {
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
-        // âœ… No background â€” inherits layout bg
+        // âœ… No background — inherits layout bg
         fontFamily: "'Poppins', sans-serif"
       }}
     >
@@ -1608,7 +1608,7 @@ function ListServices() {
     flexShrink: 0
   });
   return (
-    // âœ… FIX: Removed background: pageBg â€” now inherits layout bg, matching Archived Content
+    // âœ… FIX: Removed background: pageBg — now inherits layout bg, matching Archived Content
     <div style={{ minHeight: "100vh", fontFamily: "'Poppins', sans-serif" }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
@@ -1855,14 +1855,14 @@ function ListServices() {
         fontWeight: 400
       }}
     >
-              <option value="alpha-asc">Name A â†’ Z</option>
-              <option value="alpha-desc">Name Z â†’ A</option>
+              <option value="alpha-asc">Name A → Z</option>
+              <option value="alpha-desc">Name Z → A</option>
               <option value="date-newest">Newest First</option>
               <option value="date-oldest">Oldest First</option>
             </select>
           </div>
           {
-      /* Mobile view toggle â€” inside sort row */
+      /* Mobile view toggle — inside sort row */
     }
           {isMobile && <div
       style={{
@@ -2028,7 +2028,7 @@ function ListServices() {
         }}
       >
                 {
-        /* â”€â”€ TOP BANNER â€” flush edge-to-edge, no white gaps â”€â”€ */
+        /* â”€â”€ TOP BANNER — flush edge-to-edge, no white gaps â”€â”€ */
       }
                 <div
         style={{
@@ -2054,7 +2054,7 @@ function ListServices() {
       />
 
                   {
-        /* Icon â€” bottom-left */
+        /* Icon — bottom-left */
       }
                   <div
         style={{
@@ -2069,7 +2069,7 @@ function ListServices() {
                   </div>
 
                   {
-        /* Badge + Edit â€” top-right */
+        /* Badge + Edit — top-right */
       }
                   <div
         style={{
@@ -2223,7 +2223,7 @@ function ListServices() {
     }
         {filtered.length > 0 && viewmode === "list" && <div style={{ ...cardStyle, overflow: "hidden" }}>
             {
-      /* Table Header â€” desktop only */
+      /* Table Header — desktop only */
     }
             {!isMobile && <div
       style={{
@@ -2251,7 +2251,7 @@ function ListServices() {
       /* Rows */
     }
             {filtered.map((service, idx) => isMobile ? (
-      /* â”€â”€ MOBILE LIST ROW â€” stacked card style â”€â”€ */
+      /* â”€â”€ MOBILE LIST ROW — stacked card style â”€â”€ */
       <div
         key={service._id}
         className="svc-row"

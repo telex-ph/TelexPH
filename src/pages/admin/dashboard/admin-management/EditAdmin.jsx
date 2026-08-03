@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function EditAdmin({ admin, onClose, onSave }) {
@@ -140,7 +140,7 @@ function EditAdmin({ admin, onClose, onSave }) {
   };
   return <>
       {
-    /* â”€â”€ Global styles â€” identical to ActivityLogs â”€â”€ */
+    /* â”€â”€ Global styles — identical to ActivityLogs â”€â”€ */
   }
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
@@ -193,7 +193,7 @@ function EditAdmin({ admin, onClose, onSave }) {
   }
               <div style={{ padding: "18px 24px", borderBottom: `1px solid ${borderColor}` }}>
                 <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Profile Picture</p>
-                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Optional â€” JPG, PNG, WEBP</p>
+                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Optional — JPG, PNG, WEBP</p>
               </div>
 
               <div style={{ padding: "20px" }}>
@@ -307,7 +307,7 @@ function EditAdmin({ admin, onClose, onSave }) {
                 </div>
 
                 {
-    /* Department pills â€” same as ActivityLogs "Filter by Action" */
+    /* Department pills — same as ActivityLogs "Filter by Action" */
   }
                 <div style={{ padding: "18px 24px", borderBottom: `1px solid ${borderColor}` }}>
                   <p style={{ fontSize: 11, fontWeight: 500, color: textMuted, margin: "0 0 10px", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Select Department</p>
@@ -332,7 +332,7 @@ function EditAdmin({ admin, onClose, onSave }) {
               </div>
 
               {
-    /* â”€â”€ Submit footer â€” same as ActivityLogs pagination footer â”€â”€ */
+    /* â”€â”€ Submit footer — same as ActivityLogs pagination footer â”€â”€ */
   }
               <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
                 <div style={{ padding: "14px 24px", background: subtleBg, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -395,7 +395,7 @@ function EditAdmin({ admin, onClose, onSave }) {
               </div>
 
               {
-    /* Summary table â€” same row/col pattern as ActivityLogs */
+    /* Summary table — same row/col pattern as ActivityLogs */
   }
               <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, marginBottom: 24, overflow: "hidden" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "110px 1fr", background: isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)", borderBottom: `1px solid ${borderColor}` }}>

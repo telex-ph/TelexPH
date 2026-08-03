@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function UserManagement() {
@@ -390,7 +390,7 @@ function UserManagement() {
             </div>
 
             {
-    /* Filter controls â€” Status + Sort + Toggle */
+    /* Filter controls — Status + Sort + Toggle */
   }
             <div className="um-filter-controls" style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
               {
@@ -547,7 +547,7 @@ function UserManagement() {
               </div>
 
               {
-    /* Mobile rows â€” hidden on desktop via CSS, shown on mobile via media query */
+    /* Mobile rows — hidden on desktop via CSS, shown on mobile via media query */
   }
               {vas.map((va, i) => <div
     key={`mob-${va._id}`}

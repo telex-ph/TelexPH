@@ -1,26 +1,26 @@
-﻿
+
 import { useState, useEffect } from "react";
 import EditBlogs from "./EditBlogs";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const STAT_CARD_IMAGES = [
   "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=500&q=80&fit=crop",
-  // Total blogs  â€” open notebook
+  // Total blogs  — open notebook
   "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=500&q=80&fit=crop",
-  // Published    â€” laptop writing
+  // Published    — laptop writing
   "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=500&q=80&fit=crop",
-  // Draft        â€” pen + paper
+  // Draft        — pen + paper
   "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=500&q=80&fit=crop"
-  // Scheduled    â€” planner/calendar
+  // Scheduled    — planner/calendar
 ];
 const STAT_CARD_COLORS = [
   "#1e6e4a",
-  // Total blogs  â€” green
+  // Total blogs  — green
   "#8b0f0f",
-  // Published    â€” deep red
+  // Published    — deep red
   "#92580a",
-  // Draft        â€” amber
+  // Draft        — amber
   "#103f9e"
-  // Scheduled    â€” blue
+  // Scheduled    — blue
 ];
 function ListBlogs() {
   const [blogs, setblogs] = useState([]);
@@ -374,7 +374,7 @@ function ListBlogs() {
     }
                 <div className="sic-photo" style={{ backgroundImage: `url(${STAT_CARD_IMAGES[i]})` }} />
                 {
-      /* Gradient: solid left â†’ transparent right (shows photo on right side) */
+      /* Gradient: solid left → transparent right (shows photo on right side) */
     }
                 <div className="sic-overlay" style={{
       background: `linear-gradient(to right,
@@ -543,7 +543,7 @@ function ListBlogs() {
               <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-red-900 border-t-transparent" />
               <p className={`mt-5 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 12, fontWeight: 400 }}>Loading blogs...</p>
             </div> : currentblogs.length === 0 ? <div className={`rounded-[2rem] border p-14 sm:p-20 text-center transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-              <div className="text-5xl sm:text-6xl mb-4">ðŸ“</div>
+              <div className="text-5xl sm:text-6xl mb-4">📝</div>
               <p className={`mb-2 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 13, fontWeight: 500 }}>No blogs found</p>
               <p className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>Try adjusting your filters or create a new blog post</p>
             </div> : viewmode === "grid" ? (
@@ -718,7 +718,7 @@ function ListBlogs() {
 
               {totalPages > 1 && <div className={`px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
                   <p className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 10, fontWeight: 400 }}>
-                    Showing <strong>{indexOfFirstCard + 1}</strong>â€“<strong>{Math.min(indexOfLastCard, filteredblogs.length)}</strong> of <strong>{filteredblogs.length}</strong>
+                    Showing <strong>{indexOfFirstCard + 1}</strong>–<strong>{Math.min(indexOfLastCard, filteredblogs.length)}</strong> of <strong>{filteredblogs.length}</strong>
                   </p>
                   <div className="flex items-center gap-2">
                     <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`} style={{ fontSize: 10, fontWeight: 500 }}>
@@ -758,7 +758,7 @@ function ListBlogs() {
       {blogtoarchive && <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-8">
           <div className={`rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-sm sm:max-w-md shadow-2xl transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a]" : "bg-white"}`}>
             <div className="p-8 sm:p-12 text-center">
-              <div className="text-5xl sm:text-6xl mb-4">ðŸ“¦</div>
+              <div className="text-5xl sm:text-6xl mb-4">📦</div>
               <h3 className={`mb-2 transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 16, fontWeight: 600 }}>Confirm Archive</h3>
               <p className={`mb-6 sm:mb-8 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 11, fontWeight: 400 }}>
                 Are you sure you want to archive this blog? It will be hidden from the public but can be recovered later.
@@ -780,7 +780,7 @@ function ListBlogs() {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`px-2.5 py-1 rounded-full ${getstatusstyles(viewingblog.status)}`} style={{ fontSize: 9, fontWeight: 500 }}>{viewingblog.status}</span>
                 <span className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 10, fontWeight: 400 }}>{viewingblog.mainCategory}</span>
-                {viewingblog.subcategory && <span className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: 400 }}>â€¢ {viewingblog.subcategory}</span>}
+                {viewingblog.subcategory && <span className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: 400 }}>• {viewingblog.subcategory}</span>}
               </div>
               <button onClick={closeviewmodal} className={`p-2 rounded-full transition-colors shrink-0 ${isdarkmode ? "text-gray-400 hover:text-gray-300 hover:bg-white/5" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

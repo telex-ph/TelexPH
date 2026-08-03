@@ -238,7 +238,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
       setMounted(false);
       setLikeCount(post.likeCount || 0);
       checkLikeStatus();
-      fetch(`${API_BASE}/api/blogs/${post._id}`).catch(() => {
+      fetch(`${API_BASE}/blogs/${post._id}`).catch(() => {
       });
       const timer = setTimeout(() => {
         setIsLoading(false);
@@ -249,7 +249,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
   }, [post?._id]);
   const checkLikeStatus = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/blogs/${post._id}/like-status`);
+      const res = await fetch(`${API_BASE}/blogs/${post._id}/like-status`);
       const data = await res.json();
       setHasLiked(data.hasLiked);
       setLikeCount(data.likeCount);
@@ -260,7 +260,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
     if (isLiking) return;
     setIsLiking(true);
     try {
-      const res = await fetch(`${API_BASE}/api/blogs/${post._id}/like`, { method: hasLiked ? "DELETE" : "POST" });
+      const res = await fetch(`${API_BASE}/blogs/${post._id}/like`, { method: hasLiked ? "DELETE" : "POST" });
       const data = await res.json();
       if (res.ok) {
         setLikeCount(data.likeCount);

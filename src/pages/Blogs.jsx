@@ -26,7 +26,7 @@ function BlogsPage() {
     const getBlogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE}/api/blogs`);
+        const response = await fetch(`${API_BASE}/blogs`);
         const data = await response.json();
         const publishedOnly = data.filter((b) => b.status === "published");
         setBlogs(publishedOnly);

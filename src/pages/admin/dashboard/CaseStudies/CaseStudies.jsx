@@ -1,4 +1,4 @@
-﻿
+
 import React, { useState, useRef, useEffect } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
@@ -18,7 +18,7 @@ const transformBackendRecord = (item) => ({
   start: item.startDate ? new Date(item.startDate).toISOString().split("T")[0] : "",
   end: item.endDate ? new Date(item.endDate).toISOString().split("T")[0] : "",
   cover: item.cover || "",
-  // challenge and solution are arrays of { title, text } â€” extract the text
+  // challenge and solution are arrays of { title, text } — extract the text
   challenge: Array.isArray(item.challenge) ? item.challenge.map((c) => c.text || "").join("\n\n") : item.challenge || "",
   solution: Array.isArray(item.solution) ? item.solution.map((s) => s.text || "").join("\n\n") : item.solution || "",
   sections: Array.isArray(item.sections) ? item.sections.map((s) => ({
@@ -233,10 +233,10 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
   }
           <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
             {data.start && <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-                ðŸ“… Started: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.start}</strong>
+                📅 Started: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.start}</strong>
               </p>}
             {data.end && <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-                ðŸ Ended: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.end}</strong>
+                🏁 Ended: <strong style={{ color: textSecondary, fontFamily: "'Poppins', sans-serif" }}>{data.end}</strong>
               </p>}
           </div>
 
@@ -334,7 +334,7 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
     return <div key={r._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 13px", borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
                       <div>
                         <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: "0 0 2px", fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
-                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} Â· {formatAuthors(r.authors)}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {formatAuthors(r.authors)}</p>
                       </div>
                       <span style={{ fontSize: 9, fontWeight: 600, padding: "3px 10px", borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                     </div>;
@@ -784,7 +784,7 @@ function CaseStudies() {
             </div>
             {r.subtitle && <p style={{ fontSize: 10, color: textMuted, margin: "0 0 5px", fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
             <p style={{ fontSize: 10, color: textMuted, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif" }}>By <strong style={{ color: textSecondary }}>{formatAuthors(r.authors)}</strong></p>
-            {r.start && <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>ðŸ“… {r.start}</p>}
+            {r.start && <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>📅 {r.start}</p>}
             {r.tags.length > 0 && <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 7 }}>
                 {r.tags.slice(0, 3).map((t) => <span key={t} style={{ fontSize: 8, padding: "2px 6px", borderRadius: 4, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{t}</span>)}
               </div>}
@@ -906,7 +906,7 @@ function CaseStudies() {
                       <svg width="14" height="14" fill="none" stroke="#800000" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     </div>
                     <p style={{ fontSize: 10, color: textSecondary, margin: 0, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Click to upload</p>
-                    <p style={{ fontSize: 9, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>PNG, JPG, WebP Â· 10MB</p>
+                    <p style={{ fontSize: 9, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>PNG, JPG, WebP · 10MB</p>
                   </>}
               </div>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files?.[0])} />
@@ -1112,7 +1112,7 @@ function CaseStudies() {
                           <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
                           <span style={{ fontSize: 8, fontWeight: 600, padding: "2px 7px", borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: "nowrap", flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                         </div>
-                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} Â· {formatAuthors(r.authors)}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{r.start} · {formatAuthors(r.authors)}</p>
                       </div>;
     })}
                 </div>
@@ -1264,7 +1264,7 @@ function CaseStudies() {
                           <span style={{ fontSize: 8, fontWeight: 600, padding: "2px 8px", borderRadius: 20, background: st.bg, color: st.color, border: st.border, whiteSpace: "nowrap", flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                         </div>
                         {r.subtitle && <p style={{ fontSize: 11, color: textMuted, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif" }}>{r.subtitle}</p>}
-                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By {formatAuthors(r.authors)} Â· {r.start}</p>
+                        <p style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>By {formatAuthors(r.authors)} · {r.start}</p>
                       </div>;
     });
   })()}
@@ -1291,8 +1291,8 @@ function CaseStudies() {
               <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={inp({ width: "auto", padding: "7px 10px", fontSize: 11 })}>
                 <option value="date-newest">Newest first</option>
                 <option value="date-oldest">Oldest first</option>
-                <option value="alpha-asc">Name A â†’ Z</option>
-                <option value="alpha-desc">Name Z â†’ A</option>
+                <option value="alpha-asc">Name A → Z</option>
+                <option value="alpha-desc">Name Z → A</option>
               </select>
             </div>
             <div style={{ width: 1, height: 20, background: borderColor }} />

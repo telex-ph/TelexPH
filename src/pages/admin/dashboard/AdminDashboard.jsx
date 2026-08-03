@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -14,27 +14,27 @@ import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import api from "@/lib/api/axios";
 const STAT_CARD_IMAGES = [
   "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80&fit=crop",
-  // Total views  â€” analytics
+  // Total views  — analytics
   "https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&q=80&fit=crop",
-  // Today       â€” office/morning
+  // Today       — office/morning
   "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&q=80&fit=crop",
-  // This week   â€” planning/desk
+  // This week   — planning/desk
   "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=80&fit=crop",
-  // This month  â€” growth chart
+  // This month  — growth chart
   "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=500&q=80&fit=crop"
-  // This year   â€” cityscape
+  // This year   — cityscape
 ];
 const STAT_CARD_COLORS = [
   "#1e6e4a",
-  // Total views  â€” green
+  // Total views  — green
   "#8b0f0f",
-  // Today        â€” deep red
+  // Today        — deep red
   "#103f9e",
-  // This week    â€” blue
+  // This week    — blue
   "#2d5a3d",
-  // This month   â€” dark green
+  // This month   — dark green
   "#1e3a5a"
-  // This year    â€” navy
+  // This year    — navy
 ];
 function AdminPage() {
   const pathname = usePathname();
@@ -402,10 +402,10 @@ function AdminPage() {
 
         {
     /* â”€â”€ Stat Tiles â”€â”€
-          < 480px  â†’ 2 cols  (iPhone SE, Galaxy S8+)
-          480â€“639  â†’ 3 cols  (iPhone XR/12/14, Pixel 7, Galaxy A51/71, Surface Duo)
-          640â€“1023 â†’ 3 cols  (iPad Mini, iPad Air, Surface Pro 7, Nest Hub)
-          1024+    â†’ 5 cols  (iPad Pro, Asus Zenbook, Nest Hub Max)
+          < 480px  → 2 cols  (iPhone SE, Galaxy S8+)
+          480–639  → 3 cols  (iPhone XR/12/14, Pixel 7, Galaxy A51/71, Surface Duo)
+          640–1023 → 3 cols  (iPad Mini, iPad Air, Surface Pro 7, Nest Hub)
+          1024+    → 5 cols  (iPad Pro, Asus Zenbook, Nest Hub Max)
     â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto grid grid-cols-2 min-[480px]:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5 lg:gap-3">
@@ -424,7 +424,7 @@ function AdminPage() {
     />
 
                 {
-      /* Gradient overlay: left solid â†’ right transparent */
+      /* Gradient overlay: left solid → right transparent */
     }
                 <div
       className="card-overlay"
@@ -693,7 +693,7 @@ function AdminPage() {
     className={`card-inner rounded-xl border shadow-sm transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
   >
             {
-    /* Chart Header â€” stacks on mobile */
+    /* Chart Header — stacks on mobile */
   }
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
               <div>
@@ -756,7 +756,7 @@ function AdminPage() {
             </div>
 
             {
-    /* Chart â€” height clamps gracefully */
+    /* Chart — height clamps gracefully */
   }
             <div style={{ height: "clamp(180px, 35vw, 280px)", width: "100%" }}>
               <ResponsiveContainer width="100%" height="100%">
