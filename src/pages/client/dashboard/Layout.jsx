@@ -30,7 +30,7 @@ const ProfileIco = () => <Ico d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11
 const CheckIco = () => <Ico d="M20 6L9 17l-5-5" size={12} />;
 const TrashIco = () => <Ico d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" size={12} />;
 const API_BASE =
-  import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
+  import.meta.env.VITE_API_URL || "/api";
 const NAV_GENERAL = [
   { label: "Dashboard", href: "/client/dashboard", icon: <CalIcon /> },
   { label: "Appointments", href: "/client/dashboard/Appointments", icon: <BookingIcon /> },

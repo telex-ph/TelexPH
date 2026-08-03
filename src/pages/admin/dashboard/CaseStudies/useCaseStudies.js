@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentDate, validateScheduleTime as validateTime, filterRecords } from "./helpers";
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 const transformBackendToFrontend = (backendData) => {
   return {
     id: backendData._id || backendData.id,

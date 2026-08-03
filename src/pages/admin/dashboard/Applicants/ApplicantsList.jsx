@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 
 const API_ORIGIN =
-  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+  import.meta.env.VITE_API_ORIGIN || "/api";
 const API_BASE = API_ORIGIN;
 const poppins = {
   fontFamily: "'Poppins', sans-serif",

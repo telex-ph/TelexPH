@@ -1,6 +1,6 @@
 
 const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+  import.meta.env.VITE_API_ORIGIN || "/api";
 
 import React, {
   useState,

@@ -1,6 +1,7 @@
 ﻿
 import { useState, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import api from "@/lib/api/axios";
 function AddAdmin() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -134,17 +135,7 @@ function AddAdmin() {
         password
       };
       if (selectedImage) payload.profilePicture = selectedImage;
-      const API_BASE_URL = import.meta.env.VITE_API_URL || "https://telexph-admin.onrender.com/api";
-      const response = await fetch(`${API_BASE_URL}/users`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create admin");
-      }
+      await api.post("/users", payload);
       setShowConfirmModal(false);
       setShowSuccessModal(true);
       setFirstName("");
@@ -160,7 +151,7 @@ function AddAdmin() {
       if (fileRef.current) fileRef.current.value = "";
       setActiveTab(0);
     } catch (error) {
-      setErrorMessage(error.message || "Failed to create admin. Please try again.");
+      setErrorMessage(error.response?.data?.error || error.message || "Failed to create admin. Please try again.");
       setShowConfirmModal(false);
       setShowErrorModal(true);
     } finally {

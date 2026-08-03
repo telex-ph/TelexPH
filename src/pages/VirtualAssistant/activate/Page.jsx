@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ShieldCheck, Loader2, XCircle } from "lucide-react";
 
 const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "https://telexph-admin.onrender.com";
+  import.meta.env.VITE_API_ORIGIN || "/api";
 function ActivateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
