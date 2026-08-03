@@ -106,33 +106,31 @@ const CustomDropdown = ({ value, onChange, options, placeholder = "Select...", i
         </div>}
     </div>;
 };
-async function callGemini(systemPrompt, userPrompt) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ parts: [{ text: userPrompt }] }]
-      })
-    }
-  );
+async function generateWithGemini(mode, prompt) {
+  const response = await fetch(`${API_BASE}/ai/generate-blog`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mode, prompt })
+  });
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err?.error?.message || "Gemini API error");
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || "Gemini API error");
   }
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return response.json();
 }
 async function generatePollinationsImage(prompt) {
-  const encoded = encodeURIComponent(`${prompt}, professional business blog cover, clean modern design`);
-  const url = `https://image.pollinations.ai/prompt/${encoded}?width=800&height=450&seed=${Date.now()}&nologo=true`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Image generation failed");
-  const blob = await res.blob();
-  const blobUrl = URL.createObjectURL(blob);
+  const response = await fetch(`${API_BASE}/ai/generate-image`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || "Image generation failed");
+  }
+  const { dataUrl: sourceDataUrl } = await response.json();
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -147,7 +145,6 @@ async function generatePollinationsImage(prompt) {
       canvas.height = h;
       const ctx = canvas.getContext("2d");
       if (!ctx) {
-        URL.revokeObjectURL(blobUrl);
         return reject(new Error("Canvas error"));
       }
       ctx.fillStyle = "#fff";
@@ -155,23 +152,22 @@ async function generatePollinationsImage(prompt) {
       ctx.drawImage(img, 0, 0, w, h);
       const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
       canvas.toBlob((b) => {
-        URL.revokeObjectURL(blobUrl);
         if (!b) return reject(new Error("Blob error"));
         resolve({ dataUrl, file: new File([b], "ai-generated.jpg", { type: "image/jpeg" }) });
       }, "image/jpeg", 0.7);
     };
     img.onerror = () => {
-      URL.revokeObjectURL(blobUrl);
       reject(new Error("Image load error"));
     };
-    img.src = blobUrl;
+    img.src = sourceDataUrl;
   });
 }
 const MODAL_CONFIGS = {
-  image: { title: "Generate AI Image", hint: "Enter a topic or description to generate a professional cover image.", placeholder: "e.g., Customer support team in a modern office...", withImageAttach: false },
-  title: { title: "Generate Title", hint: "Enter a topic (or attach an image) to generate a catchy title.", placeholder: "e.g., Best outsourcing practices for e-commerce...", withImageAttach: true },
-  content: { title: "Write Content with AI", hint: "Describe what you want to write about and AI will draft the full content body.", placeholder: "e.g., Write about how BPO helps scale e-commerce businesses...", withImageAttach: true },
-  full: { title: "Generate Full Blog", hint: "Enter a topic and AI will generate the title, description, and all content sections.", placeholder: "e.g., How TelexPH helps startups reduce operational costs...", withImageAttach: false }
+  image: { title: "Generate AI Image", hint: "Enter a topic or description to generate a professional cover image.", placeholder: "e.g., Customer support team in a modern office...", withImageAttach: false, steps: ["Analyzing prompt", "Creating cover image"] },
+  title: { title: "Generate Title", hint: "Enter a topic (or attach an image) to generate a catchy title.", placeholder: "e.g., Best outsourcing practices for e-commerce...", withImageAttach: true, steps: ["Analyzing topic", "Writing title"] },
+  content: { title: "Write Content with AI", hint: "Describe what you want to write about and AI will draft the full content body.", placeholder: "e.g., Write about how BPO helps scale e-commerce businesses...", withImageAttach: true, steps: ["Analyzing topic", "Writing content", "Structuring sections"] },
+  full: { title: "Generate Full Blog", hint: "Enter a content topic and a separate image description — AI will generate the title, description, all content sections, and a matching cover image.", placeholder: "e.g., How TelexPH helps startups reduce operational costs...", withImageAttach: false, steps: ["Analyzing prompts", "Writing content", "Structuring sections", "Creating cover image"] },
+  expand: { title: "Generate Prompt", hint: "Enter a rough idea and AI will expand it into a detailed content prompt and image prompt, ready to use in Generate Full Blog.", placeholder: "e.g., BPO tips for small businesses...", withImageAttach: false, steps: ["Analyzing your idea", "Expanding into prompts"] }
 };
 const TABS = [
   {
@@ -224,8 +220,22 @@ function AddBlogs() {
   const [errorMessage, setErrorMessage] = useState("");
   const [activeModal, setActiveModal] = useState(null);
   const [modalPrompt, setModalPrompt] = useState("");
+  const [modalImagePrompt, setModalImagePrompt] = useState("");
   const [modalAttachedImage, setModalAttachedImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStepIndex, setGenerationStepIndex] = useState(0);
+  const [aiUsage, setAiUsage] = useState(null);
+  React.useEffect(() => {
+    const fetchUsage = () => {
+      fetch(`${API_BASE}/ai/usage`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => data && setAiUsage(data))
+        .catch(() => {});
+    };
+    fetchUsage();
+    const interval = setInterval(fetchUsage, 1e4);
+    return () => clearInterval(interval);
+  }, [isGenerating]);
   const getTotalWordCount = () => {
     let n = (mainContentTitle + " " + mainContentText).split(/\s+/).filter(Boolean).length;
     contentSections.forEach((s) => {
@@ -291,45 +301,37 @@ function AddBlogs() {
   };
   const openModal = (type) => {
     setModalPrompt("");
+    setModalImagePrompt("");
     setModalAttachedImage(null);
     setActiveModal(type);
   };
   const closeModal = () => {
     setActiveModal(null);
     setModalPrompt("");
+    setModalImagePrompt("");
     setModalAttachedImage(null);
   };
   const handleGenerate = async () => {
     if (!modalPrompt.trim()) return;
+    if (activeModal === "full" && !modalImagePrompt.trim()) return;
     setIsGenerating(true);
+    setGenerationStepIndex(0);
     try {
       if (activeModal === "image") {
+        setGenerationStepIndex(1);
         const { dataUrl, file } = await generatePollinationsImage(modalPrompt);
         setSelectedImage(dataUrl);
         actualFileRef.current = file;
         closeModal();
       } else if (activeModal === "title") {
-        const raw = await callGemini(
-          "You are a professional blog title writer for TelexPH, a BPO company. Return ONLY the title text, nothing else. Max 40 characters.",
-          `Write a catchy, professional blog title about: ${modalPrompt}`
-        );
-        setTitle(raw.replace(/^["']|["']$/g, "").trim().slice(0, HEADLINE_MAX));
+        setGenerationStepIndex(1);
+        const { text } = await generateWithGemini("title", modalPrompt);
+        setTitle((text || "").trim().slice(0, HEADLINE_MAX));
         closeModal();
       } else if (activeModal === "content") {
-        const raw = await callGemini(
-          "You are a professional blog content writer for TelexPH, a BPO company. Return ONLY a valid JSON object, no markdown, no backticks.",
-          `Write blog content about: ${modalPrompt}
-Return ONLY JSON:
-{
-  "mainContentTitle": "Title (5-40 chars)",
-  "mainContentText": "Main body, 150+ words",
-  "additionalSections": [
-    { "title": "Section title (5-40 chars)", "content": "Section body 80+ words" },
-    { "title": "Section title (5-40 chars)", "content": "Section body 80+ words" }
-  ]
-}`
-        );
-        const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+        setGenerationStepIndex(1);
+        const { data: parsed } = await generateWithGemini("content", modalPrompt);
+        setGenerationStepIndex(2);
         if (parsed.mainContentTitle) setMainContentTitle(parsed.mainContentTitle.slice(0, HEADLINE_MAX));
         if (parsed.mainContentText) setMainContentText(parsed.mainContentText);
         if (Array.isArray(parsed.additionalSections) && parsed.additionalSections.length > 0) {
@@ -340,22 +342,20 @@ Return ONLY JSON:
         }
         closeModal();
       } else if (activeModal === "full") {
-        const raw = await callGemini(
-          "You are a professional blog writer for TelexPH, a BPO company. Return ONLY a valid JSON object, no markdown, no backticks.",
-          `Write a complete blog post about: ${modalPrompt}
-Return ONLY JSON:
-{
-  "title": "Blog headline (5-40 chars)",
-  "shortDescription": "Summary under 55 chars",
-  "mainContentTitle": "Main section title (5-40 chars)",
-  "mainContentText": "Main body, 150+ words",
-  "additionalSections": [
-    { "title": "Section title (5-40 chars)", "content": "Section body 80+ words" },
-    { "title": "Section title (5-40 chars)", "content": "Section body 80+ words" }
-  ]
-}`
-        );
-        const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+        let contentDone = false;
+        setGenerationStepIndex(1);
+        const [{ data: parsed }, imageResult] = await Promise.all([
+          generateWithGemini("full", modalPrompt).then((r) => {
+            contentDone = true;
+            setGenerationStepIndex(3);
+            return r;
+          }),
+          (async () => {
+            const result = await generatePollinationsImage(modalImagePrompt).catch(() => null);
+            if (contentDone) setGenerationStepIndex(3);
+            return result;
+          })()
+        ]);
         if (parsed.title) setTitle(parsed.title.slice(0, HEADLINE_MAX));
         if (parsed.shortDescription) setShortDescription(parsed.shortDescription.slice(0, SHORT_DESC_MAX));
         if (parsed.mainContentTitle) setMainContentTitle(parsed.mainContentTitle.slice(0, HEADLINE_MAX));
@@ -366,7 +366,17 @@ Return ONLY JSON:
             content: s.content || ""
           })));
         }
+        if (imageResult) {
+          setSelectedImage(imageResult.dataUrl);
+          actualFileRef.current = imageResult.file;
+        }
         closeModal();
+      } else if (activeModal === "expand") {
+        setGenerationStepIndex(1);
+        const { data: parsed } = await generateWithGemini("expand-prompt", modalPrompt);
+        setModalPrompt(parsed.contentPrompt || modalPrompt);
+        setModalImagePrompt(parsed.imagePrompt || "");
+        setActiveModal("full");
       }
     } catch (err) {
       setErrorMessage(err.message || "Generation failed. Please try again.");
@@ -374,6 +384,7 @@ Return ONLY JSON:
       setShowErrorModal(true);
     } finally {
       setIsGenerating(false);
+      setGenerationStepIndex(0);
     }
   };
   const handleFinalConfirm = async () => {
@@ -404,7 +415,7 @@ Return ONLY JSON:
       if (status === "scheduled" && scheduledDate) {
         formData.append("scheduledDate", new Date(scheduledDate).toISOString());
       }
-      const response = await fetch(`${API_BASE}/api/blogs`, { method: "POST", credentials: "include", body: formData });
+      const response = await fetch(`${API_BASE}/blogs`, { method: "POST", credentials: "include", body: formData });
       if (!response.ok) {
         const e = await response.json();
         throw new Error(e.error || "Failed to create blog");
@@ -498,14 +509,38 @@ Return ONLY JSON:
                 Share your insights and expertise with the community
               </p>
             </div>
-            <button
+            <div className="flex items-center gap-3">
+              {aiUsage && <div
+    className={`flex flex-col gap-1 px-3 py-2 rounded-lg border ${isdarkmode ? "border-white/10 bg-[#1a1a1a]" : "border-gray-200 bg-white"}`}
+    title={aiUsage.models.map((m) => `${m.label}: ${m.used}/${m.limit}${m.active ? " (active)" : ""}`).join("\n")}
+  >
+                  {aiUsage.models.map((m) => <div key={m.id} className="flex items-center gap-2">
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : isdarkmode ? "bg-white/15" : "bg-gray-300"}`} />
+                      <span className={`${m.active ? isdarkmode ? "text-gray-200" : "text-gray-800" : isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: m.active ? 600 : 400 }}>
+                        {m.label}
+                      </span>
+                      <span className={isdarkmode ? "text-gray-600" : "text-gray-400"} style={{ fontSize: 10, fontWeight: 400 }}>
+                        {m.used}/{m.limit}
+                      </span>
+                    </div>)}
+                </div>}
+              <button
+    onClick={() => openModal("expand")}
+    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    style={{ fontSize: 11, fontWeight: 500 }}
+  >
+                <SparkleIcon className="w-3.5 h-3.5" />
+                Generate Prompt
+              </button>
+              <button
     onClick={() => openModal("full")}
     className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all shadow-sm"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
-              <LayersIcon className="w-3.5 h-3.5" />
-              Generate Full Blog
-            </button>
+                <LayersIcon className="w-3.5 h-3.5" />
+                Generate Full Blog
+              </button>
+            </div>
           </div>
         </div>
 
@@ -595,7 +630,7 @@ Return ONLY JSON:
             {
     /* Publishing Options â€” Accordion */
   }
-            <div className={sectionCard}>
+            <div className={`${sectionCard} ${publishingOpen ? "!overflow-visible" : ""}`}>
               <button
     type="button"
     onClick={() => setPublishingOpen((prev) => !prev)}
@@ -616,7 +651,7 @@ Return ONLY JSON:
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${publishingOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
+              <div className={`transition-all duration-300 ease-in-out ${publishingOpen ? "max-h-none opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
                 <div className="p-6 space-y-4">
                   <div>
                     <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Status</p>
@@ -648,7 +683,7 @@ Return ONLY JSON:
             {
     /* Categories â€” Accordion */
   }
-            <div className={sectionCard}>
+            <div className={`${sectionCard} ${categoriesOpen ? "!overflow-visible" : ""}`}>
               <button
     type="button"
     onClick={() => setCategoriesOpen((prev) => !prev)}
@@ -669,7 +704,7 @@ Return ONLY JSON:
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${categoriesOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
+              <div className={`transition-all duration-300 ease-in-out ${categoriesOpen ? "max-h-none opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
                 <div className="p-6 space-y-4">
                   <div>
                     <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Main Category</p>
@@ -999,7 +1034,9 @@ Return ONLY JSON:
               {
     /* Prompt */
   }
-              <textarea
+              <div>
+                {activeModal === "full" && <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Content Prompt</p>}
+                <textarea
     value={modalPrompt}
     onChange={(e) => setModalPrompt(e.target.value)}
     placeholder={modalCfg.placeholder}
@@ -1007,6 +1044,21 @@ Return ONLY JSON:
     autoFocus
     className={textareaBase}
   />
+              </div>
+
+              {
+    /* Image Prompt (Generate Full Blog only) */
+  }
+              {activeModal === "full" && <div>
+                  <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Image Prompt</p>
+                  <textarea
+    value={modalImagePrompt}
+    onChange={(e) => setModalImagePrompt(e.target.value)}
+    placeholder="e.g., Modern BPO office with startup team collaborating..."
+    rows={2}
+    className={textareaBase}
+  />
+                </div>}
 
               {
     /* Attach image */
@@ -1021,6 +1073,40 @@ Return ONLY JSON:
                 </button>}
             </div>
 
+            {isGenerating && modalCfg && <div className={`mx-6 mb-4 px-6 py-6 rounded-xl border flex flex-col items-center justify-center gap-1 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
+                <div className="relative w-14 h-14 mb-2">
+                  <svg className="w-14 h-14 animate-spin" style={{ animationDuration: "2s" }} viewBox="0 0 56 56" fill="none">
+                    <circle cx="28" cy="28" r="24" stroke={isdarkmode ? "#ffffff20" : "#00000014"} strokeWidth="4" />
+                    <circle cx="28" cy="28" r="24" stroke="#800000" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <SparkleIcon className={`w-5 h-5 ${isdarkmode ? "text-gray-300" : "text-gray-600"}`} />
+                  </div>
+                </div>
+                <p className={`${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 14, fontWeight: 600 }}>
+                  {modalCfg.steps[generationStepIndex] || "Generating..."}
+                </p>
+                <p className={`mb-3 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                  This usually takes 30-60 seconds.
+                </p>
+                <div className="flex items-center w-full">
+                  {modalCfg.steps.map((step, i) => <React.Fragment key={step}>
+                      {i > 0 && <div className={`flex-1 h-px ${i <= generationStepIndex ? "bg-[#800000]" : isdarkmode ? "bg-white/10" : "bg-gray-200"}`} />}
+                      <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                        <div
+    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${i < generationStepIndex ? "bg-[#800000]" : i === generationStepIndex ? `border-2 border-[#800000] ${isdarkmode ? "bg-[#202020]" : "bg-gray-50"}` : isdarkmode ? "bg-white/10" : "bg-gray-200"}`}
+  >
+                          {i < generationStepIndex ? <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg> : i === generationStepIndex ? <div className="w-2 h-2 rounded-full bg-[#800000]" /> : null}
+                        </div>
+                        <span className={`text-center ${i <= generationStepIndex ? isdarkmode ? "text-gray-300" : "text-gray-700" : isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: i === generationStepIndex ? 600 : 400, maxWidth: 72 }}>
+                          {step}
+                        </span>
+                      </div>
+                    </React.Fragment>)}
+                </div>
+              </div>}
             {
     /* Actions */
   }
@@ -1035,8 +1121,8 @@ Return ONLY JSON:
               </button>
               <button
     onClick={handleGenerate}
-    disabled={isGenerating || !modalPrompt.trim()}
-    className={`flex-1 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all ${isGenerating || !modalPrompt.trim() ? "bg-[#800000]/40 text-white cursor-not-allowed" : "bg-[#800000] text-white hover:bg-[#6a0000]"}`}
+    disabled={isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim())}
+    className={`flex-1 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all ${isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim()) ? "bg-[#800000]/40 text-white cursor-not-allowed" : "bg-[#800000] text-white hover:bg-[#6a0000]"}`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 {isGenerating ? <><Spinner /> Generating...</> : <><SparkleIcon className="w-3.5 h-3.5" /> Generate</>}
