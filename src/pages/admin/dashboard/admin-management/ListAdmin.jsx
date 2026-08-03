@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect } from "react";
 import EditAdmin from "./EditAdmin";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
@@ -226,7 +226,7 @@ function ListAdmin() {
       value: admins.length,
       subtitle: "All accounts",
       overlay: "linear-gradient(135deg, rgba(60,0,0,0.88) 0%, rgba(100,0,0,0.75) 100%)",
-      // Server rack / data center â€” admin panel vibe
+      // Server rack / data center — admin panel vibe
       bg: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=60",
       icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
@@ -248,7 +248,7 @@ function ListAdmin() {
       value: inactiveCount,
       subtitle: "Disabled accounts",
       overlay: "linear-gradient(135deg, rgba(0,25,80,0.90) 0%, rgba(0,40,110,0.78) 100%)",
-      // Lock / security â€” access control vibe
+      // Lock / security — access control vibe
       bg: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&q=60",
       icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -259,7 +259,7 @@ function ListAdmin() {
       value: filteredAdmins.length,
       subtitle: "Current view",
       overlay: "linear-gradient(135deg, rgba(30,20,0,0.90) 0%, rgba(70,45,0,0.80) 100%)",
-      // Analytics / dashboard screen â€” data overview vibe
+      // Analytics / dashboard screen — data overview vibe
       bg: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=60",
       icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -364,7 +364,7 @@ function ListAdmin() {
     alignItems: "center",
     gap: 5
   }}>
-                    <span style={{ fontSize: 16, lineHeight: 1 }}>â€¢</span>
+                    <span style={{ fontSize: 16, lineHeight: 1 }}>•</span>
                     {card.subtitle}
                   </p>
                 </div>
@@ -487,8 +487,8 @@ function ListAdmin() {
     onChange={(e) => setSortBy(e.target.value)}
     style={inp({ padding: "6px 10px", fontSize: 11, cursor: "pointer", minWidth: 130 })}
   >
-                  <option value="Name Aâ†’Z">Name A â†’ Z</option>
-                  <option value="Name Zâ†’A">Name Z â†’ A</option>
+                  <option value="Name A→Z">Name A → Z</option>
+                  <option value="Name Z→A">Name Z → A</option>
                   <option value="Newest">Newest First</option>
                   <option value="Oldest">Oldest First</option>
                 </select>

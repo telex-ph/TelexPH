@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 
@@ -391,7 +391,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
   />
         </svg>
         {
-    /* Center icon â€” next stage icon */
+    /* Center icon — next stage icon */
   }
         <div style={{
     position: "absolute",
@@ -407,7 +407,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
 
       <div style={{ textAlign: "center" }}>
         <p style={{ ...poppins, fontSize: "13px", fontWeight: 600, color: dm ? "#fff" : "#111827", marginBottom: "4px" }}>{msg}</p>
-        <p style={{ ...poppins, fontSize: "11px", color: "#9ca3af" }}>Please waitâ€¦</p>
+        <p style={{ ...poppins, fontSize: "11px", color: "#9ca3af" }}>Please wait…</p>
       </div>
 
       {
@@ -867,7 +867,7 @@ function ApplicantModal({
   />
                       </svg>
                     </span>
-                    <span>Processingâ€¦</span>
+                    <span>Processing…</span>
                   </> : <>
                     <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{nextStage.icon}</span>
                     {PROCEED_LABELS[currentStage?.key || "details"]}
@@ -1251,7 +1251,7 @@ function ApplicantsList() {
                 </svg>
                 <input
     type="text"
-    placeholder="Search applicantsâ€¦"
+    placeholder="Search applicants…"
     value={searchQuery}
     onChange={(e) => setSearchQuery(e.target.value)}
     style={{
@@ -1315,7 +1315,7 @@ function ApplicantsList() {
             {isLoading ? <div className="flex items-center justify-center py-20">
                 <div className="text-center space-y-3">
                   <div className="inline-block h-7 w-7 animate-spin rounded-full border-4 border-solid border-[#800000] border-r-transparent" />
-                  <p className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>Loading applicantsâ€¦</p>
+                  <p className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>Loading applicants…</p>
                 </div>
               </div> : filtered.length === 0 ? <div className="flex flex-col items-center justify-center py-20 gap-3">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
@@ -1356,8 +1356,8 @@ function ApplicantsList() {
                       <div style={{ display: "flex", gap: "6px" }}>
                         <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: selectedApplicantLoading ? "not-allowed" : "pointer", opacity: selectedApplicantLoading ? 0.6 : 1, background: isdarkmode ? "rgba(255,255,255,0.07)" : "#eeeeee", color: isdarkmode ? "#d1d5db" : "#374151" }}>View</button>
                         {applicant.status === "pending" && <>
-                            <button onClick={() => handleAction(applicant._id, "approve")} disabled={!!actionLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: "pointer", background: "rgba(5,150,105,0.1)", color: "#059669" }}>âœ“</button>
-                            <button onClick={() => handleAction(applicant._id, "reject")} disabled={!!actionLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: "pointer", background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>âœ•</button>
+                            <button onClick={() => handleAction(applicant._id, "approve")} disabled={!!actionLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: "pointer", background: "rgba(5,150,105,0.1)", color: "#059669" }}>✓</button>
+                            <button onClick={() => handleAction(applicant._id, "reject")} disabled={!!actionLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: "pointer", background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>✕</button>
                           </>}
                       </div>
                     </div>
@@ -1384,7 +1384,7 @@ function ApplicantsList() {
                           {applicant.services && applicant.services.length > 0 ? <div className="flex flex-wrap gap-1">
                               {applicant.services.slice(0, 2).map((s) => <span key={s} className={`px-2 py-0.5 rounded-md font-medium ${isdarkmode ? "bg-[#800000]/20 text-[#ff6666]" : "bg-[#800000]/10 text-[#800000]"}`} style={{ ...poppins, fontSize: "11px" }}>{s}</span>)}
                               {applicant.services.length > 2 && <span className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>+{applicant.services.length - 2} more</span>}
-                            </div> : <span className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>â€”</span>}
+                            </div> : <span className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>—</span>}
                         </td>
                         <td className="px-6 py-4"><span className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>{applicant.appliedAt ? formatDate(applicant.appliedAt) : "\u2014"}</span></td>
                         <td className="px-6 py-4"><span className={statusBadge(applicant.status)} style={poppins}>{applicant.status}</span></td>

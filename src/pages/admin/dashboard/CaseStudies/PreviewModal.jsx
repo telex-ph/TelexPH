@@ -1,4 +1,4 @@
-﻿import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import { getstatuscolor, getcategorybadgecolor } from "./helpers";
 const PreviewModal = ({ isOpen, data, onClose, onEdit }) => {
   const { isdarkmode } = useDarkMode();
@@ -44,7 +44,7 @@ const PreviewModal = ({ isOpen, data, onClose, onEdit }) => {
             By {data.author}
           </p>
           <p className={`text-sm ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>
-            {data.start} â€“ {data.isUnfinished ? "Unfinished" : data.end}
+            {data.start} – {data.isUnfinished ? "Unfinished" : data.end}
           </p>
           {data.status === "Scheduled" && data.scheduleDate && <p className={`text-sm font-bold mt-2 ${isdarkmode ? "text-orange-400" : "text-orange-600"}`}>
               Scheduled for: {data.scheduleDate} at {data.scheduleTime}

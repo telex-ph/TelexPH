@@ -1,4 +1,4 @@
-﻿import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import { useState, useRef, useEffect, createContext, useContext } from "react";
 import Link from "next/link";
@@ -282,7 +282,7 @@ function DashboardLayout() {
             </Link>
 
             {
-    /* Close button â€” mobile only */
+    /* Close button — mobile only */
   }
             <button
     onClick={() => setismobilemenuopen(false)}
@@ -295,7 +295,7 @@ function DashboardLayout() {
             </button>
 
             {
-    /* Toggle button â€” desktop only */
+    /* Toggle button — desktop only */
   }
             <button
     onClick={togglesidebar}
@@ -309,7 +309,7 @@ function DashboardLayout() {
           </div>}
 
         {
-    /* COLLAPSED: toggle button only â€” desktop only */
+    /* COLLAPSED: toggle button only — desktop only */
   }
         {iscollapsed && !ismobilemenuopen && <div className="hidden lg:flex flex-col items-center">
             <button
@@ -464,7 +464,7 @@ function DashboardLayout() {
         ` }} />
 
         {
-    /* Desktop sidebar â€” slightly narrower on smaller desktops */
+    /* Desktop sidebar — slightly narrower on smaller desktops */
   }
         <aside
     className={`border-r hidden lg:flex flex-col h-full z-20 transition-all duration-300 ease-in-out shrink-0
@@ -502,7 +502,7 @@ function DashboardLayout() {
         <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden w-0 min-w-0">
 
           {
-    /* Header â€” shorter on mobile */
+    /* Header — shorter on mobile */
   }
           <header
     className={`flex items-center justify-between shrink-0 transition-colors duration-500

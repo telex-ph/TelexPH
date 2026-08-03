@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import api from "@/lib/api/axios";
@@ -266,7 +266,7 @@ function AddAdmin() {
             <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
               <div style={{ padding: "18px 24px", borderBottom: `1px solid ${borderColor}` }}>
                 <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0 }}>Profile Picture</p>
-                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400 }}>Optional â€” JPG, PNG, WEBP</p>
+                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400 }}>Optional — JPG, PNG, WEBP</p>
               </div>
               <div style={{ padding: "24px" }}>
                 <input ref={fileRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} style={{ display: "none" }} />
@@ -469,7 +469,7 @@ function AddAdmin() {
                 </>}
 
               {
-    /* â”€â”€ Footer â€” always visible â”€â”€ */
+    /* â”€â”€ Footer — always visible â”€â”€ */
   }
               <div className="aa-footer">
                 <p className="aa-footer-note" style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontStyle: "italic" }}>

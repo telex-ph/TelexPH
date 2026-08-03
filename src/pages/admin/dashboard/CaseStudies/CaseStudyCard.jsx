@@ -1,4 +1,4 @@
-﻿import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const CaseStudyCard = ({
   study,
   isEditing,
@@ -62,7 +62,7 @@ const CaseStudyCard = ({
     /* Date Range */
   }
       <p className={`text-xs mb-4 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}>
-        {study.start} â€“ {study.isUnfinished ? "Unfinished" : study.end}
+        {study.start} – {study.isUnfinished ? "Unfinished" : study.end}
       </p>
 
       {

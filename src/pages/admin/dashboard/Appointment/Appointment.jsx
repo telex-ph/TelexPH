@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 
@@ -215,7 +215,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
             </button>
           </div>
           {
-      /* Time-of-day filter â€” wraps on mobile */
+      /* Time-of-day filter — wraps on mobile */
     }
           <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
             {["all", "morning", "afternoon", "evening"].map((f) => {
@@ -397,7 +397,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
                 </div>
 
                 {
-      /* Appointment chips â€” card style on desktop, dots on mobile */
+      /* Appointment chips — card style on desktop, dots on mobile */
     }
                 {isMobileCal ? (
       /* Mobile: just show a row of colored dots */
@@ -1084,7 +1084,7 @@ function AppointmentsPage() {
           {appt.email && <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, flexWrap: "wrap", marginTop: "auto", paddingTop: 8 }}>
               {feedback && <span style={{ fontSize: 11, padding: "4px 12px", borderRadius: 8, background: feedback.type === "success" ? dark ? "rgba(5,150,105,0.15)" : "rgba(5,150,105,0.09)" : dark ? "rgba(220,38,38,0.15)" : "rgba(220,38,38,0.09)", color: feedback.type === "success" ? "#059669" : "#dc2626", fontFamily: "'Poppins', sans-serif" }}>{feedback.text}</span>}
               <button onClick={() => handleConfirm(appt)} disabled={isConfirming} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, border: "none", background: "#800000", color: "#fff", fontSize: 11, fontWeight: 500, cursor: isConfirming ? "not-allowed" : "pointer", opacity: isConfirming ? 0.7 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
-                {isConfirming ? <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Confirmingâ€¦</> : <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>Confirm &amp; Send Credentials</>}
+                {isConfirming ? <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Confirming…</> : <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>Confirm &amp; Send Credentials</>}
               </button>
             </div>}
         </div>
@@ -1165,7 +1165,7 @@ function AppointmentsPage() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)", gap: isMobile ? 10 : 14 }}>
             {statCards.map((card, i) => {
     const palettes = [
-      // 0 â€” Total: Maroon / Rose
+      // 0 — Total: Maroon / Rose
       {
         flapL: ["#ecdada", "#f5e8e8"],
         flapD: ["#2e1e1e", "#3a2424"],
@@ -1183,7 +1183,7 @@ function AppointmentsPage() {
         barD: "linear-gradient(90deg,#b05050 0%,rgba(176,80,80,0) 100%)",
         valD: "#f5eeee"
       },
-      // 1 â€” Today: Emerald
+      // 1 — Today: Emerald
       {
         flapL: ["#d4ede3", "#e6f5ee"],
         flapD: ["#163326", "#1e4030"],
@@ -1201,7 +1201,7 @@ function AppointmentsPage() {
         barD: "linear-gradient(90deg,#34d399 0%,rgba(52,211,153,0) 100%)",
         valD: "#eefaf4"
       },
-      // 2 â€” This week: Blue
+      // 2 — This week: Blue
       {
         flapL: ["#d8e8fb", "#e8f0fd"],
         flapD: ["#16243e", "#1e2e50"],
@@ -1219,7 +1219,7 @@ function AppointmentsPage() {
         barD: "linear-gradient(90deg,#60a5fa 0%,rgba(96,165,250,0) 100%)",
         valD: "#eef3ff"
       },
-      // 3 â€” This month: Amber
+      // 3 — This month: Amber
       {
         flapL: ["#fbeacc", "#fdf3df"],
         flapD: ["#2e2410", "#3a2e14"],
@@ -1237,7 +1237,7 @@ function AppointmentsPage() {
         barD: "linear-gradient(90deg,#fbbf24 0%,rgba(251,191,36,0) 100%)",
         valD: "#fdf8e8"
       },
-      // 4 â€” This year: Forest green (always dark-ish card)
+      // 4 — This year: Forest green (always dark-ish card)
       {
         flapL: ["#1e4a30", "#2a5c3c"],
         flapD: ["#1a3828", "#243f30"],
@@ -1370,7 +1370,7 @@ function AppointmentsPage() {
                   <span style={{ fontSize: 11, color: textMuted, whiteSpace: "nowrap" }}>Sort by</span>
                   <div style={{ position: "relative" }}>
                     <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ appearance: "none", WebkitAppearance: "none", background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 8, padding: "5px 28px 5px 10px", fontSize: 11, color: textPrimary, cursor: "pointer", outline: "none" }}>
-                      <option value="name-az">Name A â†’ Z</option><option value="name-za">Name Z â†’ A</option><option value="newest">Newest First</option><option value="oldest">Oldest First</option>
+                      <option value="name-az">Name A → Z</option><option value="name-za">Name Z → A</option><option value="newest">Newest First</option><option value="oldest">Oldest First</option>
                     </select>
                     <svg width="11" height="11" fill="none" stroke={textMuted} strokeWidth="2" viewBox="0 0 24 24" style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><polyline points="6 9 12 15 18 9" /></svg>
                   </div>
@@ -1410,7 +1410,7 @@ function AppointmentsPage() {
                         <span style={{ fontSize: 11, color: textMuted }}>Showing <strong style={{ color: textPrimary }}>{(currentPage - 1) * PAGE_SIZE + 1}</strong>{" \u2013 "}<strong style={{ color: textPrimary }}>{Math.min(currentPage * PAGE_SIZE, allSorted.length)}</strong>{" out of "}<strong style={{ color: textPrimary }}>{allSorted.length}</strong></span>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: cardBg, color: currentPage === 1 ? dark ? "#3f3f3f" : "#d1d5db" : textMuted, fontSize: 11, fontWeight: 500, cursor: currentPage === 1 ? "not-allowed" : "pointer", transition: "all .15s" }}>Prev</button>
-                          {getPageNumbers().map((pg, i) => pg === "..." ? <span key={`el-${i}`} style={{ width: 32, textAlign: "center", fontSize: 11, color: textMuted }}>â€¦</span> : <button key={pg} onClick={() => setCurrentPage(pg)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${currentPage === pg ? "#800000" : borderColor}`, background: currentPage === pg ? "#800000" : cardBg, color: currentPage === pg ? "#fff" : textMuted, fontSize: 11, fontWeight: currentPage === pg ? 600 : 400, cursor: "pointer", transition: "all .15s" }}>{pg}</button>)}
+                          {getPageNumbers().map((pg, i) => pg === "..." ? <span key={`el-${i}`} style={{ width: 32, textAlign: "center", fontSize: 11, color: textMuted }}>…</span> : <button key={pg} onClick={() => setCurrentPage(pg)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${currentPage === pg ? "#800000" : borderColor}`, background: currentPage === pg ? "#800000" : cardBg, color: currentPage === pg ? "#fff" : textMuted, fontSize: 11, fontWeight: currentPage === pg ? 600 : 400, cursor: "pointer", transition: "all .15s" }}>{pg}</button>)}
                           <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: cardBg, color: currentPage === totalPages ? dark ? "#3f3f3f" : "#d1d5db" : textMuted, fontSize: 11, fontWeight: 500, cursor: currentPage === totalPages ? "not-allowed" : "pointer", transition: "all .15s" }}>Next</button>
                         </div>
                       </div>}

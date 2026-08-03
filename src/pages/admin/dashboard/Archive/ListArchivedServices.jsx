@@ -1,4 +1,4 @@
-﻿
+
 import { useState, useEffect, useCallback } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const departments = {
@@ -428,7 +428,7 @@ function ListArchivedServices() {
     /* â”€â”€ Toasts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   }
         {successmsg && <div style={{ position: "fixed", top: 28, right: 28, background: "#059669", color: "#fff", padding: "14px 24px", borderRadius: 20, fontSize: 12, fontWeight: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", zIndex: 50, fontFamily: FONT }}>
-            âœ“ {successmsg}
+            ✓ {successmsg}
           </div>}
         {error && <div style={{ position: "fixed", top: 28, right: 28, background: "#dc2626", color: "#fff", padding: "14px 24px", borderRadius: 20, fontSize: 12, fontWeight: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", zIndex: 50, display: "flex", alignItems: "center", gap: 12, fontFamily: FONT }}>
             {error}
@@ -545,7 +545,7 @@ function ListArchivedServices() {
     }} />
 
                   {
-      /* Folder-shaped translucent overlay â€” raised on left, steps down to right */
+      /* Folder-shaped translucent overlay — raised on left, steps down to right */
     }
                   <svg
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 1, pointerEvents: "none" }}
@@ -554,7 +554,7 @@ function ListArchivedServices() {
       xmlns="http://www.w3.org/2000/svg"
     >
                     {
-      /* Folder body â€” raised on left, tab notch cuts down toward the right */
+      /* Folder body — raised on left, tab notch cuts down toward the right */
     }
                     <path
       d="M0,46 L125,46 C140,46 145,58 155,68 C165,78 170,78 185,78 L300,78 L300,145 L0,145 Z"
@@ -574,7 +574,7 @@ function ListArchivedServices() {
                   </svg>
 
                   {
-      /* Icon â€” top right corner, glassmorphism */
+      /* Icon — top right corner, glassmorphism */
     }
                   <div style={{
       position: "absolute",
@@ -685,8 +685,8 @@ function ListArchivedServices() {
   >
                 <option value="date-newest">Newest First</option>
                 <option value="date-oldest">Oldest First</option>
-                <option value="alpha-asc">Name A â†’ Z</option>
-                <option value="alpha-desc">Name Z â†’ A</option>
+                <option value="alpha-asc">Name A → Z</option>
+                <option value="alpha-desc">Name Z → A</option>
               </select>
             </div>
           </div>
@@ -744,7 +744,7 @@ function ListArchivedServices() {
             </div>}
 
           {
-    /* â”€â”€ GRID VIEW â€” Compact vertical cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* â”€â”€ GRID VIEW — Compact vertical cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   }
           {items.length > 0 && viewmode === "grid" && <div className="arc-card-grid">
               {items.map((item) => {
@@ -797,7 +797,7 @@ function ListArchivedServices() {
                           {subtitle}
                         </p>}
                       <p className="arc-card-meta" style={{ fontSize: 10, color: textMuted, margin: 0, fontFamily: FONT }}>
-                        By <span style={{ fontWeight: 600, color: textPrimary }}>{author}</span> Â· {date}
+                        By <span style={{ fontWeight: 600, color: textPrimary }}>{author}</span> · {date}
                       </p>
 
                       {
@@ -829,7 +829,7 @@ function ListArchivedServices() {
             </div>}
 
           {
-    /* â”€â”€ LIST VIEW â€” Timeline / zebra rows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* â”€â”€ LIST VIEW — Timeline / zebra rows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   }
           {items.length > 0 && viewmode === "list" && <>
               {
@@ -910,7 +910,7 @@ function ListArchivedServices() {
                       {isAdmin && admin ? <span style={{ fontSize: 10, color: textMuted, fontFamily: FONT }}>{getDeptIcon(admin.department)} {departments[admin.department]}</span> : isBlog && blog?.mainCategory ? <span style={{ fontSize: 9, fontWeight: 500, padding: "2px 8px", borderRadius: 5, background: `${accentColor}14`, color: accentColor, fontFamily: FONT }}>{blog.mainCategory}</span> : cs?.tags?.length ? <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                           {cs.tags.slice(0, 2).map((t) => <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: "2px 6px", borderRadius: 4, background: `${accentColor}14`, color: accentColor, fontFamily: FONT }}>{t}</span>)}
                           {cs.tags.length > 2 && <span style={{ fontSize: 9, color: textMuted, fontFamily: FONT }}>+{cs.tags.length - 2}</span>}
-                        </div> : <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT }}>â€”</span>}
+                        </div> : <span style={{ fontSize: 11, color: textMuted, fontFamily: FONT }}>—</span>}
                     </div>
 
                     {

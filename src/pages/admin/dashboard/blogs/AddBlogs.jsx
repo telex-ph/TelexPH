@@ -1,4 +1,4 @@
-﻿
+
 import React, { useState, useRef } from "react";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 
@@ -628,7 +628,7 @@ function AddBlogs() {
             </div>
 
             {
-    /* Publishing Options â€” Accordion */
+    /* Publishing Options — Accordion */
   }
             <div className={`${sectionCard} ${publishingOpen ? "!overflow-visible" : ""}`}>
               <button
@@ -681,7 +681,7 @@ function AddBlogs() {
             </div>
 
             {
-    /* Categories â€” Accordion */
+    /* Categories — Accordion */
   }
             <div className={`${sectionCard} ${categoriesOpen ? "!overflow-visible" : ""}`}>
               <button
@@ -806,7 +806,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Title <span className="text-[#800000]">â€¢</span>
+                        Title <span className="text-[#800000]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -827,7 +827,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Author <span className="text-[#800000]">â€¢</span>
+                        Author <span className="text-[#800000]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -848,7 +848,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Description <span className="text-[#800000]">â€¢</span>
+                        Description <span className="text-[#800000]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
