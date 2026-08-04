@@ -6,6 +6,7 @@ import ProtectedRoute from "@/shared/ProtectedRoute";
 import RouteFallback from "@/shared/RouteFallback";
 import { registerPrefetch } from "@/shared/prefetch";
 import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTracker";
+import BugReportWidget from "@/shared/BugReportWidget";
 
 /* The landing page is eager so the first paint is immediate. Every other
    route is code-split — Next.js did this per-page automatically, and without
@@ -130,6 +131,7 @@ const App = () => {
     <>
       <ScrollToTop />
       <SitePageViewTracker />
+      <BugReportWidget />
 
       <Suspense fallback={<RouteFallback />}>
       <Routes>
