@@ -31,9 +31,8 @@ function RecentTransactions() {
     const fetchUpcoming = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("authToken") || localStorage.getItem("token") || "";
         const res = await fetch(`${API_BASE}/api/appointments/upcoming`, {
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" },
           credentials: "include"
         });
         if (!res.ok) throw new Error(`Failed to fetch upcoming appointments: ${res.status}`);
