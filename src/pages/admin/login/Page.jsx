@@ -18,6 +18,21 @@ function fetchWithTimeout(input, init = {}) {
   });
   return Promise.race([fetchPromise, timeoutPromise]);
 }
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) {
+    throw new Error(
+      response.ok
+        ? "The server returned an empty response. Please try again."
+        : `Request failed with status ${response.status}. Please try again.`
+    );
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("The server returned an unexpected response. Please try again.");
+  }
+}
 function AdminLoginPage() {
   return <Suspense fallback={null}>
       <AdminLoginForm />
@@ -58,7 +73,7 @@ function AdminLoginForm() {
           rememberMe
         })
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         throw new Error(data.error || "Authentication failed");
       }
@@ -90,7 +105,7 @@ function AdminLoginForm() {
           accountType: "admin"
         })
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         throw new Error(data.error || "Verification failed");
       }
@@ -115,7 +130,7 @@ function AdminLoginForm() {
           rememberMe
         })
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         throw new Error(data.error || "Failed to resend code");
       }
