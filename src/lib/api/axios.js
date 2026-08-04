@@ -13,24 +13,28 @@ const api = axios.create({
 });
 api.interceptors.request.use(
   (config) => {
-    console.log(`\u{1F4E4} API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    if (import.meta.env.DEV) {
+      console.log(`\u{1F4E4} API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    }
     return config;
   },
   (error) => {
-    console.error("\u{1F4E4} Request Error:", error);
+    if (import.meta.env.DEV) console.error("\u{1F4E4} Request Error:", error);
     return Promise.reject(error);
   }
 );
 api.interceptors.response.use(
   (response) => {
-    console.log(`\u2705 API Response: ${response.config.url}`, response.status);
+    if (import.meta.env.DEV) {
+      console.log(`\u2705 API Response: ${response.config.url}`, response.status);
+    }
     return response;
   },
   (error) => {
     if (error.response) {
       const status = error.response.status;
       const path = typeof window !== "undefined" ? window.location.pathname : "";
-      console.error(`\u274C API Error: ${status} - ${error.config?.url}`);
+      if (import.meta.env.DEV) console.error(`\u274C API Error: ${status} - ${error.config?.url}`);
       if (status === 401) {
         console.warn("\u{1F512} Unauthorized - Redirecting to login");
         if (typeof window !== "undefined") {

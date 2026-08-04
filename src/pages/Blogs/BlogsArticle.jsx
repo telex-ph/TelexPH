@@ -1,7 +1,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
+import DOMPurify from "dompurify";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
+
+const sanitizeHtml = (html) =>
+  DOMPurify.sanitize(html || "", {
+    ALLOWED_TAGS: ["p", "br", "ul", "ol", "li", "strong", "em", "b", "i", "u", "a", "h1", "h2", "h3", "h4", "blockquote", "code", "pre", "span"],
+    ALLOWED_ATTR: ["href", "target", "rel"]
+  });
 
 const API_BASE =
   import.meta.env.VITE_API_ORIGIN || "/api";
@@ -139,8 +146,8 @@ function FaqItem({ question, answer, isOpen, onToggle }) {
           <div className="px-5 py-4">
             <div
     style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.textBody, lineHeight: "1.85" }}
-    className="[&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ul]:mb-3 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_strong]:font-semibold [&_script]:hidden"
-    dangerouslySetInnerHTML={{ __html: answer }}
+    className="[&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ul]:mb-3 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_strong]:font-semibold"
+    dangerouslySetInnerHTML={{ __html: sanitizeHtml(answer) }}
   />
           </div>
         </div>
@@ -217,8 +224,8 @@ function FaqSection({ content, sectionTitle }) {
           {faqs.map((faq, i) => <FaqItem key={i} index={i} question={faq.question} answer={faq.answer} isOpen={openIndex === i} onToggle={() => setOpenIndex(openIndex === i ? null : i)} />)}
         </div> : <div
     style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.textBody, lineHeight: "1.85" }}
-    className="[&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_strong]:font-bold [&_script]:hidden"
-    dangerouslySetInnerHTML={{ __html: content }}
+    className="[&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_strong]:font-bold"
+    dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
   />}
     </div>;
 }
@@ -468,9 +475,9 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
                         </div>
                       </div>}
                     <div
-      className="text-[14px] md:text-[16px] leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828] [&_script]:hidden"
+      className="text-[14px] md:text-[16px] leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828]"
       style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
-      dangerouslySetInnerHTML={{ __html: section.content }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }}
     />
                   </div>;
   })}

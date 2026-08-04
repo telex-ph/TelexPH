@@ -39,7 +39,6 @@ const AdminLayout = lazy(() => import("@/pages/admin/Layout"));
 const AdminIndex = lazy(() => import("@/pages/admin/Page"));
 const AdminLogin = lazy(() => import("@/pages/admin/login/Page"));
 const AdminForgotPassword = lazy(() => import("@/pages/admin/login/forgot-password/Page"));
-const AdminRegister = lazy(() => import("@/pages/admin/register/Page"));
 const AdminDashboardLayout = lazy(() => import("@/pages/admin/dashboard/Layout"));
 const AdminDashboardHome = lazy(() => import("@/pages/admin/dashboard/Page"));
 const AdminActivityLogs = lazy(() => import("@/pages/admin/dashboard/ActivityLogs/Page"));
@@ -169,7 +168,6 @@ const App = () => {
           <Route index element={<AdminIndex />} />
           <Route path="login" element={<AdminLogin />} />
           <Route path="login/forgot-password" element={<AdminForgotPassword />} />
-          <Route path="register" element={<AdminRegister />} />
 
           {/* Everything below requires a valid session */}
           <Route element={<ProtectedRoute loginPath="/admin/login" />}>
