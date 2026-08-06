@@ -28,6 +28,22 @@ const transformBackendRecord = (item) => ({
 });
 const STATUS_OPTIONS = ["Active", "Draft", "Completed", "Scheduled"];
 const CATEGORY_OPTIONS = ["Technology", "Healthcare", "Finance", "Marketing", "Operations", "Research", "Design", "Analytics"];
+const STATUS_ICON_PATHS = {
+  Active: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+  Draft: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+  Completed: "M5 13l4 4L19 7",
+  Scheduled: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"
+};
+const CATEGORY_ICON_PATHS = {
+  Technology: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+  Healthcare: "M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z",
+  Finance: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2m9-8a9 9 0 11-18 0 9 9 0 0118 0z",
+  Marketing: "M3 11l18-5v12L3 14v-3zm0 0v7a2 2 0 002 2h1M8 11v9",
+  Operations: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z",
+  Research: "M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
+  Design: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h11a2 2 0 012 2v4M7 21h11a2 2 0 002-2v-4M7 21c1.5-4.5 4-4 4-4m9-9L11 17l-4 1 1-4L17 3z",
+  Analytics: "M9 19V6l7 7-7 7zM3 3v18h18"
+};
 const LIB_CATEGORIES = ["All", "Technology", "Logistics", "Analytics", "Infrastructure"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const getDefaultForm = () => ({
@@ -177,6 +193,74 @@ const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm, card
           <button onClick={onClose} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
           <button onClick={onConfirm} disabled={isDeleting} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "#dc2626", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: isDeleting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
             {isDeleting ? "Deleting\u2026" : "Delete"}
+          </button>
+        </div>
+      </div>
+    </Backdrop>;
+};
+const AI_IMAGE_STEPS = ["Analyzing prompt", "Creating cover image"];
+const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGenerating, onExpandPrompt, onGenerate, onClose, cardBg, borderColor, textPrimary, textMuted, inputBg, isdarkmode }) => {
+  if (!isOpen) return null;
+  const busy = isExpanding || isGenerating;
+  const stepIndex = isGenerating ? 1 : 0;
+  return <Backdrop>
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "32px 28px", maxWidth: 460, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.28)", fontFamily: "'Poppins', sans-serif" }}>
+        <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: "0 0 8px", fontFamily: "'Poppins', sans-serif" }}>Generate cover image</h3>
+        <p style={{ fontSize: 12, color: textMuted, margin: "0 0 18px", fontFamily: "'Poppins', sans-serif" }}>Describe the cover image you want, or type a rough idea and let AI expand it into a detailed prompt first.</p>
+        <textarea
+          value={prompt}
+          onChange={(e) => onPromptChange(e.target.value)}
+          placeholder="e.g., Customer support team collaborating in a modern office..."
+          rows={4}
+          disabled={busy}
+          autoFocus
+          style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: `1px solid ${borderColor}`, background: inputBg, color: textPrimary, fontSize: 12, outline: "none", resize: "none", fontFamily: "'Poppins', sans-serif", boxSizing: "border-box", marginBottom: 10 }}
+        />
+        <button onClick={onExpandPrompt} disabled={busy || !prompt.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 0", borderRadius: 10, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 12, fontWeight: 500, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.6 : 1, fontFamily: "'Poppins', sans-serif", marginBottom: busy ? 10 : 18 }}>
+          {isExpanding ? <svg className="animate-spin" width="13" height="13" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg> : <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>}
+          {isExpanding ? "Generating prompt…" : "Generate Prompt"}
+        </button>
+
+        {busy && <div style={{ marginBottom: 18, padding: "22px 20px", borderRadius: 14, border: `1px solid ${borderColor}`, background: inputBg, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <div style={{ position: "relative", width: 52, height: 52, marginBottom: 6 }}>
+              <svg width="52" height="52" className="animate-spin" style={{ animationDuration: "2s" }} viewBox="0 0 56 56" fill="none">
+                <circle cx="28" cy="28" r="24" stroke={isdarkmode ? "#ffffff20" : "#00000014"} strokeWidth="4" />
+                <circle cx="28" cy="28" r="24" stroke="#800000" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
+              </svg>
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="18" height="18" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+              </div>
+            </div>
+            <p style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
+              {isExpanding ? "Expanding your prompt" : AI_IMAGE_STEPS[stepIndex] || "Generating…"}
+            </p>
+            <p style={{ fontSize: 11, color: textMuted, margin: "0 0 10px", fontFamily: "'Poppins', sans-serif" }}>
+              {isGenerating ? "This usually takes 30-60 seconds." : "This only takes a few seconds."}
+            </p>
+            {isGenerating && <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                {AI_IMAGE_STEPS.map((step, i) => <React.Fragment key={step}>
+                    {i > 0 && <div style={{ flex: 1, height: 1, background: i <= stepIndex ? "#800000" : borderColor }} />}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: i < stepIndex ? "#800000" : i === stepIndex ? "transparent" : borderColor, border: i === stepIndex ? "2px solid #800000" : "none" }}>
+                        {i < stepIndex ? <svg width="10" height="10" fill="none" stroke="#fff" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg> : i === stepIndex ? <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#800000" }} /> : null}
+                      </div>
+                      <span style={{ fontSize: 9, textAlign: "center", maxWidth: 72, color: i <= stepIndex ? textPrimary : textMuted, fontWeight: i === stepIndex ? 600 : 400, fontFamily: "'Poppins', sans-serif" }}>{step}</span>
+                    </div>
+                  </React.Fragment>)}
+              </div>}
+          </div>}
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={onClose} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: busy ? "not-allowed" : "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
+          <button onClick={onGenerate} disabled={busy || !prompt.trim()} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 600, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}>
+            {isGenerating ? <svg className="animate-spin" width="13" height="13" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg> : null}
+            {isGenerating ? "Generating image…" : "Generate Image"}
           </button>
         </div>
       </div>
@@ -418,7 +502,12 @@ function CaseStudies() {
   }, []);
   const [form, setForm] = useState(getDefaultForm());
   const [coverPreview, setCoverPreview] = useState("");
+  const [coverFile, setCoverFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
+  const [showAiImageModal, setShowAiImageModal] = useState(false);
+  const [aiImagePrompt, setAiImagePrompt] = useState("");
+  const [isExpandingPrompt, setIsExpandingPrompt] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -520,6 +609,7 @@ function CaseStudies() {
   const clearForm = () => {
     setForm(getDefaultForm());
     setCoverPreview("");
+    setCoverFile(null);
     authorFileRefs.current = [];
     setIsEditMode(false);
     setEditingId(null);
@@ -533,9 +623,69 @@ function CaseStudies() {
   };
   const handleFile = (file) => {
     if (!file) return;
+    setCoverFile(null);
     const reader = new FileReader();
     reader.onload = (e) => setCoverPreview(e.target?.result);
     reader.readAsDataURL(file);
+  };
+  const openAiImageModal = () => {
+    setAiImagePrompt("");
+    setShowAiImageModal(true);
+  };
+  const closeAiImageModal = () => {
+    if (isExpandingPrompt || isGeneratingImage) return;
+    setShowAiImageModal(false);
+    setAiImagePrompt("");
+  };
+  const handleExpandImagePrompt = async () => {
+    if (!aiImagePrompt.trim()) return;
+    setIsExpandingPrompt(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/ai/generate-blog`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "expand-prompt", prompt: aiImagePrompt.trim() })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.error || "Prompt generation failed");
+      }
+      const { data } = await res.json();
+      if (data?.imagePrompt) setAiImagePrompt(data.imagePrompt);
+    } catch (err) {
+      showToast(err.message || "Prompt generation failed", "error");
+    } finally {
+      setIsExpandingPrompt(false);
+    }
+  };
+  const handleGenerateAiImage = async () => {
+    if (!aiImagePrompt.trim()) return;
+    setIsGeneratingImage(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/ai/generate-image`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: aiImagePrompt.trim() })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.error || "Image generation failed");
+      }
+      const { dataUrl } = await res.json();
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], "ai-generated-cover.jpg", { type: blob.type || "image/jpeg" });
+      setCoverFile(file);
+      setCoverPreview(dataUrl);
+      setShowAiImageModal(false);
+      setAiImagePrompt("");
+      showToast("Cover image generated!", "success");
+    } catch (err) {
+      showToast(err.message || "Image generation failed", "error");
+    } finally {
+      setIsGeneratingImage(false);
+    }
   };
   const inp = (overrides = {}) => ({
     width: "100%",
@@ -584,6 +734,8 @@ function CaseStudies() {
       });
       if (fileRef.current?.files?.[0]) {
         formDataToSend.append("cover", fileRef.current.files[0]);
+      } else if (coverFile) {
+        formDataToSend.append("cover", coverFile);
       }
       const url = isEditMode && editingId ? `${API_BASE_URL}/casestudies/${editingId}` : `${API_BASE_URL}/casestudies`;
       const method = isEditMode ? "PATCH" : "POST";
@@ -799,6 +951,19 @@ function CaseStudies() {
         </div>}
       <ConfirmModal isOpen={showConfirm} isEdit={isEditMode} isLoading={isLoading} onClose={() => setShowConfirm(false)} onConfirm={handleSubmit} {...modalTheme} />
       <DeleteModal isOpen={showDelete} isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
+      <AiImageModal
+        isOpen={showAiImageModal}
+        prompt={aiImagePrompt}
+        onPromptChange={setAiImagePrompt}
+        isExpanding={isExpandingPrompt}
+        isGenerating={isGeneratingImage}
+        onExpandPrompt={handleExpandImagePrompt}
+        onGenerate={handleGenerateAiImage}
+        onClose={closeAiImageModal}
+        {...modalTheme}
+        inputBg={inputBg}
+        isdarkmode={dark}
+      />
       <PreviewModal isOpen={showPreview} data={previewData} allRecords={records} onClose={() => {
     setShowPreview(false);
     if (selectedDate) setShowBottomSheet(true);
@@ -826,6 +991,7 @@ function CaseStudies() {
     setForm(getDefaultForm());
     authorFileRefs.current = [];
     setCoverPreview("");
+    setCoverFile(null);
   }} className="cs-header-btn" style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
               Back to Case Studies
@@ -885,69 +1051,95 @@ function CaseStudies() {
         {
     /* FORM */
   }
-        {(showFormOnly || isEditMode) && !showCalendarPage && <div style={{ ...card, padding: "22px 22px", marginBottom: 16 }}>
-          <div style={{ marginBottom: 18 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{isEditMode ? "Edit case study" : "Create new case study"}</p>
-            <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>{isEditMode ? "Update the fields below and save your changes" : "Fill in the details below to add a new case study"}</p>
-          </div>
-          <div className="cs-form-cover-row" style={{ display: "grid", gridTemplateColumns: "175px 1fr", gap: 14, marginBottom: 13 }}>
-            <div>
-              <span style={lbl}>Cover image <span style={{ color: "#800000" }}>*</span></span>
-              <div onClick={() => fileRef.current?.click()} onDragOver={(e) => {
+        {(showFormOnly || isEditMode) && !showCalendarPage && <div className="cs-form-wrap" style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
+
+          {
+    /* STEP 1 — Cover & Basic Information */
+  }
+          <div style={{ ...card, padding: "22px 22px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 18 }}>
+              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>1</div>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Cover &amp; Basic Information</p>
+                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Add a compelling cover and essential details</p>
+              </div>
+            </div>
+            <div className="cs-form-cover-row" style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: 18 }}>
+              <div>
+                <div onClick={() => fileRef.current?.click()} onDragOver={(e) => {
     e.preventDefault();
     setDragOver(true);
   }} onDragLeave={() => setDragOver(false)} onDrop={(e) => {
     e.preventDefault();
     setDragOver(false);
     handleFile(e.dataTransfer.files[0]);
-  }} style={{ border: `1.5px dashed ${dragOver ? "#800000" : borderColor}`, borderRadius: 10, cursor: "pointer", transition: "all .15s", overflow: "hidden", height: 150, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: dragOver ? "rgba(128,0,0,0.04)" : subtleBg, position: "relative" }}>
-                {coverPreview ? <img src={coverPreview} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} /> : <>
-                    <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(128,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 7 }}>
-                      <svg width="14" height="14" fill="none" stroke="#800000" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    </div>
-                    <p style={{ fontSize: 10, color: textSecondary, margin: 0, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Click to upload</p>
-                    <p style={{ fontSize: 9, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>PNG, JPG, WebP · 10MB</p>
-                  </>}
+  }} style={{ border: `1.5px dashed ${dragOver ? "#800000" : borderColor}`, borderRadius: 14, cursor: "pointer", transition: "all .15s", overflow: "hidden", aspectRatio: "16/9", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: dragOver ? "rgba(128,0,0,0.04)" : subtleBg, position: "relative" }}>
+                  {coverPreview ? <img src={coverPreview} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} /> : <>
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(128,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+                        <svg width="18" height="18" fill="none" stroke="#800000" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      </div>
+                      <p style={{ fontSize: 12, color: textPrimary, margin: 0, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>Upload cover image</p>
+                      <p style={{ fontSize: 10, color: textMuted, margin: "5px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>PNG, JPG, WebP · Max 10MB</p>
+                      <p style={{ fontSize: 10, color: textMuted, margin: "1px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Recommended: 16:9 ratio</p>
+                    </>}
+                </div>
+                <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files?.[0])} />
+                <button type="button" onClick={openAiImageModal} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                  Generate with AI
+                </button>
               </div>
-              <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files?.[0])} />
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div className="cs-form-title-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                <div>
-                  <span style={lbl}>Title <span style={{ color: "#800000" }}>*</span></span>
-                  <input style={inp()} placeholder="Enter title..." value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div className="cs-form-title-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <div>
+                    <span style={lbl}>Title <span style={{ color: "#800000" }}>*</span></span>
+                    <input style={inp()} placeholder="Enter case study title..." value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
+                  </div>
+                  <div>
+                    <span style={lbl}>Subtitle</span>
+                    <input style={inp()} placeholder="Enter a short subtitle (optional)..." value={form.subtitle} onChange={(e) => updateForm("subtitle", e.target.value)} />
+                  </div>
                 </div>
                 <div>
-                  <span style={lbl}>Subtitle</span>
-                  <input style={inp()} placeholder="Enter subtitle..." value={form.subtitle} onChange={(e) => updateForm("subtitle", e.target.value)} />
-                </div>
-              </div>
-              <div>
-                <span style={lbl}>Status <span style={{ color: "#800000" }}>*</span></span>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {STATUS_OPTIONS.map((s) => {
+                  <span style={lbl}>Status <span style={{ color: "#800000" }}>*</span></span>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {STATUS_OPTIONS.map((s) => {
     const st = getStatusStyle(s);
     const sel = form.status === s;
-    return <button key={s} className="pill-btn" onClick={() => updateForm("status", s)} style={{ padding: "5px 12px", borderRadius: 20, border: sel ? st.border : `1px solid ${borderColor}`, background: sel ? st.bg : "transparent", color: sel ? st.color : textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>{s}</button>;
+    return <button key={s} className="pill-btn" onClick={() => updateForm("status", s)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: sel ? st.border : `1px solid ${borderColor}`, background: sel ? st.bg : "transparent", color: sel ? st.color : textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
+                          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={STATUS_ICON_PATHS[s]} /></svg>
+                          {s}
+                          {sel && <svg width="12" height="12" fill="none" stroke={st.color} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
+                        </button>;
   })}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {
-    /* Authors */
+    /* STEP 2 — Authors */
   }
-          <div style={{ marginBottom: 13 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-              <span style={lbl}>Authors <span style={{ color: "#800000" }}>*</span></span>
-              <button onClick={addAuthor} style={{ fontSize: 10, color: "#800000", background: "rgba(128,0,0,0.07)", border: "1px solid rgba(128,0,0,0.2)", borderRadius: 6, padding: "3px 10px", cursor: "pointer", fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>+ Add author</button>
+          <div style={{ ...card, padding: "22px 22px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>2</div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Authors <span style={{ color: "#800000" }}>*</span></p>
+                  <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Add the people behind this case study</p>
+                </div>
+              </div>
+              <button onClick={addAuthor} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#800000", background: "transparent", border: `1px solid ${borderColor}`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                Add author
+              </button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {form.authors.map((a, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: subtleBg, border: `1px solid ${borderColor}` }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {form.authors.map((a, i) => <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14, background: subtleBg, border: `1px solid ${borderColor}` }}>
                   <div style={{ position: "relative", flexShrink: 0 }}>
                     <div onClick={() => authorFileRefs.current[i]?.click()} style={{ width: 44, height: 44, borderRadius: "50%", overflow: "hidden", cursor: "pointer", border: `1.5px dashed ${borderColor}`, background: inputBg, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                      {a.image ? <img src={a.image} alt={a.name || "author"} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <svg width="16" height="16" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
+                      {a.image ? <img src={a.image} alt={a.name || "author"} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <svg width="16" height="16" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
                     </div>
                     {a.image && <button onClick={() => removeAuthorImage(i)} style={{ position: "absolute", top: -3, right: -3, width: 16, height: 16, borderRadius: "50%", border: "none", background: "#dc2626", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>
                         <svg width="8" height="8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -969,66 +1161,101 @@ function CaseStudies() {
                   <div style={{ flex: 1 }}>
                     <input style={inp()} placeholder="Author name..." value={a.name} onChange={(e) => updateAuthorName(i, e.target.value)} />
                   </div>
-                  {form.authors.length > 1 && <button onClick={() => removeAuthor(i)} className="icon-btn" style={{ width: 26, height: 26, borderRadius: 6, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                  {form.authors.length > 1 && <button onClick={() => removeAuthor(i)} className="icon-btn" style={{ width: 34, height: 34, borderRadius: 9, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>}
                 </div>)}
             </div>
           </div>
 
-          <div style={{ marginBottom: 13 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-              <span style={lbl}>Categories <span style={{ color: "#800000" }}>*</span></span>
-              {form.tags.length > 0 && <button onClick={() => updateForm("tags", [])} style={{ fontSize: 10, color: "#800000", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Clear</button>}
+          {
+    /* STEP 3 — Details */
+  }
+          <div style={{ ...card, padding: "22px 22px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 18 }}>
+              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>3</div>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Details</p>
+                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Categorize and provide key information</p>
+              </div>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {CATEGORY_OPTIONS.map((t) => {
+
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                <span style={lbl}>Categories <span style={{ color: "#800000" }}>*</span></span>
+                {form.tags.length > 0 && <button onClick={() => updateForm("tags", [])} style={{ fontSize: 11, color: "#800000", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Clear</button>}
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {CATEGORY_OPTIONS.map((t) => {
     const sel = form.tags.includes(t);
-    return <button key={t} className="pill-btn" onClick={() => toggleTag(t)} style={{ padding: "4px 12px", borderRadius: 20, border: sel ? "1px solid rgba(128,0,0,0.3)" : `1px solid ${borderColor}`, background: sel ? "rgba(128,0,0,0.09)" : subtleBg, color: sel ? "#800000" : textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>{t}</button>;
+    return <button key={t} className="pill-btn" onClick={() => toggleTag(t)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: sel ? "1px solid rgba(128,0,0,0.35)" : `1px solid ${borderColor}`, background: sel ? "rgba(128,0,0,0.08)" : "transparent", color: sel ? "#800000" : textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
+                      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={CATEGORY_ICON_PATHS[t]} /></svg>
+                      {t}
+                    </button>;
   })}
+              </div>
+            </div>
+
+            <div className="cs-form-date-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 18 }}>
+              <div>
+                <span style={lbl}>Start date <span style={{ color: "#800000" }}>*</span></span>
+                <input type="date" style={inp()} value={form.startDate} onChange={(e) => updateForm("startDate", e.target.value)} />
+              </div>
+              <div>
+                <span style={lbl}>End date</span>
+                <input type="date" style={inp()} value={form.endDate} onChange={(e) => updateForm("endDate", e.target.value)} />
+              </div>
+            </div>
+            <div className="cs-form-challenge-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <div>
+                <span style={lbl}>Challenge <span style={{ color: "#800000" }}>*</span></span>
+                <textarea style={inp({ minHeight: 84, resize: "vertical" })} placeholder="Describe the challenge or problem..." value={form.challenge} onChange={(e) => updateForm("challenge", e.target.value)} />
+              </div>
+              <div>
+                <span style={lbl}>Solution <span style={{ color: "#800000" }}>*</span></span>
+                <textarea style={inp({ minHeight: 84, resize: "vertical" })} placeholder="Describe the solution and approach..." value={form.solution} onChange={(e) => updateForm("solution", e.target.value)} />
+              </div>
             </div>
           </div>
-          <div className="cs-form-date-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 13 }}>
-            <div>
-              <span style={lbl}>Start date <span style={{ color: "#800000" }}>*</span></span>
-              <input type="date" style={inp()} value={form.startDate} onChange={(e) => updateForm("startDate", e.target.value)} />
+
+          {
+    /* STEP 4 — Content Sections */
+  }
+          <div style={{ ...card, padding: "22px 22px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>4</div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Content Sections</p>
+                  <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Organize your case study content into sections</p>
+                </div>
+              </div>
+              {form.sections.length < 5 && <button onClick={addSection} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#800000", background: "transparent", border: `1px solid ${borderColor}`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                  Add section
+                </button>}
             </div>
-            <div>
-              <span style={lbl}>End date</span>
-              <input type="date" style={inp()} value={form.endDate} onChange={(e) => updateForm("endDate", e.target.value)} />
-            </div>
-          </div>
-          <div className="cs-form-challenge-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 13 }}>
-            <div>
-              <span style={lbl}>Challenge <span style={{ color: "#800000" }}>*</span></span>
-              <textarea style={inp({ minHeight: 72, resize: "vertical" })} placeholder="Describe the challenge..." value={form.challenge} onChange={(e) => updateForm("challenge", e.target.value)} />
-            </div>
-            <div>
-              <span style={lbl}>Solution <span style={{ color: "#800000" }}>*</span></span>
-              <textarea style={inp({ minHeight: 72, resize: "vertical" })} placeholder="Describe the solution..." value={form.solution} onChange={(e) => updateForm("solution", e.target.value)} />
-            </div>
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={lbl}>Content sections</span>
-              {form.sections.length < 5 && <button onClick={addSection} style={{ fontSize: 10, color: "#800000", background: "rgba(128,0,0,0.07)", border: "1px solid rgba(128,0,0,0.2)", borderRadius: 6, padding: "3px 10px", cursor: "pointer", fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>+ Add section</button>}
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {form.sections.map((s, i) => <div key={i} className="cs-section-row" style={{ display: "grid", gridTemplateColumns: "160px 1fr auto", gap: 8, padding: "10px 12px", borderRadius: 10, background: subtleBg, border: `1px solid ${borderColor}`, alignItems: "start" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {form.sections.map((s, i) => <div key={i} className="cs-section-row" style={{ display: "grid", gridTemplateColumns: "200px 1fr auto", gap: 12, padding: "14px 16px", borderRadius: 14, background: subtleBg, border: `1px solid ${borderColor}`, alignItems: "start" }}>
                   <div>
-                    <span style={{ ...lbl, marginBottom: 4 }}>Topic {i + 1}</span>
-                    <input style={inp({ fontSize: 11 })} placeholder={`Topic ${i + 1}`} value={s.topic} onChange={(e) => updateSection(i, "topic", e.target.value)} />
+                    <span style={{ ...lbl, marginBottom: 6 }}>Topic {i + 1}</span>
+                    <input style={inp()} placeholder="Topic title..." value={s.topic} onChange={(e) => updateSection(i, "topic", e.target.value)} />
                   </div>
                   <div>
-                    <span style={{ ...lbl, marginBottom: 4 }}>Content {i + 1}</span>
-                    <textarea style={inp({ fontSize: 11, minHeight: 50, resize: "none" })} placeholder={`Content ${i + 1}`} value={s.content} onChange={(e) => updateSection(i, "content", e.target.value)} />
+                    <span style={{ ...lbl, marginBottom: 6 }}>Content</span>
+                    <input style={inp()} placeholder="Write content for this section..." value={s.content} onChange={(e) => updateSection(i, "content", e.target.value)} />
                   </div>
-                  {form.sections.length > 1 && <button onClick={() => removeSection(i)} className="icon-btn" style={{ marginTop: 21, width: 26, height: 26, borderRadius: 6, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                  {form.sections.length > 1 && <button onClick={() => removeSection(i)} className="icon-btn" style={{ marginTop: 21, width: 34, height: 34, borderRadius: 9, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>}
                 </div>)}
+              {form.sections.length < 5 && <button onClick={addSection} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 0", borderRadius: 12, border: `1.5px dashed ${borderColor}`, background: "transparent", color: textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                  Add another section
+                </button>}
             </div>
           </div>
+
           <div className="cs-form-actions" style={{ display: "flex", gap: 10 }}>
             <button onClick={() => {
     if (isEditMode) {
@@ -1041,10 +1268,12 @@ function CaseStudies() {
     } else {
       clearForm();
     }
-  }} style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+  }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 1, padding: "13px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: cardBg, color: textMuted, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
               {isEditMode ? "Cancel edit" : "Reset form"}
             </button>
-            <button onClick={() => setShowConfirm(true)} style={{ flex: 2, padding: "10px 0", borderRadius: 10, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+            <button onClick={() => setShowConfirm(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 2, padding: "13px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               {isEditMode ? "Update case study" : "Create case study"}
             </button>
           </div>

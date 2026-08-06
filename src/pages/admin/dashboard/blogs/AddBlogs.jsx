@@ -106,12 +106,12 @@ const CustomDropdown = ({ value, onChange, options, placeholder = "Select...", i
         </div>}
     </div>;
 };
-async function generateWithGemini(mode, prompt) {
+async function generateWithGemini(mode, prompt, modelId) {
   const response = await fetch(`${API_BASE}/ai/generate-blog`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mode, prompt })
+    body: JSON.stringify({ mode, prompt, modelId })
   });
   if (!response.ok) {
     const err = await response.json().catch(() => null);
@@ -119,12 +119,12 @@ async function generateWithGemini(mode, prompt) {
   }
   return response.json();
 }
-async function generatePollinationsImage(prompt) {
+async function generatePollinationsImage(prompt, modelId) {
   const response = await fetch(`${API_BASE}/ai/generate-image`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ prompt, modelId })
   });
   if (!response.ok) {
     const err = await response.json().catch(() => null);
@@ -225,9 +225,17 @@ function AddBlogs() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStepIndex, setGenerationStepIndex] = useState(0);
   const [aiUsage, setAiUsage] = useState(null);
+  const [selectedModelId, setSelectedModelId] = useState(() => localStorage.getItem("aiModelId") || "");
+  const [isModelMenuOpen, setIsModelMenuOpen] = useState(false);
+  const modelMenuRef = useRef(null);
+  const [aiImageUsage, setAiImageUsage] = useState(null);
+  const [selectedImageModelId, setSelectedImageModelId] = useState(() => localStorage.getItem("aiImageModelId") || "");
+  const [isImageModelMenuOpen, setIsImageModelMenuOpen] = useState(false);
+  const imageModelMenuRef = useRef(null);
   React.useEffect(() => {
     const fetchUsage = () => {
-      fetch(`${API_BASE}/ai/usage`, { credentials: "include" })
+      const qs = selectedModelId ? `?modelId=${encodeURIComponent(selectedModelId)}` : "";
+      fetch(`${API_BASE}/ai/usage${qs}`, { credentials: "include" })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => data && setAiUsage(data))
         .catch(() => {});
@@ -235,7 +243,42 @@ function AddBlogs() {
     fetchUsage();
     const interval = setInterval(fetchUsage, 1e4);
     return () => clearInterval(interval);
-  }, [isGenerating]);
+  }, [isGenerating, selectedModelId]);
+  React.useEffect(() => {
+    const fetchImageUsage = () => {
+      const params = new URLSearchParams({ kind: "image" });
+      if (selectedImageModelId) params.set("modelId", selectedImageModelId);
+      fetch(`${API_BASE}/ai/usage?${params}`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => data && setAiImageUsage(data))
+        .catch(() => {});
+    };
+    fetchImageUsage();
+    const interval = setInterval(fetchImageUsage, 1e4);
+    return () => clearInterval(interval);
+  }, [isGenerating, selectedImageModelId]);
+  React.useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (modelMenuRef.current && !modelMenuRef.current.contains(e.target)) {
+        setIsModelMenuOpen(false);
+      }
+      if (imageModelMenuRef.current && !imageModelMenuRef.current.contains(e.target)) {
+        setIsImageModelMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  const selectModel = (id) => {
+    setSelectedModelId(id);
+    localStorage.setItem("aiModelId", id);
+    setIsModelMenuOpen(false);
+  };
+  const selectImageModel = (id) => {
+    setSelectedImageModelId(id);
+    localStorage.setItem("aiImageModelId", id);
+    setIsImageModelMenuOpen(false);
+  };
   const getTotalWordCount = () => {
     let n = (mainContentTitle + " " + mainContentText).split(/\s+/).filter(Boolean).length;
     contentSections.forEach((s) => {
@@ -319,18 +362,18 @@ function AddBlogs() {
     try {
       if (activeModal === "image") {
         setGenerationStepIndex(1);
-        const { dataUrl, file } = await generatePollinationsImage(modalPrompt);
+        const { dataUrl, file } = await generatePollinationsImage(modalPrompt, selectedImageModelId);
         setSelectedImage(dataUrl);
         actualFileRef.current = file;
         closeModal();
       } else if (activeModal === "title") {
         setGenerationStepIndex(1);
-        const { text } = await generateWithGemini("title", modalPrompt);
+        const { text } = await generateWithGemini("title", modalPrompt, selectedModelId);
         setTitle((text || "").trim().slice(0, HEADLINE_MAX));
         closeModal();
       } else if (activeModal === "content") {
         setGenerationStepIndex(1);
-        const { data: parsed } = await generateWithGemini("content", modalPrompt);
+        const { data: parsed } = await generateWithGemini("content", modalPrompt, selectedModelId);
         setGenerationStepIndex(2);
         if (parsed.mainContentTitle) setMainContentTitle(parsed.mainContentTitle.slice(0, HEADLINE_MAX));
         if (parsed.mainContentText) setMainContentText(parsed.mainContentText);
@@ -345,13 +388,13 @@ function AddBlogs() {
         let contentDone = false;
         setGenerationStepIndex(1);
         const [{ data: parsed }, imageResult] = await Promise.all([
-          generateWithGemini("full", modalPrompt).then((r) => {
+          generateWithGemini("full", modalPrompt, selectedModelId).then((r) => {
             contentDone = true;
             setGenerationStepIndex(3);
             return r;
           }),
           (async () => {
-            const result = await generatePollinationsImage(modalImagePrompt).catch(() => null);
+            const result = await generatePollinationsImage(modalImagePrompt, selectedImageModelId).catch(() => null);
             if (contentDone) setGenerationStepIndex(3);
             return result;
           })()
@@ -373,7 +416,7 @@ function AddBlogs() {
         closeModal();
       } else if (activeModal === "expand") {
         setGenerationStepIndex(1);
-        const { data: parsed } = await generateWithGemini("expand-prompt", modalPrompt);
+        const { data: parsed } = await generateWithGemini("expand-prompt", modalPrompt, selectedModelId);
         setModalPrompt(parsed.contentPrompt || modalPrompt);
         setModalImagePrompt(parsed.imagePrompt || "");
         setActiveModal("full");
@@ -1021,6 +1064,90 @@ function AddBlogs() {
             </div>
 
             <div className="p-6 space-y-4">
+              {
+    /* AI Model switcher — text models for text modes, image models for the image mode */
+  }
+              {activeModal === "image" ? aiImageUsage && <div>
+                  <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>AI Model</p>
+                  <div className="relative" ref={imageModelMenuRef}>
+                    <button
+    type="button"
+    onClick={() => setIsImageModelMenuOpen((v) => !v)}
+    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 hover:border-white/20" : "bg-gray-50 border-gray-200 text-gray-800 hover:border-gray-300"}`}
+    style={{ fontSize: 11, fontWeight: 500 }}
+  >
+                      <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-green-500" />
+                        {aiImageUsage.models.find((m) => m.active)?.label || "Select model"}
+                      </span>
+                      <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform ${isImageModelMenuOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isImageModelMenuOpen && <div
+    className={`absolute left-0 right-0 top-full mt-1 rounded-lg border shadow-lg overflow-hidden z-20 ${isdarkmode ? "border-white/10 bg-[#1a1a1a]" : "border-gray-200 bg-white"}`}
+  >
+                        {aiImageUsage.models.map((m) => <button
+    key={m.id}
+    type="button"
+    onClick={() => selectImageModel(m.id)}
+    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors ${isdarkmode ? "hover:bg-white/5" : "hover:bg-gray-50"}`}
+  >
+                            <span className="flex items-center gap-2">
+                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : isdarkmode ? "bg-white/15" : "bg-gray-300"}`} />
+                              <span className={`${m.active ? isdarkmode ? "text-gray-200" : "text-gray-800" : isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: m.active ? 600 : 400 }}>
+                                {m.label}
+                              </span>
+                            </span>
+                            <span className={isdarkmode ? "text-gray-600" : "text-gray-400"} style={{ fontSize: 10, fontWeight: 400 }}>
+                              {m.used}/{m.limit}
+                            </span>
+                          </button>)}
+                      </div>}
+                  </div>
+                  <p className={`mt-1.5 ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: 400 }}>
+                    Falls back to a free image generator automatically if the selected model has no quota.
+                  </p>
+                </div> : aiUsage && <div>
+                  <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>AI Model</p>
+                  <div className="relative" ref={modelMenuRef}>
+                    <button
+    type="button"
+    onClick={() => setIsModelMenuOpen((v) => !v)}
+    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 hover:border-white/20" : "bg-gray-50 border-gray-200 text-gray-800 hover:border-gray-300"}`}
+    style={{ fontSize: 11, fontWeight: 500 }}
+  >
+                      <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-green-500" />
+                        {aiUsage.models.find((m) => m.active)?.label || "Select model"}
+                      </span>
+                      <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform ${isModelMenuOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isModelMenuOpen && <div
+    className={`absolute left-0 right-0 top-full mt-1 rounded-lg border shadow-lg overflow-hidden z-20 ${isdarkmode ? "border-white/10 bg-[#1a1a1a]" : "border-gray-200 bg-white"}`}
+  >
+                        {aiUsage.models.map((m) => <button
+    key={m.id}
+    type="button"
+    onClick={() => selectModel(m.id)}
+    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors ${isdarkmode ? "hover:bg-white/5" : "hover:bg-gray-50"}`}
+  >
+                            <span className="flex items-center gap-2">
+                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : isdarkmode ? "bg-white/15" : "bg-gray-300"}`} />
+                              <span className={`${m.active ? isdarkmode ? "text-gray-200" : "text-gray-800" : isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: m.active ? 600 : 400 }}>
+                                {m.label}
+                              </span>
+                            </span>
+                            <span className={isdarkmode ? "text-gray-600" : "text-gray-400"} style={{ fontSize: 10, fontWeight: 400 }}>
+                              {m.used}/{m.limit}
+                            </span>
+                          </button>)}
+                      </div>}
+                  </div>
+                </div>}
+
               {
     /* Hint */
   }
