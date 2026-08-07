@@ -138,7 +138,7 @@ function Careers() {
   const gettypecolor = (type) => {
     switch (type) {
       case "Full-time":
-        return { backgroundColor: "#800000" };
+        return { backgroundColor: "var(--admin-accent)" };
       case "Part-time":
         return { backgroundColor: "#ff4500" };
       case "Contract":
@@ -161,7 +161,7 @@ function Careers() {
           }
           input:focus, textarea:focus, select:focus {
             ring: 0 !important;
-            outline: 2px solid #800000 !important;
+            outline: 2px solid var(--admin-accent) !important;
           }
         ` }} />
 
@@ -213,7 +213,7 @@ function Careers() {
       setisediting(false);
       resetform();
     }} className="px-6 py-2.5 text-[10px] bg-gray-100 text-gray-500 rounded-xl font-bold uppercase tracking-widest">Discard</button>
-              <button onClick={handlesave} className="px-8 py-2.5 text-[11px] bg-[#800000] text-white rounded-xl shadow-md font-bold hover:bg-[#600000] transition-all">Confirm & Publish</button>
+              <button onClick={handlesave} className="px-8 py-2.5 text-[11px] bg-[var(--admin-accent)] text-white rounded-xl shadow-md font-bold hover:bg-[#600000] transition-all">Confirm & Publish</button>
             </div>
           </div>
         </div>
@@ -230,7 +230,7 @@ function Careers() {
           <h2 className="text-xl leading-none tracking-tight font-bold" style={{ color: "#4a5565" }}>Career Opportunities</h2>
           <p className="text-[11px] tracking-wide italic text-gray-400">Reviewing recruitment progress — your contributions are shaping meaningful solutions!</p>
         </div>
-        <button onClick={() => setisediting(true)} className="px-8 py-4 bg-[#800000] text-white text-[10px] font-bold uppercase tracking-widest rounded-xl shadow-md hover:bg-[#600000] transition-all">
+        <button onClick={() => setisediting(true)} className="px-8 py-4 bg-[var(--admin-accent)] text-white text-[10px] font-bold uppercase tracking-widest rounded-xl shadow-md hover:bg-[#600000] transition-all">
           Add new position
         </button>
       </div>
@@ -255,10 +255,10 @@ function Careers() {
   />
             </div>
             <div className="bg-white p-1 rounded-xl border border-gray-100 shadow-sm flex items-center">
-              <button onClick={() => setviewmode("grid")} className={`p-2.5 rounded-xl transition-all ${viewmode === "grid" ? "bg-[#800000] text-white" : "text-gray-400 hover:text-gray-600"}`}>
+              <button onClick={() => setviewmode("grid")} className={`p-2.5 rounded-xl transition-all ${viewmode === "grid" ? "bg-[var(--admin-accent)] text-white" : "text-gray-400 hover:text-gray-600"}`}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
               </button>
-              <button onClick={() => setviewmode("list")} className={`p-2.5 rounded-xl transition-all ${viewmode === "list" ? "bg-[#800000] text-white" : "text-gray-400 hover:text-gray-600"}`}>
+              <button onClick={() => setviewmode("list")} className={`p-2.5 rounded-xl transition-all ${viewmode === "list" ? "bg-[var(--admin-accent)] text-white" : "text-gray-400 hover:text-gray-600"}`}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
               </button>
             </div>
@@ -278,7 +278,7 @@ function Careers() {
                     <div className="flex flex-col space-y-0.5">
                       <h4 className="text-[18px] text-gray-900 font-bold leading-tight line-clamp-2 uppercase">{rec.title}</h4>
                       <p className="text-[11px] text-gray-400 font-bold tracking-wide uppercase">{rec.location}</p>
-                      <p className="text-[11px] text-gray-500">salary: <span className="font-bold text-[#800000]">{rec.salary}</span></p>
+                      <p className="text-[11px] text-gray-500">salary: <span className="font-bold text-[var(--admin-accent)]">{rec.salary}</span></p>
                     </div>
 
                     <div className="mt-3 mb-6">
@@ -292,7 +292,7 @@ function Careers() {
                         {rec.type}
                       </span>
                       <div className="flex gap-2">
-                        <button onClick={() => handleedit(rec)} className="p-1.5 bg-gray-50 rounded-full text-gray-400 hover:text-[#800000] transition-colors"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg></button>
+                        <button onClick={() => handleedit(rec)} className="p-1.5 bg-gray-50 rounded-full text-gray-400 hover:text-[var(--admin-accent)] transition-colors"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg></button>
                         <button onClick={() => handledelete(rec.id)} className="p-1.5 bg-gray-50 rounded-full text-gray-400 hover:text-red-600 transition-colors"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></svg></button>
                       </div>
                     </div>
@@ -304,7 +304,7 @@ function Careers() {
                     </div>
                     <div className="flex-grow space-y-1 text-center md:text-left">
                       <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start">
-                        <span className="text-[9px] font-bold text-[#800000] tracking-widest uppercase bg-maroon-50 px-2.5 py-1 rounded-full border border-maroon-100">{rec.category}</span>
+                        <span className="text-[9px] font-bold text-[var(--admin-accent)] tracking-widest uppercase bg-maroon-50 px-2.5 py-1 rounded-full border border-maroon-100">{rec.category}</span>
                         <span style={gettypecolor(rec.type)} className="text-[9px] font-bold text-white tracking-widest uppercase px-2.5 py-1 rounded-full shadow-sm">
                           {rec.type}
                         </span>
@@ -312,12 +312,12 @@ function Careers() {
                       <div className="flex flex-col space-y-0.5">
                         <h4 className="text-md text-gray-900 font-bold leading-tight uppercase">{rec.title}</h4>
                         <p className="text-[10px] text-gray-400 font-bold uppercase">{rec.location}</p>
-                        <p className="text-[10px] text-gray-500">salary: <span className="font-bold text-[#800000]">{rec.salary}</span></p>
+                        <p className="text-[10px] text-gray-500">salary: <span className="font-bold text-[var(--admin-accent)]">{rec.salary}</span></p>
                       </div>
                       <p className="text-[10px] text-gray-400 mt-1 line-clamp-1 text-left">{rec.summary}</p>
                     </div>
                     <div className="flex md:flex-col items-center gap-2 md:border-l md:border-gray-50 md:pl-6">
-                      <button onClick={() => handleedit(rec)} className="px-5 py-2 bg-gray-50 text-gray-500 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-[#800000] hover:text-white transition-all">edit</button>
+                      <button onClick={() => handleedit(rec)} className="px-5 py-2 bg-gray-50 text-gray-500 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-[var(--admin-accent)] hover:text-white transition-all">edit</button>
                       <button onClick={() => handledelete(rec.id)} className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:text-red-600 transition-all"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></svg></button>
                     </div>
                   </div>)}
@@ -332,7 +332,7 @@ function Careers() {
                 <button
     disabled={currentpage === 1}
     onClick={() => setcurrentpage((prev) => prev - 1)}
-    className={`p-2 transition-all ${currentpage === 1 ? "text-gray-200 cursor-not-allowed" : "text-gray-400 hover:text-[#800000]"}`}
+    className={`p-2 transition-all ${currentpage === 1 ? "text-gray-200 cursor-not-allowed" : "text-gray-400 hover:text-[var(--admin-accent)]"}`}
   >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
@@ -341,7 +341,7 @@ function Careers() {
                   {[...Array(totalpages)].map((_, i) => <button
     key={i}
     onClick={() => setcurrentpage(i + 1)}
-    className={`w-8 h-8 rounded-lg text-[11px] font-bold transition-all border ${currentpage === i + 1 ? "bg-transparent border-[#800000] text-[#800000]" : "border-transparent text-gray-400 hover:bg-gray-50"}`}
+    className={`w-8 h-8 rounded-lg text-[11px] font-bold transition-all border ${currentpage === i + 1 ? "bg-transparent border-[var(--admin-accent)] text-[var(--admin-accent)]" : "border-transparent text-gray-400 hover:bg-gray-50"}`}
   >
                       {i + 1}
                     </button>)}
@@ -350,7 +350,7 @@ function Careers() {
                 <button
     disabled={currentpage === totalpages || totalitems === 0}
     onClick={() => setcurrentpage((prev) => prev + 1)}
-    className={`p-2 transition-all ${currentpage === totalpages || totalitems === 0 ? "text-gray-200 cursor-not-allowed" : "text-gray-400 hover:text-[#800000]"}`}
+    className={`p-2 transition-all ${currentpage === totalpages || totalitems === 0 ? "text-gray-200 cursor-not-allowed" : "text-gray-400 hover:text-[var(--admin-accent)]"}`}
   >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>

@@ -829,7 +829,7 @@ const serviceIdToCanonical = {
   "white-label": "white-label"
 };
 const getBanner = (serviceId) => serviceBanners[serviceId] ?? serviceBanners[serviceIdToCanonical[serviceId] ?? ""];
-const defaultGradient = "linear-gradient(135deg, rgba(128,0,0,0.14) 0%, rgba(160,0,0,0.07) 60%, transparent 100%)";
+const defaultGradient = "linear-gradient(135deg, color-mix(in srgb, var(--admin-accent) 14%, transparent) 0%, rgba(160,0,0,0.07) 60%, transparent 100%)";
 const defaultIcon = <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
   </svg>;
@@ -860,7 +860,7 @@ function CoverPhotoUploader({
   };
   return <div className="w-full">
       {value ? <div
-    className={`relative rounded-lg overflow-hidden border ${isdarkmode ? "border-white/8" : "border-gray-200"}`}
+    className={`relative rounded-lg overflow-hidden border border-[var(--admin-border)]`}
     style={{ height: 130 }}
   >
           <img src={value} alt="Cover" className="w-full h-full object-cover" />
@@ -893,11 +893,11 @@ function CoverPhotoUploader({
       if (f) handleFile(f);
     }}
     onDragOver={(e) => e.preventDefault()}
-    className={`w-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${isdarkmode ? "border-white/10 hover:border-[#800000]/50 bg-white/[0.02]" : "border-gray-200 hover:border-[#800000]/40 bg-gray-50 hover:bg-white"}`}
+    className={`w-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all border-[var(--admin-border)] hover:border-[var(--admin-accent)] bg-[var(--admin-bg-soft)]`}
     style={{ height: 110 }}
   >
           <svg
-    className={`w-6 h-6 ${isdarkmode ? "text-gray-600" : "text-gray-400"}`}
+    className={`w-6 h-6 text-[var(--admin-text-faint)]`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -905,13 +905,13 @@ function CoverPhotoUploader({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           <p
-    className={`text-[11px] font-normal ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`text-[11px] font-normal text-[var(--admin-text-faint)]`}
     style={{ fontFamily: "'Poppins', sans-serif" }}
   >
             Click or drag to upload
           </p>
           <p
-    className={`text-[10px] ${isdarkmode ? "text-gray-600" : "text-gray-400"}`}
+    className={`text-[10px] text-[var(--admin-text-faint)]`}
     style={{ fontFamily: "'Poppins', sans-serif" }}
   >
             PNG, JPG, WEBP · Max 5MB
@@ -931,8 +931,8 @@ function CoverPhotoUploader({
   />
     </div>;
 }
-const getInputCls = (isdarkmode) => `w-full px-3 py-2 rounded-lg text-[11px] font-normal border outline-none transition-all duration-200 ${isdarkmode ? "bg-[#161616] text-[#f0f0f0] placeholder-[#6b7280] border-white/10 focus:border-[#800000]" : "bg-white text-[#1f2937] placeholder-[#9ca3af] border-[#e5e7eb] focus:border-[#800000]"}`;
-const getLabelCls = (isdarkmode) => `block text-[10px] font-medium mb-1 uppercase tracking-wider ${isdarkmode ? "text-[#9ca3af]" : "text-[#6b7280]"}`;
+const getInputCls = (isdarkmode) => `w-full px-3 py-2 rounded-lg text-[11px] font-normal border outline-none transition-all duration-200 bg-[var(--admin-surface)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] border-[var(--admin-border)] focus:border-[var(--admin-accent)]`;
+const getLabelCls = (isdarkmode) => `block text-[10px] font-medium mb-1 uppercase tracking-wider text-[var(--admin-text-faint)]`;
 function AddServiceModal({
   isOpen,
   onClose,
@@ -1009,16 +1009,16 @@ function AddServiceModal({
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-    className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border ${isdarkmode ? "bg-[#111] border-white/5" : "bg-white border-gray-100"}`}
+    className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
         {
     /* Header */
   }
         <div className="relative px-8 pt-8 pb-4">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-[#800000]" />
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--admin-accent)]" />
           <h2
     className="text-[18px] font-semibold tracking-tight"
-    style={{ color: isdarkmode ? "#fff" : "#111", margin: 0 }}
+    style={{ color: "var(--admin-text)", margin: 0 }}
   >
             New System Service
           </h2>
@@ -1105,7 +1105,7 @@ function AddServiceModal({
             <button
     type="button"
     onClick={onClose}
-    className={`flex-1 py-2.5 text-[11px] font-medium border rounded-lg transition-all ${isdarkmode ? "border-white/10 text-gray-400 hover:text-white" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}
+    className={`flex-1 py-2.5 text-[11px] font-medium border rounded-lg transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
               Cancel
             </button>
@@ -1113,7 +1113,7 @@ function AddServiceModal({
     type="submit"
     disabled={submitting}
     className="flex-[2] py-2.5 text-[11px] font-medium text-white rounded-lg transition-all shadow-lg disabled:opacity-60"
-    style={{ background: "#800000" }}
+    style={{ background: "var(--admin-accent)" }}
   >
               {submitting ? "Registering..." : "Register Service"}
             </button>
@@ -1243,20 +1243,20 @@ function EditServiceModal({
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-    className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border ${isdarkmode ? "bg-[#111] border-white/5" : "bg-white border-gray-100"}`}
+    className={`relative w-full max-w-lg rounded-[24px] shadow-2xl overflow-hidden border bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
         {
     /* Header */
   }
         <div className="relative px-8 pt-8 pb-4">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-[#800000]" />
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--admin-accent)]" />
           <h2
     className="text-[18px] font-semibold tracking-tight"
-    style={{ color: isdarkmode ? "#fff" : "#111", margin: 0 }}
+    style={{ color: "var(--admin-text)", margin: 0 }}
   >
             Modify Configuration
           </h2>
-          <p className="text-[9px] font-mono mt-1 text-[#800000] font-bold uppercase tracking-tighter">
+          <p className="text-[9px] font-mono mt-1 text-[var(--admin-accent)] font-bold uppercase tracking-tighter">
             ref: {service.serviceId}
           </p>
         </div>
@@ -1347,7 +1347,7 @@ function EditServiceModal({
                 <button
     type="button"
     onClick={() => setConfirmDelete(false)}
-    className={`flex-1 py-1.5 rounded text-[10px] font-medium border transition-all ${isdarkmode ? "border-white/10 text-gray-400 hover:text-white" : "border-gray-200 text-gray-500 hover:bg-gray-100"}`}
+    className={`flex-1 py-1.5 rounded text-[10px] font-medium border transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
                   Cancel
                 </button>
@@ -1392,7 +1392,7 @@ function EditServiceModal({
             <button
     type="button"
     onClick={onClose}
-    className={`flex-1 py-2.5 text-[11px] font-medium border rounded-lg transition-all ${isdarkmode ? "border-white/10 text-gray-400 hover:text-white" : "border-gray-200 text-gray-500 hover:bg-gray-50"}`}
+    className={`flex-1 py-2.5 text-[11px] font-medium border rounded-lg transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
               Discard
             </button>
@@ -1400,7 +1400,7 @@ function EditServiceModal({
     type="submit"
     disabled={submitting}
     className="flex-[2] py-2.5 text-[11px] font-medium text-white rounded-lg transition-all shadow-lg disabled:opacity-60"
-    style={{ background: "#800000" }}
+    style={{ background: "var(--admin-accent)" }}
   >
               {submitting ? "Updating..." : "Commit Changes"}
             </button>
@@ -1516,14 +1516,14 @@ function ListServices() {
   );
   const activeCount = services.filter((s) => s.isActive).length;
   const inactiveCount = services.filter((s) => !s.isActive).length;
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textSecondary = isdarkmode ? "#9ca3af" : "#6b7280";
-  const textMuted = isdarkmode ? "#6b7280" : "#9ca3af";
-  const hoverBg = isdarkmode ? "rgba(255,255,255,0.04)" : "#f9fafb";
-  const subtleBg = isdarkmode ? "rgba(255,255,255,0.03)" : "#f9fafb";
-  const inputBg = isdarkmode ? "#161616" : "#ffffff";
+  const cardBg = "var(--admin-surface)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textSecondary = "var(--admin-text-faint)";
+  const textMuted = "var(--admin-text-faint)";
+  const hoverBg = "var(--admin-bg-soft)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const inputBg = "var(--admin-surface)";
   if (loading) {
     return <div
       style={{
@@ -1541,7 +1541,7 @@ function ListServices() {
         width: 36,
         height: 36,
         border: "2px solid",
-        borderColor: `${borderColor} ${borderColor} ${borderColor} #800000`,
+        borderColor: `${borderColor} ${borderColor} ${borderColor} var(--admin-accent)`,
         borderRadius: "50%",
         animation: "spin 0.8s linear infinite",
         margin: "0 auto 12px"
@@ -1579,7 +1579,7 @@ function ListServices() {
     outline: "none",
     cursor: "pointer",
     transition: "background 0.3s",
-    background: isActive ? "#800000" : isdarkmode ? "rgba(255,255,255,0.12)" : "#d1d5db",
+    background: isActive ? "var(--admin-accent)" : "var(--admin-border-strong)",
     flexShrink: 0
   });
   const thumbStyle = (isActive) => ({
@@ -1600,7 +1600,7 @@ function ListServices() {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: isActive ? "linear-gradient(135deg, #800000, #a00000)" : "rgba(255, 255, 255, 0.08)",
+    background: isActive ? "linear-gradient(135deg, var(--admin-accent), #a00000)" : "rgba(255, 255, 255, 0.08)",
     backdropFilter: isActive ? void 0 : "blur(8px)",
     WebkitBackdropFilter: isActive ? void 0 : "blur(8px)",
     border: isActive ? void 0 : "1px solid rgba(255,255,255,0.10)",
@@ -1621,7 +1621,7 @@ function ListServices() {
         .svc-card:hover {
           transform: translateY(-3px);
           box-shadow: 0 10px 25px rgba(0,0,0,${isdarkmode ? "0.4" : "0.10"}) !important;
-          border-color: ${isdarkmode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.10)"};
+          border-color: ${"var(--admin-border-strong)"};
         }
         .toggle-btn:active { transform: scale(0.92); }
       ` }} />
@@ -1691,7 +1691,7 @@ function ListServices() {
         gap: 7,
         padding: isMobile ? "7px 12px" : "9px 18px",
         borderRadius: 8,
-        background: "linear-gradient(135deg, #800000, #a00000)",
+        background: "linear-gradient(135deg, var(--admin-accent), #a00000)",
         color: "#fff",
         fontSize: isMobile ? 11 : 12,
         fontWeight: 500,
@@ -1747,7 +1747,7 @@ function ListServices() {
         transition: "border-color 0.15s",
         fontWeight: 400
       }}
-      onFocus={(e) => e.target.style.borderColor = "#800000"}
+      onFocus={(e) => e.target.style.borderColor = "var(--admin-accent)"}
       onBlur={(e) => e.target.style.borderColor = borderColor}
     />
             <svg
@@ -1806,7 +1806,7 @@ function ListServices() {
         borderLeftColor: borderColor,
         cursor: "pointer",
         transition: "all 0.15s",
-        background: filtermode === val ? "#800000" : "transparent",
+        background: filtermode === val ? "var(--admin-accent)" : "transparent",
         color: filtermode === val ? "#ffffff" : textMuted
       }}
     >
@@ -1817,7 +1817,7 @@ function ListServices() {
         padding: "1px 6px",
         borderRadius: 10,
         fontWeight: 500,
-        background: filtermode === val ? "rgba(255,255,255,0.22)" : isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+        background: filtermode === val ? "rgba(255,255,255,0.22)" : "var(--admin-border)",
         color: filtermode === val ? "#fff" : textMuted
       }}
     >
@@ -1891,7 +1891,7 @@ function ListServices() {
         borderLeftWidth: i > 0 ? 1 : 0,
         borderLeftStyle: "solid",
         borderLeftColor: borderColor,
-        background: viewmode === mode ? "#800000" : "transparent",
+        background: viewmode === mode ? "var(--admin-accent)" : "transparent",
         color: viewmode === mode ? "#fff" : textMuted,
         cursor: "pointer",
         transition: "all 0.15s",
@@ -1957,7 +1957,7 @@ function ListServices() {
         borderLeftWidth: i > 0 ? 1 : 0,
         borderLeftStyle: "solid",
         borderLeftColor: borderColor,
-        background: viewmode === mode ? "#800000" : "transparent",
+        background: viewmode === mode ? "var(--admin-accent)" : "transparent",
         color: viewmode === mode ? "#fff" : textMuted,
         cursor: "pointer",
         transition: "all 0.15s",
@@ -1981,7 +1981,7 @@ function ListServices() {
         width: 52,
         height: 52,
         borderRadius: 14,
-        background: isdarkmode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+        background: "var(--admin-bg-soft)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -2017,13 +2017,13 @@ function ListServices() {
         key={service._id}
         className="svc-card"
         style={{
-          background: isdarkmode ? "#1a1a1a" : "#ffffff",
+          background: "var(--admin-surface)",
           border: `1px solid ${borderColor}`,
           borderRadius: 16,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          boxShadow: isdarkmode ? "0 1px 4px rgba(0,0,0,0.35)" : "0 2px 8px rgba(0,0,0,0.08)",
+          boxShadow: "var(--admin-shadow-sm)",
           position: "relative"
         }}
       >
@@ -2129,7 +2129,7 @@ function ListServices() {
           flexDirection: "column",
           gap: 10,
           flex: 1,
-          background: isdarkmode ? "#1a1a1a" : "#ffffff"
+          background: "var(--admin-surface)"
         }}
       >
                   {
@@ -2140,7 +2140,7 @@ function ListServices() {
         style={{
           fontSize: 14,
           fontWeight: 600,
-          color: isdarkmode ? "#f9fafb" : "#111827",
+          color: "var(--admin-text)",
           margin: "0 0 6px",
           lineHeight: 1.35
         }}
@@ -2150,7 +2150,7 @@ function ListServices() {
                     <p
         style={{
           fontSize: 12,
-          color: isdarkmode ? "#9ca3af" : "#6b7280",
+          color: "var(--admin-text-faint)",
           lineHeight: 1.6,
           margin: 0,
           fontWeight: 400,
@@ -2192,8 +2192,8 @@ function ListServices() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "10px 18px",
-          borderTop: `1px solid ${isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)"}`,
-          background: isdarkmode ? "#151515" : "#f9fafb"
+          borderTop: `1px solid ${"var(--admin-border)"}`,
+          background: "var(--admin-bg-soft)"
         }}
       >
                   <span
@@ -2300,7 +2300,7 @@ function ListServices() {
           padding: "6px 8px",
           borderRadius: 6,
           border: "none",
-          background: isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+          background: "var(--admin-border)",
           color: textMuted,
           cursor: "pointer",
           display: "flex",
@@ -2365,7 +2365,7 @@ function ListServices() {
           letterSpacing: "0.06em",
           padding: "3px 8px",
           borderRadius: 4,
-          background: isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+          background: "var(--admin-border)",
           color: textMuted,
           alignSelf: "center",
           width: "fit-content"
@@ -2400,7 +2400,7 @@ function ListServices() {
           padding: "5px 7px",
           borderRadius: 6,
           border: "none",
-          background: isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+          background: "var(--admin-border)",
           color: textMuted,
           cursor: "pointer",
           display: "flex",

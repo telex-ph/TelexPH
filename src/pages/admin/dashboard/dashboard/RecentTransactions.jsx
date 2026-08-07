@@ -59,7 +59,7 @@ function RecentTransactions() {
       fontWeight: 600,
       textTransform: "uppercase",
       letterSpacing: "0.07em",
-      color: "#800000",
+      color: "var(--admin-accent)",
       fontFamily: "'Poppins', sans-serif"
     }}
   >
@@ -132,13 +132,13 @@ function RecentTransactions() {
       width: 36,
       height: 36,
       borderRadius: "50%",
-      background: isdarkmode ? "rgba(255,255,255,0.08)" : "#f3f4f6",
+      background: "var(--admin-bg-hover)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontSize: 10,
       fontWeight: 700,
-      color: "#800000",
+      color: "var(--admin-accent)",
       flexShrink: 0,
       fontFamily: "'Poppins', sans-serif"
     }}
@@ -150,7 +150,7 @@ function RecentTransactions() {
     style={{
       fontSize: 12,
       fontWeight: 500,
-      color: isdarkmode ? "#d1d5db" : "#1f2937",
+      color: "var(--admin-text)",
       margin: 0,
       fontFamily: "'Poppins', sans-serif"
     }}

@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-import { useState, useRef, useEffect, createContext, useContext } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logout, { performAdminLogout, goToAdminLogin } from "./settings/logout";
@@ -9,12 +9,15 @@ import LogoutOverlay from "@/components/LogoutOverlay";
 import SettingsMenu from "./settings/SettingsMenu";
 import MiniActivityLogs from "./MiniActivityLogs";
 import api from "@/lib/api/axios";
-const DarkModeContext = createContext({
-  isdarkmode: false,
-  toggledarkmode: () => {
-  }
-});
-const useDarkMode = () => useContext(DarkModeContext);
+import { AdminThemeProvider, useAdminTheme } from "@/lib/admin-theme";
+import "@/styles/admin-theme.css";
+// Backed by the multi-theme provider rather than its own boolean state, so the
+// 34 dashboard files that read `isdarkmode` keep working unchanged while the
+// actual palette comes from whichever of the 20 themes is active.
+const useDarkMode = () => {
+  const { theme, setTheme, isdarkmode } = useAdminTheme();
+  return { isdarkmode, theme, setTheme };
+};
 const getDepartmentName = (dept) => {
   const departments = {
     1: "Compliance",
@@ -33,10 +36,13 @@ const getRoleName = (role) => {
   return roles[role] || "Unknown";
 };
 function DashboardLayout() {
+  return <AdminThemeProvider><DashboardLayoutInner /></AdminThemeProvider>;
+}
+function DashboardLayoutInner() {
   const children = <Outlet />;
   const pathname = usePathname();
   const router = useRouter();
-  const [isdarkmode, setisdarkmode] = useState(false);
+  const { isdarkmode, theme, setTheme } = useDarkMode();
   const [issidebarcollapsed, setissidebarcollapsed] = useState(false);
   const [ismobilemenuopen, setismobilemenuopen] = useState(false);
   const [opendropdowns, setopendropdowns] = useState({});
@@ -51,10 +57,8 @@ function DashboardLayout() {
   const [userData, setUserData] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [authError, setAuthError] = useState(false);
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") setisdarkmode(true);
-  }, []);
+  // Theme restore/persist is handled by AdminThemeProvider (localStorage) and
+  // by the effect below (server), so no local dark-mode bootstrap is needed.
   const handleConfirmLogout = async () => {
     if (loggingOut) return;
     setConfirmLogout(false);
@@ -62,22 +66,31 @@ function DashboardLayout() {
     await performAdminLogout();
     setLogoutDone(true);
   };
-  const toggledarkmode = async () => {
-    const newMode = !isdarkmode;
-    setisdarkmode(newMode);
-    localStorage.setItem("theme", newMode ? "dark" : "light");
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL || "/api";
-      await fetch(`${apiUrl}/users/theme`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ darkMode: newMode })
-      });
-    } catch (error) {
-      console.error("Failed to sync theme with database:", error);
+  // Mirrors the active theme to the server. Skips the very first run so
+  // merely loading the page doesn't PATCH back the value we just read.
+  const didSyncInitialTheme = useRef(false);
+  useEffect(() => {
+    if (!didSyncInitialTheme.current) {
+      didSyncInitialTheme.current = true;
+      return;
     }
-  };
+    const syncTheme = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || "/api";
+        await fetch(`${apiUrl}/users/theme`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          // darkMode is kept for backward compatibility with the existing
+          // column; theme carries the actual selection.
+          body: JSON.stringify({ darkMode: isdarkmode, theme })
+        });
+      } catch (error) {
+        console.error("Failed to sync theme with database:", error);
+      }
+    };
+    syncTheme();
+  }, [theme, isdarkmode]);
   const togglesidebar = () => {
     setissidebarcollapsed(!issidebarcollapsed);
     if (!issidebarcollapsed) setopendropdowns({});
@@ -97,9 +110,12 @@ function DashboardLayout() {
         ]);
         const data = response.data;
         setUserData(data);
-        if (data.darkMode !== void 0) {
-          setisdarkmode(data.darkMode);
-          localStorage.setItem("theme", data.darkMode ? "dark" : "light");
+        // Prefer the stored theme key; fall back to the legacy darkMode
+        // boolean for accounts saved before multi-theme support.
+        if (data.theme) {
+          setTheme(data.theme);
+        } else if (data.darkMode !== void 0) {
+          setTheme(data.darkMode ? "dark-obsidian" : "light");
         }
         setAuthError(false);
       } catch (error) {
@@ -153,20 +169,20 @@ function DashboardLayout() {
   const getnavstyle = (path, hasdropdown = false) => {
     const isactive = pathname === path || hasdropdown && pathname.startsWith(path);
     const collapsedpadding = issidebarcollapsed ? "lg:justify-center lg:px-0" : "px-3 sm:px-4";
-    if (isactive) return `bg-[#800000] text-white shadow-md border-none ${collapsedpadding}`;
-    return isdarkmode ? `bg-transparent text-gray-400 hover:bg-white/5 border-none ${collapsedpadding}` : `bg-transparent text-gray-500 hover:bg-gray-50 border-none ${collapsedpadding}`;
+    if (isactive) return `bg-[var(--admin-accent)] text-[var(--admin-text-on-accent)] shadow-md border-none ${collapsedpadding}`;
+    return `bg-transparent text-[var(--admin-text-faint)] hover:bg-[var(--admin-bg-hover)] border-none ${collapsedpadding}`;
   };
   const getsubnavstyle = (path) => {
     const isactive = pathname === path;
-    if (isactive) return isdarkmode ? "text-[#800000] rounded-xl bg-white/5" : "text-[#800000] rounded-xl bg-gray-50";
-    return isdarkmode ? "text-gray-400 hover:text-white rounded-xl hover:bg-white/5" : "text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-50";
+    if (isactive) return "text-[var(--admin-accent-text)] rounded-xl bg-[var(--admin-bg-soft)]";
+    return "text-[var(--admin-text-faint)] hover:text-[var(--admin-text)] rounded-xl hover:bg-[var(--admin-bg-hover)]";
   };
   if (isLoadingUser) {
-    return <div className={`flex h-[100dvh] items-center justify-center ${isdarkmode ? "bg-[#0f0f0f]" : "bg-[#f8f9fa]"}`}>
+    return <div className="flex h-[100dvh] items-center justify-center bg-[var(--admin-bg)]">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#800000] border-r-transparent" />
-          <p className="mt-4 text-gray-500" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "11px" }}>Authenticating...</p>
-          <p className="mt-2 text-gray-400" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "10px" }}>Please wait</p>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[var(--admin-accent)] border-r-transparent" />
+          <p className="mt-4 text-[var(--admin-text-sub)]" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "11px" }}>Authenticating...</p>
+          <p className="mt-2 text-[var(--admin-text-faint)]" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "10px" }}>Please wait</p>
         </div>
       </div>;
   }
@@ -267,13 +283,13 @@ function DashboardLayout() {
               </div>
               <div className="flex flex-col min-w-0">
                 <span
-    className={`transition-colors truncate ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}
+    className={`transition-colors truncate text-[var(--admin-text)]`}
     style={{ ...poppins, fontSize: "12px", fontWeight: 600, letterSpacing: "0.05em" }}
   >
                   TELEXPH
                 </span>
                 <span
-    className={`transition-colors truncate ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`transition-colors truncate text-[var(--admin-text-faint)]`}
     style={{ ...poppins, fontSize: "9px", letterSpacing: "0.02em" }}
   >
                   Administration Side
@@ -286,7 +302,7 @@ function DashboardLayout() {
   }
             <button
     onClick={() => setismobilemenuopen(false)}
-    className="lg:hidden p-2 text-gray-400 bg-transparent border-none shrink-0 touch-manipulation"
+    className="lg:hidden p-2 text-[var(--admin-text-faint)] bg-transparent border-none shrink-0 touch-manipulation"
   >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -299,7 +315,7 @@ function DashboardLayout() {
   }
             <button
     onClick={togglesidebar}
-    className={`hidden lg:flex items-center justify-center w-9 h-9 rounded-xl border-none transition-all active:scale-90 cursor-pointer shrink-0 ${isdarkmode ? "bg-white/5 text-gray-400 hover:bg-white/10" : "bg-gray-100 text-gray-400 hover:bg-gray-200"}`}
+    className={`hidden lg:flex items-center justify-center w-9 h-9 rounded-xl border-none transition-all active:scale-90 cursor-pointer shrink-0 bg-[var(--admin-bg-soft)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <rect width="18" height="18" x="3" y="3" rx="2" />
@@ -314,7 +330,7 @@ function DashboardLayout() {
         {iscollapsed && !ismobilemenuopen && <div className="hidden lg:flex flex-col items-center">
             <button
     onClick={togglesidebar}
-    className={`flex items-center justify-center w-10 h-10 rounded-2xl border-none transition-all active:scale-90 cursor-pointer ${isdarkmode ? "bg-white/5 text-gray-400 hover:bg-white/10" : "bg-gray-100 text-gray-400 hover:bg-gray-200"}`}
+    className={`flex items-center justify-center w-10 h-10 rounded-2xl border-none transition-all active:scale-90 cursor-pointer bg-[var(--admin-bg-soft)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <rect width="18" height="18" x="3" y="3" rx="2" />
@@ -329,7 +345,7 @@ function DashboardLayout() {
   }
       <nav className={`flex-1 overflow-y-auto no-scrollbar pt-2 pb-6 space-y-1 transition-all duration-300 ${iscollapsed ? "px-2" : "px-3 sm:px-5"}`}>
         {!iscollapsed && <div
-    className={`mb-3 px-3 sm:px-4 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mb-3 px-3 sm:px-4 transition-colors text-[var(--admin-text-faint)]`}
     style={{ ...poppins, fontSize: "9px" }}
   >
             Main menu
@@ -364,7 +380,7 @@ function DashboardLayout() {
       href={sub.path}
       className={`group relative flex items-center py-2 pl-5 sm:pl-6 pr-3 sm:pr-4 no-underline transition-all active:scale-95 my-1 mx-2 touch-manipulation ${getsubnavstyle(sub.path)}`}
     >
-                          <div className={`absolute left-[-8px] w-4 h-px top-1/2 ${isdarkmode ? "bg-white/10" : "bg-gray-200"} rounded-tr-lg`} />
+                          <div className={`absolute left-[-8px] w-4 h-px top-1/2 bg-[var(--admin-border-strong)] rounded-tr-lg`} />
                           <span className="transition-colors" style={{ ...poppins, fontSize: "10px" }}>{sub.name}</span>
                         </Link>)}
                     </div>
@@ -387,49 +403,31 @@ function DashboardLayout() {
       </nav>
 
       {
-    /* Bottom: dark mode + profile */
+    /* Bottom: profile */
   }
-      <div className={`pb-4 sm:pb-6 space-y-2 sm:space-y-3 border-t transition-all duration-300 ${iscollapsed ? "px-2" : "px-3 sm:px-5"} ${isdarkmode ? "border-white/5" : "border-gray-50"}`}>
-        {
-    /* Dark mode row */
-  }
-        <div className={`flex items-center py-3 sm:py-4 ${iscollapsed ? "justify-center" : "justify-between px-3 sm:px-4"}`}>
-          <div className={`flex items-center gap-2 sm:gap-3 transition-colors ${isdarkmode ? "text-white" : "text-gray-500"}`}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-            </svg>
-            {(!iscollapsed || ismobilemenuopen) && <span style={{ ...poppins, fontSize: "11px" }}>Dark mode</span>}
-          </div>
-          {(!iscollapsed || ismobilemenuopen) && <div
-    onClick={toggledarkmode}
-    className={`w-8 h-4 rounded-full relative cursor-pointer transition-all duration-500 active:scale-75 border-none touch-manipulation ${isdarkmode ? "bg-[#800000]" : "bg-gray-300"}`}
-  >
-              <div className={`absolute top-1 w-2 h-2 rounded-full shadow-sm transition-all duration-300 ${isdarkmode ? "right-1 bg-white" : "right-5 bg-white"}`} />
-            </div>}
-        </div>
-
+      <div className={`pt-3 sm:pt-4 pb-4 sm:pb-6 space-y-2 sm:space-y-3 border-t transition-all duration-300 ${iscollapsed ? "px-2" : "px-3 sm:px-5"} border-[var(--admin-border)]`}>
         {
     /* Profile card */
   }
         <Link
     href="/admin/dashboard/settings"
-    className={`flex items-center p-2.5 sm:p-3 rounded-2xl border-none shadow-sm transition-all hover:shadow-md cursor-pointer no-underline active:scale-95 touch-manipulation ${iscollapsed ? "justify-center" : "justify-between"} ${isdarkmode ? "bg-[#202020]" : "bg-white"}`}
+    className={`flex items-center p-2.5 sm:p-3 rounded-2xl border-none shadow-sm transition-all hover:shadow-md cursor-pointer no-underline active:scale-95 touch-manipulation ${iscollapsed ? "justify-center" : "justify-between"} bg-[var(--admin-surface-raised)]`}
   >
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div
-    className="w-8 h-8 sm:w-9 sm:h-9 bg-[#800000] rounded-xl flex items-center justify-center text-white border-none shrink-0 shadow-lg overflow-hidden"
+    className="w-8 h-8 sm:w-9 sm:h-9 bg-[var(--admin-accent)] rounded-xl flex items-center justify-center text-[var(--admin-text-on-accent)] border-none shrink-0 shadow-lg overflow-hidden"
     style={{ ...poppins, fontSize: "10px" }}
   >
               {userData.profilePicture ? <img src={userData.profilePicture} alt="Profile" className="w-full h-full object-cover" /> : getUserInitials()}
             </div>
             {(!iscollapsed || ismobilemenuopen) && <div className="flex flex-col text-left min-w-0">
                 <span
-    className={`tracking-tight transition-colors truncate ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`tracking-tight transition-colors truncate text-[var(--admin-text)]`}
     style={{ ...poppins, fontSize: "11px" }}
   >
                   {getUserFullName()}
                 </span>
-                <span className="text-gray-400 truncate" style={{ ...poppins, fontSize: "9px" }}>
+                <span className="text-[var(--admin-text-faint)] truncate" style={{ ...poppins, fontSize: "9px" }}>
                   {getDepartmentName(userData.department)}
                 </span>
               </div>}
@@ -437,21 +435,21 @@ function DashboardLayout() {
         </Link>
       </div>
     </>;
-  return <DarkModeContext.Provider value={{ isdarkmode, toggledarkmode }}>
+  return <>
       {confirmLogout && <LogoutConfirmModal
     portalLabel="Admin"
-    accent="#800000"
+    accent="var(--admin-accent)"
     onConfirm={handleConfirmLogout}
     onCancel={() => setConfirmLogout(false)}
   />}
       {loggingOut && <LogoutOverlay
     portalLabel="Admin"
-    accent="#800000"
+    accent="var(--admin-accent)"
     ready={logoutDone}
     onDone={goToAdminLogin}
   />}
       <div
-    className={`flex h-[100dvh] overflow-hidden antialiased transition-colors duration-500 ${isdarkmode ? "bg-[#0f0f0f] text-gray-400" : "bg-[#f8f9fa] text-gray-600"}`}
+    className={`flex h-[100dvh] overflow-hidden antialiased transition-colors duration-500 bg-[var(--admin-bg)] text-[var(--admin-text-sub)]`}
     style={poppins}
   >
         <style dangerouslySetInnerHTML={{ __html: `
@@ -469,7 +467,7 @@ function DashboardLayout() {
         <aside
     className={`border-r hidden lg:flex flex-col h-full z-20 transition-all duration-300 ease-in-out shrink-0
             ${issidebarcollapsed ? "w-20" : "w-56 xl:w-64"}
-            ${isdarkmode ? "bg-[#181818] border-white/5" : "bg-white border-gray-100"}`}
+            bg-[var(--admin-surface)] border-[var(--admin-border)]`}
     style={poppins}
   >
           <SidebarContent iscollapsed={issidebarcollapsed} />
@@ -490,7 +488,7 @@ function DashboardLayout() {
     className={`lg:hidden fixed left-0 top-0 bottom-0 z-[50] transition-transform duration-300 ease-in-out transform flex flex-col
             w-[75vw] max-w-[300px] sm:w-72 md:w-80
             ${ismobilemenuopen ? "translate-x-0" : "-translate-x-full"}
-            ${isdarkmode ? "bg-[#181818]" : "bg-white"}`}
+            bg-[var(--admin-surface)]`}
     style={poppins}
   >
           <SidebarContent iscollapsed={false} />
@@ -508,7 +506,7 @@ function DashboardLayout() {
     className={`flex items-center justify-between shrink-0 transition-colors duration-500
             h-14 sm:h-16 lg:h-20
             px-4 sm:px-6 lg:px-8 xl:px-10
-            ${isdarkmode ? "bg-[#181818]" : "bg-white border-b border-gray-50"}`}
+            bg-[var(--admin-surface)] border-b border-[var(--admin-border)]`}
   >
             <div className="flex items-center gap-2 sm:gap-4">
               {
@@ -516,7 +514,7 @@ function DashboardLayout() {
   }
               <button
     onClick={() => setismobilemenuopen(true)}
-    className={`lg:hidden p-2 sm:p-2.5 rounded-xl border-none transition-all active:scale-90 touch-manipulation ${isdarkmode ? "bg-white/5 text-gray-400" : "bg-gray-50 text-gray-400"}`}
+    className={`lg:hidden p-2 sm:p-2.5 rounded-xl border-none transition-all active:scale-90 touch-manipulation bg-[var(--admin-bg-soft)] text-[var(--admin-text-sub)]`}
   >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="3" y1="12" x2="21" y2="12" />
@@ -533,13 +531,13 @@ function DashboardLayout() {
               <div className="relative" ref={activitylogsref}>
                 <button
     onClick={() => setisactivitylogsopen(!isactivitylogsopen)}
-    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center relative cursor-pointer transition-all border-none outline-none active:scale-90 touch-manipulation ${isdarkmode ? "bg-[#202020] hover:bg-white/10" : "bg-gray-50 hover:bg-gray-100"}`}
+    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center relative cursor-pointer transition-all border-none outline-none active:scale-90 touch-manipulation bg-[var(--admin-bg-soft)] hover:bg-[var(--admin-bg-hover)]`}
   >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                   {unreadcount > 0 && <span
-    className="absolute top-0.5 right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#800000] text-white flex items-center justify-center rounded-full border border-white"
+    className="absolute top-0.5 right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[var(--admin-accent)] text-[var(--admin-text-on-accent)] flex items-center justify-center rounded-full border border-[var(--admin-surface)]"
     style={{ ...poppins, fontSize: "8px", fontWeight: 600 }}
   >
                       {unreadcount > 9 ? "9+" : unreadcount}
@@ -561,7 +559,7 @@ function DashboardLayout() {
               <div className="relative" ref={dropdownref}>
                 <button
     onClick={() => setisheaderdropdownopen(!isheaderdropdownopen)}
-    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center cursor-pointer transition-all border-none outline-none active:scale-90 touch-manipulation ${isdarkmode ? "bg-[#202020] hover:bg-white/10" : "bg-gray-50 hover:bg-gray-100"}`}
+    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center cursor-pointer transition-all border-none outline-none active:scale-90 touch-manipulation bg-[var(--admin-bg-soft)] hover:bg-[var(--admin-bg-hover)]`}
   >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
                     <circle cx="12" cy="12" r="1" fill="currentColor" />
@@ -570,11 +568,11 @@ function DashboardLayout() {
                   </svg>
                 </button>
 
-                {isheaderdropdownopen && <div className={`absolute right-0 mt-2 sm:mt-4 w-60 sm:w-72 rounded-[20px] sm:rounded-[35px] shadow-2xl border p-2 sm:p-3 z-[100] animate-in fade-in zoom-in-95 duration-200 ${isdarkmode ? "bg-[#1e1e1e] border-white/10" : "bg-white border-gray-100"}`}>
+                {isheaderdropdownopen && <div className={`absolute right-0 mt-2 sm:mt-4 w-60 sm:w-72 rounded-[20px] sm:rounded-[35px] shadow-2xl border p-2 sm:p-3 z-[100] animate-in fade-in zoom-in-95 duration-200 bg-[var(--admin-surface-raised)] border-[var(--admin-border)]`}>
                     <div onClick={() => setisheaderdropdownopen(false)}>
                       <SettingsMenu isdarkmode={isdarkmode} />
                     </div>
-                    <div className={`h-[1px] mx-4 sm:mx-6 my-2 ${isdarkmode ? "bg-white/5" : "bg-gray-50"}`} />
+                    <div className={`h-[1px] mx-4 sm:mx-6 my-2 bg-[var(--admin-border)]`} />
                     <div onClick={() => setisheaderdropdownopen(false)}>
                       <Logout isdarkmode={isdarkmode} onRequestConfirm={() => setConfirmLogout(true)} />
                     </div>
@@ -591,7 +589,7 @@ function DashboardLayout() {
           </section>
         </main>
       </div>
-    </DarkModeContext.Provider>;
+    </>;
 }
 export {
   DashboardLayout as default,

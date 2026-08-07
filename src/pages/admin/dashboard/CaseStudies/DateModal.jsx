@@ -14,14 +14,14 @@ const DateModal = ({
     year: "numeric"
   });
   return <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4 no-scrollbar">
-      <div className={`rounded-[2rem] p-8 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto no-scrollbar ${isdarkmode ? "bg-[#1f1f1f]" : "bg-white"}`}>
+      <div className={`rounded-[2rem] p-8 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto no-scrollbar bg-[var(--admin-surface)]`}>
         <div className="flex justify-between items-center mb-6">
-          <h3 className={`text-xl font-bold ${isdarkmode ? "text-white" : "text-gray-900"}`}>
+          <h3 className={`text-xl font-bold text-[var(--admin-text)]`}>
             {formattedDate}
           </h3>
           <button
     onClick={onClose}
-    className={`p-2 rounded-full transition-colors ${isdarkmode ? "hover:bg-white/10" : "hover:bg-gray-100"}`}
+    className={`p-2 rounded-full transition-colors hover:bg-[var(--admin-bg-hover)]`}
   >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -31,7 +31,7 @@ const DateModal = ({
         </div>
 
         {dateData.studies.length === 0 ? <div className="text-center py-12">
-            <p className={`text-sm ${isdarkmode ? "text-gray-400" : "text-gray-400"}`}>
+            <p className={`text-sm text-[var(--admin-text-faint)]`}>
               No case studies available for this date
             </p>
           </div> : <div className="space-y-3">
@@ -41,14 +41,14 @@ const DateModal = ({
       onClose();
       onSelectStudy(cs);
     }}
-    className={`p-4 rounded-xl cursor-pointer transition-colors border ${isdarkmode ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-gray-50 border-gray-100 hover:bg-gray-100"}`}
+    className={`p-4 rounded-xl cursor-pointer transition-colors border bg-[var(--admin-bg-soft)] border-[var(--admin-border)] hover:bg-[var(--admin-bg-hover)]`}
   >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className={`text-sm font-bold truncate mb-1 ${isdarkmode ? "text-white" : "text-gray-900"}`}>
+                    <h4 className={`text-sm font-bold truncate mb-1 text-[var(--admin-text)]`}>
                       {cs.title}
                     </h4>
-                    {cs.subtitle && <p className={`text-xs truncate mb-2 ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>
+                    {cs.subtitle && <p className={`text-xs truncate mb-2 text-[var(--admin-text-faint)]`}>
                         {cs.subtitle}
                       </p>}
                     <div className="flex items-center gap-2 flex-wrap">
@@ -60,7 +60,7 @@ const DateModal = ({
                         </span>)}
                     </div>
                   </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`flex-shrink-0 ${isdarkmode ? "text-gray-400" : "text-gray-400"}`}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`flex-shrink-0 text-[var(--admin-text-faint)]`}>
                     <path d="M9 18l6-6-6-6" />
                   </svg>
                 </div>
@@ -70,7 +70,7 @@ const DateModal = ({
         <div className="flex justify-end mt-6 pt-6 border-t border-gray-200">
           <button
     onClick={onClose}
-    className={`px-6 py-2 rounded-xl font-bold transition-colors text-sm ${isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+    className={`px-6 py-2 rounded-xl font-bold transition-colors text-sm bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}
   >
             Close
           </button>

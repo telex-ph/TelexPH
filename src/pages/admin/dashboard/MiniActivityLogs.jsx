@@ -40,11 +40,11 @@ function MiniActivityLogs({
 }) {
   const [logs, setlogs] = useState([]);
   const [isloading, setisloading] = useState(false);
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
   const fetchRecentLogs = useCallback(async () => {
     try {
       setisloading(true);
@@ -166,8 +166,8 @@ function MiniActivityLogs({
           -webkit-font-smoothing: antialiased;
         }
         button, a { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
-        .mal-row:hover  { background: ${isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"} !important; }
-        .mal-foot:hover { background: ${isdarkmode ? "rgba(255,255,255,0.05)" : "#f3f4f6"} !important; }
+        .mal-row:hover  { background: ${"var(--admin-bg-soft)"} !important; }
+        .mal-foot:hover { background: ${"var(--admin-bg-hover)"} !important; }
         @keyframes spin { to { transform: rotate(360deg); } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
@@ -183,7 +183,7 @@ function MiniActivityLogs({
       border: `1px solid ${borderColor}`,
       borderRadius: 24,
       overflow: "hidden",
-      boxShadow: isdarkmode ? "0 20px 60px rgba(0,0,0,0.5)" : "0 20px 60px rgba(0,0,0,0.12)",
+      boxShadow: "var(--admin-shadow-lg)",
       fontFamily: "'Poppins', sans-serif"
     }}
   >
@@ -270,7 +270,7 @@ function MiniActivityLogs({
       width: 36,
       height: 36,
       borderRadius: "50%",
-      border: "3px solid #800000",
+      border: "3px solid var(--admin-accent)",
       borderTopColor: "transparent",
       animation: "spin 0.8s linear infinite",
       margin: "0 auto 12px",
@@ -287,7 +287,7 @@ function MiniActivityLogs({
   }
         {!isloading && logs.length === 0 && <div style={{ padding: "48px 20px", textAlign: "center" }}>
             <svg
-    style={{ margin: "0 auto 12px", display: "block", color: isdarkmode ? "#374151" : "#d1d5db" }}
+    style={{ margin: "0 auto 12px", display: "block", color: "var(--admin-border-strong)" }}
     width="40"
     height="40"
     fill="none"

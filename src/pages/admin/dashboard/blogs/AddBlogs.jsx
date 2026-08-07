@@ -73,13 +73,13 @@ const CustomDropdown = ({ value, onChange, options, placeholder = "Select...", i
       <button
     type="button"
     onClick={() => setOpen((prev) => !prev)}
-    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none text-[12px] ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 hover:border-white/20" : "bg-gray-50 border-gray-200 text-gray-800 hover:border-gray-300"} ${open ? isdarkmode ? "border-white/30" : "border-gray-400" : ""}`}
+    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none text-[12px] bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] hover:border-[var(--admin-border-strong)] ${open ? "border-[var(--admin-border-strong)]" : ""}`}
   >
-        <span className={selected ? "" : isdarkmode ? "text-gray-600" : "text-gray-400"}>
+        <span className={selected ? "" : "text-[var(--admin-text-faint)]"}>
           {selected ? selected.label : placeholder}
         </span>
         <svg
-    className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""} ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""} text-[var(--admin-text-faint)]`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -88,7 +88,7 @@ const CustomDropdown = ({ value, onChange, options, placeholder = "Select...", i
         </svg>
       </button>
 
-      {open && <div className={`absolute z-30 mt-1.5 w-full rounded-lg border shadow-lg overflow-hidden transition-all duration-200 ${isdarkmode ? "bg-[#1a1a1a] border-white/10" : "bg-white border-gray-200"}`}>
+      {open && <div className={`absolute z-30 mt-1.5 w-full rounded-lg border shadow-lg overflow-hidden transition-all duration-200 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
           {options.map((opt) => <button
     key={opt.value}
     type="button"
@@ -96,7 +96,7 @@ const CustomDropdown = ({ value, onChange, options, placeholder = "Select...", i
       onChange(opt.value);
       setOpen(false);
     }}
-    className={`w-full text-left px-4 py-2.5 text-[12px] transition-all duration-150 flex items-center gap-2 ${opt.value === value ? "bg-[#800000] text-white" : isdarkmode ? "text-gray-300 hover:bg-white/5" : "text-gray-700 hover:bg-gray-50"}`}
+    className={`w-full text-left px-4 py-2.5 text-[12px] transition-all duration-150 flex items-center gap-2 ${opt.value === value ? "bg-[var(--admin-accent)] text-white" : "text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]"}`}
   >
               {opt.value === value && <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -510,19 +510,19 @@ function AddBlogs() {
         <span className={`text-[9px] ${tooShort || tooLong ? "text-red-500" : "text-transparent select-none"}`}>
           {tooShort ? `Min ${min} chars required.` : tooLong ? `Max ${max} chars allowed.` : "."}
         </span>
-        <span className={`text-[9px] ${tooLong ? "text-red-500" : isdarkmode ? "text-white/30" : "text-black/30"}`}>
+        <span className={`text-[9px] ${tooLong ? "text-red-500" : "text-[var(--admin-text-faint)]"}`}>
           {max !== void 0 ? `${trimmed.length}/${max}` : `${trimmed.length} chars`}
         </span>
       </div>;
   };
-  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30" : "bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400"}`;
-  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 focus:border-white/30" : "bg-gray-50 border-gray-200 text-gray-800 focus:border-gray-400"}`;
-  const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30" : "bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400"}`;
-  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`;
-  const sectionHeader = `flex items-center justify-between px-6 py-4 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`;
-  const labelCls = `uppercase tracking-widest transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`;
-  const dividerCls = `divide-y transition-all duration-500 ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`;
-  const rowHoverCls = `flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`;
+  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
+  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] focus:border-[var(--admin-border-strong)]`;
+  const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
+  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`;
+  const sectionHeader = `flex items-center justify-between px-6 py-4 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`;
+  const labelCls = `uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`;
+  const dividerCls = `divide-y transition-all duration-500 divide-[var(--admin-border)]`;
+  const rowHoverCls = `flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`;
   return <>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -531,22 +531,22 @@ function AddBlogs() {
         * { scrollbar-width: none; -ms-overflow-style: none; }
       ` }} />
 
-      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 ${isdarkmode ? "bg-[#0f0f0f]" : "bg-[#f8f9fa]"}`}>
+      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}>
 
         {
     /* â”€â”€ Page Header â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 ${isdarkmode ? "border-white/5" : "border-gray-200"}`}>
+          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 border-[var(--admin-border)]`}>
             <div>
               <h2
-    className={`tracking-tight transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`tracking-tight transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 18, fontWeight: 500, margin: 0 }}
   >
                 Create New Blog Post
               </h2>
               <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0" }}
   >
                 Share your insights and expertise with the community
@@ -554,22 +554,22 @@ function AddBlogs() {
             </div>
             <div className="flex items-center gap-3">
               {aiUsage && <div
-    className={`flex flex-col gap-1 px-3 py-2 rounded-lg border ${isdarkmode ? "border-white/10 bg-[#1a1a1a]" : "border-gray-200 bg-white"}`}
+    className={`flex flex-col gap-1 px-3 py-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]`}
     title={aiUsage.models.map((m) => `${m.label}: ${m.used}/${m.limit}${m.active ? " (active)" : ""}`).join("\n")}
   >
                   {aiUsage.models.map((m) => <div key={m.id} className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : isdarkmode ? "bg-white/15" : "bg-gray-300"}`} />
-                      <span className={`${m.active ? isdarkmode ? "text-gray-200" : "text-gray-800" : isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: m.active ? 600 : 400 }}>
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : "bg-[var(--admin-border-strong)]"}`} />
+                      <span className={`${m.active ? "text-[var(--admin-text)]" : "text-[var(--admin-text-faint)]"}`} style={{ fontSize: 10, fontWeight: m.active ? 600 : 400 }}>
                         {m.label}
                       </span>
-                      <span className={isdarkmode ? "text-gray-600" : "text-gray-400"} style={{ fontSize: 10, fontWeight: 400 }}>
+                      <span className={"text-[var(--admin-text-faint)]"} style={{ fontSize: 10, fontWeight: 400 }}>
                         {m.used}/{m.limit}
                       </span>
                     </div>)}
                 </div>}
               <button
     onClick={() => openModal("expand")}
-    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 <SparkleIcon className="w-3.5 h-3.5" />
@@ -577,7 +577,7 @@ function AddBlogs() {
               </button>
               <button
     onClick={() => openModal("full")}
-    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all shadow-sm"
+    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all shadow-sm"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 <LayersIcon className="w-3.5 h-3.5" />
@@ -604,7 +604,7 @@ function AddBlogs() {
               <div className={sectionHeader}>
                 <div>
                   <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Blog Cover Image</p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                     Upload or generate a cover photo
                   </p>
                 </div>
@@ -619,26 +619,26 @@ function AddBlogs() {
   }
                 <div
     onClick={() => fileRef.current?.click()}
-    className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${imageError ? "border-red-400 bg-red-50/5" : selectedImage ? "border-[#800000]/40" : isdarkmode ? "border-white/10 hover:border-white/20 bg-[#202020]" : "border-gray-200 hover:border-gray-300 bg-gray-50"}`}
+    className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${imageError ? "border-red-400 bg-red-50/5" : selectedImage ? "border-[var(--admin-accent)]/40" : "border-[var(--admin-border)] hover:border-[var(--admin-border-strong)] bg-[var(--admin-bg-soft)]"}`}
     style={{ aspectRatio: "16/9" }}
   >
                   {isCompressing ? <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                       <Spinner />
-                      <span className={`text-[10px] ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>Compressing...</span>
+                      <span className={`text-[10px] text-[var(--admin-text-faint)]`}>Compressing...</span>
                     </div> : selectedImage ? <>
                       <img src={selectedImage} alt="Cover preview" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                         <span className="text-white text-[11px] font-medium">Click to change</span>
                       </div>
                     </> : <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <div className={`w-11 h-11 rounded-full flex items-center justify-center ${isdarkmode ? "bg-[#2a2a2a]" : "bg-gray-100"}`}>
-                        <svg className={`w-5 h-5 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center bg-[var(--admin-bg-hover)]`}>
+                        <svg className={`w-5 h-5 text-[var(--admin-text-faint)]`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                         </svg>
                       </div>
                       <div className="text-center">
-                        <p className={`text-[11px] font-medium ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>Drop or click to upload</p>
-                        <p className={`text-[10px] mt-0.5 ${isdarkmode ? "text-gray-600" : "text-gray-400"}`}>JPG, PNG, WEBP</p>
+                        <p className={`text-[11px] font-medium text-[var(--admin-text-sub)]`}>Drop or click to upload</p>
+                        <p className={`text-[10px] mt-0.5 text-[var(--admin-text-faint)]`}>JPG, PNG, WEBP</p>
                       </div>
                     </div>}
                 </div>
@@ -650,7 +650,7 @@ function AddBlogs() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
     onClick={() => fileRef.current?.click()}
-    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all border-2 ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all border-2 border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -660,7 +660,7 @@ function AddBlogs() {
                   </button>
                   <button
     onClick={() => openModal("image")}
-    className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+    className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                     <ImageIcon className="w-3.5 h-3.5" />
@@ -677,16 +677,16 @@ function AddBlogs() {
               <button
     type="button"
     onClick={() => setPublishingOpen((prev) => !prev)}
-    className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-white/5" : "hover:bg-gray-50"} ${!publishingOpen ? "rounded-xl" : `border-b ${isdarkmode ? "border-white/5" : "border-gray-200"}`}`}
+    className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)] ${!publishingOpen ? "rounded-xl" : `border-b border-[var(--admin-border)]`}`}
   >
                 <div className="text-left">
                   <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Publishing Options</p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                     Set status and schedule
                   </p>
                 </div>
                 <svg
-    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${publishingOpen ? "rotate-180" : ""} ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${publishingOpen ? "rotate-180" : ""} text-[var(--admin-text-faint)]`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -730,16 +730,16 @@ function AddBlogs() {
               <button
     type="button"
     onClick={() => setCategoriesOpen((prev) => !prev)}
-    className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-white/5" : "hover:bg-gray-50"} ${!categoriesOpen ? "rounded-xl" : `border-b ${isdarkmode ? "border-white/5" : "border-gray-200"}`}`}
+    className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)] ${!categoriesOpen ? "rounded-xl" : `border-b border-[var(--admin-border)]`}`}
   >
                 <div className="text-left">
                   <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Categories</p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                     Assign topic and subcategory
                   </p>
                 </div>
                 <svg
-    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${categoriesOpen ? "rotate-180" : ""} ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${categoriesOpen ? "rotate-180" : ""} text-[var(--admin-text-faint)]`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -788,13 +788,13 @@ function AddBlogs() {
               {
     /* Tab Bar */
   }
-              <div className={`flex items-center border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
+              <div className={`flex items-center border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
                 {TABS.map((tab) => {
     const isActive = activeTab === tab.key;
     return <button
       key={tab.key}
       onClick={() => setActiveTab(tab.key)}
-      className={`relative flex items-center gap-2 px-5 py-4 transition-all duration-200 ${isActive ? isdarkmode ? "text-white" : "text-gray-800" : isdarkmode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600"}`}
+      className={`relative flex items-center gap-2 px-5 py-4 transition-all duration-200 ${isActive ? "text-[var(--admin-text)]" : "text-[var(--admin-text-faint)] hover:text-[var(--admin-text-sub)]"}`}
       style={{ fontSize: 12, fontWeight: isActive ? 600 : 400 }}
     >
                       {tab.icon}
@@ -802,7 +802,7 @@ function AddBlogs() {
                       {
       /* Active indicator */
     }
-                      {isActive && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#800000] rounded-full" />}
+                      {isActive && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--admin-accent)] rounded-full" />}
                     </button>;
   })}
 
@@ -812,7 +812,7 @@ function AddBlogs() {
                 <div className="ml-auto px-4">
                   {activeTab === "details" && <button
     onClick={() => openModal("title")}
-    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
     style={{ fontSize: 10, fontWeight: 500 }}
   >
                       <SparkleIcon className="w-3 h-3" />
@@ -820,7 +820,7 @@ function AddBlogs() {
                     </button>}
                   {activeTab === "content" && <button
     onClick={() => openModal("content")}
-    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                       <SparkleIcon className="w-3.5 h-3.5" />
@@ -828,7 +828,7 @@ function AddBlogs() {
                     </button>}
                   {activeTab === "sections" && <button
     onClick={addContentSection}
-    className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -849,7 +849,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Title <span className="text-[#800000]">•</span>
+                        Title <span className="text-[var(--admin-accent)]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -870,7 +870,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Author <span className="text-[#800000]">•</span>
+                        Author <span className="text-[var(--admin-accent)]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -891,7 +891,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Description <span className="text-[#800000]">•</span>
+                        Description <span className="text-[var(--admin-accent)]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -917,7 +917,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
-                      <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
+                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
                     </div>
                     <div className="flex-1">
                       <input
@@ -937,7 +937,7 @@ function AddBlogs() {
                   <div className={rowHoverCls}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
-                      <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: 400 }}>
+                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>
                         Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
                       </p>
                     </div>
@@ -958,13 +958,13 @@ function AddBlogs() {
     /* â”€â”€ Tab: Additional Sections â”€â”€ */
   }
               {activeTab === "sections" && <div className={dividerCls}>
-                  {contentSections.map((section, i) => <div key={i} className={`px-6 py-5 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  {contentSections.map((section, i) => <div key={i} className={`px-6 py-5 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-[#800000] flex items-center justify-center flex-shrink-0">
+                          <div className="w-5 h-5 rounded-full bg-[var(--admin-accent)] flex items-center justify-center flex-shrink-0">
                             <span className="text-white text-[9px] font-bold">{i + 1}</span>
                           </div>
-                          <p className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: 500 }}>
+                          <p className={`transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 500 }}>
                             Section {i + 1}
                           </p>
                         </div>
@@ -1011,15 +1011,15 @@ function AddBlogs() {
             {
     /* Footer / Submit */
   }
-            <div className={`rounded-xl border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-              <div className={`flex items-center justify-between px-6 py-4 transition-all duration-500 ${isdarkmode ? "bg-[#202020]" : "bg-gray-50"} rounded-xl`}>
-                <p className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+            <div className={`rounded-xl border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+              <div className={`flex items-center justify-between px-6 py-4 transition-all duration-500 bg-[var(--admin-bg-soft)] rounded-xl`}>
+                <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                   Review your entry before finalizing.
                 </p>
                 <button
     onClick={() => setShowConfirmModal(true)}
     disabled={!isFormValid() || isSubmitting}
-    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[#800000] text-white hover:bg-[#6a0000] shadow-md" : isdarkmode ? "bg-[#2a2a2a] text-gray-600 cursor-not-allowed" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] shadow-md" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed"}`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                   {isSubmitting ? "Saving..." : "Save Blog Entry"}
@@ -1035,27 +1035,27 @@ function AddBlogs() {
     /* â•â•â•â•â•â•â•â• AI Generate Modal â•â•â•â•â•â•â•â• */
   }
       {activeModal && modalCfg && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-[460px] overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
+          <div className={`rounded-xl shadow-2xl w-full max-w-[460px] overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
             {
     /* Modal Header */
   }
-            <div className={`flex items-center justify-between px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
+            <div className={`flex items-center justify-between px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[#800000] flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 rounded-lg bg-[var(--admin-accent)] flex items-center justify-center flex-shrink-0">
                   {activeModal === "image" ? <ImageIcon className="w-4 h-4 text-white" /> : activeModal === "full" ? <LayersIcon className="w-4 h-4 text-white" /> : <SparkleIcon className="w-4 h-4 text-white" />}
                 </div>
                 <div>
-                  <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                  <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>
                     {modalCfg.title}
                   </p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: 400 }}>
+                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400 }}>
                     Powered by Gemini AI
                   </p>
                 </div>
               </div>
               <button
     onClick={closeModal}
-    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isdarkmode ? "text-gray-400 hover:text-white hover:bg-white/10" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}
+    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-[var(--admin-text-faint)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}
   >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -1073,7 +1073,7 @@ function AddBlogs() {
                     <button
     type="button"
     onClick={() => setIsImageModelMenuOpen((v) => !v)}
-    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 hover:border-white/20" : "bg-gray-50 border-gray-200 text-gray-800 hover:border-gray-300"}`}
+    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border-2 transition-all bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] hover:border-[var(--admin-border-strong)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                       <span className="flex items-center gap-2">
@@ -1085,27 +1085,27 @@ function AddBlogs() {
                       </svg>
                     </button>
                     {isImageModelMenuOpen && <div
-    className={`absolute left-0 right-0 top-full mt-1 rounded-lg border shadow-lg overflow-hidden z-20 ${isdarkmode ? "border-white/10 bg-[#1a1a1a]" : "border-gray-200 bg-white"}`}
+    className={`absolute left-0 right-0 top-full mt-1 rounded-lg border shadow-lg overflow-hidden z-20 border-[var(--admin-border)] bg-[var(--admin-surface)]`}
   >
                         {aiImageUsage.models.map((m) => <button
     key={m.id}
     type="button"
     onClick={() => selectImageModel(m.id)}
-    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors ${isdarkmode ? "hover:bg-white/5" : "hover:bg-gray-50"}`}
+    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-[var(--admin-bg-hover)]`}
   >
                             <span className="flex items-center gap-2">
-                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : isdarkmode ? "bg-white/15" : "bg-gray-300"}`} />
-                              <span className={`${m.active ? isdarkmode ? "text-gray-200" : "text-gray-800" : isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: m.active ? 600 : 400 }}>
+                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : "bg-[var(--admin-border-strong)]"}`} />
+                              <span className={`${m.active ? "text-[var(--admin-text)]" : "text-[var(--admin-text-sub)]"}`} style={{ fontSize: 11, fontWeight: m.active ? 600 : 400 }}>
                                 {m.label}
                               </span>
                             </span>
-                            <span className={isdarkmode ? "text-gray-600" : "text-gray-400"} style={{ fontSize: 10, fontWeight: 400 }}>
+                            <span className={"text-[var(--admin-text-faint)]"} style={{ fontSize: 10, fontWeight: 400 }}>
                               {m.used}/{m.limit}
                             </span>
                           </button>)}
                       </div>}
                   </div>
-                  <p className={`mt-1.5 ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: 400 }}>
+                  <p className={`mt-1.5 text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>
                     Falls back to a free image generator automatically if the selected model has no quota.
                   </p>
                 </div> : aiUsage && <div>
@@ -1114,7 +1114,7 @@ function AddBlogs() {
                     <button
     type="button"
     onClick={() => setIsModelMenuOpen((v) => !v)}
-    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 hover:border-white/20" : "bg-gray-50 border-gray-200 text-gray-800 hover:border-gray-300"}`}
+    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border-2 transition-all bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] hover:border-[var(--admin-border-strong)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                       <span className="flex items-center gap-2">
@@ -1126,21 +1126,21 @@ function AddBlogs() {
                       </svg>
                     </button>
                     {isModelMenuOpen && <div
-    className={`absolute left-0 right-0 top-full mt-1 rounded-lg border shadow-lg overflow-hidden z-20 ${isdarkmode ? "border-white/10 bg-[#1a1a1a]" : "border-gray-200 bg-white"}`}
+    className={`absolute left-0 right-0 top-full mt-1 rounded-lg border shadow-lg overflow-hidden z-20 border-[var(--admin-border)] bg-[var(--admin-surface)]`}
   >
                         {aiUsage.models.map((m) => <button
     key={m.id}
     type="button"
     onClick={() => selectModel(m.id)}
-    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors ${isdarkmode ? "hover:bg-white/5" : "hover:bg-gray-50"}`}
+    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-[var(--admin-bg-hover)]`}
   >
                             <span className="flex items-center gap-2">
-                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : isdarkmode ? "bg-white/15" : "bg-gray-300"}`} />
-                              <span className={`${m.active ? isdarkmode ? "text-gray-200" : "text-gray-800" : isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: m.active ? 600 : 400 }}>
+                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : "bg-[var(--admin-border-strong)]"}`} />
+                              <span className={`${m.active ? "text-[var(--admin-text)]" : "text-[var(--admin-text-sub)]"}`} style={{ fontSize: 11, fontWeight: m.active ? 600 : 400 }}>
                                 {m.label}
                               </span>
                             </span>
-                            <span className={isdarkmode ? "text-gray-600" : "text-gray-400"} style={{ fontSize: 10, fontWeight: 400 }}>
+                            <span className={"text-[var(--admin-text-faint)]"} style={{ fontSize: 10, fontWeight: 400 }}>
                               {m.used}/{m.limit}
                             </span>
                           </button>)}
@@ -1192,7 +1192,7 @@ function AddBlogs() {
   }
               {modalCfg.withImageAttach && <button
     onClick={() => modalImageRef.current?.click()}
-    className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${modalAttachedImage ? "border-green-400 text-green-500" : isdarkmode ? "border-white/10 text-gray-400 hover:border-white/20 hover:text-gray-200" : "border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"}`}
+    className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${modalAttachedImage ? "border-green-400 text-green-500" : "border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:border-[var(--admin-border-strong)] hover:text-[var(--admin-text)]"}`}
     style={{ fontSize: 10, fontWeight: 500 }}
   >
                   <PaperclipIcon />
@@ -1200,34 +1200,34 @@ function AddBlogs() {
                 </button>}
             </div>
 
-            {isGenerating && modalCfg && <div className={`mx-6 mb-4 px-6 py-6 rounded-xl border flex flex-col items-center justify-center gap-1 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
+            {isGenerating && modalCfg && <div className={`mx-6 mb-4 px-6 py-6 rounded-xl border flex flex-col items-center justify-center gap-1 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
                 <div className="relative w-14 h-14 mb-2">
                   <svg className="w-14 h-14 animate-spin" style={{ animationDuration: "2s" }} viewBox="0 0 56 56" fill="none">
-                    <circle cx="28" cy="28" r="24" stroke={isdarkmode ? "#ffffff20" : "#00000014"} strokeWidth="4" />
-                    <circle cx="28" cy="28" r="24" stroke="#800000" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
+                    <circle cx="28" cy="28" r="24" stroke={"var(--admin-border)"} strokeWidth="4" />
+                    <circle cx="28" cy="28" r="24" stroke="var(--admin-accent)" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <SparkleIcon className={`w-5 h-5 ${isdarkmode ? "text-gray-300" : "text-gray-600"}`} />
+                    <SparkleIcon className={`w-5 h-5 text-[var(--admin-text-sub)]`} />
                   </div>
                 </div>
-                <p className={`${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 14, fontWeight: 600 }}>
+                <p className={`text-[var(--admin-text)]`} style={{ fontSize: 14, fontWeight: 600 }}>
                   {modalCfg.steps[generationStepIndex] || "Generating..."}
                 </p>
-                <p className={`mb-3 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                <p className={`mb-3 text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                   This usually takes 30-60 seconds.
                 </p>
                 <div className="flex items-center w-full">
                   {modalCfg.steps.map((step, i) => <React.Fragment key={step}>
-                      {i > 0 && <div className={`flex-1 h-px ${i <= generationStepIndex ? "bg-[#800000]" : isdarkmode ? "bg-white/10" : "bg-gray-200"}`} />}
+                      {i > 0 && <div className={`flex-1 h-px ${i <= generationStepIndex ? "bg-[var(--admin-accent)]" : "bg-[var(--admin-border-strong)]"}`} />}
                       <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
                         <div
-    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${i < generationStepIndex ? "bg-[#800000]" : i === generationStepIndex ? `border-2 border-[#800000] ${isdarkmode ? "bg-[#202020]" : "bg-gray-50"}` : isdarkmode ? "bg-white/10" : "bg-gray-200"}`}
+    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${i < generationStepIndex ? "bg-[var(--admin-accent)]" : i === generationStepIndex ? `border-2 border-[var(--admin-accent)] bg-[var(--admin-bg-soft)]` : "bg-[var(--admin-border-strong)]"}`}
   >
                           {i < generationStepIndex ? <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg> : i === generationStepIndex ? <div className="w-2 h-2 rounded-full bg-[#800000]" /> : null}
+                            </svg> : i === generationStepIndex ? <div className="w-2 h-2 rounded-full bg-[var(--admin-accent)]" /> : null}
                         </div>
-                        <span className={`text-center ${i <= generationStepIndex ? isdarkmode ? "text-gray-300" : "text-gray-700" : isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: i === generationStepIndex ? 600 : 400, maxWidth: 72 }}>
+                        <span className={`text-center ${i <= generationStepIndex ? "text-[var(--admin-text-sub)]" : "text-[var(--admin-text-faint)]"}`} style={{ fontSize: 9, fontWeight: i === generationStepIndex ? 600 : 400, maxWidth: 72 }}>
                           {step}
                         </span>
                       </div>
@@ -1237,11 +1237,11 @@ function AddBlogs() {
             {
     /* Actions */
   }
-            <div className={`flex gap-3 px-6 py-4 border-t transition-all duration-500 ${isdarkmode ? "border-white/5" : "border-gray-100"}`}>
+            <div className={`flex gap-3 px-6 py-4 border-t transition-all duration-500 border-[var(--admin-border)]`}>
               <button
     onClick={closeModal}
     disabled={isGenerating}
-    className={`flex-1 py-2.5 rounded-lg transition-all border-2 ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`flex-1 py-2.5 rounded-lg transition-all border-2 border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 Cancel
@@ -1249,7 +1249,7 @@ function AddBlogs() {
               <button
     onClick={handleGenerate}
     disabled={isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim())}
-    className={`flex-1 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all ${isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim()) ? "bg-[#800000]/40 text-white cursor-not-allowed" : "bg-[#800000] text-white hover:bg-[#6a0000]"}`}
+    className={`flex-1 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all ${isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim()) ? "bg-[var(--admin-accent)]/40 text-white cursor-not-allowed" : "bg-[var(--admin-accent)] text-white hover:bg-[#6a0000]"}`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 {isGenerating ? <><Spinner /> Generating...</> : <><SparkleIcon className="w-3.5 h-3.5" /> Generate</>}
@@ -1262,12 +1262,12 @@ function AddBlogs() {
     /* â•â•â•â•â•â•â•â• Confirm Modal â•â•â•â•â•â•â•â• */
   }
       {showConfirmModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>
                 Confirm Submission
               </p>
-              <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                 Are you ready to {status === "published" ? "publish" : status === "scheduled" ? "schedule" : "save"} this blog post?
               </p>
             </div>
@@ -1275,7 +1275,7 @@ function AddBlogs() {
               <button
     onClick={() => setShowConfirmModal(false)}
     disabled={isSubmitting}
-    className={`flex-1 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`flex-1 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 Cancel
@@ -1283,7 +1283,7 @@ function AddBlogs() {
               <button
     onClick={handleFinalConfirm}
     disabled={isSubmitting}
-    className="flex-1 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50"
+    className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 {isSubmitting ? "Saving..." : "Confirm"}
@@ -1296,19 +1296,19 @@ function AddBlogs() {
     /* â•â•â•â•â•â•â•â• Success Modal â•â•â•â•â•â•â•â• */
   }
       {showSuccessModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>
                 Success!
               </p>
-              <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                 Your blog post has been {status === "published" ? "published" : status === "scheduled" ? "scheduled" : "saved"} successfully.
               </p>
             </div>
             <div className="p-6">
               <button
     onClick={() => setShowSuccessModal(false)}
-    className="w-full py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+    className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 Close
@@ -1321,19 +1321,19 @@ function AddBlogs() {
     /* â•â•â•â•â•â•â•â• Error Modal â•â•â•â•â•â•â•â• */
   }
       {showErrorModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>
                 Error
               </p>
-              <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                 {errorMessage || "Something went wrong. Please try again."}
               </p>
             </div>
             <div className="p-6">
               <button
     onClick={() => setShowErrorModal(false)}
-    className="w-full py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all"
+    className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 Close

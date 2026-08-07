@@ -29,12 +29,12 @@ function UserManagement() {
     experience: ""
   });
   const [viewmode, setviewmode] = useState("list");
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const inputBg = isdarkmode ? "#202020" : "#f9fafb";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
+  const inputBg = "var(--admin-bg-soft)";
   const inp = (extra = {}) => ({
     padding: "10px 14px",
     borderRadius: 12,
@@ -225,7 +225,7 @@ function UserManagement() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         @keyframes spin { to { transform: rotate(360deg) } }
-        .um-row:hover { background: ${isdarkmode ? "rgba(255,255,255,0.03)" : "#f9fafb"} !important; }
+        .um-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .um-pill:hover { opacity: .85 !important; }
         .um-btn:hover  { opacity: .88 !important; }
 
@@ -326,7 +326,7 @@ function UserManagement() {
       border: `1px solid ${c.dark ? "rgba(139,0,0,0.3)" : borderColor}`,
       borderRadius: 20,
       padding: "20px 22px",
-      boxShadow: isdarkmode ? "none" : "0 2px 10px rgba(0,0,0,0.05)",
+      boxShadow: "var(--admin-shadow-sm)",
       position: "relative",
       overflow: "hidden"
     }}>
@@ -433,7 +433,7 @@ function UserManagement() {
                 <button
     onClick={() => setviewmode("card")}
     title="Card view"
-    style={{ width: 28, height: 28, borderRadius: 7, border: "none", cursor: "pointer", background: viewmode === "card" ? "#800000" : "transparent", color: viewmode === "card" ? "#fff" : textMuted, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
+    style={{ width: 28, height: 28, borderRadius: 7, border: "none", cursor: "pointer", background: viewmode === "card" ? "var(--admin-accent)" : "transparent", color: viewmode === "card" ? "#fff" : textMuted, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
   >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
@@ -443,7 +443,7 @@ function UserManagement() {
                 <button
     onClick={() => setviewmode("list")}
     title="List view"
-    style={{ width: 28, height: 28, borderRadius: 7, border: "none", cursor: "pointer", background: viewmode === "list" ? "#800000" : "transparent", color: viewmode === "list" ? "#fff" : textMuted, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
+    style={{ width: 28, height: 28, borderRadius: 7, border: "none", cursor: "pointer", background: viewmode === "list" ? "var(--admin-accent)" : "transparent", color: viewmode === "list" ? "#fff" : textMuted, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
   >
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
@@ -457,7 +457,7 @@ function UserManagement() {
         {
     /* â”€â”€ Table / Card view â”€â”€ */
   }
-        <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+        <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
           {
     /* Card header */
   }
@@ -475,7 +475,7 @@ function UserManagement() {
     /* Loading */
   }
           {isloading && <div style={{ padding: "80px 20px", textAlign: "center" }}>
-              <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid #800000", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
+              <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
               <p style={{ fontSize: 12, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Loading virtual assistants...</p>
             </div>}
 
@@ -483,7 +483,7 @@ function UserManagement() {
     /* Empty */
   }
           {!isloading && vas.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
-              <svg style={{ margin: "0 auto 16px", display: "block", color: isdarkmode ? "#374151" : "#d1d5db" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <p style={{ fontSize: 14, fontWeight: 500, color: textMuted, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif" }}>No virtual assistants found</p>
@@ -520,7 +520,7 @@ function UserManagement() {
     /* VA name + avatar */
   }
                       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 12, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 12, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                           {va.profilePicture ? <img src={va.profilePicture} alt={va.firstName} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>{getInitials(va)}</span>}
                         </div>
                         <div style={{ minWidth: 0 }}>
@@ -536,11 +536,11 @@ function UserManagement() {
                         <button className="um-btn" onClick={() => {
     setselectedva(va);
     setshowdetailsmodal(true);
-  }} style={{ padding: "5px 12px", borderRadius: 9, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#f9fafb", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>View</button>
+  }} style={{ padding: "5px 12px", borderRadius: 9, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>View</button>
                         <button className="um-btn" onClick={() => openEdit(va)} style={{ padding: "5px 12px", borderRadius: 9, border: "none", background: "rgba(0,102,204,0.12)", color: "#0066CC", fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                         {va.status === "PENDING" && <button className="um-btn" onClick={() => openConfirm("VERIFY", "Verify", va)} style={{ padding: "5px 12px", borderRadius: 9, border: "none", background: "rgba(5,150,105,0.12)", color: "#059669", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Verify</button>}
                         {(va.status === "VERIFIED" || va.status === "INACTIVE") && <button className="um-btn" onClick={() => openConfirm("ACTIVATE", "Activate", va)} style={{ padding: "5px 12px", borderRadius: 9, border: "none", background: "rgba(5,150,105,0.12)", color: "#059669", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Activate</button>}
-                        {va.status === "ACTIVE" && <button className="um-btn" onClick={() => openConfirm("DEACTIVATE", "Deactivate", va)} style={{ padding: "5px 12px", borderRadius: 9, border: "none", background: "rgba(139,0,0,0.1)", color: "#800000", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
+                        {va.status === "ACTIVE" && <button className="um-btn" onClick={() => openConfirm("DEACTIVATE", "Deactivate", va)} style={{ padding: "5px 12px", borderRadius: 9, border: "none", background: "rgba(139,0,0,0.1)", color: "var(--admin-accent)", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
                       </div>
                     </div>
                   </div>)}
@@ -562,7 +562,7 @@ function UserManagement() {
                   {
     /* Avatar */
   }
-                  <div style={{ width: 38, height: 38, borderRadius: 11, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden", marginTop: 2 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 11, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden", marginTop: 2 }}>
                     {va.profilePicture ? <img src={va.profilePicture} alt={va.firstName} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff", fontSize: 12, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>{getInitials(va)}</span>}
                   </div>
                   {
@@ -593,11 +593,11 @@ function UserManagement() {
                       <button className="um-btn" onClick={() => {
     setselectedva(va);
     setshowdetailsmodal(true);
-  }} style={{ padding: "4px 11px", borderRadius: 8, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#f9fafb", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>View</button>
+  }} style={{ padding: "4px 11px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>View</button>
                       <button className="um-btn" onClick={() => openEdit(va)} style={{ padding: "4px 11px", borderRadius: 8, border: "none", background: "rgba(0,102,204,0.12)", color: "#0066CC", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                       {va.status === "PENDING" && <button className="um-btn" onClick={() => openConfirm("VERIFY", "Verify", va)} style={{ padding: "4px 11px", borderRadius: 8, border: "none", background: "rgba(5,150,105,0.12)", color: "#059669", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Verify</button>}
                       {(va.status === "VERIFIED" || va.status === "INACTIVE") && <button className="um-btn" onClick={() => openConfirm("ACTIVATE", "Activate", va)} style={{ padding: "4px 11px", borderRadius: 8, border: "none", background: "rgba(5,150,105,0.12)", color: "#059669", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Activate</button>}
-                      {va.status === "ACTIVE" && <button className="um-btn" onClick={() => openConfirm("DEACTIVATE", "Deactivate", va)} style={{ padding: "4px 11px", borderRadius: 8, border: "none", background: "rgba(139,0,0,0.1)", color: "#800000", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
+                      {va.status === "ACTIVE" && <button className="um-btn" onClick={() => openConfirm("DEACTIVATE", "Deactivate", va)} style={{ padding: "4px 11px", borderRadius: 8, border: "none", background: "rgba(139,0,0,0.1)", color: "var(--admin-accent)", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
                     </div>
                   </div>
                 </div>)}
@@ -618,7 +618,7 @@ function UserManagement() {
                   {pagination && Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => i + 1).map((pg) => <button key={pg} onClick={() => {
     setcurrentpage(pg);
     redeive(void 0, void 0, void 0, pg);
-  }} style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentpage ? "none" : `1px solid ${borderColor}`, background: pg === currentpage ? "#800000" : subtleBg, color: pg === currentpage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentpage ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>{pg}</button>)}
+  }} style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentpage ? "none" : `1px solid ${borderColor}`, background: pg === currentpage ? "var(--admin-accent)" : subtleBg, color: pg === currentpage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentpage ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>{pg}</button>)}
                   <button onClick={() => {
     const np = pagination ? Math.min(currentpage + 1, pagination.totalPages) : currentpage;
     setcurrentpage(np);
@@ -642,7 +642,7 @@ function UserManagement() {
     /* Top: avatar + name + status */
   }
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                      <div style={{ width: 46, height: 46, borderRadius: 14, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                      <div style={{ width: 46, height: 46, borderRadius: 14, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                         {va.profilePicture ? <img src={va.profilePicture} alt={va.firstName} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff", fontSize: 14, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>{getInitials(va)}</span>}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -669,11 +669,11 @@ function UserManagement() {
                       <button className="um-btn" onClick={() => {
     setselectedva(va);
     setshowdetailsmodal(true);
-  }} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#fff", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>View</button>
+  }} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: `1px solid ${borderColor}`, background: "var(--admin-surface)", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>View</button>
                       <button className="um-btn" onClick={() => openEdit(va)} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: "none", background: "rgba(0,102,204,0.12)", color: "#0066CC", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                       {va.status === "PENDING" && <button className="um-btn" onClick={() => openConfirm("VERIFY", "Verify", va)} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: "none", background: "rgba(5,150,105,0.12)", color: "#059669", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Verify</button>}
                       {(va.status === "VERIFIED" || va.status === "INACTIVE") && <button className="um-btn" onClick={() => openConfirm("ACTIVATE", "Activate", va)} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: "none", background: "rgba(5,150,105,0.12)", color: "#059669", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Activate</button>}
-                      {va.status === "ACTIVE" && <button className="um-btn" onClick={() => openConfirm("DEACTIVATE", "Deactivate", va)} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: "none", background: "rgba(139,0,0,0.1)", color: "#800000", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
+                      {va.status === "ACTIVE" && <button className="um-btn" onClick={() => openConfirm("DEACTIVATE", "Deactivate", va)} style={{ flex: 1, padding: "7px 10px", borderRadius: 10, border: "none", background: "rgba(139,0,0,0.1)", color: "var(--admin-accent)", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
                     </div>
                   </div>)}
               </div>
@@ -694,7 +694,7 @@ function UserManagement() {
                   {pagination && Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => i + 1).map((pg) => <button key={pg} onClick={() => {
     setcurrentpage(pg);
     redeive(void 0, void 0, void 0, pg);
-  }} style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentpage ? "none" : `1px solid ${borderColor}`, background: pg === currentpage ? "#800000" : subtleBg, color: pg === currentpage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentpage ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>{pg}</button>)}
+  }} style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentpage ? "none" : `1px solid ${borderColor}`, background: pg === currentpage ? "var(--admin-accent)" : subtleBg, color: pg === currentpage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentpage ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>{pg}</button>)}
                   <button onClick={() => {
     const np = pagination ? Math.min(currentpage + 1, pagination.totalPages) : currentpage;
     setcurrentpage(np);
@@ -729,7 +729,7 @@ function UserManagement() {
     /* Avatar + name */
   }
               <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-                <div style={{ width: 52, height: 52, borderRadius: 16, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                <div style={{ width: 52, height: 52, borderRadius: 16, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                   {selectedva.profilePicture ? <img src={selectedva.profilePicture} alt={selectedva.firstName} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff", fontSize: 17, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>{getInitials(selectedva)}</span>}
                 </div>
                 <div>
@@ -776,7 +776,7 @@ function UserManagement() {
                     <button onClick={() => {
     setshowdetailsmodal(false);
     openConfirm("REJECT", "Reject", selectedva);
-  }} style={{ padding: "10px 16px", borderRadius: 12, border: "none", background: "rgba(139,0,0,0.1)", color: "#800000", fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Reject</button>
+  }} style={{ padding: "10px 16px", borderRadius: 12, border: "none", background: "rgba(139,0,0,0.1)", color: "var(--admin-accent)", fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Reject</button>
                   </>}
                 {(selectedva.status === "VERIFIED" || selectedva.status === "INACTIVE") && <button onClick={() => {
     setshowdetailsmodal(false);
@@ -785,8 +785,8 @@ function UserManagement() {
                 {selectedva.status === "ACTIVE" && <button onClick={() => {
     setshowdetailsmodal(false);
     openConfirm("DEACTIVATE", "Deactivate", selectedva);
-  }} style={{ padding: "10px 16px", borderRadius: 12, border: "none", background: "rgba(139,0,0,0.1)", color: "#800000", fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
-                <button onClick={() => setshowdetailsmodal(false)} style={{ padding: "10px 24px", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Close</button>
+  }} style={{ padding: "10px 16px", borderRadius: 12, border: "none", background: "rgba(139,0,0,0.1)", color: "var(--admin-accent)", fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Deactivate</button>}
+                <button onClick={() => setshowdetailsmodal(false)} style={{ padding: "10px 24px", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Close</button>
               </div>
             </div>
           </div>
@@ -831,7 +831,7 @@ function UserManagement() {
 
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 16, borderTop: `1px solid ${borderColor}`, flexWrap: "wrap" }}>
                 <button onClick={() => setshoweditmodal(false)} style={{ padding: "10px 22px", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
-                <button onClick={submitEdit} disabled={issubmitting} style={{ padding: "10px 28px", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 11, fontWeight: 500, cursor: issubmitting ? "not-allowed" : "pointer", opacity: issubmitting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
+                <button onClick={submitEdit} disabled={issubmitting} style={{ padding: "10px 28px", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 11, fontWeight: 500, cursor: issubmitting ? "not-allowed" : "pointer", opacity: issubmitting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
                   {issubmitting ? "Saving..." : "Save Changes"}
                 </button>
               </div>
@@ -846,7 +846,7 @@ function UserManagement() {
           <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, width: "100%", maxWidth: 440, boxShadow: "0 32px 80px rgba(0,0,0,0.32)", fontFamily: "'Poppins', sans-serif" }}>
             <div className="um-modal-pad">
               <div style={{ width: 52, height: 52, borderRadius: 16, background: confirmaction.type === "DEACTIVATE" || confirmaction.type === "REJECT" ? "rgba(139,0,0,0.1)" : "rgba(5,150,105,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-                {confirmaction.type === "VERIFY" || confirmaction.type === "ACTIVATE" ? <svg width="24" height="24" fill="none" stroke="#059669" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> : <svg width="24" height="24" fill="none" stroke="#800000" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
+                {confirmaction.type === "VERIFY" || confirmaction.type === "ACTIVATE" ? <svg width="24" height="24" fill="none" stroke="#059669" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> : <svg width="24" height="24" fill="none" stroke="var(--admin-accent)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
               </div>
               <h3 style={{ fontSize: 17, fontWeight: 600, color: textPrimary, margin: "0 0 8px", fontFamily: "'Poppins', sans-serif" }}>{confirmaction.label} Account</h3>
               <p style={{ fontSize: 12, color: textMuted, margin: "0 0 20px", lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>
@@ -858,7 +858,7 @@ function UserManagement() {
                 <button
     onClick={() => performAction(confirmaction.type, confirmaction.va)}
     disabled={issubmitting}
-    style={{ padding: "10px 28px", borderRadius: 12, border: "none", background: confirmaction.type === "DEACTIVATE" || confirmaction.type === "REJECT" ? "#800000" : "#059669", color: "#fff", fontSize: 11, fontWeight: 500, cursor: issubmitting ? "not-allowed" : "pointer", opacity: issubmitting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}
+    style={{ padding: "10px 28px", borderRadius: 12, border: "none", background: confirmaction.type === "DEACTIVATE" || confirmaction.type === "REJECT" ? "var(--admin-accent)" : "#059669", color: "#fff", fontSize: 11, fontWeight: 500, cursor: issubmitting ? "not-allowed" : "pointer", opacity: issubmitting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}
   >
                   {issubmitting ? "Processing..." : `Yes, ${confirmaction.label}`}
                 </button>

@@ -20,13 +20,13 @@ function ListAdmin() {
   const cardsPerPage = 8;
   const { isdarkmode } = useDarkMode();
   const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
-  const pageBg = isdarkmode ? "#0f0f0f" : "#f8f9fa";
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const inputBg = isdarkmode ? "#202020" : "#f9fafb";
+  const pageBg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
+  const inputBg = "var(--admin-bg-soft)";
   const departments = {
     1: "Compliance",
     2: "Innovation",
@@ -62,7 +62,7 @@ function ListAdmin() {
     ...extra
   });
   const getRoleBadgeStyle = (role) => {
-    const map = { 1: "#800000", 2: "#FF4500" };
+    const map = { 1: "var(--admin-accent)", 2: "#FF4500" };
     return {
       background: map[role] || "#6b7280",
       color: "#fff",
@@ -77,7 +77,7 @@ function ListAdmin() {
     };
   };
   const getDeptBadgeStyle = () => ({
-    background: isdarkmode ? "rgba(255,255,255,0.07)" : "#f3f4f6",
+    background: "var(--admin-bg-hover)",
     color: textMuted,
     padding: "3px 10px",
     borderRadius: 20,
@@ -180,8 +180,8 @@ function ListAdmin() {
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
         *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
-        input:focus, textarea:focus, select:focus { border-color: #800000 !important; outline: none !important; box-shadow: none !important; }
-        .la-row:hover { background: ${isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"} !important; }
+        input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
+        .la-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .la-pill:hover { opacity: .78; }
         .la-card:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.28) !important; }
@@ -374,7 +374,7 @@ function ListAdmin() {
           {
     /* â”€â”€ Filters card â”€â”€ */
   }
-          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "24px", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "24px", boxShadow: "var(--admin-shadow-sm)" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div>
                 <p style={{ fontSize: 11, fontWeight: 500, color: textMuted, margin: "0 0 10px", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Filter by Department</p>
@@ -382,7 +382,7 @@ function ListAdmin() {
                   {["All", ...departmentList.map((d) => d.id.toString())].map((val) => {
     const sel = selectedDepartment === val;
     const label = val === "All" ? "All Departments" : `${departmentIcons[parseInt(val)]} ${departments[parseInt(val)]}`;
-    return <button key={val} className="la-pill" onClick={() => setSelectedDepartment(val)} style={{ padding: "5px 14px", borderRadius: 8, border: sel ? "none" : `1px solid ${borderColor}`, background: sel ? "#800000" : subtleBg, color: sel ? "#fff" : textMuted, fontSize: 11, fontWeight: sel ? 500 : 400, cursor: "pointer", transition: "all .15s", boxShadow: sel ? "0 2px 8px rgba(128,0,0,0.3)" : "none", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+    return <button key={val} className="la-pill" onClick={() => setSelectedDepartment(val)} style={{ padding: "5px 14px", borderRadius: 8, border: sel ? "none" : `1px solid ${borderColor}`, background: sel ? "var(--admin-accent)" : subtleBg, color: sel ? "#fff" : textMuted, fontSize: 11, fontWeight: sel ? 500 : 400, cursor: "pointer", transition: "all .15s", boxShadow: sel ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
                         {label}
                       </button>;
   })}
@@ -394,7 +394,7 @@ function ListAdmin() {
                   {["All", ...roleList.map((r) => r.id.toString())].map((val) => {
     const sel = selectedRole === val;
     const label = val === "All" ? "All Roles" : roles[parseInt(val)];
-    return <button key={val} className="la-pill" onClick={() => setSelectedRole(val)} style={{ padding: "5px 14px", borderRadius: 8, border: sel ? "none" : `1px solid ${borderColor}`, background: sel ? "#800000" : subtleBg, color: sel ? "#fff" : textMuted, fontSize: 11, fontWeight: sel ? 500 : 400, cursor: "pointer", transition: "all .15s", boxShadow: sel ? "0 2px 8px rgba(128,0,0,0.3)" : "none", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
+    return <button key={val} className="la-pill" onClick={() => setSelectedRole(val)} style={{ padding: "5px 14px", borderRadius: 8, border: sel ? "none" : `1px solid ${borderColor}`, background: sel ? "var(--admin-accent)" : subtleBg, color: sel ? "#fff" : textMuted, fontSize: 11, fontWeight: sel ? 500 : 400, cursor: "pointer", transition: "all .15s", boxShadow: sel ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
                         {label}
                       </button>;
   })}
@@ -406,7 +406,7 @@ function ListAdmin() {
           {
     /* â”€â”€ Main content card â”€â”€ */
   }
-          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
 
             {
     /* â•â• TOOLBAR â•â• */
@@ -446,13 +446,13 @@ function ListAdmin() {
         padding: "5px 12px",
         borderRadius: 8,
         border: sel ? "none" : `1px solid ${borderColor}`,
-        background: sel ? "#800000" : subtleBg,
+        background: sel ? "var(--admin-accent)" : subtleBg,
         color: sel ? "#fff" : textMuted,
         fontSize: 11,
         fontWeight: sel ? 600 : 400,
         cursor: "pointer",
         transition: "all .15s",
-        boxShadow: sel ? "0 2px 8px rgba(128,0,0,0.3)" : "none",
+        boxShadow: sel ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none",
         fontFamily: "'Poppins', sans-serif",
         letterSpacing: 0
       }}
@@ -466,7 +466,7 @@ function ListAdmin() {
       height: 18,
       borderRadius: 6,
       padding: "0 4px",
-      background: sel ? "rgba(255,255,255,0.22)" : isdarkmode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)",
+      background: sel ? "rgba(255,255,255,0.22)" : "var(--admin-border-strong)",
       color: sel ? "#fff" : textMuted,
       fontSize: 10,
       fontWeight: 600,
@@ -512,14 +512,14 @@ function ListAdmin() {
       height: 32,
       borderRadius: 8,
       border: "none",
-      background: viewMode === mode ? "#800000" : subtleBg,
+      background: viewMode === mode ? "var(--admin-accent)" : subtleBg,
       color: viewMode === mode ? "#fff" : textMuted,
       cursor: "pointer",
       transition: "all .15s",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      boxShadow: viewMode === mode ? "0 2px 8px rgba(128,0,0,0.3)" : "none"
+      boxShadow: viewMode === mode ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none"
     }}
   >
                     {mode === "grid" ? <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg> : <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>}
@@ -544,7 +544,7 @@ function ListAdmin() {
     /* â”€â”€ Loading â”€â”€ */
   }
             {isLoading && <div style={{ padding: "80px 20px", textAlign: "center" }}>
-                <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid #800000", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
+                <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
                 <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Loading administrators...</p>
               </div>}
 
@@ -552,7 +552,7 @@ function ListAdmin() {
     /* â”€â”€ Empty â”€â”€ */
   }
             {!isLoading && filteredAdmins.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
-                <svg style={{ margin: "0 auto 16px", display: "block", color: isdarkmode ? "#374151" : "#d1d5db" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <p style={{ fontSize: 14, fontWeight: 500, color: textMuted, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>No administrators found</p>
@@ -574,7 +574,7 @@ function ListAdmin() {
     style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr 1fr 1.4fr 140px", gap: 16, alignItems: "center", padding: "14px 24px", borderBottom: i < currentCards.length - 1 ? `1px solid ${borderColor}` : "none", transition: "background .15s", cursor: "pointer" }}
   >
                     <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                      <div style={{ width: 38, height: 38, borderRadius: 10, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
+                      <div style={{ width: 38, height: 38, borderRadius: 10, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
                         {admin.profilePicture ? <img src={admin.profilePicture} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : getUserInitials(admin)}
                       </div>
                       <div style={{ minWidth: 0 }}>
@@ -589,7 +589,7 @@ function ListAdmin() {
                       <button onClick={(e) => {
     e.stopPropagation();
     handleEdit(admin);
-  }} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#f9fafb", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Edit</button>
+  }} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Edit</button>
                       <button onClick={(e) => {
     e.stopPropagation();
     setAdminToArchive(admin._id);
@@ -604,7 +604,7 @@ function ListAdmin() {
             {!isLoading && filteredAdmins.length > 0 && viewMode === "grid" && <div style={{ padding: "24px", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
                 {currentCards.map((admin) => <div key={admin._id} className="la-card" onClick={() => handleView(admin)} style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, overflow: "hidden", cursor: "pointer", transition: "all .2s" }}>
                     <div style={{ padding: "18px 20px", borderBottom: `1px solid ${borderColor}`, display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
                         {admin.profilePicture ? <img src={admin.profilePicture} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : getUserInitials(admin)}
                       </div>
                       <div style={{ minWidth: 0 }}>
@@ -645,7 +645,7 @@ function ListAdmin() {
                 </p>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <button onClick={() => setCurrentPage((p) => p - 1)} disabled={currentPage === 1} style={{ padding: "7px 16px", borderRadius: 10, border: `1px solid ${borderColor}`, background: currentPage === 1 ? "transparent" : subtleBg, color: currentPage === 1 ? textMuted : textPrimary, fontSize: 11, fontWeight: 500, cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.4 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Previous</button>
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((pg) => <button key={pg} onClick={() => setCurrentPage(pg)} style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentPage ? "none" : `1px solid ${borderColor}`, background: pg === currentPage ? "#800000" : subtleBg, color: pg === currentPage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentPage ? 600 : 400, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{pg}</button>)}
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((pg) => <button key={pg} onClick={() => setCurrentPage(pg)} style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentPage ? "none" : `1px solid ${borderColor}`, background: pg === currentPage ? "var(--admin-accent)" : subtleBg, color: pg === currentPage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentPage ? 600 : 400, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{pg}</button>)}
                   <button onClick={() => setCurrentPage((p) => p + 1)} disabled={currentPage === totalPages} style={{ padding: "7px 16px", borderRadius: 10, border: `1px solid ${borderColor}`, background: currentPage === totalPages ? "transparent" : subtleBg, color: currentPage === totalPages ? textMuted : textPrimary, fontSize: 11, fontWeight: 500, cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.4 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Next</button>
                 </div>
               </div>}
@@ -706,7 +706,7 @@ function ListAdmin() {
               </div>
               <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, padding: "24px", marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, paddingBottom: 20, borderBottom: `1px solid ${borderColor}` }}>
-                  <div style={{ width: 64, height: 64, borderRadius: 16, background: "#800000", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
+                  <div style={{ width: 64, height: 64, borderRadius: 16, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
                     {viewingAdmin.profilePicture ? <img src={viewingAdmin.profilePicture} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : getUserInitials(viewingAdmin)}
                   </div>
                   <div>
@@ -730,7 +730,7 @@ function ListAdmin() {
                 <button onClick={() => {
     closeView();
     handleEdit(viewingAdmin);
-  }} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", letterSpacing: 0, transition: "all .15s" }}>Edit Admin</button>
+  }} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", letterSpacing: 0, transition: "all .15s" }}>Edit Admin</button>
               </div>
             </div>
           </div>

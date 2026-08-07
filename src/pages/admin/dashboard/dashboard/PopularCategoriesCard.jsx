@@ -51,7 +51,7 @@ function PopularCategoriesCard() {
     cy="18"
     r="16"
     fill="none"
-    stroke={isdarkmode ? "#2a2a2a" : "#f3f4f6"}
+    stroke={"var(--admin-bg-hover)"}
     strokeWidth="4"
   />
           {
@@ -146,7 +146,7 @@ function PopularCategoriesCard() {
   >
               <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                 <div style={{ width: 10, height: 10, borderRadius: "50%", background: cat.color, flexShrink: 0 }} />
-                <span style={{ color: isdarkmode ? "#9ca3af" : "#6b7280", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
+                <span style={{ color: "var(--admin-text-faint)", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
                   {cat.label}
                 </span>
               </div>

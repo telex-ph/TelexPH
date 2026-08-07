@@ -1,0 +1,754 @@
+/*
+ * Theme tokens for the admin dashboard (src/lib/admin-theme.jsx sets
+ * data-admin-theme on <html>). The --admin- prefix and the dedicated
+ * data-admin-theme attribute keep these isolated from globals.css's
+ * --color-* tokens and from any other theming on the public site.
+ *
+ * One block of ~24 semantic tokens per theme, not one token per unique hex
+ * literal — the dashboard's existing `isdarkmode ? A : B` inline styles map
+ * onto the nearest matching token via useDashboardTheme().
+ *
+ * :root (no data-admin-theme) carries the light values as the default, so
+ * anything painted before the provider's effect runs still gets sane light
+ * colors instead of unstyled/transparent backgrounds.
+ */
+
+:root,
+:root[data-admin-theme="light"] {
+  --admin-bg: #fafafa;
+  --admin-bg-soft: #f7f5f5;
+  --admin-bg-hover: #f4f2f2;
+  --admin-surface: #ffffff;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #1a1a2e;
+  --admin-text-sub: #666666;
+  --admin-text-faint: #999999;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #f0eeee;
+  --admin-border-strong: #e0dcdc;
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #660000;
+  --admin-accent-soft: #fff5f5;
+  --admin-accent-text: #800000;
+
+  --admin-danger: #c0392b;
+  --admin-danger-bg: #fff5f5;
+  --admin-success: #16a34a;
+  --admin-success-bg: #dcfce7;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #fff9f0;
+  --admin-info: #2563eb;
+  --admin-info-bg: #dbeafe;
+  --admin-noshow: #c2410c;
+  --admin-noshow-bg: #fff1e8;
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.14);
+}
+
+/* Cream — warm ivory background instead of stark white, soft/paper-like */
+:root[data-admin-theme="light-cream"] {
+  --admin-bg: #f7f3ea;
+  --admin-bg-soft: #f0e9da;
+  --admin-bg-hover: #e9dfc9;
+  --admin-surface: #fffdf7;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #2b2420;
+  --admin-text-sub: #6b5f52;
+  --admin-text-faint: #9c8f7f;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #e9ddc6;
+  --admin-border-strong: #dccdad;
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #660000;
+  --admin-accent-soft: #fbeeee;
+  --admin-accent-text: #800000;
+
+  --admin-danger: #c0392b;
+  --admin-danger-bg: #fdeeea;
+  --admin-success: #16a34a;
+  --admin-success-bg: #e2f6e9;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #fdf1de;
+  --admin-info: #2563eb;
+  --admin-info-bg: #e3ecfc;
+  --admin-noshow: #c2410c;
+  --admin-noshow-bg: #fbe9dd;
+
+  --admin-shadow-sm: 0 2px 8px rgba(90, 70, 30, 0.1);
+  --admin-shadow-md: 0 4px 16px rgba(90, 70, 30, 0.12);
+  --admin-shadow-lg: 0 12px 36px rgba(90, 70, 30, 0.16);
+}
+
+/* Blush — very soft pink-white, echoes the maroon brand directly */
+:root[data-admin-theme="light-blush"] {
+  --admin-bg: #fdf5f5;
+  --admin-bg-soft: #fbebeb;
+  --admin-bg-hover: #f7dede;
+  --admin-surface: #ffffff;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #2e1a1a;
+  --admin-text-sub: #7a5c5c;
+  --admin-text-faint: #ad8c8c;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #f5dede;
+  --admin-border-strong: #e8c6c6;
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #660000;
+  --admin-accent-soft: #f9e3e3;
+  --admin-accent-text: #800000;
+
+  --admin-danger: #c0392b;
+  --admin-danger-bg: #fbe6e2;
+  --admin-success: #16a34a;
+  --admin-success-bg: #e2f6e9;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #fdf1de;
+  --admin-info: #2563eb;
+  --admin-info-bg: #e3ecfc;
+  --admin-noshow: #c2410c;
+  --admin-noshow-bg: #fbe9dd;
+
+  --admin-shadow-sm: 0 2px 8px rgba(128, 0, 0, 0.08);
+  --admin-shadow-md: 0 4px 16px rgba(128, 0, 0, 0.1);
+  --admin-shadow-lg: 0 12px 36px rgba(128, 0, 0, 0.14);
+}
+
+/* Sand — warm beige/tan, neutral paper tone, distinct from Cream's yellow-ivory lean */
+:root[data-admin-theme="light-sand"] {
+  --admin-bg: #f5f0e8;
+  --admin-bg-soft: #ece3d4;
+  --admin-bg-hover: #e2d5bf;
+  --admin-surface: #fbf8f2;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #33291e;
+  --admin-text-sub: #756a58;
+  --admin-text-faint: #a4967f;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #e3d7c1;
+  --admin-border-strong: #d3c2a3;
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #660000;
+  --admin-accent-soft: #f6e9e5;
+  --admin-accent-text: #800000;
+
+  --admin-danger: #c0392b;
+  --admin-danger-bg: #f7e6e0;
+  --admin-success: #16a34a;
+  --admin-success-bg: #e4f2e2;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #f6ecd8;
+  --admin-info: #2563eb;
+  --admin-info-bg: #e2ebf9;
+  --admin-noshow: #c2410c;
+  --admin-noshow-bg: #fae5d6;
+
+  --admin-shadow-sm: 0 2px 8px rgba(80, 60, 20, 0.1);
+  --admin-shadow-md: 0 4px 16px rgba(80, 60, 20, 0.12);
+  --admin-shadow-lg: 0 12px 36px rgba(80, 60, 20, 0.16);
+}
+
+/* Cool — crisp blue-gray tinted white, corporate/clean */
+:root[data-admin-theme="light-cool"] {
+  --admin-bg: #f3f5f8;
+  --admin-bg-soft: #e9edf3;
+  --admin-bg-hover: #dfe5ee;
+  --admin-surface: #ffffff;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #1a2030;
+  --admin-text-sub: #5b6478;
+  --admin-text-faint: #8e97a8;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #e2e7ef;
+  --admin-border-strong: #cdd5e2;
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #660000;
+  --admin-accent-soft: #fbeeee;
+  --admin-accent-text: #800000;
+
+  --admin-danger: #c0392b;
+  --admin-danger-bg: #fdeeea;
+  --admin-success: #16a34a;
+  --admin-success-bg: #dcfce7;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #fff3e0;
+  --admin-info: #2563eb;
+  --admin-info-bg: #dbeafe;
+  --admin-noshow: #c2410c;
+  --admin-noshow-bg: #fbe6d8;
+
+  --admin-shadow-sm: 0 2px 8px rgba(20, 30, 60, 0.08);
+  --admin-shadow-md: 0 4px 16px rgba(20, 30, 60, 0.1);
+  --admin-shadow-lg: 0 12px 36px rgba(20, 30, 60, 0.14);
+}
+
+/* Sage — subtle cool green-gray tint, the one non-warm, non-blue light option */
+:root[data-admin-theme="light-sage"] {
+  --admin-bg: #f3f6f3;
+  --admin-bg-soft: #e8eee7;
+  --admin-bg-hover: #dbe5d9;
+  --admin-surface: #fbfdfb;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #1e2620;
+  --admin-text-sub: #5c6b5e;
+  --admin-text-faint: #8fa090;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #dee8dd;
+  --admin-border-strong: #c7d6c5;
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #660000;
+  --admin-accent-soft: #f9ecec;
+  --admin-accent-text: #800000;
+
+  --admin-danger: #c0392b;
+  --admin-danger-bg: #fbeae6;
+  --admin-success: #16a34a;
+  --admin-success-bg: #dcf3df;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #fbf0da;
+  --admin-info: #2563eb;
+  --admin-info-bg: #dfe9f8;
+  --admin-noshow: #c2410c;
+  --admin-noshow-bg: #f9e5d6;
+
+  --admin-shadow-sm: 0 2px 8px rgba(30, 50, 30, 0.08);
+  --admin-shadow-md: 0 4px 16px rgba(30, 50, 30, 0.1);
+  --admin-shadow-lg: 0 12px 36px rgba(30, 50, 30, 0.14);
+}
+
+/* Obsidian — true black / OLED, max contrast, minimal hue tint */
+:root[data-admin-theme="dark-obsidian"] {
+  --admin-bg: #000000;
+  --admin-bg-soft: #0d0d0d;
+  --admin-bg-hover: #1a1a1a;
+  --admin-surface: #0a0a0a;
+  --admin-surface-raised: #141414;
+
+  --admin-text: #f5f5f5;
+  --admin-text-sub: #a3a3a3;
+  --admin-text-faint: #6b6b6b;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-border-strong: rgba(255, 255, 255, 0.16);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 100, 95, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --admin-shadow-md: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 16px rgba(0, 0, 0, 0.6);
+  --admin-shadow-lg: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 12px 36px rgba(0, 0, 0, 0.7);
+}
+
+/* Slate — cool neutral blue-gray, recommended default dark */
+:root[data-admin-theme="dark-slate"] {
+  --admin-bg: #0f1115;
+  --admin-bg-soft: #15181d;
+  --admin-bg-hover: #1e2229;
+  --admin-surface: #171a20;
+  --admin-surface-raised: #1e222a;
+
+  --admin-text: #f3f4f6;
+  --admin-text-sub: #9ca3af;
+  --admin-text-faint: #6b7280;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-border-strong: rgba(255, 255, 255, 0.14);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Maroon — warm, brand-tinted brown-black */
+:root[data-admin-theme="dark-maroon"] {
+  --admin-bg: #140d0d;
+  --admin-bg-soft: #1a1212;
+  --admin-bg-hover: #2a1c1c;
+  --admin-surface: #1d1414;
+  --admin-surface-raised: #261a1a;
+
+  --admin-text: #f5edec;
+  --admin-text-sub: #b8a5a3;
+  --admin-text-faint: #8a7371;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 220, 215, 0.1);
+  --admin-border-strong: rgba(255, 220, 215, 0.18);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Indigo — cool blue-violet tint */
+:root[data-admin-theme="dark-indigo"] {
+  --admin-bg: #10111a;
+  --admin-bg-soft: #14151f;
+  --admin-bg-hover: #232640;
+  --admin-surface: #171925;
+  --admin-surface-raised: #1f2233;
+
+  --admin-text: #edeef7;
+  --admin-text-sub: #9c9fbd;
+  --admin-text-faint: #6b6e8a;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(180, 185, 255, 0.1);
+  --admin-border-strong: rgba(180, 185, 255, 0.18);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Charcoal — soft dark, lighter/higher-contrast gray for less-harsh reading */
+:root[data-admin-theme="dark-charcoal"] {
+  --admin-bg: #1c1c1e;
+  --admin-bg-soft: #232325;
+  --admin-bg-hover: #38383b;
+  --admin-surface: #262628;
+  --admin-surface-raised: #313133;
+
+  --admin-text: #fafafa;
+  --admin-text-sub: #b0b0b3;
+  --admin-text-faint: #7d7d80;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 255, 255, 0.12);
+  --admin-border-strong: rgba(255, 255, 255, 0.2);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+/* Espresso — warm sepia/tan-brown, lighter and more brown than Maroon */
+:root[data-admin-theme="dark-espresso"] {
+  --admin-bg: #1c140f;
+  --admin-bg-soft: #221a14;
+  --admin-bg-hover: #33261c;
+  --admin-surface: #261c15;
+  --admin-surface-raised: #32251c;
+
+  --admin-text: #f3e9df;
+  --admin-text-sub: #c4a996;
+  --admin-text-faint: #8f7563;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 214, 178, 0.1);
+  --admin-border-strong: rgba(255, 214, 178, 0.18);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Burgundy — deep saturated wine-red, more chromatic than Maroon's near-black brown */
+:root[data-admin-theme="dark-burgundy"] {
+  --admin-bg: #1a0a0d;
+  --admin-bg-soft: #200c10;
+  --admin-bg-hover: #33141a;
+  --admin-surface: #250e13;
+  --admin-surface-raised: #33131a;
+
+  --admin-text: #f7e8ea;
+  --admin-text-sub: #c99ba3;
+  --admin-text-faint: #8f5f68;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 180, 190, 0.1);
+  --admin-border-strong: rgba(255, 180, 190, 0.18);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Rose Gold — softer, lighter blush-pink-tinted dark, higher luminance than the others */
+:root[data-admin-theme="dark-rosegold"] {
+  --admin-bg: #211519;
+  --admin-bg-soft: #271820;
+  --admin-bg-hover: #3d2530;
+  --admin-surface: #2c1d22;
+  --admin-surface-raised: #38262c;
+
+  --admin-text: #f9edef;
+  --admin-text-sub: #d3aeb6;
+  --admin-text-faint: #977c82;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: rgba(255, 200, 210, 0.12);
+  --admin-border-strong: rgba(255, 200, 210, 0.2);
+
+  --admin-accent: #800000;
+  --admin-accent-hover: #a10000;
+  --admin-accent-soft: rgba(224, 93, 93, 0.14);
+  --admin-accent-text: #e0645f;
+
+  --admin-danger: #f87171;
+  --admin-danger-bg: rgba(239, 68, 68, 0.16);
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(34, 197, 94, 0.16);
+  --admin-warning: #fbbf24;
+  --admin-warning-bg: rgba(245, 158, 11, 0.16);
+  --admin-info: #60a5fa;
+  --admin-info-bg: rgba(59, 130, 246, 0.16);
+  --admin-noshow: #fb923c;
+  --admin-noshow-bg: rgba(251, 146, 60, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+/* Dracula — iconic purple/pink dev-tool theme, keeps its own signature pink accent */
+:root[data-admin-theme="dracula"] {
+  --admin-bg: #191a21;
+  --admin-bg-soft: #21222c;
+  --admin-bg-hover: #343746;
+  --admin-surface: #282a36;
+  --admin-surface-raised: #343746;
+
+  --admin-text: #f8f8f2;
+  --admin-text-sub: #bd93f9;
+  --admin-text-faint: #6272a4;
+  --admin-text-on-accent: #282a36;
+
+  --admin-border: rgba(189, 147, 249, 0.14);
+  --admin-border-strong: rgba(189, 147, 249, 0.24);
+
+  --admin-accent: #ff79c6;
+  --admin-accent-hover: #ff92d0;
+  --admin-accent-soft: rgba(255, 121, 198, 0.16);
+  --admin-accent-text: #ff92d0;
+
+  --admin-danger: #ff5555;
+  --admin-danger-bg: rgba(255, 85, 85, 0.16);
+  --admin-success: #50fa7b;
+  --admin-success-bg: rgba(80, 250, 123, 0.16);
+  --admin-warning: #f1fa8c;
+  --admin-warning-bg: rgba(241, 250, 140, 0.16);
+  --admin-info: #8be9fd;
+  --admin-info-bg: rgba(139, 233, 253, 0.16);
+  --admin-noshow: #ffb86c;
+  --admin-noshow-bg: rgba(255, 184, 108, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Monokai — classic warm-gray editor theme with signature cyan/green accents */
+:root[data-admin-theme="monokai"] {
+  --admin-bg: #1e1f1c;
+  --admin-bg-soft: #232420;
+  --admin-bg-hover: #3e3d32;
+  --admin-surface: #272822;
+  --admin-surface-raised: #35362e;
+
+  --admin-text: #f8f8f2;
+  --admin-text-sub: #c2c3bd;
+  --admin-text-faint: #75715e;
+  --admin-text-on-accent: #272822;
+
+  --admin-border: rgba(230, 219, 116, 0.1);
+  --admin-border-strong: rgba(230, 219, 116, 0.2);
+
+  --admin-accent: #66d9ef;
+  --admin-accent-hover: #8fe5f5;
+  --admin-accent-soft: rgba(102, 217, 239, 0.16);
+  --admin-accent-text: #8fe5f5;
+
+  --admin-danger: #f92672;
+  --admin-danger-bg: rgba(249, 38, 114, 0.16);
+  --admin-success: #a6e22e;
+  --admin-success-bg: rgba(166, 226, 46, 0.16);
+  --admin-warning: #e6db74;
+  --admin-warning-bg: rgba(230, 219, 116, 0.16);
+  --admin-info: #66d9ef;
+  --admin-info-bg: rgba(102, 217, 239, 0.16);
+  --admin-noshow: #fd971f;
+  --admin-noshow-bg: rgba(253, 151, 31, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Night Owl Light — soft off-white with the Night Owl family's signature teal accent */
+:root[data-admin-theme="night-owl-light"] {
+  --admin-bg: #fbfbfb;
+  --admin-bg-soft: #f4f4f4;
+  --admin-bg-hover: #e8e9ec;
+  --admin-surface: #ffffff;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #403f53;
+  --admin-text-sub: #647085;
+  --admin-text-faint: #90a7b2;
+  --admin-text-on-accent: #ffffff;
+
+  --admin-border: #e3e5e9;
+  --admin-border-strong: #d1d5db;
+
+  --admin-accent: #2aa298;
+  --admin-accent-hover: #22887f;
+  --admin-accent-soft: rgba(42, 162, 152, 0.12);
+  --admin-accent-text: #22887f;
+
+  --admin-danger: #de3d3b;
+  --admin-danger-bg: rgba(222, 61, 59, 0.1);
+  --admin-success: #4d9375;
+  --admin-success-bg: rgba(77, 147, 117, 0.12);
+  --admin-warning: #daaa01;
+  --admin-warning-bg: rgba(218, 170, 1, 0.12);
+  --admin-info: #4876d6;
+  --admin-info-bg: rgba(72, 118, 214, 0.12);
+  --admin-noshow: #c96765;
+  --admin-noshow-bg: rgba(201, 103, 101, 0.12);
+
+  --admin-shadow-sm: 0 2px 8px rgba(64, 63, 83, 0.08);
+  --admin-shadow-md: 0 4px 16px rgba(64, 63, 83, 0.1);
+  --admin-shadow-lg: 0 12px 36px rgba(64, 63, 83, 0.14);
+}
+
+/* Night Owl Dark — deep blue-black night theme with its signature lavender accent */
+:root[data-admin-theme="night-owl-dark"] {
+  --admin-bg: #011627;
+  --admin-bg-soft: #051b2c;
+  --admin-bg-hover: #0e2941;
+  --admin-surface: #0b2942;
+  --admin-surface-raised: #122d4a;
+
+  --admin-text: #d6deeb;
+  --admin-text-sub: #a1aab7;
+  --admin-text-faint: #637777;
+  --admin-text-on-accent: #011627;
+
+  --admin-border: rgba(126, 182, 234, 0.12);
+  --admin-border-strong: rgba(126, 182, 234, 0.22);
+
+  --admin-accent: #c792ea;
+  --admin-accent-hover: #d7aef0;
+  --admin-accent-soft: rgba(199, 146, 234, 0.16);
+  --admin-accent-text: #d7aef0;
+
+  --admin-danger: #ef5350;
+  --admin-danger-bg: rgba(239, 83, 80, 0.16);
+  --admin-success: #addb67;
+  --admin-success-bg: rgba(173, 219, 103, 0.16);
+  --admin-warning: #ffeb95;
+  --admin-warning-bg: rgba(255, 235, 149, 0.16);
+  --admin-info: #82aaff;
+  --admin-info-bg: rgba(130, 170, 255, 0.16);
+  --admin-noshow: #f78c6c;
+  --admin-noshow-bg: rgba(247, 140, 108, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Solarized Light — iconic warm paper background with its signature golden-yellow accent */
+:root[data-admin-theme="solarized-light"] {
+  --admin-bg: #fdf6e3;
+  --admin-bg-soft: #f5edda;
+  --admin-bg-hover: #eee8d5;
+  --admin-surface: #fffbf0;
+  --admin-surface-raised: #ffffff;
+
+  --admin-text: #073642;
+  --admin-text-sub: #657b83;
+  --admin-text-faint: #93a1a1;
+  --admin-text-on-accent: #fdf6e3;
+
+  --admin-border: #eee8d5;
+  --admin-border-strong: #d8d2bf;
+
+  --admin-accent: #b58900;
+  --admin-accent-hover: #9a7300;
+  --admin-accent-soft: rgba(181, 137, 0, 0.12);
+  --admin-accent-text: #9a7300;
+
+  --admin-danger: #dc322f;
+  --admin-danger-bg: rgba(220, 50, 47, 0.1);
+  --admin-success: #859900;
+  --admin-success-bg: rgba(133, 153, 0, 0.12);
+  --admin-warning: #cb4b16;
+  --admin-warning-bg: rgba(203, 75, 22, 0.12);
+  --admin-info: #268bd2;
+  --admin-info-bg: rgba(38, 139, 210, 0.12);
+  --admin-noshow: #d33682;
+  --admin-noshow-bg: rgba(211, 54, 130, 0.12);
+
+  --admin-shadow-sm: 0 2px 8px rgba(7, 54, 66, 0.08);
+  --admin-shadow-md: 0 4px 16px rgba(7, 54, 66, 0.1);
+  --admin-shadow-lg: 0 12px 36px rgba(7, 54, 66, 0.14);
+}
+
+/* Solarized Dark — iconic deep teal-black background with its signature teal accent */
+:root[data-admin-theme="solarized-dark"] {
+  --admin-bg: #002b36;
+  --admin-bg-soft: #023642;
+  --admin-bg-hover: #0a4152;
+  --admin-surface: #073642;
+  --admin-surface-raised: #0a4152;
+
+  --admin-text: #839496;
+  --admin-text-sub: #93a1a1;
+  --admin-text-faint: #586e75;
+  --admin-text-on-accent: #002b36;
+
+  --admin-border: rgba(147, 161, 161, 0.14);
+  --admin-border-strong: rgba(147, 161, 161, 0.24);
+
+  --admin-accent: #2aa198;
+  --admin-accent-hover: #3fc1b7;
+  --admin-accent-soft: rgba(42, 161, 152, 0.18);
+  --admin-accent-text: #3fc1b7;
+
+  --admin-danger: #dc322f;
+  --admin-danger-bg: rgba(220, 50, 47, 0.16);
+  --admin-success: #859900;
+  --admin-success-bg: rgba(133, 153, 0, 0.16);
+  --admin-warning: #cb4b16;
+  --admin-warning-bg: rgba(203, 75, 22, 0.16);
+  --admin-info: #268bd2;
+  --admin-info-bg: rgba(38, 139, 210, 0.16);
+  --admin-noshow: #d33682;
+  --admin-noshow-bg: rgba(211, 54, 130, 0.16);
+
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
+}

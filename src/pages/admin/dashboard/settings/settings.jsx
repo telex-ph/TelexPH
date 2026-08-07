@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import AdminThemeGallery from "@/components/AdminThemeGallery";
 import api from "@/lib/api/axios";
 const getDepartmentName = (dept) => {
   const map = {
@@ -29,13 +30,13 @@ function EyeIcon({ open }) {
 function AdminSettings() {
   const router = useRouter();
   const { isdarkmode } = useDarkMode();
-  const pageBg = isdarkmode ? "#0f0f0f" : "#f8f9fa";
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const inputBg = isdarkmode ? "#202020" : "#f9fafb";
+  const pageBg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
+  const inputBg = "var(--admin-bg-soft)";
   const [activetab, setactivetab] = useState("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -184,12 +185,24 @@ function AdminSettings() {
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
           <path strokeLinecap="round" strokeLinejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4" />
         </svg>
+    },
+    {
+      id: "appearance",
+      label: "Appearance",
+      desc: "Dashboard theme",
+      icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+        </svg>
     }
   ];
   if (loading) {
     return <div style={{ minHeight: "100vh", background: pageBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid #800000", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 12px", display: "inline-block" }} />
+          <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 12px", display: "inline-block" }} />
           <p style={{ fontSize: 11, color: textMuted, fontFamily: "'Poppins', sans-serif", margin: 0, letterSpacing: 0 }}>Loading...</p>
           <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
@@ -200,9 +213,9 @@ function AdminSettings() {
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
         *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
-        input:focus, textarea:focus, select:focus { border-color: #800000 !important; outline: none !important; box-shadow: none !important; }
-        .as-nav:hover  { background: ${isdarkmode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.025)"} !important; }
-        .as-ghost:hover { background: ${isdarkmode ? "rgba(255,255,255,0.07)" : "#f3f4f6"} !important; }
+        input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
+        .as-nav:hover  { background: ${"var(--admin-bg-soft)"} !important; }
+        .as-ghost:hover { background: ${"var(--admin-bg-hover)"} !important; }
         .as-upload:hover { opacity: 0.82; }
         @keyframes spin { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
@@ -248,7 +261,7 @@ function AdminSettings() {
           {
     /* â”€â”€ Profile summary banner â”€â”€ */
   }
-          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "20px 26px", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)", display: "flex", alignItems: "center", gap: 18 }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "20px 26px", boxShadow: "var(--admin-shadow-sm)", display: "flex", alignItems: "center", gap: 18 }}>
             {
     /* Avatar */
   }
@@ -257,7 +270,7 @@ function AdminSettings() {
     width: 58,
     height: 58,
     borderRadius: "50%",
-    background: "#800000",
+    background: "var(--admin-accent)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -276,7 +289,7 @@ function AdminSettings() {
     width: 20,
     height: 20,
     borderRadius: "50%",
-    background: "#800000",
+    background: "var(--admin-accent)",
     color: "#fff",
     border: `2px solid ${cardBg}`,
     display: "flex",
@@ -308,7 +321,7 @@ function AdminSettings() {
   }
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
               {userData && <>
-                  <span style={{ padding: "4px 12px", borderRadius: 20, fontSize: 10, fontWeight: 500, background: "#80000014", color: "#800000", border: "1px solid #80000022" }}>
+                  <span style={{ padding: "4px 12px", borderRadius: 20, fontSize: 10, fontWeight: 500, background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)", color: "var(--admin-accent)", border: "1px solid color-mix(in srgb, var(--admin-accent) 13%, transparent)" }}>
                     {getRoleName(userData.role)}
                   </span>
                   <span style={{ padding: "4px 12px", borderRadius: 20, fontSize: 10, fontWeight: 500, background: subtleBg, color: textMuted, border: `1px solid ${borderColor}` }}>
@@ -326,7 +339,7 @@ function AdminSettings() {
             {
     /* â”€â”€ Sidebar â”€â”€ */
   }
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
               {
     /* Sidebar header */
   }
@@ -356,7 +369,7 @@ function AdminSettings() {
         padding: "10px 12px",
         borderRadius: 12,
         border: "none",
-        background: isActive ? "#800000" : "transparent",
+        background: isActive ? "var(--admin-accent)" : "transparent",
         color: isActive ? "#fff" : textMuted,
         cursor: "pointer",
         transition: "all .15s",
@@ -408,7 +421,7 @@ function AdminSettings() {
             {
     /* â”€â”€ Main panel â”€â”€ */
   }
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
 
               {
     /* Panel header */
@@ -416,22 +429,22 @@ function AdminSettings() {
               <div style={{ padding: "16px 26px", borderBottom: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: subtleBg }}>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0 }}>
-                    {activetab === "profile" ? "Profile Information" : "Security Settings"}
+                    {navItems.find((n) => n.id === activetab)?.label}
                   </p>
                   <p style={{ fontSize: 11, color: textMuted, margin: "2px 0 0", fontWeight: 400 }}>
-                    {activetab === "profile" ? "Update your personal details and photo" : "Manage your account password"}
+                    {activetab === "profile" ? "Update your personal details and photo" : activetab === "security" ? "Manage your account password" : "Choose how your dashboard looks"}
                   </p>
                 </div>
                 <div style={{
     width: 32,
     height: 32,
     borderRadius: 9,
-    background: "#80000014",
-    border: "1px solid #80000020",
+    background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)",
+    border: "1px solid color-mix(in srgb, var(--admin-accent) 12%, transparent)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#800000"
+    color: "var(--admin-accent)"
   }}>
                   {navItems.find((n) => n.id === activetab)?.icon}
                 </div>
@@ -451,7 +464,7 @@ function AdminSettings() {
     height: 68,
     borderRadius: "50%",
     flexShrink: 0,
-    background: "#800000",
+    background: "var(--admin-accent)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -475,7 +488,7 @@ function AdminSettings() {
     gap: 6,
     padding: "7px 16px",
     borderRadius: 10,
-    background: "#800000",
+    background: "var(--admin-accent)",
     color: "#fff",
     fontSize: 11,
     fontWeight: 500,
@@ -555,9 +568,9 @@ function AdminSettings() {
   }
                     <div>
                       <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: "0 0 7px", textTransform: "uppercase" }}>Assigned Role</p>
-                      <div style={{ ...inp(), display: "flex", alignItems: "center", gap: 8, background: isdarkmode ? "#1a1a1a" : "#f3f4f6", cursor: "default" }}>
-                        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#800000", flexShrink: 0 }} />
-                        <span style={{ fontSize: 12, color: "#800000", fontWeight: 500 }}>
+                      <div style={{ ...inp(), display: "flex", alignItems: "center", gap: 8, background: "var(--admin-bg-hover)", cursor: "default" }}>
+                        <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--admin-accent)", flexShrink: 0 }} />
+                        <span style={{ fontSize: 12, color: "var(--admin-accent)", fontWeight: 500 }}>
                           {userData ? getRoleName(userData.role) : "\u2014"}
                         </span>
                       </div>
@@ -581,14 +594,14 @@ function AdminSettings() {
       padding: "10px 24px",
       borderRadius: 12,
       border: "none",
-      background: "#800000",
+      background: "var(--admin-accent)",
       color: "#fff",
       fontSize: 12,
       fontWeight: 500,
       cursor: saving ? "not-allowed" : "pointer",
       opacity: saving ? 0.7 : 1,
       transition: "all .15s",
-      boxShadow: "0 4px 14px rgba(128,0,0,0.28)"
+      boxShadow: "0 4px 14px color-mix(in srgb, var(--admin-accent) 28%, transparent)"
     }}
   >
                       {saving ? <>
@@ -731,14 +744,14 @@ function AdminSettings() {
       padding: "10px 24px",
       borderRadius: 12,
       border: "none",
-      background: "#800000",
+      background: "var(--admin-accent)",
       color: "#fff",
       fontSize: 12,
       fontWeight: 500,
       cursor: saving ? "not-allowed" : "pointer",
       opacity: saving ? 0.7 : 1,
       transition: "all .15s",
-      boxShadow: "0 4px 14px rgba(128,0,0,0.28)"
+      boxShadow: "0 4px 14px color-mix(in srgb, var(--admin-accent) 28%, transparent)"
     }}
   >
                       {saving ? <>
@@ -750,6 +763,35 @@ function AdminSettings() {
                         </>}
                     </button>
                   </div>
+                </div>}
+
+              {
+    /* ═══════════ APPEARANCE TAB ═══════════ */
+  }
+              {activetab === "appearance" && <div style={{ padding: "26px 28px" }}>
+
+                  {
+    /* Info card */
+  }
+                  <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 14, padding: "14px 18px", marginBottom: 24, display: "flex", alignItems: "center", gap: 14 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--admin-accent) 12%, transparent)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--admin-accent-text)", flexShrink: 0 }}>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0 }}>Dashboard Theme</p>
+                      <p style={{ fontSize: 10, color: textMuted, margin: "2px 0 0", fontWeight: 400 }}>
+                        Applies instantly and is saved to your account. Only you see this change.
+                      </p>
+                    </div>
+                  </div>
+
+                  <AdminThemeGallery />
                 </div>}
 
             </div>

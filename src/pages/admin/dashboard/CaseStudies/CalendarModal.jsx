@@ -45,17 +45,17 @@ const CalendarModal = ({
     }
   };
   return <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-8 no-scrollbar">
-      <div className={`rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl ${isdarkmode ? "bg-[#1a1a1a]" : "bg-white"}`}>
+      <div className={`rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl bg-[var(--admin-surface)]`}>
         <div className="flex flex-col md:flex-row h-full max-h-[85vh]">
           {
     /* Left Side: Calendar */
   }
-          <div className={`flex-[3] p-8 overflow-y-auto no-scrollbar ${isdarkmode ? "bg-[#1a1a1a]" : "bg-white"}`}>
+          <div className={`flex-[3] p-8 overflow-y-auto no-scrollbar bg-[var(--admin-surface)]`}>
             <div className="mb-6">
-              <h3 className={`text-xl font-semibold ${isdarkmode ? "text-white" : "text-gray-900"}`}>
+              <h3 className={`text-xl font-semibold text-[var(--admin-text)]`}>
                 Calendar
               </h3>
-              <p className={`text-xs mt-1 ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>
+              <p className={`text-xs mt-1 text-[var(--admin-text-faint)]`}>
                 Select a date to view details
               </p>
             </div>
@@ -63,11 +63,11 @@ const CalendarModal = ({
             {
     /* Month Selector */
   }
-            <div className={`flex flex-wrap gap-2 mb-6 p-2 rounded-2xl ${isdarkmode ? "bg-[#242424]" : "bg-gray-50"}`}>
+            <div className={`flex flex-wrap gap-2 mb-6 p-2 rounded-2xl bg-[var(--admin-bg-soft)]`}>
               {MONTHS.map((m, idx) => <button
     key={m}
     onClick={() => onMonthChange(idx)}
-    className={`flex-1 min-w-[60px] text-center py-2.5 rounded-xl text-[11px] font-semibold cursor-pointer transition-all duration-200 ${idx === selectedMonthIndex ? "bg-red-900 text-white shadow-lg" : isdarkmode ? "text-gray-400 hover:text-gray-200 hover:bg-[#2a2a2a]" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"}`}
+    className={`flex-1 min-w-[60px] text-center py-2.5 rounded-xl text-[11px] font-semibold cursor-pointer transition-all duration-200 ${idx === selectedMonthIndex ? "bg-red-900 text-white shadow-lg" : "text-[var(--admin-text-sub)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]"}`}
   >
                   {m.substring(0, 3)}
                 </button>)}
@@ -77,7 +77,7 @@ const CalendarModal = ({
     /* Day Labels */
   }
             <div className="grid grid-cols-7 gap-3 text-center mb-3">
-              {DAYS_SHORT.map((day) => <span key={day} className={`text-[10px] font-bold uppercase ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}>
+              {DAYS_SHORT.map((day) => <span key={day} className={`text-[10px] font-bold uppercase text-[var(--admin-text-faint)]`}>
                   {day}
                 </span>)}
             </div>
@@ -88,7 +88,7 @@ const CalendarModal = ({
             <div className="grid grid-cols-7 gap-2.5">
               {calendardata.map((d, i) => <div
     key={i}
-    className={`relative rounded-2xl transition-all duration-200 flex items-center justify-center cursor-pointer min-h-[56px] ${d.istoday ? "bg-red-900 hover:bg-red-800 border border-red-900" : d.currentmonth ? isdarkmode ? "bg-[#242424] hover:bg-[#2a2a2a] border border-[#2e2e2e]" : "bg-gray-50 hover:bg-gray-100 border border-gray-100" : "bg-transparent opacity-30"}`}
+    className={`relative rounded-2xl transition-all duration-200 flex items-center justify-center cursor-pointer min-h-[56px] ${d.istoday ? "bg-red-900 hover:bg-red-800 border border-red-900" : d.currentmonth ? "bg-[var(--admin-bg-soft)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]" : "bg-transparent opacity-30"}`}
     onClick={() => handleDateClick(d)}
   >
                   {
@@ -105,7 +105,7 @@ const CalendarModal = ({
     /* Day number */
   }
                   <span
-    className={`text-sm font-medium transition-all ${d.istoday ? "text-white font-bold" : d.currentmonth ? isdarkmode ? "text-gray-200" : "text-gray-700" : "text-gray-400"}`}
+    className={`text-sm font-medium transition-all ${d.istoday ? "text-white font-bold" : d.currentmonth ? "text-[var(--admin-text)]" : "text-gray-400"}`}
   >
                     {d.day || ""}
                   </span>
@@ -116,10 +116,10 @@ const CalendarModal = ({
           {
     /* Right Side: Details Panel */
   }
-          <div className={`flex-[2] p-8 flex flex-col relative overflow-y-auto no-scrollbar ${isdarkmode ? "bg-[#222222]" : "bg-gray-50"}`}>
+          <div className={`flex-[2] p-8 flex flex-col relative overflow-y-auto no-scrollbar bg-[var(--admin-bg-soft)]`}>
             <button
     onClick={onClose}
-    className={`absolute top-6 right-6 p-2.5 rounded-full transition-all ${isdarkmode ? "bg-[#2a2a2a] text-gray-400 hover:text-white hover:bg-[#333333]" : "bg-white text-gray-600 hover:text-gray-900 shadow-sm"}`}
+    className={`absolute top-6 right-6 p-2.5 rounded-full transition-all bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}
   >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -128,10 +128,10 @@ const CalendarModal = ({
             </button>
 
             <div className="mt-12 mb-6">
-              <h3 className={`text-lg font-semibold ${isdarkmode ? "text-white" : "text-gray-900"}`}>
+              <h3 className={`text-lg font-semibold text-[var(--admin-text)]`}>
                 Event Details
               </h3>
-              <p className={`text-xs mt-1 ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>
+              <p className={`text-xs mt-1 text-[var(--admin-text-faint)]`}>
                 Stay updated with our project timeline and milestone completions.
               </p>
             </div>
@@ -141,7 +141,7 @@ const CalendarModal = ({
                 <p className={`text-[10px] font-bold uppercase mb-1.5 ${isdarkmode ? "text-red-400" : "text-red-700"}`}>
                   Tip
                 </p>
-                <p className={`text-xs leading-relaxed ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>
+                <p className={`text-xs leading-relaxed text-[var(--admin-text-sub)]`}>
                   Click on any highlighted date to view associated case studies or project updates.
                 </p>
               </div>
@@ -149,25 +149,25 @@ const CalendarModal = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-                  <span className={`text-xs font-medium ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>
+                  <span className={`text-xs font-medium text-[var(--admin-text-sub)]`}>
                     Active
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
-                  <span className={`text-xs font-medium ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>
+                  <span className={`text-xs font-medium text-[var(--admin-text-sub)]`}>
                     Completed
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#9CA3AF]" />
-                  <span className={`text-xs font-medium ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>
+                  <span className={`text-xs font-medium text-[var(--admin-text-sub)]`}>
                     Draft
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
-                  <span className={`text-xs font-medium ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>
+                  <span className={`text-xs font-medium text-[var(--admin-text-sub)]`}>
                     Scheduled
                   </span>
                 </div>

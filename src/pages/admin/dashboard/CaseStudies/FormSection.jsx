@@ -61,17 +61,17 @@ const FormSection = ({
   };
   return <div
     ref={formRef}
-    className={`p-10 rounded-[2.5rem] shadow-sm border ${isdarkmode ? "bg-[#1e1e1e] border-white/5" : "bg-white border-gray-100"}`}
+    className={`p-10 rounded-[2.5rem] shadow-sm border bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
       {
     /* Header */
   }
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h4 className={`text-base font-semibold ${isdarkmode ? "text-white" : "text-gray-800"}`}>
+          <h4 className={`text-base font-semibold text-[var(--admin-text)]`}>
             {isEditMode ? "Edit Case Study" : "Create New Case Study"}
           </h4>
-          <p className={`text-xs mt-1 ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>
+          <p className={`text-xs mt-1 text-[var(--admin-text-faint)]`}>
             {isEditMode ? "Update the details below" : "Fill in the details below"}
           </p>
         </div>
@@ -84,13 +84,13 @@ const FormSection = ({
     /* Cover Image */
   }
       <div className="mb-6">
-        <label className={`block text-xs font-semibold mb-3 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+        <label className={`block text-xs font-semibold mb-3 text-[var(--admin-text-sub)]`}>
           Cover Image *
         </label>
         <div
     ref={imageContainerRef}
     onClick={handleImageContainerClick}
-    className={`relative w-full h-64 rounded-[2rem] overflow-hidden cursor-pointer transition-all border-2 border-dashed ${formData.selectedimage ? "border-transparent" : isdarkmode ? "border-gray-700 hover:border-gray-600 bg-[#2a2a2a]" : "border-gray-300 hover:border-gray-400 bg-gray-50"}`}
+    className={`relative w-full h-64 rounded-[2rem] overflow-hidden cursor-pointer transition-all border-2 border-dashed ${formData.selectedimage ? "border-transparent" : "border-[var(--admin-border-strong)] hover:border-[var(--admin-border-strong)] bg-[var(--admin-bg-soft)]"}`}
     tabIndex={0}
   >
           {formData.selectedimage ? <>
@@ -123,13 +123,13 @@ const FormSection = ({
                 </button>
               </div>
             </> : <div className="flex flex-col items-center justify-center h-full">
-              <svg className={`w-12 h-12 mb-3 ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className={`w-12 h-12 mb-3 text-[var(--admin-text-faint)]`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className={`text-sm font-medium mb-1 ${isdarkmode ? "text-gray-400" : "text-gray-600"}`}>
+              <p className={`text-sm font-medium mb-1 text-[var(--admin-text-sub)]`}>
                 Click to upload or paste image
               </p>
-              <p className={`text-xs ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}>
+              <p className={`text-xs text-[var(--admin-text-faint)]`}>
                 PNG, JPG, JPEG, WebP up to 10MB
               </p>
             </div>}
@@ -148,7 +148,7 @@ const FormSection = ({
   }
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Title *
           </label>
           <input
@@ -156,11 +156,11 @@ const FormSection = ({
     value={formData.title}
     onChange={(e) => onFormChange("title", e.target.value)}
     placeholder="Enter case study title"
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
         </div>
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Subtitle
           </label>
           <input
@@ -168,7 +168,7 @@ const FormSection = ({
     value={formData.subtitle}
     onChange={(e) => onFormChange("subtitle", e.target.value)}
     placeholder="Enter subtitle (optional)"
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
         </div>
       </div>
@@ -178,7 +178,7 @@ const FormSection = ({
   }
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Author *
           </label>
           <input
@@ -186,17 +186,17 @@ const FormSection = ({
     value={formData.author}
     onChange={(e) => onFormChange("author", e.target.value)}
     placeholder="Enter author name"
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
         </div>
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Status *
           </label>
           <select
     value={formData.status}
     onChange={(e) => onFormChange("status", e.target.value)}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   >
             {STATUS_OPTIONS.map((status) => {
     const isDisabled = formData.isunfinished && status !== "Draft";
@@ -221,7 +221,7 @@ const FormSection = ({
   }
       {formData.status === "Scheduled" && <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+            <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
               Schedule Date *
             </label>
             <input
@@ -229,18 +229,18 @@ const FormSection = ({
     value={formData.scheduledate}
     onChange={(e) => onScheduleDateChange(e.target.value)}
     min={getCurrentDate()}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
           </div>
           <div>
-            <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+            <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
               Schedule Time *
             </label>
             <input
     type="time"
     value={formData.scheduletime}
     onChange={(e) => onScheduleTimeChange(e.target.value)}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
             {timeError && <p className="text-xs text-red-500 mt-2">{timeError}</p>}
           </div>
@@ -251,13 +251,13 @@ const FormSection = ({
   }
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <label className={`block text-xs font-semibold ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold text-[var(--admin-text-sub)]`}>
             Categories *
           </label>
           {formData.categories.length > 0 && <button
     type="button"
     onClick={() => onFormChange("categories", [])}
-    className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors ${isdarkmode ? "text-gray-400 hover:text-white hover:bg-white/10" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}
+    className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors text-[var(--admin-text-faint)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}
   >
               Clear
             </button>}
@@ -266,7 +266,7 @@ const FormSection = ({
           <button
     type="button"
     onClick={() => onCategoryDropdownToggle(!showCategoryDropdown)}
-    className={`w-full px-4 py-3 rounded-xl text-sm text-left transition-all outline-none flex items-center justify-between ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 hover:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 hover:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm text-left transition-all outline-none flex items-center justify-between bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] hover:border-[var(--admin-accent)]`}
   >
             <span>
               {formData.categories.length > 0 ? formData.categories.join(", ") : "Select categories"}
@@ -276,12 +276,12 @@ const FormSection = ({
             </svg>
           </button>
           
-          {showCategoryDropdown && <div className={`absolute z-10 w-full mt-2 rounded-xl shadow-lg border ${isdarkmode ? "bg-[#2a2a2a] border-white/10" : "bg-white border-gray-200"}`}>
+          {showCategoryDropdown && <div className={`absolute z-10 w-full mt-2 rounded-xl shadow-lg border bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
               {AVAILABLE_CATEGORIES.map((category) => <button
     key={category}
     type="button"
     onClick={() => onCategoryToggle(category)}
-    className={`w-full px-4 py-3 text-left text-sm transition-colors flex items-center justify-between ${formData.categories.includes(category) ? isdarkmode ? "bg-red-900/20 text-red-400" : "bg-red-50 text-red-700" : isdarkmode ? "text-gray-300 hover:bg-white/5" : "text-gray-700 hover:bg-gray-50"}`}
+    className={`w-full px-4 py-3 text-left text-sm transition-colors flex items-center justify-between ${formData.categories.includes(category) ? isdarkmode ? "bg-red-900/20 text-red-400" : "bg-red-50 text-red-700" : "text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]"}`}
   >
                   <span>{category}</span>
                   {formData.categories.includes(category) && <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -297,18 +297,18 @@ const FormSection = ({
   }
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Start Date *
           </label>
           <input
     type="date"
     value={formData.startdate}
     onChange={(e) => onFormChange("startdate", e.target.value)}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
         </div>
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             End Date
           </label>
           <div className="flex gap-3 items-center">
@@ -318,7 +318,7 @@ const FormSection = ({
     onChange={(e) => onFormChange("enddate", e.target.value)}
     disabled={formData.isunfinished}
     min={formData.startdate || void 0}
-    className={`flex-1 px-4 py-3 rounded-xl text-sm transition-all outline-none ${formData.isunfinished ? isdarkmode ? "bg-[#1a1a1a] text-gray-600 cursor-not-allowed" : "bg-gray-100 text-gray-400 cursor-not-allowed" : isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`flex-1 px-4 py-3 rounded-xl text-sm transition-all outline-none ${formData.isunfinished ? "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]"}`}
   />
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -327,7 +327,7 @@ const FormSection = ({
     onChange={(e) => onFormChange("isunfinished", e.target.checked)}
     className="w-4 h-4 rounded accent-red-900"
   />
-              <span className={`text-xs font-medium ${isdarkmode ? "text-gray-400" : "text-gray-600"}`}>
+              <span className={`text-xs font-medium text-[var(--admin-text-sub)]`}>
                 Unfinished
               </span>
             </label>
@@ -340,7 +340,7 @@ const FormSection = ({
   }
       <div className="space-y-6 mb-6">
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Challenge *
           </label>
           <textarea
@@ -348,11 +348,11 @@ const FormSection = ({
     onChange={(e) => onFormChange("challenge", e.target.value)}
     placeholder="Describe the challenge or problem"
     rows={4}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
         </div>
         <div>
-          <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+          <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
             Solution *
           </label>
           <textarea
@@ -360,7 +360,7 @@ const FormSection = ({
     onChange={(e) => onFormChange("solution", e.target.value)}
     placeholder="Describe the solution or approach"
     rows={4}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? "bg-[#2a2a2a] text-white border border-white/10 focus:border-red-900" : "bg-gray-50 text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none bg-[var(--admin-bg-soft)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
         </div>
       </div>
@@ -369,12 +369,12 @@ const FormSection = ({
     /* Content Sections */
   }
       <div className="space-y-6 mb-8">
-        <h5 className={`text-sm font-bold ${isdarkmode ? "text-white" : "text-gray-900"}`}>
+        <h5 className={`text-sm font-bold text-[var(--admin-text)]`}>
           Content Sections
         </h5>
-        {[1, 2, 3, 4, 5].map((num) => <div key={num} className={`p-6 rounded-2xl ${isdarkmode ? "bg-[#2a2a2a]" : "bg-gray-50"}`}>
+        {[1, 2, 3, 4, 5].map((num) => <div key={num} className={`p-6 rounded-2xl bg-[var(--admin-bg-soft)]`}>
             <div className="mb-4">
-              <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+              <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
                 Topic {num}
               </label>
               <input
@@ -382,11 +382,11 @@ const FormSection = ({
     value={formData[`topic${num}`]}
     onChange={(e) => onFormChange(`topic${num}`, e.target.value)}
     placeholder={`Enter topic ${num}`}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none ${isdarkmode ? "bg-[#1e1e1e] text-white border border-white/10 focus:border-red-900" : "bg-white text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none bg-[var(--admin-surface)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
             </div>
             <div>
-              <label className={`block text-xs font-semibold mb-2 ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}>
+              <label className={`block text-xs font-semibold mb-2 text-[var(--admin-text-sub)]`}>
                 Content {num}
               </label>
               <textarea
@@ -394,7 +394,7 @@ const FormSection = ({
     onChange={(e) => onFormChange(`content${num}`, e.target.value)}
     placeholder={`Enter content for section ${num}`}
     rows={4}
-    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none ${isdarkmode ? "bg-[#1e1e1e] text-white border border-white/10 focus:border-red-900" : "bg-white text-gray-900 border border-gray-200 focus:border-red-900"}`}
+    className={`w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none bg-[var(--admin-surface)] text-[var(--admin-text)] border border-[var(--admin-border)] focus:border-[var(--admin-accent)]`}
   />
             </div>
           </div>)}
@@ -408,7 +408,7 @@ const FormSection = ({
     type="button"
     onClick={onReset}
     disabled={isLoading}
-    className={`flex-1 px-6 py-3 rounded-2xl font-bold transition-colors ${isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-200 text-gray-700 hover:bg-gray-300"} disabled:opacity-50`}
+    className={`flex-1 px-6 py-3 rounded-2xl font-bold transition-colors bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)] disabled:opacity-50`}
   >
           {isEditMode ? "Cancel Edit" : "Reset Form"}
         </button>
@@ -416,7 +416,7 @@ const FormSection = ({
     type="button"
     onClick={onSubmit}
     disabled={isLoading}
-    className="flex-1 px-6 py-3 bg-[#800000] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors disabled:opacity-50"
+    className="flex-1 px-6 py-3 bg-[var(--admin-accent)] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors disabled:opacity-50"
   >
           {isLoading ? "Processing..." : isEditMode ? "Update Case Study" : "Create Case Study"}
         </button>

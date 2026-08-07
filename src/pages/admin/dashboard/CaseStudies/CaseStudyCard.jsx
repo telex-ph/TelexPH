@@ -21,7 +21,7 @@ const CaseStudyCard = ({
         return "bg-gray-600";
     }
   };
-  return <div className={`group rounded-[2.5rem] p-6 transition-all duration-300 flex flex-col relative overflow-hidden ${isEditing ? "ring-2 ring-red-900 shadow-xl" : isdarkmode ? "bg-[#2a2a2a] hover:bg-[#303030] shadow-md hover:shadow-xl" : "bg-white hover:shadow-xl shadow-sm"}`}>
+  return <div className={`group rounded-[2.5rem] p-6 transition-all duration-300 flex flex-col relative overflow-hidden ${isEditing ? "ring-2 ring-red-900 shadow-xl" : "bg-[var(--admin-surface)] hover:bg-[var(--admin-bg-hover)] shadow-md hover:shadow-xl"}`}>
       {
     /* Cover Image */
   }
@@ -40,28 +40,28 @@ const CaseStudyCard = ({
       {
     /* Title */
   }
-      <h4 className={`text-lg font-semibold mb-2 line-clamp-2 leading-snug ${isdarkmode ? "text-white" : "text-gray-900"}`}>
+      <h4 className={`text-lg font-semibold mb-2 line-clamp-2 leading-snug text-[var(--admin-text)]`}>
         {study.title}
       </h4>
 
       {
     /* Subtitle */
   }
-      {study.subtitle && <p className={`text-sm mb-3 line-clamp-2 ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>
+      {study.subtitle && <p className={`text-sm mb-3 line-clamp-2 text-[var(--admin-text-faint)]`}>
           {study.subtitle}
         </p>}
 
       {
     /* Author */
   }
-      <p className={`text-xs mb-1 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}>
+      <p className={`text-xs mb-1 text-[var(--admin-text-faint)]`}>
         By {study.author}
       </p>
 
       {
     /* Date Range */
   }
-      <p className={`text-xs mb-4 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}>
+      <p className={`text-xs mb-4 text-[var(--admin-text-faint)]`}>
         {study.start} – {study.isUnfinished ? "Unfinished" : study.end}
       </p>
 
