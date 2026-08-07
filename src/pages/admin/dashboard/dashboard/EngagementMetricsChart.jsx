@@ -57,7 +57,7 @@ function EngagementMetricsChart({
     padding: "4px 14px",
     borderRadius: 8,
     border: "none",
-    background: active ? "#800000" : "transparent",
+    background: active ? "var(--admin-accent)" : "transparent",
     color: active ? "#fff" : textMuted,
     fontSize: 10,
     fontWeight: active ? 600 : 400,
@@ -153,7 +153,7 @@ function EngagementMetricsChart({
   }
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {[
-    { color: "#800000", label: "views" },
+    { color: "var(--admin-accent)", label: "views" },
     { color: "#6b7280", label: "likes" }
   ].map((l) => <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: l.color, flexShrink: 0 }} />
@@ -212,7 +212,7 @@ function EngagementMetricsChart({
       fontWeight: 600,
       textTransform: "uppercase",
       letterSpacing: "0.06em",
-      color: "#800000",
+      color: "var(--admin-accent)",
       background: "none",
       border: "none",
       cursor: "pointer",
@@ -238,7 +238,7 @@ function EngagementMetricsChart({
       position: "absolute",
       inset: 0,
       borderRadius: 12,
-      background: isdarkmode ? "rgba(26,26,26,0.55)" : "rgba(249,250,251,0.55)",
+      background: "var(--admin-bg-soft)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -253,11 +253,11 @@ function EngagementMetricsChart({
           <AreaChart data={engagementdata}>
             <defs>
               <linearGradient id="colorviews" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#800000" stopOpacity={0.1} />
-                <stop offset="95%" stopColor="#800000" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--admin-accent)" stopOpacity={0.1} />
+                <stop offset="95%" stopColor="var(--admin-accent)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isdarkmode ? "#2a2a2a" : "#f3f4f6"} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={"var(--admin-bg-hover)"} />
             <XAxis
     dataKey="name"
     axisLine={false}
@@ -281,7 +281,7 @@ function EngagementMetricsChart({
       color: textPrimary
     }}
   />
-            <Area type="monotone" dataKey="views" stroke="#800000" strokeWidth={3} fillOpacity={1} fill="url(#colorviews)" />
+            <Area type="monotone" dataKey="views" stroke="var(--admin-accent)" strokeWidth={3} fillOpacity={1} fill="url(#colorviews)" />
             <Area type="monotone" dataKey="likes" stroke="#6b7280" strokeWidth={2} fill="transparent" />
           </AreaChart>
         </ResponsiveContainer>

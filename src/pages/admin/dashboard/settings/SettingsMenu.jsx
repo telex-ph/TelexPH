@@ -1,10 +1,10 @@
 
 import Link from "next/link";
 function SettingsMenu({ isdarkmode }) {
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const hoverBg = isdarkmode ? "rgba(255,255,255,0.04)" : "rgba(128,0,0,0.06)";
-  const iconBg = isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
+  const textMuted = "var(--admin-text-faint)";
+  const borderColor = "var(--admin-border)";
+  const hoverBg = "var(--admin-accent-soft)";
+  const iconBg = "var(--admin-bg-soft)";
   return <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -27,12 +27,12 @@ function SettingsMenu({ isdarkmode }) {
         .settings-link:hover {
           background: ${hoverBg};
           border-color: ${borderColor};
-          color: ${isdarkmode ? "#f0f0f0" : "#800000"};
+          color: ${"var(--admin-accent-text)"};
         }
         .settings-link:hover .settings-icon {
           transform: rotate(45deg);
-          color: #800000;
-          background: ${isdarkmode ? "rgba(128,0,0,0.2)" : "rgba(128,0,0,0.1)"};
+          color: var(--admin-accent);
+          background: ${"var(--admin-accent-soft)"};
         }
         .settings-icon {
           display: flex;

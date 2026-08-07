@@ -67,7 +67,7 @@ const getCardCover = (record, allRecords) => {
 const getStatusStyle = (s) => {
   switch (s) {
     case "Active":
-      return { bg: "rgba(128,0,0,0.10)", color: "#800000", border: "1px solid rgba(128,0,0,0.25)" };
+      return { bg: "color-mix(in srgb, var(--admin-accent) 10%, transparent)", color: "var(--admin-accent)", border: "1px solid color-mix(in srgb, var(--admin-accent) 25%, transparent)" };
     case "Completed":
       return { bg: "rgba(5,150,105,0.09)", color: "#059669", border: "1px solid rgba(5,150,105,0.22)" };
     case "Draft":
@@ -145,7 +145,7 @@ const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, textMuted
     const isToday = d === today;
     const ds = dateStr(d);
     const hasEv = records.some((r) => r.start === ds);
-    return <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 10, borderRadius: 8, cursor: "pointer", fontWeight: isToday ? 700 : 400, background: isToday ? "#800000" : "transparent", color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
+    return <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 10, borderRadius: 8, cursor: "pointer", fontWeight: isToday ? 700 : 400, background: isToday ? "var(--admin-accent)" : "transparent", color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
               {d}
               {hasEv && <div style={{ width: 4, height: 4, borderRadius: "50%", background: isToday ? "rgba(255,255,255,0.8)" : "#3b82f6" }} />}
             </div>;
@@ -153,7 +153,7 @@ const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, textMuted
       </div>
       <div style={{ display: "flex", gap: 16, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 3, background: "#800000" }} />
+          <div style={{ width: 10, height: 10, borderRadius: 3, background: "var(--admin-accent)" }} />
           <span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Today</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -174,7 +174,7 @@ const ConfirmModal = ({ isOpen, isEdit, isLoading, onClose, onConfirm, cardBg, b
         <p style={{ fontSize: 12, color: textMuted, margin: "0 0 28px", fontFamily: "'Poppins', sans-serif" }}>{isEdit ? "Save the changes to this case study?" : "Are you sure you want to create this case study?"}</p>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={onClose} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
-          <button onClick={onConfirm} disabled={isLoading} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: isLoading ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
+          <button onClick={onConfirm} disabled={isLoading} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: isLoading ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
             {isLoading ? "Saving\u2026" : isEdit ? "Update" : "Create"}
           </button>
         </div>
@@ -187,7 +187,7 @@ const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm, card
       <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "32px 28px", maxWidth: 420, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.28)", fontFamily: "'Poppins', sans-serif" }}>
         <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: "0 0 8px", fontFamily: "'Poppins', sans-serif" }}>Delete case study?</h3>
         <p style={{ fontSize: 12, color: textMuted, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif" }}>You are about to delete:</p>
-        <p style={{ fontSize: 13, fontWeight: 600, color: "#800000", margin: "0 0 6px", fontFamily: "'Poppins', sans-serif" }}>"{targetTitle}"</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: "var(--admin-accent)", margin: "0 0 6px", fontFamily: "'Poppins', sans-serif" }}>"{targetTitle}"</p>
         <p style={{ fontSize: 11, color: textMuted, margin: "0 0 28px", fontFamily: "'Poppins', sans-serif" }}>This action cannot be undone.</p>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={onClose} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
@@ -227,8 +227,8 @@ const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGeneratin
         {busy && <div style={{ marginBottom: 18, padding: "22px 20px", borderRadius: 14, border: `1px solid ${borderColor}`, background: inputBg, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <div style={{ position: "relative", width: 52, height: 52, marginBottom: 6 }}>
               <svg width="52" height="52" className="animate-spin" style={{ animationDuration: "2s" }} viewBox="0 0 56 56" fill="none">
-                <circle cx="28" cy="28" r="24" stroke={isdarkmode ? "#ffffff20" : "#00000014"} strokeWidth="4" />
-                <circle cx="28" cy="28" r="24" stroke="#800000" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
+                <circle cx="28" cy="28" r="24" stroke={"var(--admin-border)"} strokeWidth="4" />
+                <circle cx="28" cy="28" r="24" stroke="var(--admin-accent)" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
               </svg>
               <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="18" height="18" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
@@ -242,10 +242,10 @@ const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGeneratin
             </p>
             {isGenerating && <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
                 {AI_IMAGE_STEPS.map((step, i) => <React.Fragment key={step}>
-                    {i > 0 && <div style={{ flex: 1, height: 1, background: i <= stepIndex ? "#800000" : borderColor }} />}
+                    {i > 0 && <div style={{ flex: 1, height: 1, background: i <= stepIndex ? "var(--admin-accent)" : borderColor }} />}
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: i < stepIndex ? "#800000" : i === stepIndex ? "transparent" : borderColor, border: i === stepIndex ? "2px solid #800000" : "none" }}>
-                        {i < stepIndex ? <svg width="10" height="10" fill="none" stroke="#fff" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg> : i === stepIndex ? <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#800000" }} /> : null}
+                      <div style={{ width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: i < stepIndex ? "var(--admin-accent)" : i === stepIndex ? "transparent" : borderColor, border: i === stepIndex ? "2px solid var(--admin-accent)" : "none" }}>
+                        {i < stepIndex ? <svg width="10" height="10" fill="none" stroke="#fff" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg> : i === stepIndex ? <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--admin-accent)" }} /> : null}
                       </div>
                       <span style={{ fontSize: 9, textAlign: "center", maxWidth: 72, color: i <= stepIndex ? textPrimary : textMuted, fontWeight: i === stepIndex ? 600 : 400, fontFamily: "'Poppins', sans-serif" }}>{step}</span>
                     </div>
@@ -255,7 +255,7 @@ const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGeneratin
 
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={onClose} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: busy ? "not-allowed" : "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
-          <button onClick={onGenerate} disabled={busy || !prompt.trim()} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 600, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}>
+          <button onClick={onGenerate} disabled={busy || !prompt.trim()} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}>
             {isGenerating ? <svg className="animate-spin" width="13" height="13" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
@@ -278,7 +278,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
           <div style={{ position: "absolute", bottom: 12, left: 16, zIndex: 1 }}>
-            <span style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "4px 10px", borderRadius: 6, background: "rgba(128,0,0,0.85)", color: "#fff", fontFamily: "'Poppins', sans-serif" }}>Case study</span>
+            <span style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "4px 10px", borderRadius: 6, background: "color-mix(in srgb, var(--admin-accent) 85%, transparent)", color: "#fff", fontFamily: "'Poppins', sans-serif" }}>Case study</span>
           </div>
         </div>
         <div style={{ padding: "22px 26px 30px" }}>
@@ -298,7 +298,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
   }
           {data.authors.length > 0 && <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 16px" }}>
               <div style={{ display: "flex" }}>
-                {data.authors.map((a, i) => a.image ? <img key={i} src={a.image} alt={a.name} style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover", border: `2px solid ${cardBg}`, marginLeft: i === 0 ? 0 : -8, flexShrink: 0 }} /> : <div key={i} style={{ width: 26, height: 26, borderRadius: "50%", border: `2px solid ${cardBg}`, marginLeft: i === 0 ? 0 : -8, flexShrink: 0, background: "rgba(128,0,0,0.12)", color: "#800000", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Poppins', sans-serif" }}>
+                {data.authors.map((a, i) => a.image ? <img key={i} src={a.image} alt={a.name} style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover", border: `2px solid ${cardBg}`, marginLeft: i === 0 ? 0 : -8, flexShrink: 0 }} /> : <div key={i} style={{ width: 26, height: 26, borderRadius: "50%", border: `2px solid ${cardBg}`, marginLeft: i === 0 ? 0 : -8, flexShrink: 0, background: "color-mix(in srgb, var(--admin-accent) 12%, transparent)", color: "var(--admin-accent)", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Poppins', sans-serif" }}>
                       {a.name.charAt(0).toUpperCase()}
                     </div>)}
               </div>
@@ -328,7 +328,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
     /* Challenge */
   }
           {data.challenge && <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#800000", margin: "0 0 5px", textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'Poppins', sans-serif" }}>Challenge</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: "var(--admin-accent)", margin: "0 0 5px", textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'Poppins', sans-serif" }}>Challenge</p>
               <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{data.challenge}</p>
             </div>}
 
@@ -361,7 +361,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
             <button onClick={() => {
     onEdit(data);
     onClose();
-  }} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Edit this study</button>
+  }} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Edit this study</button>
           </div>
         </div>
       </div>
@@ -404,7 +404,7 @@ const CalendarModal = ({ isOpen, records, selectedMonthIndex, onClose, onMonthCh
     const isToday = isCurrentMonth && d === today;
     const ds = dateStr(d);
     const evs = records.filter((r) => r.start === ds);
-    return <div key={i} onClick={() => evs.length ? onDateClick(ds) : void 0} style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 10, cursor: evs.length ? "pointer" : "default", gap: 2, background: isToday ? "#800000" : subtleBg, border: isToday ? "none" : `1px solid transparent` }}>
+    return <div key={i} onClick={() => evs.length ? onDateClick(ds) : void 0} style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 10, cursor: evs.length ? "pointer" : "default", gap: 2, background: isToday ? "var(--admin-accent)" : subtleBg, border: isToday ? "none" : `1px solid transparent` }}>
                   <span style={{ fontSize: 12, fontWeight: isToday ? 700 : 400, color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif" }}>{d}</span>
                   {evs.length > 0 && <div style={{ width: 4, height: 4, borderRadius: "50%", background: isToday ? "rgba(255,255,255,0.8)" : "#3b82f6", marginTop: 1 }} />}
                 </div>;
@@ -471,8 +471,8 @@ function CaseStudies() {
   const fileRef = useRef(null);
   const authorFileRefs = useRef([]);
   const { isdarkmode: dark } = useDarkMode();
-  const bg = dark ? "#0f0f0f" : "#f8fafc";
-  const cardBg = dark ? "#1a1a1a" : "#ffffff";
+  const bg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
   const subtleBg = dark ? "rgba(255,255,255,0.03)" : "#f9fafb";
   const borderColor = dark ? "rgba(255,255,255,0.08)" : "#e5e7eb";
   const textPrimary = dark ? "#f0f0f0" : "#1f2937";
@@ -861,7 +861,7 @@ function CaseStudies() {
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         @keyframes slideIn { from { opacity:0; transform:translateY(-10px) } to { opacity:1; transform:translateY(0) } }
         *, *::before, *::after { font-family: 'Poppins', sans-serif !important; box-sizing: border-box; }
-        input:focus, textarea:focus, select:focus { border-color: #800000 !important; outline: none !important; box-shadow: none !important; }
+        input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .cs-card { transition: transform .18s, box-shadow .18s, border-color .18s; }
         .cs-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.10) !important; border-color: rgba(0,0,0,.13) !important; }
         .arc-row:hover { background: ${hoverBg} !important; }
@@ -926,9 +926,9 @@ function CaseStudies() {
       {hoveredEvent && (() => {
     const { record: r, x, y } = hoveredEvent;
     const st = getStatusStyle(r.status);
-    return <div style={{ position: "fixed", left: x, top: y - 8, transform: "translateX(-50%) translateY(-100%)", zIndex: 3e3, background: dark ? "#1e1e1e" : "#ffffff", border: `1px solid ${borderColor}`, borderRadius: 14, padding: "12px 14px", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", minWidth: 200, maxWidth: 260, pointerEvents: "none", fontFamily: "'Poppins', sans-serif" }}>
+    return <div style={{ position: "fixed", left: x, top: y - 8, transform: "translateX(-50%) translateY(-100%)", zIndex: 3e3, background: "var(--admin-surface)", border: `1px solid ${borderColor}`, borderRadius: 14, padding: "12px 14px", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", minWidth: 200, maxWidth: 260, pointerEvents: "none", fontFamily: "'Poppins', sans-serif" }}>
             <div style={{ position: "absolute", bottom: -7, left: "50%", transform: "translateX(-50%)", width: 14, height: 7, overflow: "hidden" }}>
-              <div style={{ width: 12, height: 12, background: dark ? "#1e1e1e" : "#ffffff", border: `1px solid ${borderColor}`, transform: "rotate(45deg)", margin: "-6px auto 0" }} />
+              <div style={{ width: 12, height: 12, background: "var(--admin-surface)", border: `1px solid ${borderColor}`, transform: "rotate(45deg)", margin: "-6px auto 0" }} />
             </div>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", lineHeight: 1.3 }}>{r.title}</p>
@@ -945,7 +945,7 @@ function CaseStudies() {
 
       {isFetchingFull && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.48)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100, fontFamily: "'Poppins', sans-serif" }}>
           <div style={{ background: cardBg, borderRadius: 20, padding: "28px 36px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, border: `1px solid ${borderColor}`, boxShadow: "0 24px 64px rgba(0,0,0,0.28)" }}>
-            <div style={{ width: 28, height: 28, border: "3px solid #e5e7eb", borderTopColor: "#800000", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+            <div style={{ width: 28, height: 28, border: "3px solid #e5e7eb", borderTopColor: "var(--admin-accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
             <p style={{ fontSize: 13, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Loading case study...</p>
           </div>
         </div>}
@@ -1001,7 +1001,7 @@ function CaseStudies() {
     authorFileRefs.current = [];
     setShowFormOnly(true);
     setShowCalendarPage(false);
-  }} className="cs-header-btn" style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
+  }} className="cs-header-btn" style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
               Add Case Study
             </button>}
@@ -1058,7 +1058,7 @@ function CaseStudies() {
   }
           <div style={{ ...card, padding: "22px 22px" }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 18 }}>
-              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>1</div>
+              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>1</div>
               <div>
                 <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Cover &amp; Basic Information</p>
                 <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Add a compelling cover and essential details</p>
@@ -1073,10 +1073,10 @@ function CaseStudies() {
     e.preventDefault();
     setDragOver(false);
     handleFile(e.dataTransfer.files[0]);
-  }} style={{ border: `1.5px dashed ${dragOver ? "#800000" : borderColor}`, borderRadius: 14, cursor: "pointer", transition: "all .15s", overflow: "hidden", aspectRatio: "16/9", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: dragOver ? "rgba(128,0,0,0.04)" : subtleBg, position: "relative" }}>
+  }} style={{ border: `1.5px dashed ${dragOver ? "var(--admin-accent)" : borderColor}`, borderRadius: 14, cursor: "pointer", transition: "all .15s", overflow: "hidden", aspectRatio: "16/9", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: dragOver ? "color-mix(in srgb, var(--admin-accent) 4%, transparent)" : subtleBg, position: "relative" }}>
                   {coverPreview ? <img src={coverPreview} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} /> : <>
-                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(128,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                        <svg width="18" height="18" fill="none" stroke="#800000" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+                        <svg width="18" height="18" fill="none" stroke="var(--admin-accent)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       </div>
                       <p style={{ fontSize: 12, color: textPrimary, margin: 0, fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>Upload cover image</p>
                       <p style={{ fontSize: 10, color: textMuted, margin: "5px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>PNG, JPG, WebP · Max 10MB</p>
@@ -1084,7 +1084,7 @@ function CaseStudies() {
                     </>}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files?.[0])} />
-                <button type="button" onClick={openAiImageModal} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+                <button type="button" onClick={openAiImageModal} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
                   Generate with AI
                 </button>
@@ -1092,7 +1092,7 @@ function CaseStudies() {
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div className="cs-form-title-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                   <div>
-                    <span style={lbl}>Title <span style={{ color: "#800000" }}>*</span></span>
+                    <span style={lbl}>Title <span style={{ color: "var(--admin-accent)" }}>*</span></span>
                     <input style={inp()} placeholder="Enter case study title..." value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
                   </div>
                   <div>
@@ -1101,7 +1101,7 @@ function CaseStudies() {
                   </div>
                 </div>
                 <div>
-                  <span style={lbl}>Status <span style={{ color: "#800000" }}>*</span></span>
+                  <span style={lbl}>Status <span style={{ color: "var(--admin-accent)" }}>*</span></span>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {STATUS_OPTIONS.map((s) => {
     const st = getStatusStyle(s);
@@ -1124,13 +1124,13 @@ function CaseStudies() {
           <div style={{ ...card, padding: "22px 22px" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 18 }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>2</div>
+                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>2</div>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Authors <span style={{ color: "#800000" }}>*</span></p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Authors <span style={{ color: "var(--admin-accent)" }}>*</span></p>
                   <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Add the people behind this case study</p>
                 </div>
               </div>
-              <button onClick={addAuthor} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#800000", background: "transparent", border: `1px solid ${borderColor}`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>
+              <button onClick={addAuthor} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--admin-accent)", background: "transparent", border: `1px solid ${borderColor}`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>
                 <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
                 Add author
               </button>
@@ -1173,7 +1173,7 @@ function CaseStudies() {
   }
           <div style={{ ...card, padding: "22px 22px" }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 18 }}>
-              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>3</div>
+              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>3</div>
               <div>
                 <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Details</p>
                 <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Categorize and provide key information</p>
@@ -1182,13 +1182,13 @@ function CaseStudies() {
 
             <div style={{ marginBottom: 18 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={lbl}>Categories <span style={{ color: "#800000" }}>*</span></span>
-                {form.tags.length > 0 && <button onClick={() => updateForm("tags", [])} style={{ fontSize: 11, color: "#800000", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Clear</button>}
+                <span style={lbl}>Categories <span style={{ color: "var(--admin-accent)" }}>*</span></span>
+                {form.tags.length > 0 && <button onClick={() => updateForm("tags", [])} style={{ fontSize: 11, color: "var(--admin-accent)", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>Clear</button>}
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {CATEGORY_OPTIONS.map((t) => {
     const sel = form.tags.includes(t);
-    return <button key={t} className="pill-btn" onClick={() => toggleTag(t)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: sel ? "1px solid rgba(128,0,0,0.35)" : `1px solid ${borderColor}`, background: sel ? "rgba(128,0,0,0.08)" : "transparent", color: sel ? "#800000" : textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
+    return <button key={t} className="pill-btn" onClick={() => toggleTag(t)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, border: sel ? "1px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)" : `1px solid ${borderColor}`, background: sel ? "color-mix(in srgb, var(--admin-accent) 8%, transparent)" : "transparent", color: sel ? "var(--admin-accent)" : textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
                       <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={CATEGORY_ICON_PATHS[t]} /></svg>
                       {t}
                     </button>;
@@ -1198,7 +1198,7 @@ function CaseStudies() {
 
             <div className="cs-form-date-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 18 }}>
               <div>
-                <span style={lbl}>Start date <span style={{ color: "#800000" }}>*</span></span>
+                <span style={lbl}>Start date <span style={{ color: "var(--admin-accent)" }}>*</span></span>
                 <input type="date" style={inp()} value={form.startDate} onChange={(e) => updateForm("startDate", e.target.value)} />
               </div>
               <div>
@@ -1208,11 +1208,11 @@ function CaseStudies() {
             </div>
             <div className="cs-form-challenge-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div>
-                <span style={lbl}>Challenge <span style={{ color: "#800000" }}>*</span></span>
+                <span style={lbl}>Challenge <span style={{ color: "var(--admin-accent)" }}>*</span></span>
                 <textarea style={inp({ minHeight: 84, resize: "vertical" })} placeholder="Describe the challenge or problem..." value={form.challenge} onChange={(e) => updateForm("challenge", e.target.value)} />
               </div>
               <div>
-                <span style={lbl}>Solution <span style={{ color: "#800000" }}>*</span></span>
+                <span style={lbl}>Solution <span style={{ color: "var(--admin-accent)" }}>*</span></span>
                 <textarea style={inp({ minHeight: 84, resize: "vertical" })} placeholder="Describe the solution and approach..." value={form.solution} onChange={(e) => updateForm("solution", e.target.value)} />
               </div>
             </div>
@@ -1224,13 +1224,13 @@ function CaseStudies() {
           <div style={{ ...card, padding: "22px 22px" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 18 }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid rgba(128,0,0,0.35)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>4</div>
+                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>4</div>
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Content Sections</p>
                   <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Organize your case study content into sections</p>
                 </div>
               </div>
-              {form.sections.length < 5 && <button onClick={addSection} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#800000", background: "transparent", border: `1px solid ${borderColor}`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>
+              {form.sections.length < 5 && <button onClick={addSection} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--admin-accent)", background: "transparent", border: `1px solid ${borderColor}`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, fontFamily: "'Poppins', sans-serif", flexShrink: 0 }}>
                   <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
                   Add section
                 </button>}
@@ -1272,7 +1272,7 @@ function CaseStudies() {
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
               {isEditMode ? "Cancel edit" : "Reset form"}
             </button>
-            <button onClick={() => setShowConfirm(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 2, padding: "13px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+            <button onClick={() => setShowConfirm(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 2, padding: "13px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               {isEditMode ? "Update case study" : "Create case study"}
             </button>
@@ -1302,7 +1302,7 @@ function CaseStudies() {
     const hasMore = tabEvents.length > EVENT_LIMIT;
     return <div className="cs-calendar-layout" style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 16, alignItems: "start" }}>
               <div className="cs-calendar-events cs-events-panel-desktop" style={{ ...card, padding: "0", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                <div style={{ background: "#800000", padding: "16px 18px" }}>
+                <div style={{ background: "var(--admin-accent)", padding: "16px 18px" }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", margin: 0, fontFamily: "'Poppins', sans-serif", display: "flex", alignItems: "center", gap: 7 }}>
                     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     Events
@@ -1320,7 +1320,7 @@ function CaseStudies() {
           setSelectedDateStudies([]);
         }
       }}
-      style={{ flex: 1, padding: "9px 0", border: "none", background: "transparent", borderBottom: eventPanelTab === tab ? "2px solid #800000" : "2px solid transparent", color: eventPanelTab === tab ? "#800000" : textMuted, fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif", transition: "all .15s" }}
+      style={{ flex: 1, padding: "9px 0", border: "none", background: "transparent", borderBottom: eventPanelTab === tab ? "2px solid var(--admin-accent)" : "2px solid transparent", color: eventPanelTab === tab ? "var(--admin-accent)" : textMuted, fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif", transition: "all .15s" }}
     >
                       {tab === "today" ? dayLabel : MONTHS[m]}
                     </button>)}
@@ -1346,7 +1346,7 @@ function CaseStudies() {
     })}
                 </div>
                 {hasMore && <div style={{ padding: "10px 18px 16px" }}>
-                    <button onClick={() => setShowAllEvents(!showAllEvents)} style={{ width: "100%", fontSize: 10, fontWeight: 500, color: "#800000", background: "rgba(128,0,0,0.06)", border: "1px solid rgba(128,0,0,0.18)", borderRadius: 8, padding: "7px 0", cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+                    <button onClick={() => setShowAllEvents(!showAllEvents)} style={{ width: "100%", fontSize: 10, fontWeight: 500, color: "var(--admin-accent)", background: "color-mix(in srgb, var(--admin-accent) 6%, transparent)", border: "1px solid color-mix(in srgb, var(--admin-accent) 18%, transparent)", borderRadius: 8, padding: "7px 0", cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
                       {showAllEvents ? `\u2191 Show less` : `\u2193 Show all ${tabEvents.length} events`}
                     </button>
                   </div>}
@@ -1354,7 +1354,7 @@ function CaseStudies() {
               </div>
 
               <div className="cs-calendar-grid" style={{ ...card, padding: "0", overflow: "hidden" }}>
-                <div style={{ background: "#800000", padding: "16px 22px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ background: "var(--admin-accent)", padding: "16px 22px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", margin: 0, fontFamily: "'Poppins', sans-serif", display: "flex", alignItems: "center", gap: 7 }}>
                     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     Timeline & Events
@@ -1405,9 +1405,9 @@ function CaseStudies() {
             setShowBottomSheet(true);
           }
         }}
-        style={{ ...isMobile ? { height: 44, minHeight: 44, maxHeight: 44, overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 } : { minHeight: 72, maxHeight: 100, overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "6px 7px", position: "relative" }, borderRadius: 10, cursor: "pointer", background: isToday ? "#800000" : isSelected ? "rgba(128,0,0,0.05)" : subtleBg, border: isToday ? "none" : isSelected ? "1.5px solid rgba(128,0,0,0.35)" : evs.length ? "1px solid rgba(59,130,246,0.22)" : `1px solid ${borderColor}`, transition: "all .15s" }}
+        style={{ ...isMobile ? { height: 44, minHeight: 44, maxHeight: 44, overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 } : { minHeight: 72, maxHeight: 100, overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "6px 7px", position: "relative" }, borderRadius: 10, cursor: "pointer", background: isToday ? "var(--admin-accent)" : isSelected ? "color-mix(in srgb, var(--admin-accent) 5%, transparent)" : subtleBg, border: isToday ? "none" : isSelected ? "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)" : evs.length ? "1px solid rgba(59,130,246,0.22)" : `1px solid ${borderColor}`, transition: "all .15s" }}
       >
-                          <span style={{ fontSize: 11, fontWeight: isToday ? 700 : 400, lineHeight: 1, color: isToday ? "#fff" : isSelected ? "#800000" : textMuted, flexShrink: 0, marginBottom: isMobile ? 0 : 3, fontFamily: "'Poppins', sans-serif" }}>{d}</span>
+                          <span style={{ fontSize: 11, fontWeight: isToday ? 700 : 400, lineHeight: 1, color: isToday ? "#fff" : isSelected ? "var(--admin-accent)" : textMuted, flexShrink: 0, marginBottom: isMobile ? 0 : 3, fontFamily: "'Poppins', sans-serif" }}>{d}</span>
                           {evs.length > 0 && !isMobile && <div className="cs-cell-events">
                               <div onMouseEnter={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
@@ -1426,9 +1426,9 @@ function CaseStudies() {
     })}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 12, borderTop: `1px solid ${borderColor}` }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: "#800000" }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Today</span></div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: "var(--admin-accent)" }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Today</span></div>
                     <div style={{ display: "flex", alignItems: "center", gap: 5 }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#3b82f6" }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Has events</span></div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: "rgba(128,0,0,0.08)", border: "1.5px solid rgba(128,0,0,0.35)" }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Selected</span></div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}><div style={{ width: 10, height: 10, borderRadius: 3, background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)", border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)" }} /><span style={{ fontSize: 10, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Selected</span></div>
                   </div>
                 </div>
               </div>
@@ -1444,7 +1444,7 @@ function CaseStudies() {
     setSelectedDateStudies([]);
   }}>
             <div className="cs-bottomsheet" style={{ background: cardBg }} onClick={(e) => e.stopPropagation()}>
-              <div style={{ background: "#800000", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ background: "var(--admin-accent)", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", margin: 0, fontFamily: "'Poppins', sans-serif", display: "flex", alignItems: "center", gap: 7 }}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                   {selectedDate || "Events"}
@@ -1468,7 +1468,7 @@ function CaseStudies() {
         setSelectedDate("");
         setSelectedDateStudies([]);
       }
-    }} style={{ flex: 1, padding: "9px 0", border: "none", background: "transparent", borderBottom: eventPanelTab === tab ? "2px solid #800000" : "2px solid transparent", color: eventPanelTab === tab ? "#800000" : textMuted, fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif", transition: "all .15s" }}>
+    }} style={{ flex: 1, padding: "9px 0", border: "none", background: "transparent", borderBottom: eventPanelTab === tab ? "2px solid var(--admin-accent)" : "2px solid transparent", color: eventPanelTab === tab ? "var(--admin-accent)" : textMuted, fontSize: 11, fontWeight: eventPanelTab === tab ? 600 : 400, cursor: "pointer", fontFamily: "'Poppins', sans-serif", transition: "all .15s" }}>
                       {tab === "today" ? dayLabel2 : MONTHS[m2]}
                     </button>;
   })}
@@ -1526,19 +1526,19 @@ function CaseStudies() {
             </div>
             <div style={{ width: 1, height: 20, background: borderColor }} />
             <div style={{ display: "flex", border: `1px solid ${borderColor}`, borderRadius: 8, overflow: "hidden" }}>
-              <button onClick={() => setViewMode("grid")} style={{ padding: "6px 9px", border: "none", borderRight: `1px solid ${borderColor}`, background: viewMode === "grid" ? "#800000" : "transparent", color: viewMode === "grid" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", transition: "all .15s" }}>
+              <button onClick={() => setViewMode("grid")} style={{ padding: "6px 9px", border: "none", borderRight: `1px solid ${borderColor}`, background: viewMode === "grid" ? "var(--admin-accent)" : "transparent", color: viewMode === "grid" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", transition: "all .15s" }}>
                 <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
               </button>
-              <button onClick={() => setViewMode("list")} style={{ padding: "6px 9px", border: "none", background: viewMode === "list" ? "#800000" : "transparent", color: viewMode === "list" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", transition: "all .15s" }}>
+              <button onClick={() => setViewMode("list")} style={{ padding: "6px 9px", border: "none", background: viewMode === "list" ? "var(--admin-accent)" : "transparent", color: viewMode === "list" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", transition: "all .15s" }}>
                 <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
               </button>
             </div>
           </div>
 
           <div style={{ display: "flex", padding: "0 18px", borderBottom: `1px solid ${borderColor}`, background: subtleBg }}>
-            {["All", "Active", "Draft", "Completed", "Scheduled"].map((tab) => <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: "9px 12px", border: "none", borderBottom: activeTab === tab ? "2px solid #800000" : "2px solid transparent", background: "transparent", color: activeTab === tab ? "#800000" : textMuted, fontSize: 11, fontWeight: activeTab === tab ? 600 : 400, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>
+            {["All", "Active", "Draft", "Completed", "Scheduled"].map((tab) => <button key={tab} onClick={() => setActiveTab(tab)} style={{ padding: "9px 12px", border: "none", borderBottom: activeTab === tab ? "2px solid var(--admin-accent)" : "2px solid transparent", background: "transparent", color: activeTab === tab ? "var(--admin-accent)" : textMuted, fontSize: 11, fontWeight: activeTab === tab ? 600 : 400, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>
                 {tab}
-                <span style={{ marginLeft: 5, fontSize: 9, padding: "1px 5px", borderRadius: 10, background: activeTab === tab ? "rgba(128,0,0,0.10)" : dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)", color: activeTab === tab ? "#800000" : textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>
+                <span style={{ marginLeft: 5, fontSize: 9, padding: "1px 5px", borderRadius: 10, background: activeTab === tab ? "color-mix(in srgb, var(--admin-accent) 10%, transparent)" : dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)", color: activeTab === tab ? "var(--admin-accent)" : textMuted, fontWeight: 500, fontFamily: "'Poppins', sans-serif" }}>
                   {counts[tab]}
                 </span>
               </button>)}
@@ -1552,12 +1552,12 @@ function CaseStudies() {
             <span style={{ fontSize: 10, fontWeight: 600, color: textMuted, marginRight: 2, whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>Category:</span>
             {LIB_CATEGORIES.map((tag) => {
     const sel = activeTagFilter === tag;
-    return <button key={tag} className="pill-btn" onClick={() => setActiveTagFilter(tag)} style={{ padding: "3px 11px", borderRadius: 20, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", border: sel ? "1px solid rgba(128,0,0,0.3)" : `1px solid ${borderColor}`, background: sel ? "rgba(128,0,0,0.09)" : subtleBg, color: sel ? "#800000" : textMuted, fontFamily: "'Poppins', sans-serif" }}>{tag}</button>;
+    return <button key={tag} className="pill-btn" onClick={() => setActiveTagFilter(tag)} style={{ padding: "3px 11px", borderRadius: 20, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", border: sel ? "1px solid color-mix(in srgb, var(--admin-accent) 30%, transparent)" : `1px solid ${borderColor}`, background: sel ? "color-mix(in srgb, var(--admin-accent) 9%, transparent)" : subtleBg, color: sel ? "var(--admin-accent)" : textMuted, fontFamily: "'Poppins', sans-serif" }}>{tag}</button>;
   })}
           </div>
 
           {isFetchingRecords && <div style={{ padding: "48px 20px", textAlign: "center" }}>
-              <div style={{ display: "inline-block", width: 24, height: 24, border: "3px solid #e5e7eb", borderTopColor: "#800000", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <div style={{ display: "inline-block", width: 24, height: 24, border: "3px solid #e5e7eb", borderTopColor: "var(--admin-accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               <p style={{ fontSize: 12, color: textMuted, marginTop: 10, fontFamily: "'Poppins', sans-serif" }}>Loading case studies...</p>
             </div>}
@@ -1572,19 +1572,19 @@ function CaseStudies() {
     const st = getStatusStyle(r.status);
     const isBeingEdited = editingId === r._id;
     const coverSrc = getCardCover(r, records);
-    return <div key={r._id} className="cs-card" style={{ border: `1px solid ${isBeingEdited ? "#800000" : borderColor}`, borderRadius: 14, overflow: "hidden", background: cardBg, display: "flex", flexDirection: "column" }}>
+    return <div key={r._id} className="cs-card" style={{ border: `1px solid ${isBeingEdited ? "var(--admin-accent)" : borderColor}`, borderRadius: 14, overflow: "hidden", background: cardBg, display: "flex", flexDirection: "column" }}>
                     <div style={{ height: 140, position: "relative", overflow: "hidden", flexShrink: 0, background: "#e5e7eb" }}>
                       <img src={coverSrc} alt={r.title} className="cs-card-img" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={(e) => {
       const el = e.currentTarget;
       el.style.display = "none";
       const parent = el.parentElement;
-      if (parent) parent.style.background = "linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))";
+      if (parent) parent.style.background = "linear-gradient(135deg,color-mix(in srgb, var(--admin-accent) 18%, transparent),color-mix(in srgb, var(--admin-accent) 4%, transparent))";
     }} />
                       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.38) 100%)" }} />
                       <div style={{ position: "absolute", bottom: 8, left: 8 }}>
-                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "3px 8px", borderRadius: 5, background: "rgba(128,0,0,0.88)", color: "#fff", fontFamily: "'Poppins', sans-serif" }}>Case study</span>
+                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "3px 8px", borderRadius: 5, background: "color-mix(in srgb, var(--admin-accent) 88%, transparent)", color: "#fff", fontFamily: "'Poppins', sans-serif" }}>Case study</span>
                       </div>
-                      {isBeingEdited && <div style={{ position: "absolute", top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: "#800000", color: "#fff", fontFamily: "'Poppins', sans-serif" }}>Editing</div>}
+                      {isBeingEdited && <div style={{ position: "absolute", top: 8, right: 8, fontSize: 8, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: "var(--admin-accent)", color: "#fff", fontFamily: "'Poppins', sans-serif" }}>Editing</div>}
                     </div>
                     <div style={{ padding: "12px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
                       <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>{r.title}</p>
@@ -1626,7 +1626,7 @@ function CaseStudies() {
       const el = e.currentTarget;
       el.style.display = "none";
       const parent = el.parentElement;
-      if (parent) parent.style.background = "linear-gradient(135deg,rgba(128,0,0,0.18),rgba(128,0,0,0.04))";
+      if (parent) parent.style.background = "linear-gradient(135deg,color-mix(in srgb, var(--admin-accent) 18%, transparent),color-mix(in srgb, var(--admin-accent) 4%, transparent))";
     }} />
                     </div>
                     <div style={{ minWidth: 0 }}>
@@ -1641,7 +1641,7 @@ function CaseStudies() {
                     <span style={{ fontSize: 9, fontWeight: 500, padding: "3px 9px", borderRadius: 20, background: st.bg, color: st.color, border: st.border, display: "inline-block", whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>{r.status}</span>
                     <div style={{ display: "flex", gap: 4, justifyContent: "flex-end" }}>
                       <button onClick={() => handleView(r)} style={{ padding: "4px 9px", borderRadius: 7, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>View</button>
-                      <button onClick={() => handleEdit(r, "main")} style={{ padding: "4px 9px", borderRadius: 7, border: "none", background: "#800000", color: "#fff", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Edit</button>
+                      <button onClick={() => handleEdit(r, "main")} style={{ padding: "4px 9px", borderRadius: 7, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Edit</button>
                       <button onClick={() => {
       setDeleteTarget(r);
       setShowDelete(true);

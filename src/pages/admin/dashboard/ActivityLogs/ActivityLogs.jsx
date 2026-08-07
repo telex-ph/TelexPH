@@ -18,13 +18,13 @@ function ActivityLogs() {
   const [error, seterror] = useState(null);
   const availableModules = ["CASESTUDY", "BLOGS", "ACCOUNT_SETTINGS", "AUTH"];
   const actionTypes = ["All", "CREATED", "UPDATED", "DELETED", "ARCHIVED", "RESTORED", "LOGIN", "LOGOUT"];
-  const pageBg = isdarkmode ? "#0f0f0f" : "#f8f9fa";
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const inputBg = isdarkmode ? "#202020" : "#f9fafb";
+  const pageBg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
+  const inputBg = "var(--admin-bg-soft)";
   const fetchActivityLogs = async () => {
     try {
       setisloading(true);
@@ -233,8 +233,8 @@ function ActivityLogs() {
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
         *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
-        input:focus, textarea:focus, select:focus { border-color: #800000 !important; outline: none !important; box-shadow: none !important; }
-        .al-row:hover { background: ${isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"} !important; }
+        input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
+        .al-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .al-pill:hover { opacity: .78; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
@@ -339,7 +339,7 @@ function ActivityLogs() {
       borderRadius: 20,
       border: `1px solid ${card.dark ? "rgba(139,0,0,0.3)" : borderColor}`,
       background: `${gradient}, ${baseBg}`,
-      boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)",
+      boxShadow: "var(--admin-shadow-sm)",
       position: "relative",
       overflow: "hidden",
       display: "flex",
@@ -455,7 +455,7 @@ function ActivityLogs() {
           {
     /* â”€â”€ Table card â”€â”€ */
   }
-          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
 
             {
     /* Card header */
@@ -474,7 +474,7 @@ function ActivityLogs() {
     /* Loading */
   }
             {isloading && <div style={{ padding: "80px 20px", textAlign: "center" }}>
-                <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid #800000", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
+                <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
                 <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Loading activity logs...</p>
                 <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
               </div>}
@@ -483,7 +483,7 @@ function ActivityLogs() {
     /* Empty */
   }
             {!isloading && logs.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
-                <svg style={{ margin: "0 auto 16px", display: "block", color: isdarkmode ? "#374151" : "#d1d5db" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <p style={{ fontSize: 14, fontWeight: 500, color: textMuted, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>No activity logs found</p>
@@ -529,7 +529,7 @@ function ActivityLogs() {
                         <button onClick={() => {
     setselectedlog(log);
     setshowdetailsmodal(true);
-  }} style={{ padding: "6px 14px", borderRadius: 10, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#f9fafb", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>View Details</button>
+  }} style={{ padding: "6px 14px", borderRadius: 10, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>View Details</button>
                       </div>
                     </div>)}
                 </div>
@@ -557,7 +557,7 @@ function ActivityLogs() {
                       <button onClick={() => {
     setselectedlog(log);
     setshowdetailsmodal(true);
-  }} style={{ padding: "6px 12px", borderRadius: 10, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#f9fafb", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap" }}>View</button>
+  }} style={{ padding: "6px 12px", borderRadius: 10, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap" }}>View</button>
                     </div>
                   </div>)}
 
@@ -579,7 +579,7 @@ function ActivityLogs() {
                     {pagination && Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, idx) => idx + 1).map((pg) => <button
     key={pg}
     onClick={() => setcurrentpage(pg)}
-    style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentpage ? "none" : `1px solid ${borderColor}`, background: pg === currentpage ? "#800000" : subtleBg, color: pg === currentpage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentpage ? 600 : 400, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}
+    style={{ width: 32, height: 32, borderRadius: 8, border: pg === currentpage ? "none" : `1px solid ${borderColor}`, background: pg === currentpage ? "var(--admin-accent)" : subtleBg, color: pg === currentpage ? "#fff" : textMuted, fontSize: 11, fontWeight: pg === currentpage ? 600 : 400, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}
   >
                         {pg}
                       </button>)}
@@ -669,7 +669,7 @@ function ActivityLogs() {
               <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 20, borderTop: `1px solid ${borderColor}` }}>
                 <button
     onClick={() => setshowdetailsmodal(false)}
-    style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}
+    style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}
   >
                   Close
                 </button>

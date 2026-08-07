@@ -13,13 +13,13 @@ function AddAdmin() {
   const fileRef = useRef(null);
   const actualFileRef = useRef(null);
   const { isdarkmode } = useDarkMode();
-  const pageBg = isdarkmode ? "#0f0f0f" : "#f8f9fa";
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const inputBg = isdarkmode ? "#202020" : "#f9fafb";
+  const pageBg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
+  const inputBg = "var(--admin-bg-soft)";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -166,11 +166,11 @@ function AddAdmin() {
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
         *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
-        input:focus, textarea:focus, select:focus { border-color: #800000 !important; outline: none !important; box-shadow: none !important; }
+        input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .aa-pill:hover   { opacity: .78; }
-        .aa-row:hover    { background: ${isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"} !important; }
-        .upload-zone:hover { border-color: #800000 !important; background: rgba(128,0,0,0.03) !important; }
-        .aa-tab:hover    { background: ${isdarkmode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"} !important; }
+        .aa-row:hover    { background: ${"var(--admin-bg-soft)"} !important; }
+        .upload-zone:hover { border-color: var(--admin-accent) !important; background: color-mix(in srgb, var(--admin-accent) 3%, transparent) !important; }
+        .aa-tab:hover    { background: ${"var(--admin-bg-soft)"} !important; }
         @keyframes spin  { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
@@ -263,7 +263,7 @@ function AddAdmin() {
             {
     /* â•â• LEFT: Profile Picture â•â• */
   }
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
               <div style={{ padding: "18px 24px", borderBottom: `1px solid ${borderColor}` }}>
                 <p style={{ fontSize: 13, fontWeight: 500, color: textPrimary, margin: 0 }}>Profile Picture</p>
                 <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400 }}>Optional — JPG, PNG, WEBP</p>
@@ -286,9 +286,9 @@ function AddAdmin() {
                   </div> : <div
     className="upload-zone"
     onClick={triggerBrowse}
-    style={{ border: `2px dashed ${isdarkmode ? "rgba(255,255,255,0.12)" : "#d1d5db"}`, borderRadius: 14, padding: "44px 20px", textAlign: "center", cursor: "pointer", transition: "all .15s" }}
+    style={{ border: `2px dashed ${"var(--admin-border-strong)"}`, borderRadius: 14, padding: "44px 20px", textAlign: "center", cursor: "pointer", transition: "all .15s" }}
   >
-                    <div style={{ width: 48, height: 48, borderRadius: 14, background: isdarkmode ? "rgba(255,255,255,0.06)" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 14, background: "var(--admin-bg-hover)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
                       <svg width="22" height="22" fill="none" stroke={textMuted} strokeWidth="1.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -307,7 +307,7 @@ function AddAdmin() {
             {
     /* â•â• RIGHT: Tabbed card â•â• */
   }
-            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+            <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
 
               {
     /* â”€â”€ Tab bar â”€â”€ */
@@ -321,10 +321,10 @@ function AddAdmin() {
       padding: "13px 22px",
       fontSize: 11,
       fontWeight: activeTab === idx ? 500 : 400,
-      color: activeTab === idx ? "#800000" : textMuted,
+      color: activeTab === idx ? "var(--admin-accent)" : textMuted,
       cursor: "pointer",
       border: "none",
-      borderBottom: activeTab === idx ? "2px solid #800000" : "2px solid transparent",
+      borderBottom: activeTab === idx ? "2px solid var(--admin-accent)" : "2px solid transparent",
       background: "transparent",
       display: "flex",
       alignItems: "center",
@@ -393,13 +393,13 @@ function AddAdmin() {
         padding: "5px 14px",
         borderRadius: 8,
         border: sel ? "none" : `1px solid ${borderColor}`,
-        background: sel ? "#800000" : subtleBg,
+        background: sel ? "var(--admin-accent)" : subtleBg,
         color: sel ? "#fff" : textMuted,
         fontSize: 11,
         fontWeight: sel ? 500 : 400,
         cursor: "pointer",
         transition: "all .15s",
-        boxShadow: sel ? "0 2px 8px rgba(128,0,0,0.3)" : "none"
+        boxShadow: sel ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none"
       }}
     >
                             {dept.icon} {dept.name}
@@ -420,13 +420,13 @@ function AddAdmin() {
         padding: "5px 14px",
         borderRadius: 8,
         border: sel ? "none" : `1px solid ${borderColor}`,
-        background: sel ? "#800000" : subtleBg,
+        background: sel ? "var(--admin-accent)" : subtleBg,
         color: sel ? "#fff" : textMuted,
         fontSize: 11,
         fontWeight: sel ? 500 : 400,
         cursor: "pointer",
         transition: "all .15s",
-        boxShadow: sel ? "0 2px 8px rgba(128,0,0,0.3)" : "none"
+        boxShadow: sel ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none"
       }}
     >
                             {r.name}
@@ -486,12 +486,12 @@ function AddAdmin() {
       padding: "7px 20px",
       borderRadius: 10,
       border: isFormValid() && !isSubmitting ? "none" : `1px solid ${borderColor}`,
-      background: isFormValid() && !isSubmitting ? "#800000" : isdarkmode ? "rgba(255,255,255,0.06)" : "#f9fafb",
+      background: isFormValid() && !isSubmitting ? "var(--admin-accent)" : "var(--admin-bg-soft)",
       color: isFormValid() && !isSubmitting ? "#fff" : textMuted,
       fontSize: 11,
       fontWeight: 500,
       cursor: isFormValid() && !isSubmitting ? "pointer" : "not-allowed",
-      boxShadow: isFormValid() && !isSubmitting ? "0 2px 8px rgba(128,0,0,0.3)" : "none",
+      boxShadow: isFormValid() && !isSubmitting ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none",
       transition: "all .15s"
     }}
   >
@@ -521,7 +521,7 @@ function AddAdmin() {
               </div>
 
               <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, marginBottom: 24, overflow: "hidden" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", background: isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)", borderBottom: `1px solid ${borderColor}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", background: "var(--admin-bg-soft)", borderBottom: `1px solid ${borderColor}` }}>
                   <div style={{ padding: "10px 18px", borderRight: `1px solid ${borderColor}` }}>
                     <span style={{ fontSize: 10, fontWeight: 500, color: textMuted }}>Field</span>
                   </div>
@@ -556,7 +556,7 @@ function AddAdmin() {
                 <button
     onClick={handleFinalConfirm}
     disabled={isSubmitting}
-    style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 500, cursor: isSubmitting ? "not-allowed" : "pointer", opacity: isSubmitting ? 0.75 : 1, transition: "all .15s", display: "flex", alignItems: "center", gap: 7 }}
+    style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: isSubmitting ? "not-allowed" : "pointer", opacity: isSubmitting ? 0.75 : 1, transition: "all .15s", display: "flex", alignItems: "center", gap: 7 }}
   >
                   {isSubmitting ? <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Creating...</> : "Confirm & Create"}
                 </button>
@@ -590,7 +590,7 @@ function AddAdmin() {
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => setShowSuccessModal(false)} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s" }}>
+                <button onClick={() => setShowSuccessModal(false)} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s" }}>
                   Close
                 </button>
               </div>
@@ -623,7 +623,7 @@ function AddAdmin() {
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => setShowErrorModal(false)} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s" }}>
+                <button onClick={() => setShowErrorModal(false)} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", transition: "all .15s" }}>
                   Close
                 </button>
               </div>

@@ -31,11 +31,11 @@ function Logout({ isdarkmode, onRequestConfirm }) {
   return <>
       {confirmOpen && <LogoutConfirmModal
     portalLabel="Admin"
-    accent="#800000"
+    accent="var(--admin-accent)"
     onConfirm={handlelogout}
     onCancel={() => setConfirmOpen(false)}
   />}
-      {isLoggingOut && <LogoutOverlay portalLabel="Admin" accent="#800000" ready={logoutDone} onDone={goToAdminLogin} />}
+      {isLoggingOut && <LogoutOverlay portalLabel="Admin" accent="var(--admin-accent)" ready={logoutDone} onDone={goToAdminLogin} />}
     <button
     onClick={() => onRequestConfirm ? onRequestConfirm() : setConfirmOpen(true)}
     disabled={isLoggingOut}

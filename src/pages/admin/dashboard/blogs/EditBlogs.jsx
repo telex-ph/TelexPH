@@ -182,11 +182,11 @@ function EditBlogs({ blog, onClose, onSave }) {
     setSubcategory("");
   };
   const getAvailableSubcategories = () => mainCategory ? SUBCATEGORIES[mainCategory] || [] : [];
-  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30" : "bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400"}`;
-  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 focus:border-white/30" : "bg-gray-50 border-gray-200 text-gray-800 focus:border-gray-400"}`;
-  const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 placeholder-gray-600 focus:border-white/30" : "bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400 focus:border-gray-400"}`;
-  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`;
-  const labelCls = `uppercase tracking-widest transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`;
+  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
+  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] focus:border-[var(--admin-border-strong)]`;
+  const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
+  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`;
+  const labelCls = `uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`;
   const AccordionHeader = ({
     sectionKey,
     title: headerTitle,
@@ -197,22 +197,22 @@ function EditBlogs({ blog, onClose, onSave }) {
     const isOpen = openSection === sectionKey;
     return <div
       onClick={() => toggleSection(sectionKey)}
-      className={`flex items-center justify-between px-6 py-4 border-b cursor-pointer select-none transition-all duration-300 ${isdarkmode ? `border-white/5 ${isOpen ? "bg-[#202020]" : "bg-[#1a1a1a] hover:bg-[#202020]"}` : `border-gray-200 ${isOpen ? "bg-gray-50" : "bg-white hover:bg-gray-50"}`}`}
+      className={`flex items-center justify-between px-6 py-4 border-b cursor-pointer select-none transition-all duration-300 border-[var(--admin-border)] ${isOpen ? "bg-[var(--admin-bg-soft)]" : "bg-[var(--admin-surface)] hover:bg-[var(--admin-bg-hover)]"}`}
     >
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="flex-1 min-w-0">
             {labelStyle ? <>
-                <p className={`uppercase tracking-widest transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: 500 }}>
+                <p className={`uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 500 }}>
                   {headerTitle}
                 </p>
-                <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                   {subtitle}
                 </p>
               </> : <>
-                <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>
                   {headerTitle}
                 </p>
-                <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                   {subtitle}
                 </p>
               </>}
@@ -225,7 +225,7 @@ function EditBlogs({ blog, onClose, onSave }) {
       /* Chevron */
     }
         <svg
-      className={`w-4 h-4 ml-4 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"} ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+      className={`w-4 h-4 ml-4 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"} text-[var(--admin-text-faint)]`}
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -242,7 +242,7 @@ function EditBlogs({ blog, onClose, onSave }) {
         <span className={`text-[9px] ${tooShort || tooLong ? "text-red-500" : "text-transparent select-none"}`}>
           {tooShort ? `Min ${min} chars required.` : tooLong ? `Max ${max} chars allowed.` : "."}
         </span>
-        <span className={`text-[9px] ${tooLong ? "text-red-500" : isdarkmode ? "text-white/30" : "text-black/30"}`}>
+        <span className={`text-[9px] ${tooLong ? "text-red-500" : "text-[var(--admin-text-faint)]"}`}>
           {max !== void 0 ? `${trimmed.length}/${max}` : `${trimmed.length} chars`}
         </span>
       </div>;
@@ -255,17 +255,17 @@ function EditBlogs({ blog, onClose, onSave }) {
         * { scrollbar-width: none; -ms-overflow-style: none; }
       ` }} />
 
-      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 ${isdarkmode ? "bg-[#0f0f0f]" : "bg-[#f8f9fa]"}`}>
+      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}>
 
         {
     /* â”€â”€ Page Header â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 ${isdarkmode ? "border-white/5" : "border-gray-200"}`}>
+          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 border-[var(--admin-border)]`}>
             <div className="flex items-center gap-4">
               <button
     onClick={onClose}
-    className={`w-9 h-9 rounded-lg flex items-center justify-center border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`w-9 h-9 rounded-lg flex items-center justify-center border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -273,13 +273,13 @@ function EditBlogs({ blog, onClose, onSave }) {
               </button>
               <div>
                 <h2
-    className={`tracking-tight transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`tracking-tight transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 18, fontWeight: 500, margin: 0 }}
   >
                   Edit Blog Post
                 </h2>
                 <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0" }}
   >
                   Update your blog post details below
@@ -303,10 +303,10 @@ function EditBlogs({ blog, onClose, onSave }) {
     /* Cover Image */
   }
             <div className={sectionCard}>
-              <div className={`flex items-center justify-between px-6 py-4 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
+              <div className={`flex items-center justify-between px-6 py-4 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
                 <div>
                   <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Featured Image</p>
-                  <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                     Upload a new cover or keep existing
                   </p>
                 </div>
@@ -317,29 +317,29 @@ function EditBlogs({ blog, onClose, onSave }) {
 
                 <div
     onClick={() => fileRef.current?.click()}
-    className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${imageError ? "border-red-400 bg-red-50/5" : selectedImage ? "border-[#800000]/40" : isdarkmode ? "border-white/10 hover:border-white/20 bg-[#202020]" : "border-gray-200 hover:border-gray-300 bg-gray-50"}`}
+    className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${imageError ? "border-red-400 bg-red-50/5" : selectedImage ? "border-[var(--admin-accent)]/40" : "border-[var(--admin-border)] hover:border-[var(--admin-border-strong)] bg-[var(--admin-bg-soft)]"}`}
     style={{ aspectRatio: "16/9" }}
   >
                   {isCompressing ? <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <svg className="animate-spin w-5 h-5 text-[#800000]" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin w-5 h-5 text-[var(--admin-accent)]" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
-                      <span className={`text-[10px] ${isdarkmode ? "text-gray-400" : "text-gray-500"}`}>Compressing...</span>
+                      <span className={`text-[10px] text-[var(--admin-text-faint)]`}>Compressing...</span>
                     </div> : selectedImage ? <>
                       <img src={selectedImage} alt="Cover preview" className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                         <span className="text-white text-[11px] font-medium">Click to change</span>
                       </div>
                     </> : <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <div className={`w-11 h-11 rounded-full flex items-center justify-center ${isdarkmode ? "bg-[#2a2a2a]" : "bg-gray-100"}`}>
-                        <svg className={`w-5 h-5 ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center bg-[var(--admin-bg-hover)]`}>
+                        <svg className={`w-5 h-5 text-[var(--admin-text-faint)]`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                         </svg>
                       </div>
                       <div className="text-center">
-                        <p className={`text-[11px] font-medium ${isdarkmode ? "text-gray-300" : "text-gray-600"}`}>Drop or click to upload</p>
-                        <p className={`text-[10px] mt-0.5 ${isdarkmode ? "text-gray-600" : "text-gray-400"}`}>JPG, PNG, WEBP</p>
+                        <p className={`text-[11px] font-medium text-[var(--admin-text-sub)]`}>Drop or click to upload</p>
+                        <p className={`text-[10px] mt-0.5 text-[var(--admin-text-faint)]`}>JPG, PNG, WEBP</p>
                       </div>
                     </div>}
                 </div>
@@ -347,7 +347,7 @@ function EditBlogs({ blog, onClose, onSave }) {
 
                 <button
     onClick={() => fileRef.current?.click()}
-    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,15 +439,15 @@ function EditBlogs({ blog, onClose, onSave }) {
               <div
     className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "details" ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}
   >
-                <div className={`divide-y transition-all duration-500 ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`}>
+                <div className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
 
                   {
     /* Title row */
   }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Title <span className="text-[#800000]">•</span>
+                        Title <span className="text-[var(--admin-accent)]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -459,10 +459,10 @@ function EditBlogs({ blog, onClose, onSave }) {
                   {
     /* Author row */
   }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Author <span className="text-[#800000]">•</span>
+                        Author <span className="text-[var(--admin-accent)]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -474,10 +474,10 @@ function EditBlogs({ blog, onClose, onSave }) {
                   {
     /* Short Description row */
   }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Description <span className="text-[#800000]">•</span>
+                        Description <span className="text-[var(--admin-accent)]">•</span>
                       </p>
                     </div>
                     <div className="flex-1">
@@ -503,15 +503,15 @@ function EditBlogs({ blog, onClose, onSave }) {
               <div
     className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "content" ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
   >
-                <div className={`divide-y transition-all duration-500 ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`}>
+                <div className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
 
                   {
     /* Main Title row */
   }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
-                      <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
+                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
                     </div>
                     <div className="flex-1">
                       <input value={mainContentTitle} onChange={(e) => setMainContentTitle(e.target.value)} maxLength={HEADLINE_MAX} placeholder="Main Section Title..." className={inputBase} />
@@ -522,10 +522,10 @@ function EditBlogs({ blog, onClose, onSave }) {
                   {
     /* Main Body row */
   }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                     <div className="w-32 flex-shrink-0 pt-3">
                       <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
-                      <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-600" : "text-gray-400"}`} style={{ fontSize: 9, fontWeight: 400 }}>
+                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>
                         Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
                       </p>
                     </div>
@@ -549,7 +549,7 @@ function EditBlogs({ blog, onClose, onSave }) {
     subtitle="Optional extra content blocks"
     rightSlot={<button
       onClick={addContentSection}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
       style={{ fontSize: 11, fontWeight: 500 }}
     >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -562,14 +562,14 @@ function EditBlogs({ blog, onClose, onSave }) {
               <div
     className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "additional" ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"}`}
   >
-                <div className={`divide-y transition-all duration-500 ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`}>
-                  {contentSections.map((section, i) => <div key={i} className={`px-6 py-5 transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                <div className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
+                  {contentSections.map((section, i) => <div key={i} className={`px-6 py-5 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-[#800000] flex items-center justify-center flex-shrink-0">
+                          <div className="w-5 h-5 rounded-full bg-[var(--admin-accent)] flex items-center justify-center flex-shrink-0">
                             <span className="text-white text-[9px] font-bold">{i + 1}</span>
                           </div>
-                          <p className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: 500 }}>
+                          <p className={`transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 500 }}>
                             Section {i + 1}
                           </p>
                         </div>
@@ -616,15 +616,15 @@ function EditBlogs({ blog, onClose, onSave }) {
             {
     /* Footer */
   }
-            <div className={`rounded-xl border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-              <div className={`flex items-center justify-between px-6 py-4 rounded-xl transition-all duration-500 ${isdarkmode ? "bg-[#202020]" : "bg-gray-50"}`}>
-                <p className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+            <div className={`rounded-xl border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+              <div className={`flex items-center justify-between px-6 py-4 rounded-xl transition-all duration-500 bg-[var(--admin-bg-soft)]`}>
+                <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                   Review your entry before saving.
                 </p>
                 <div className="flex items-center gap-3">
                   <button
     onClick={onClose}
-    className={`px-5 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-white"}`}
+    className={`px-5 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                     Cancel
@@ -632,7 +632,7 @@ function EditBlogs({ blog, onClose, onSave }) {
                   <button
     onClick={() => setShowConfirmModal(true)}
     disabled={!isFormValid() || isSubmitting}
-    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[#800000] text-white hover:bg-[#6a0000] shadow-md" : isdarkmode ? "bg-[#2a2a2a] text-gray-600 cursor-not-allowed" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] shadow-md" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed"}`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                     {isSubmitting ? "Saving..." : "Save Changes"}
@@ -649,14 +649,14 @@ function EditBlogs({ blog, onClose, onSave }) {
     /* â•â•â•â•â•â•â•â• Confirm Modal â•â•â•â•â•â•â•â• */
   }
       {showConfirmModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>Confirm Changes</p>
-              <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>Are you sure you want to save changes to this blog post?</p>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>Confirm Changes</p>
+              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Are you sure you want to save changes to this blog post?</p>
             </div>
             <div className="flex gap-3 p-6">
-              <button onClick={() => setShowConfirmModal(false)} disabled={isSubmitting} className={`flex-1 py-2.5 rounded-lg border-2 transition-all ${isdarkmode ? "border-white/10 text-gray-300 hover:bg-white/5" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`} style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
-              <button onClick={handleFinalConfirm} disabled={isSubmitting} className="flex-1 py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500 }}>{isSubmitting ? "Saving..." : "Confirm"}</button>
+              <button onClick={() => setShowConfirmModal(false)} disabled={isSubmitting} className={`flex-1 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
+              <button onClick={handleFinalConfirm} disabled={isSubmitting} className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500 }}>{isSubmitting ? "Saving..." : "Confirm"}</button>
             </div>
           </div>
         </div>}
@@ -665,13 +665,13 @@ function EditBlogs({ blog, onClose, onSave }) {
     /* â•â•â•â•â•â•â•â• Success Modal â•â•â•â•â•â•â•â• */
   }
       {showSuccessModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>Success!</p>
-              <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>Your blog post has been updated successfully.</p>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>Success!</p>
+              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Your blog post has been updated successfully.</p>
             </div>
             <div className="p-6">
-              <button onClick={handleSuccessClose} className="w-full py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Back to Blog List</button>
+              <button onClick={handleSuccessClose} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Back to Blog List</button>
             </div>
           </div>
         </div>}
@@ -680,13 +680,13 @@ function EditBlogs({ blog, onClose, onSave }) {
     /* â•â•â•â•â•â•â•â• Error Modal â•â•â•â•â•â•â•â• */
   }
       {showErrorModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 13, fontWeight: 600 }}>Error</p>
-              <p className={`mt-0.5 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>{errorMessage || "Something went wrong. Please try again."}</p>
+          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>Error</p>
+              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>{errorMessage || "Something went wrong. Please try again."}</p>
             </div>
             <div className="p-6">
-              <button onClick={() => setShowErrorModal(false)} className="w-full py-2.5 rounded-lg bg-[#800000] text-white hover:bg-[#6a0000] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Close</button>
+              <button onClick={() => setShowErrorModal(false)} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Close</button>
             </div>
           </div>
         </div>}

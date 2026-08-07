@@ -354,7 +354,7 @@ function AdminPage() {
       ` }} />
 
       <div
-    className={`flex flex-col items-start justify-start space-y-5 sm:space-y-6 lg:space-y-8 min-h-screen transition-colors duration-500 ${isdarkmode ? "bg-[#0f0f0f]" : "bg-[#f8f9fa]"}`}
+    className={`flex flex-col items-start justify-start space-y-5 sm:space-y-6 lg:space-y-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}
   >
         {
     /* â”€â”€ Error Toast â”€â”€ */
@@ -371,17 +371,17 @@ function AdminPage() {
   }
         <div className="w-full max-w-7xl mx-auto">
           <div
-    className={`flex items-center justify-between pb-4 sm:pb-5 lg:pb-6 border-b transition-colors duration-500 ${isdarkmode ? "border-white/5" : "border-gray-200"}`}
+    className={`flex items-center justify-between pb-4 sm:pb-5 lg:pb-6 border-b transition-colors duration-500 border-[var(--admin-border)]`}
   >
             <div>
               <h2
-    className={`tracking-tight transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`tracking-tight transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 15, fontWeight: 500, margin: 0 }}
   >
                 {isPageViewsAnalyticsRoute ? "Page views analytics" : "Dashboard overview"}
               </h2>
               <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 11, fontWeight: 400, margin: "4px 0 0" }}
   >
                 {isPageViewsAnalyticsRoute ? "Case study views, engagement, and traffic metrics" : "Key metrics and performance at a glance"}
@@ -394,7 +394,7 @@ function AdminPage() {
     type="date"
     value={selecteddate}
     onChange={(e) => setselecteddate(e.target.value)}
-    className={`hidden sm:block px-3 sm:px-5 py-2 sm:py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none ${isdarkmode ? "bg-[#202020] border-white/10 text-gray-300 focus:border-white/30" : "bg-white border-gray-200 text-gray-700 focus:border-gray-400"}`}
+    className={`hidden sm:block px-3 sm:px-5 py-2 sm:py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] focus:border-[var(--admin-border-strong)]`}
     style={{ fontSize: 11, fontWeight: 400 }}
   />
           </div>
@@ -487,17 +487,17 @@ function AdminPage() {
     /* Performance Overview */
   }
           <div
-    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
+    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
             <div style={{ marginBottom: 20 }}>
               <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
   >
                 Performance overview
               </p>
               <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0" }}
   >
                 Key business metrics compared to last month
@@ -512,7 +512,7 @@ function AdminPage() {
       className="perf-mini-card"
       style={{
         background: isdarkmode ? meta.gradient : meta.gradientLight,
-        border: isdarkmode ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)"
+        border: "1px solid var(--admin-border)"
       }}
     >
                     {
@@ -539,7 +539,7 @@ function AdminPage() {
       letterSpacing: "0.1em",
       textTransform: "uppercase",
       margin: 0,
-      color: isdarkmode ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)"
+      color: "var(--admin-text-faint)"
     }}>
                         {item.label}
                       </p>
@@ -563,7 +563,7 @@ function AdminPage() {
     }
                     <p
       className="perf-mini-value"
-      style={{ color: isdarkmode ? "#ffffff" : "#111827" }}
+      style={{ color: "var(--admin-text)" }}
     >
                       {item.value}
                     </p>
@@ -573,7 +573,7 @@ function AdminPage() {
     }
                     <div style={{
       height: 1,
-      background: isdarkmode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)",
+      background: "var(--admin-border-strong)",
       marginBottom: 10
     }} />
 
@@ -597,7 +597,7 @@ function AdminPage() {
                       <span style={{
       fontSize: 10,
       fontWeight: 400,
-      color: isdarkmode ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)"
+      color: "var(--admin-text-faint)"
     }}>
                         vs last month
                       </span>
@@ -611,17 +611,17 @@ function AdminPage() {
     /* Popular Categories */
   }
           <div
-    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 flex flex-col items-center ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
+    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 flex flex-col items-center bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
             <div className="w-full" style={{ marginBottom: 20 }}>
               <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
   >
                 Popular Categories
               </p>
               <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 11, fontWeight: 400, margin: "3px 0 0" }}
   >
                 Top content categories by engagement
@@ -633,8 +633,8 @@ function AdminPage() {
   }
             <div style={{ position: "relative", width: "min(160px, 44vw)", height: "min(160px, 44vw)", marginBottom: 22 }}>
               <svg viewBox="0 0 36 36" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}>
-                <circle cx="18" cy="18" r="16" fill="none" stroke={isdarkmode ? "#2a2a2a" : "#f3f4f6"} strokeWidth="4" />
-                <circle cx="18" cy="18" r="16" fill="none" stroke="#800000" strokeWidth="4" strokeDasharray="75, 100" />
+                <circle cx="18" cy="18" r="16" fill="none" stroke={"var(--admin-bg-hover)"} strokeWidth="4" />
+                <circle cx="18" cy="18" r="16" fill="none" stroke="var(--admin-accent)" strokeWidth="4" strokeDasharray="75, 100" />
                 <circle cx="18" cy="18" r="16" fill="none" stroke="#f97316" strokeWidth="4" strokeDasharray="15, 100" strokeDashoffset="-75" />
               </svg>
               <div style={{
@@ -646,13 +646,13 @@ function AdminPage() {
     justifyContent: "center"
   }}>
                 <span
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 22, fontWeight: 700 }}
   >
                   82%
                 </span>
                 <span
-    className={`uppercase tracking-widest transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 9, fontWeight: 500 }}
   >
                   Growth
@@ -662,20 +662,20 @@ function AdminPage() {
 
             <div className="w-full flex flex-col gap-4">
               {[
-    { label: "Appliances", pct: "75%", color: "#800000" },
+    { label: "Appliances", pct: "75%", color: "var(--admin-accent)" },
     { label: "Accessories", pct: "15%", color: "#f97316" }
   ].map((cat, i) => <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div style={{ width: 10, height: 10, borderRadius: "50%", background: cat.color, flexShrink: 0 }} />
                     <span
-    className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`}
+    className={`transition-colors text-[var(--admin-text-sub)]`}
     style={{ fontSize: 11, fontWeight: 400 }}
   >
                       {cat.label}
                     </span>
                   </div>
                   <span
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 11, fontWeight: 600 }}
   >
                     {cat.pct}
@@ -690,7 +690,7 @@ function AdminPage() {
   }
         <div className="w-full max-w-7xl mx-auto">
           <div
-    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
+    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
             {
     /* Chart Header — stacks on mobile */
@@ -698,13 +698,13 @@ function AdminPage() {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
               <div>
                 <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
   >
                   Engagement Metrics
                 </p>
                 <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 10, fontWeight: 400, margin: "3px 0 0" }}
   >
                   {resourceFilter === "all" && "Views and Likes from Blogs & Case Studies"}
@@ -718,12 +718,12 @@ function AdminPage() {
     /* Resource filter pills */
   }
                 <div
-    className={`flex gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-md border transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}
+    className={`flex gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-md border transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}
   >
                   {["all", "blog", "casestudy"].map((f) => <button
     key={f}
     onClick={() => setResourceFilter(f)}
-    className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg transition-all ${resourceFilter === f ? "bg-[#800000] text-white shadow-md" : isdarkmode ? "text-gray-400 hover:bg-white/5" : "text-gray-600 hover:bg-gray-100"}`}
+    className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg transition-all ${resourceFilter === f ? "bg-[var(--admin-accent)] text-white shadow-md" : "text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]"}`}
     style={{ fontSize: 10, fontWeight: resourceFilter === f ? 500 : 400, whiteSpace: "nowrap" }}
   >
                       {f === "all" ? "All" : f === "blog" ? "Blogs" : "Case Studies"}
@@ -734,12 +734,12 @@ function AdminPage() {
     /* Legend */
   }
                 {[
-    { color: "#800000", label: "views" },
+    { color: "var(--admin-accent)", label: "views" },
     { color: "#6b7280", label: "likes" }
   ].map((l) => <div key={l.label} className="flex items-center gap-1.5">
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: l.color }} />
                     <span
-    className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 10, fontWeight: 400 }}
   >
                       {l.label}
@@ -747,7 +747,7 @@ function AdminPage() {
                   </div>)}
 
                 {loading && <span
-    className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 10, fontStyle: "italic" }}
   >
                     loading data...
@@ -763,42 +763,42 @@ function AdminPage() {
                 <AreaChart data={engagementdata}>
                   <defs>
                     <linearGradient id="colorviews" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#800000" stopOpacity={0.12} />
-                      <stop offset="95%" stopColor="#800000" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--admin-accent)" stopOpacity={0.12} />
+                      <stop offset="95%" stopColor="var(--admin-accent)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
     strokeDasharray="3 3"
     vertical={false}
-    stroke={isdarkmode ? "#2a2a2a" : "#f3f4f6"}
+    stroke={"var(--admin-bg-hover)"}
   />
                   <XAxis
     dataKey="name"
     axisLine={false}
     tickLine={false}
-    tick={{ fontSize: 10, fill: isdarkmode ? "#6b7280" : "#9ca3af", fontWeight: 400 }}
+    tick={{ fontSize: 10, fill: "var(--admin-text-faint)", fontWeight: 400 }}
     dy={10}
   />
                   <YAxis
     axisLine={false}
     tickLine={false}
-    tick={{ fontSize: 10, fill: isdarkmode ? "#6b7280" : "#9ca3af", fontWeight: 400 }}
+    tick={{ fontSize: 10, fill: "var(--admin-text-faint)", fontWeight: 400 }}
     width={30}
   />
                   <Tooltip
     contentStyle={{
       borderRadius: 14,
-      border: `1px solid ${isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb"}`,
+      border: `1px solid ${"var(--admin-border)"}`,
       boxShadow: "0 4px 16px rgba(0,0,0,.10)",
       fontSize: 12,
-      backgroundColor: isdarkmode ? "#1a1a1a" : "#ffffff",
-      color: isdarkmode ? "#f0f0f0" : "#1f2937"
+      backgroundColor: "var(--admin-surface)",
+      color: "var(--admin-text)"
     }}
   />
                   <Area
     type="monotone"
     dataKey="views"
-    stroke="#800000"
+    stroke="var(--admin-accent)"
     strokeWidth={3}
     fillOpacity={1}
     fill="url(#colorviews)"
@@ -825,30 +825,30 @@ function AdminPage() {
     /* Recent Transactions */
   }
           <div
-    className={`rounded-xl border shadow-sm transition-all duration-500 overflow-hidden ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
+    className={`rounded-xl border shadow-sm transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
             {
     /* Card Header */
   }
             <div
-    className={`card-hdr flex items-center justify-between border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}
+    className={`card-hdr flex items-center justify-between border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}
   >
               <div>
                 <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
   >
                   Recent transactions
                 </p>
                 <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 11, fontWeight: 400, margin: "3px 0 0" }}
   >
                   Latest customer orders and payments
                 </p>
               </div>
               <button
-    className="px-3 sm:px-4 py-1.5 rounded-lg bg-[#800000] text-white hover:bg-[#600000] transition-all shrink-0"
+    className="px-3 sm:px-4 py-1.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#600000] transition-all shrink-0"
     style={{ fontSize: 10, fontWeight: 500 }}
   >
                 View all
@@ -861,31 +861,31 @@ function AdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full" style={{ minWidth: 340 }}>
                 <thead>
-                  <tr className={`border-b transition-all duration-500 ${isdarkmode ? "border-white/5" : "border-gray-100"}`}>
+                  <tr className={`border-b transition-all duration-500 border-[var(--admin-border)]`}>
                     {["Customer", "Date", "Amount", "Status"].map((col) => <th
     key={col}
-    className={`tbl-th text-left uppercase tracking-widest transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`tbl-th text-left uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontWeight: 500 }}
   >
                         {col}
                       </th>)}
                   </tr>
                 </thead>
-                <tbody className={`divide-y transition-all duration-500 ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`}>
+                <tbody className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
                   {transactions.map((t, i) => <tr
     key={i}
-    className={`transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}
+    className={`transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}
   >
                       <td className="tbl-td">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div
-    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isdarkmode ? "bg-white/10" : "bg-gray-100"}`}
-    style={{ fontSize: 9, fontWeight: 600, color: "#800000", textTransform: "uppercase" }}
+    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[var(--admin-bg-hover)]`}
+    style={{ fontSize: 9, fontWeight: 600, color: "var(--admin-accent)", textTransform: "uppercase" }}
   >
                             {t.customer.split(" ").map((n) => n[0]).join("")}
                           </div>
                           <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"} whitespace-nowrap`}
+    className={`transition-colors text-[var(--admin-text)] whitespace-nowrap`}
     style={{ fontSize: 11, fontWeight: 500, margin: 0, textTransform: "capitalize" }}
   >
                             {t.customer}
@@ -894,7 +894,7 @@ function AdminPage() {
                       </td>
                       <td className="tbl-td">
                         <p
-    className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"} whitespace-nowrap`}
+    className={`transition-colors text-[var(--admin-text-faint)] whitespace-nowrap`}
     style={{ fontSize: 11, fontWeight: 400, margin: 0 }}
   >
                           {t.date}
@@ -902,7 +902,7 @@ function AdminPage() {
                       </td>
                       <td className="tbl-td">
                         <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 12, fontWeight: 600, margin: 0 }}
   >
                           {t.amount}
@@ -926,23 +926,23 @@ function AdminPage() {
     /* Regional Performance */
   }
           <div
-    className={`rounded-xl border shadow-sm transition-all duration-500 overflow-hidden ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
+    className={`rounded-xl border shadow-sm transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
             {
     /* Card Header */
   }
             <div
-    className={`card-hdr flex items-center justify-between border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}
+    className={`card-hdr flex items-center justify-between border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}
   >
               <div>
                 <p
-    className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`}
+    className={`transition-colors text-[var(--admin-text)]`}
     style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
   >
                   Regional performance
                 </p>
                 <p
-    className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontSize: 11, fontWeight: 400, margin: "3px 0 0" }}
   >
                   Traffic breakdown by country
@@ -956,24 +956,24 @@ function AdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full" style={{ minWidth: 280 }}>
                 <thead>
-                  <tr className={`border-b transition-all duration-500 ${isdarkmode ? "border-white/5" : "border-gray-100"}`}>
+                  <tr className={`border-b transition-all duration-500 border-[var(--admin-border)]`}>
                     {["Country", "Share", "Progress"].map((col) => <th
     key={col}
-    className={`tbl-th text-left uppercase tracking-widest transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+    className={`tbl-th text-left uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`}
     style={{ fontWeight: 500 }}
   >
                         {col}
                       </th>)}
                   </tr>
                 </thead>
-                <tbody className={`divide-y transition-all duration-500 ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`}>
+                <tbody className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
                   {regions.map((reg, i) => <tr
     key={i}
-    className={`transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}
+    className={`transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}
   >
                       <td className="tbl-td">
                         <p
-    className={`uppercase tracking-wide transition-colors ${isdarkmode ? "text-white" : "text-gray-800"} whitespace-nowrap`}
+    className={`uppercase tracking-wide transition-colors text-[var(--admin-text)] whitespace-nowrap`}
     style={{ fontSize: 11, fontWeight: 500, margin: 0 }}
   >
                           {reg.country}
@@ -981,7 +981,7 @@ function AdminPage() {
                       </td>
                       <td className="tbl-td">
                         <p
-    className={`transition-colors ${isdarkmode ? "text-gray-300" : "text-gray-700"}`}
+    className={`transition-colors text-[var(--admin-text-sub)]`}
     style={{ fontSize: 12, fontWeight: 600, margin: 0 }}
   >
                           {reg.percentage}%
@@ -993,7 +993,7 @@ function AdminPage() {
       height: 6,
       width: "100%",
       borderRadius: 99,
-      background: isdarkmode ? "rgba(255,255,255,0.08)" : "#f3f4f6",
+      background: "var(--admin-bg-hover)",
       overflow: "hidden"
     }}
   >
@@ -1001,7 +1001,7 @@ function AdminPage() {
     style={{
       height: "100%",
       width: `${reg.percentage}%`,
-      background: "#800000",
+      background: "var(--admin-accent)",
       borderRadius: 99,
       transition: "width .4s ease"
     }}

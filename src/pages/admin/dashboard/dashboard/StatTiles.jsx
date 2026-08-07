@@ -7,9 +7,9 @@ function StatTiles({ quickStats, activeServicesCount, quickStatsLoading }) {
       label: "total views",
       value: quickStats.totalViews.toLocaleString(),
       subValue: `${quickStats.totalUniqueViews.toLocaleString()} Unique`,
-      accentColor: "#800000",
-      accentBg: isdarkmode ? "rgba(128,0,0,0.12)" : "rgba(128,0,0,0.05)",
-      accentBorder: isdarkmode ? "rgba(128,0,0,0.3)" : "rgba(128,0,0,0.15)"
+      accentColor: "var(--admin-accent)",
+      accentBg: "var(--admin-accent-soft)",
+      accentBorder: "var(--admin-accent-soft)"
     },
     {
       label: "appointments",
@@ -80,7 +80,7 @@ function StatTiles({ quickStats, activeServicesCount, quickStatsLoading }) {
     style={{
       height: 32,
       borderRadius: 8,
-      background: isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+      background: "var(--admin-border)",
       animation: "pulse 1.5s ease-in-out infinite"
     }}
   /> : <>

@@ -29,13 +29,13 @@ function ListArchivedServices() {
   const [confirmrestore, setconfirmrestore] = useState(null);
   const isMainAdmin = currentRole === 1;
   const API = import.meta.env.VITE_API_URL || "/api";
-  const pageBg = isdarkmode ? "#0f0f0f" : "#f8f9fa";
-  const cardBg = isdarkmode ? "#1a1a1a" : "#ffffff";
-  const subtleBg = isdarkmode ? "#202020" : "#f9fafb";
-  const borderColor = isdarkmode ? "rgba(255,255,255,0.08)" : "#e5e7eb";
-  const textPrimary = isdarkmode ? "#f0f0f0" : "#1f2937";
-  const textMuted = isdarkmode ? "#6b7280" : "#6b7280";
-  const inputBg = isdarkmode ? "#202020" : "#f9fafb";
+  const pageBg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
+  const borderColor = "var(--admin-border)";
+  const textPrimary = "var(--admin-text)";
+  const textMuted = "var(--admin-text-faint)";
+  const inputBg = "var(--admin-bg-soft)";
   const fetchBlogs = useCallback(async () => {
     const r = await fetch(`${API}/blogs?includeArchived=true`, {
       credentials: "include",
@@ -163,12 +163,12 @@ function ListArchivedServices() {
     const map = {
       published: { bg: "#00A651", color: "#fff" },
       active: { bg: "#00A651", color: "#fff" },
-      draft: { bg: isdarkmode ? "#3a3a3a" : "#e5e7eb", color: isdarkmode ? "#9ca3af" : "#6b7280" },
+      draft: { bg: "var(--admin-border-strong)", color: "var(--admin-text-faint)" },
       scheduled: { bg: "#8b5cf6", color: "#fff" },
       completed: { bg: "#0066CC", color: "#fff" }
     };
     const key = s?.toLowerCase() || "";
-    const style = map[key] || { bg: isdarkmode ? "#3a3a3a" : "#e5e7eb", color: isdarkmode ? "#9ca3af" : "#6b7280" };
+    const style = map[key] || { bg: "var(--admin-border-strong)", color: "var(--admin-text-faint)" };
     return {
       background: style.bg,
       color: style.color,
@@ -332,16 +332,16 @@ function ListArchivedServices() {
   if (isloading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: pageBg, fontFamily: FONT }}>
       <style>{`@keyframes arc-spin { to { transform: rotate(360deg) } }`}</style>
       <div style={{ textAlign: "center" }}>
-        <div style={{ width: 44, height: 44, border: "4px solid #800000", borderTopColor: "transparent", borderRadius: "50%", animation: "arc-spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
+        <div style={{ width: 44, height: 44, border: "4px solid var(--admin-accent)", borderTopColor: "transparent", borderRadius: "50%", animation: "arc-spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
         <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: FONT }}>Loading archived content...</p>
       </div>
     </div>;
   return <div style={{ minHeight: "100vh", background: pageBg, padding: "clamp(16px, 4vw, 32px)", fontFamily: FONT }}>
       <style>{`
         @keyframes arc-spin { to { transform: rotate(360deg) } }
-        .arc-row:hover { background: ${isdarkmode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"} !important; }
+        .arc-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .arc-card { transition: transform .18s, box-shadow .18s, border-color .18s; }
-        .arc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,${isdarkmode ? ".35" : ".09"}) !important; border-color: ${isdarkmode ? "rgba(255,255,255,.14)" : "rgba(0,0,0,.12)"} !important; }
+        .arc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,${isdarkmode ? ".35" : ".09"}) !important; border-color: ${"var(--admin-border-strong)"} !important; }
         .arc-pill:hover { opacity: .78; }
         .arc-rbtn:hover { opacity: .82 !important; }
 
@@ -639,7 +639,7 @@ function ListArchivedServices() {
     value={searchquery}
     onChange={(e) => setsearchquery(e.target.value)}
     style={{ ...inp({ paddingLeft: 34, width: "100%", boxSizing: "border-box" }) }}
-    onFocus={(e) => e.target.style.borderColor = "#800000"}
+    onFocus={(e) => e.target.style.borderColor = "var(--admin-accent)"}
     onBlur={(e) => e.target.style.borderColor = borderColor}
   />
           </div>
@@ -662,7 +662,7 @@ function ListArchivedServices() {
     value={activefilter}
     onChange={(e) => setactivefilter(e.target.value)}
     style={inp({ padding: "9px 12px", fontSize: 11, cursor: "pointer" })}
-    onFocus={(e) => e.target.style.borderColor = "#800000"}
+    onFocus={(e) => e.target.style.borderColor = "var(--admin-accent)"}
     onBlur={(e) => e.target.style.borderColor = borderColor}
   >
                 {filterOptions.map((f) => <option key={f.value} value={f.value}>
@@ -680,7 +680,7 @@ function ListArchivedServices() {
     value={sortmode}
     onChange={(e) => setsortmode(e.target.value)}
     style={inp({ padding: "9px 12px", fontSize: 11, cursor: "pointer" })}
-    onFocus={(e) => e.target.style.borderColor = "#800000"}
+    onFocus={(e) => e.target.style.borderColor = "var(--admin-accent)"}
     onBlur={(e) => e.target.style.borderColor = borderColor}
   >
                 <option value="date-newest">Newest First</option>
@@ -701,7 +701,7 @@ function ListArchivedServices() {
   ].map(([m, d], i) => <button
     key={m}
     onClick={() => setviewmode(m)}
-    style={{ padding: "8px 12px", borderTop: "none", borderBottom: "none", borderRight: "none", borderLeftWidth: i > 0 ? 1 : 0, borderLeftStyle: "solid", borderLeftColor: borderColor, background: viewmode === m ? "#800000" : "transparent", color: viewmode === m ? "#fff" : textMuted, cursor: "pointer", transition: "all .15s", display: "flex", alignItems: "center" }}
+    style={{ padding: "8px 12px", borderTop: "none", borderBottom: "none", borderRight: "none", borderLeftWidth: i > 0 ? 1 : 0, borderLeftStyle: "solid", borderLeftColor: borderColor, background: viewmode === m ? "var(--admin-accent)" : "transparent", color: viewmode === m ? "#fff" : textMuted, cursor: "pointer", transition: "all .15s", display: "flex", alignItems: "center" }}
   >
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={d} />
@@ -713,7 +713,7 @@ function ListArchivedServices() {
         {
     /* â”€â”€ Content Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   }
-        <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: isdarkmode ? "none" : "0 2px 12px rgba(0,0,0,0.05)" }}>
+        <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, overflow: "hidden", boxShadow: "var(--admin-shadow-sm)" }}>
 
           {
     /* Card header */
@@ -734,7 +734,7 @@ function ListArchivedServices() {
     /* Empty */
   }
           {items.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
-              <svg style={{ margin: "0 auto 16px", display: "block", color: isdarkmode ? "#374151" : "#d1d5db" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
               </svg>
               <p style={{ fontSize: 14, fontWeight: 500, color: textMuted, margin: "0 0 4px", fontFamily: FONT }}>No archived items found</p>
@@ -769,12 +769,12 @@ function ListArchivedServices() {
       overflow: "hidden",
       display: "flex",
       flexDirection: "column",
-      boxShadow: isdarkmode ? "0 1px 4px rgba(0,0,0,.3)" : "0 2px 8px rgba(0,0,0,.06)"
+      boxShadow: "var(--admin-shadow-sm)"
     }}>
                     {
       /* Cover image */
     }
-                    <div className="arc-card-img" style={{ position: "relative", height: 120, overflow: "hidden", flexShrink: 0, background: isdarkmode ? "#111" : "#f3f4f6" }}>
+                    <div className="arc-card-img" style={{ position: "relative", height: 120, overflow: "hidden", flexShrink: 0, background: "var(--admin-bg-hover)" }}>
                       {coverImage ? <img src={coverImage} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => {
       e.target.style.display = "none";
     }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: `${accentColor}15` }}>
@@ -803,11 +803,11 @@ function ListArchivedServices() {
                       {
       /* Tags / Category */
     }
-                      {!isAdmin && isBlog && blog?.mainCategory && <span style={{ fontSize: 9, fontWeight: 500, padding: "2px 7px", borderRadius: 5, background: isdarkmode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", color: textMuted, width: "fit-content", fontFamily: FONT }}>
+                      {!isAdmin && isBlog && blog?.mainCategory && <span style={{ fontSize: 9, fontWeight: 500, padding: "2px 7px", borderRadius: 5, background: "var(--admin-border-strong)", color: textMuted, width: "fit-content", fontFamily: FONT }}>
                           {blog.mainCategory}
                         </span>}
                       {!isAdmin && !isBlog && cs?.tags?.length ? <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
-                          {cs.tags.slice(0, 2).map((t) => <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: "2px 6px", borderRadius: 4, background: isdarkmode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", color: textMuted, fontFamily: FONT }}>{t}</span>)}
+                          {cs.tags.slice(0, 2).map((t) => <span key={t} style={{ fontSize: 9, fontWeight: 500, padding: "2px 6px", borderRadius: 4, background: "var(--admin-border-strong)", color: textMuted, fontFamily: FONT }}>{t}</span>)}
                           {cs.tags.length > 2 && <span style={{ fontSize: 9, color: textMuted, fontFamily: FONT }}>+{cs.tags.length - 2}</span>}
                         </div> : null}
                       {isAdmin && admin && <span style={{ fontSize: 10, color: textMuted, fontFamily: FONT }}>{getDeptIcon(admin.department)} {departments[admin.department]}</span>}
@@ -862,7 +862,7 @@ function ListArchivedServices() {
     return <div key={item._id} className="arc-row arc-list-grid" style={{
       alignItems: "center",
       padding: "12px 22px",
-      background: isEven ? isdarkmode ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.012)" : "transparent",
+      background: isEven ? "var(--admin-bg-soft)" : "transparent",
       borderBottom: `1px solid ${borderColor}`,
       transition: "background .15s"
     }}>
@@ -950,7 +950,7 @@ function ListArchivedServices() {
               {
     /* Drag handle (visible on mobile) */
   }
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: isdarkmode ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)", margin: "0 auto 20px" }} className="arc-modal-handle" />
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--admin-border-strong)", margin: "0 auto 20px" }} className="arc-modal-handle" />
 
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
                 <div>

@@ -119,7 +119,7 @@ function MiniCalendarDropdown({
     }
     setIsOpen(false);
   }
-  const ACCENT = "#800000";
+  const ACCENT = "var(--admin-accent)";
   const triggerStyle = {
     display: "flex",
     alignItems: "center",
@@ -189,7 +189,7 @@ function MiniCalendarDropdown({
       border: `1px solid ${borderColor}`,
       borderRadius: 16,
       padding: "14px 12px",
-      boxShadow: isdarkmode ? "0 8px 32px rgba(0,0,0,.6)" : "0 8px 32px rgba(0,0,0,.12)",
+      boxShadow: "var(--admin-shadow-md)",
       minWidth: 220,
       fontFamily: "'Poppins', sans-serif"
     }}
@@ -235,7 +235,7 @@ function MiniCalendarDropdown({
         gridTemplateColumns: "repeat(7, 1fr)",
         gap: 2,
         borderRadius: mode === "week" ? 8 : 0,
-        background: mode === "week" && (weekHovered || isSelectedWeek) ? isSelectedWeek ? `${ACCENT}18` : isdarkmode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)" : "transparent",
+        background: mode === "week" && (weekHovered || isSelectedWeek) ? isSelectedWeek ? `${ACCENT}18` : "var(--admin-bg-soft)" : "transparent",
         cursor: mode === "week" ? "pointer" : "default",
         padding: mode === "week" ? "1px 2px" : 0,
         outline: mode === "week" && isSelectedWeek ? `1.5px solid ${ACCENT}44` : "none"
@@ -250,7 +250,7 @@ function MiniCalendarDropdown({
       const isInWeek = mode === "week" && selectedDate && selectedMonday && selectedSunday && day >= selectedMonday && day <= selectedSunday;
       const isDisabled = minDate && ymd < minDate || maxDate && ymd > maxDate;
       const bg = isSelected || mode === "week" && isInWeek ? ACCENT : "transparent";
-      const fg = isSelected || mode === "week" && isInWeek ? "#fff" : !isThisMonth ? isdarkmode ? "#3a3a3a" : "#d1d5db" : isDisabled ? textMuted : isToday ? ACCENT : textPrimary;
+      const fg = isSelected || mode === "week" && isInWeek ? "#fff" : !isThisMonth ? "var(--admin-border-strong)" : isDisabled ? textMuted : isToday ? ACCENT : textPrimary;
       return <div
         key={di}
         onClick={(e) => {
@@ -275,7 +275,7 @@ function MiniCalendarDropdown({
         onMouseEnter={(e) => {
           if (mode === "day" && !isDisabled && !isSelected) {
             ;
-            e.currentTarget.style.background = isdarkmode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)";
+            e.currentTarget.style.background = "var(--admin-border)";
           }
         }}
         onMouseLeave={(e) => {

@@ -208,12 +208,12 @@ function AnalyticsSection({ applicants, isdarkmode }) {
     }).length);
   }
   const dm = isdarkmode;
-  const card = `rounded-2xl ${dm ? "bg-[#181818] border border-white/5" : "bg-white border border-gray-100"} shadow-sm`;
-  const sectionTitle = { ...poppins, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "#800000" };
+  const card = `rounded-2xl "bg-[var(--admin-surface)] border border-[var(--admin-border)]" shadow-sm`;
+  const sectionTitle = { ...poppins, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--admin-accent)" };
   const labelText = { ...poppins, fontSize: "11px", fontWeight: 500, color: dm ? "#d1d5db" : "#374151" };
   const mutedText = { ...poppins, fontSize: "11px", fontWeight: 400, color: "#9ca3af" };
   const heroCards = [
-    { label: "Total Applicants", value: total, sub: "All categories", color: "#800000", bgImage: CARD_BG_IMAGES[0], icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
+    { label: "Total Applicants", value: total, sub: "All categories", color: "var(--admin-accent)", bgImage: CARD_BG_IMAGES[0], icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
     { label: "Pending Review", value: pending, sub: `${pendingRate}% of total`, color: "#d97706", bgImage: CARD_BG_IMAGES[1], icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> },
     { label: "Approved", value: approved, sub: `${approvalRate}% approval rate`, color: "#059669", bgImage: CARD_BG_IMAGES[2], icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg> },
     { label: "Rejected", value: rejected, sub: `${rejectionRate}% rejection rate`, color: "#dc2626", bgImage: CARD_BG_IMAGES[3], icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg> }
@@ -257,7 +257,7 @@ function AnalyticsSection({ applicants, isdarkmode }) {
             </div>
           </div>
           <div className="flex-1 flex items-end">
-            {total === 0 ? <p style={mutedText}>No data yet.</p> : <div className="w-full"><BarChartSVG labels={monthLabels} values={monthCounts} color="#800000" dm={dm} /></div>}
+            {total === 0 ? <p style={mutedText}>No data yet.</p> : <div className="w-full"><BarChartSVG labels={monthLabels} values={monthCounts} color="var(--admin-accent)" dm={dm} /></div>}
           </div>
         </div>
         <div className={`${card} p-5 flex flex-col`}>
@@ -273,7 +273,7 @@ function AnalyticsSection({ applicants, isdarkmode }) {
             </div>
           </div>
           <div className="flex-1 flex items-end">
-            {total === 0 ? <p style={mutedText}>No data yet.</p> : <div className="w-full"><AreaLineSVG labels={monthLabels} values={monthCounts} color="#800000" dm={dm} /></div>}
+            {total === 0 ? <p style={mutedText}>No data yet.</p> : <div className="w-full"><AreaLineSVG labels={monthLabels} values={monthCounts} color="var(--admin-accent)" dm={dm} /></div>}
           </div>
           <div className="flex items-center justify-between mt-2">
             {[{ label: `${approved} Approved`, color: "#059669" }, { label: `${rejected} Rejected`, color: "#dc2626" }].map((l) => <div key={l.label} className="flex items-center gap-1.5">
@@ -375,7 +375,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
     cy="28"
     r="22"
     fill="none"
-    stroke={dm ? "rgba(128,0,0,0.2)" : "rgba(128,0,0,0.1)"}
+    stroke={dm ? "color-mix(in srgb, var(--admin-accent) 20%, transparent)" : "color-mix(in srgb, var(--admin-accent) 10%, transparent)"}
     strokeWidth="4"
   />
           <circle
@@ -383,7 +383,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
     cy="28"
     r="22"
     fill="none"
-    stroke="#800000"
+    stroke="var(--admin-accent)"
     strokeWidth="4"
     strokeLinecap="round"
     strokeDasharray="138.2"
@@ -399,7 +399,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#800000"
+    color: "var(--admin-accent)"
   }}>
           {PIPELINE_STAGES.find((s) => s.key === stage)?.icon}
         </div>
@@ -420,7 +420,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
       width: "6px",
       height: "6px",
       borderRadius: "50%",
-      background: "#800000",
+      background: "var(--admin-accent)",
       animation: `pulseDot 1.2s ease-in-out ${i * 0.2}s infinite`
     }}
   />)}
@@ -544,7 +544,7 @@ function ApplicantModal({
     /* â”€â”€ Maroon Banner â”€â”€ */
   }
         <div style={{
-    background: "linear-gradient(135deg, #800000 0%, #550000 100%)",
+    background: "linear-gradient(135deg, var(--admin-accent) 0%, #550000 100%)",
     borderRadius: "24px 24px 0 0",
     padding: "22px 22px 0"
   }}>
@@ -649,7 +649,7 @@ function ApplicantModal({
       justifyContent: "center",
       background: isDone ? "rgba(255,255,255,0.9)" : isActive ? "#ffffff" : "rgba(255,255,255,0.08)",
       border: isActive ? "2px solid #fff" : isDone ? "2px solid rgba(255,255,255,0.85)" : "1.5px solid rgba(255,255,255,0.18)",
-      color: isDone ? "#800000" : isActive ? "#800000" : "rgba(255,255,255,0.3)",
+      color: isDone ? "var(--admin-accent)" : isActive ? "var(--admin-accent)" : "rgba(255,255,255,0.3)",
       boxShadow: isActive ? "0 0 0 4px rgba(255,255,255,0.12)" : "none",
       transition: "all 0.3s ease"
     }}>
@@ -706,7 +706,7 @@ function ApplicantModal({
     /* Personal Info */
   }
           <div style={infoCard}>
-            <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "#800000", marginBottom: "12px" }}>Personal Information</p>
+            <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--admin-accent)", marginBottom: "12px" }}>Personal Information</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px" }}>
               <Row l="Phone" v={applicant.phone} />
               <Row l="Date of Birth" v={applicant.dob} />
@@ -722,7 +722,7 @@ function ApplicantModal({
     /* Services & Availability */
   }
           <div style={infoCard}>
-            <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "#800000", marginBottom: "12px" }}>Services & Availability</p>
+            <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--admin-accent)", marginBottom: "12px" }}>Services & Availability</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px" }}>
               <Row l="Experience Level" v={applicant.experienceLevel} />
               <Row l="Availability" v={applicant.availability} />
@@ -739,9 +739,9 @@ function ApplicantModal({
     fontWeight: 500,
     padding: "3px 10px",
     borderRadius: "8px",
-    background: dm ? "rgba(128,0,0,0.2)" : "rgba(128,0,0,0.07)",
-    color: dm ? "#ff8080" : "#800000",
-    border: `1px solid ${dm ? "rgba(128,0,0,0.3)" : "rgba(128,0,0,0.13)"}`
+    background: dm ? "color-mix(in srgb, var(--admin-accent) 20%, transparent)" : "color-mix(in srgb, var(--admin-accent) 7%, transparent)",
+    color: dm ? "#ff8080" : "var(--admin-accent)",
+    border: `1px solid ${dm ? "color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "color-mix(in srgb, var(--admin-accent) 13%, transparent)"}`
   }}>{s}</span>)}
                 </div>
               </div>}
@@ -751,7 +751,7 @@ function ApplicantModal({
     /* Cover Letter */
   }
           {applicant.coverLetter && <div style={infoCard}>
-              <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "#800000", marginBottom: "8px" }}>Cover Letter</p>
+              <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--admin-accent)", marginBottom: "8px" }}>Cover Letter</p>
               <p style={{ ...poppins, fontSize: "12px", lineHeight: 1.75, color: dm ? "#d1d5db" : "#4b5563" }}>{applicant.coverLetter}</p>
             </div>}
 
@@ -759,7 +759,7 @@ function ApplicantModal({
     /* Resume */
   }
           {applicant.resumeUrl && <div style={infoCard}>
-              <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "#800000", marginBottom: "8px" }}>Resume / CV</p>
+              <p style={{ ...poppins, fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em", color: "var(--admin-accent)", marginBottom: "8px" }}>Resume / CV</p>
               <a
     href={resumeHref}
     target="_blank"
@@ -771,12 +771,12 @@ function ApplicantModal({
       display: "inline-flex",
       alignItems: "center",
       gap: "7px",
-      color: "#800000",
+      color: "var(--admin-accent)",
       textDecoration: "none",
       padding: "8px 14px",
       borderRadius: "10px",
-      background: dm ? "rgba(128,0,0,0.15)" : "rgba(128,0,0,0.06)",
-      border: `1px solid ${dm ? "rgba(128,0,0,0.25)" : "rgba(128,0,0,0.12)"}`
+      background: dm ? "color-mix(in srgb, var(--admin-accent) 15%, transparent)" : "color-mix(in srgb, var(--admin-accent) 6%, transparent)",
+      border: `1px solid ${dm ? "color-mix(in srgb, var(--admin-accent) 25%, transparent)" : "color-mix(in srgb, var(--admin-accent) 12%, transparent)"}`
     }}
   >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -804,7 +804,7 @@ function ApplicantModal({
       width: "100%",
       padding: "12px",
       borderRadius: "14px",
-      background: isPipelineLoading ? "linear-gradient(135deg, #5a0000 0%, #3a0000 100%)" : "linear-gradient(135deg, #800000 0%, #550000 100%)",
+      background: isPipelineLoading ? "linear-gradient(135deg, #5a0000 0%, #3a0000 100%)" : "linear-gradient(135deg, var(--admin-accent) 0%, #550000 100%)",
       color: "#fff",
       border: "none",
       cursor: isAnyLoading ? "not-allowed" : "pointer",
@@ -977,7 +977,7 @@ function TableStatCards({ applicants, filtered, filterStatus, isdarkmode }) {
   const approved = applicants.filter((a) => a.status === "approved").length;
   const rejected = applicants.filter((a) => a.status === "rejected").length;
   const cards = [
-    { label: "Showing", value: filtered.length, sub: filterStatus === "all" ? "All applicants" : `"${filterStatus}" filter active`, bgImage: CARD_BG_IMAGES[0], color: "#800000", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg> },
+    { label: "Showing", value: filtered.length, sub: filterStatus === "all" ? "All applicants" : `"${filterStatus}" filter active`, bgImage: CARD_BG_IMAGES[0], color: "var(--admin-accent)", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg> },
     { label: "Pending", value: pending, sub: total > 0 ? `${Math.round(pending / total * 100)}% of total` : "0% of total", bgImage: CARD_BG_IMAGES[1], color: "#d97706", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> },
     { label: "Approved", value: approved, sub: total > 0 ? `${Math.round(approved / total * 100)}% approval rate` : "0% approval rate", bgImage: CARD_BG_IMAGES[2], color: "#059669", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg> },
     { label: "Rejected", value: rejected, sub: total > 0 ? `${Math.round(rejected / total * 100)}% rejection rate` : "0% rejection rate", bgImage: CARD_BG_IMAGES[3], color: "#dc2626", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg> }
@@ -999,8 +999,8 @@ function FilterTabs({ filterStatus, setFilterStatus, isdarkmode }) {
       borderRadius: "999px",
       padding: "3px",
       gap: "2px",
-      background: dm ? "rgba(128,0,0,0.2)" : "rgba(128,0,0,0.08)",
-      boxShadow: dm ? "inset 0 1px 4px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(128,0,0,0.25)" : "inset 0 1px 3px rgba(128,0,0,0.12), inset 0 0 0 1px rgba(128,0,0,0.1)"
+      background: dm ? "color-mix(in srgb, var(--admin-accent) 20%, transparent)" : "color-mix(in srgb, var(--admin-accent) 8%, transparent)",
+      boxShadow: dm ? "inset 0 1px 4px rgba(0,0,0,0.5), inset 0 0 0 1px color-mix(in srgb, var(--admin-accent) 25%, transparent)" : "inset 0 1px 3px color-mix(in srgb, var(--admin-accent) 12%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--admin-accent) 10%, transparent)"
     }}
   >
       {tabs.map((tab) => {
@@ -1018,9 +1018,9 @@ function FilterTabs({ filterStatus, setFilterStatus, isdarkmode }) {
         cursor: "pointer",
         whiteSpace: "nowrap",
         transition: "all 0.2s ease",
-        background: isActive ? "#800000" : "transparent",
+        background: isActive ? "var(--admin-accent)" : "transparent",
         color: isActive ? "#ffffff" : dm ? "#e5e7eb" : "#111827",
-        boxShadow: isActive ? "0 2px 10px rgba(128,0,0,0.4), 0 0 0 0.5px rgba(128,0,0,0.6)" : "none"
+        boxShadow: isActive ? "0 2px 10px color-mix(in srgb, var(--admin-accent) 40%, transparent), 0 0 0 0.5px color-mix(in srgb, var(--admin-accent) 60%, transparent)" : "none"
       }}
     >
             {tab.label}
@@ -1175,14 +1175,14 @@ function ApplicantsList() {
     fontWeight: 500,
     padding: "8px 16px",
     borderRadius: "12px",
-    border: `1px solid ${active ? "#800000" : isdarkmode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+    border: `1px solid ${active ? "var(--admin-accent)" : "var(--admin-border-strong)"}`,
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     gap: "7px",
     transition: "all 0.18s ease",
-    background: active ? "#800000" : isdarkmode ? "rgba(255,255,255,0.04)" : "#f9fafb",
-    color: active ? "#fff" : isdarkmode ? "#d1d5db" : "#374151"
+    background: active ? "var(--admin-accent)" : "var(--admin-bg-soft)",
+    color: active ? "#fff" : "var(--admin-text-sub)"
   });
   return <div className="space-y-6" style={poppins}>
       {
@@ -1208,7 +1208,7 @@ function ApplicantsList() {
   }
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className={isdarkmode ? "text-white" : "text-gray-800"} style={{ ...poppins, fontSize: "18px", fontWeight: 600 }}>List of Applicants</h1>
+          <h1 className={"text-[var(--admin-text)]"} style={{ ...poppins, fontSize: "18px", fontWeight: 600 }}>List of Applicants</h1>
           <p className="text-gray-400 mt-0.5" style={{ ...poppins, fontSize: "11px" }}>Review and manage job applicants</p>
         </div>
         <div className="flex items-center gap-2">
@@ -1238,7 +1238,7 @@ function ApplicantsList() {
       {!showAnalytics && <>
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <p style={{ ...poppins, fontSize: "13px", fontWeight: 600, color: isdarkmode ? "#fff" : "#111827" }}>Applicants List</p>
+              <p style={{ ...poppins, fontSize: "13px", fontWeight: 600, color: "var(--admin-text)" }}>Applicants List</p>
               <p style={{ ...poppins, fontSize: "11px", color: "#9ca3af", marginTop: "1px" }}>Showing {filtered.length} of {applicants.length} applicant{applicants.length !== 1 ? "s" : ""}</p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
@@ -1246,7 +1246,7 @@ function ApplicantsList() {
     /* Search input */
   }
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={isdarkmode ? "#6b7280" : "#9ca3af"} strokeWidth="2.5" style={{ position: "absolute", left: "10px", pointerEvents: "none" }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={"var(--admin-text-faint)"} strokeWidth="2.5" style={{ position: "absolute", left: "10px", pointerEvents: "none" }}>
                   <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
                 <input
@@ -1263,9 +1263,9 @@ function ApplicantsList() {
       paddingBottom: "7px",
       borderRadius: "12px",
       outline: "none",
-      border: `1px solid ${isdarkmode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
-      background: isdarkmode ? "rgba(255,255,255,0.04)" : "#f9fafb",
-      color: isdarkmode ? "#d1d5db" : "#374151",
+      border: `1px solid ${"var(--admin-border-strong)"}`,
+      background: "var(--admin-bg-soft)",
+      color: "var(--admin-text-sub)",
       width: "180px",
       transition: "border-color 0.15s ease"
     }}
@@ -1284,9 +1284,9 @@ function ApplicantsList() {
     display: "flex",
     alignItems: "center",
     borderRadius: "10px",
-    border: `1px solid ${isdarkmode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+    border: `1px solid ${"var(--admin-border-strong)"}`,
     overflow: "hidden",
-    background: isdarkmode ? "rgba(255,255,255,0.04)" : "#f9fafb"
+    background: "var(--admin-bg-soft)"
   }}>
                 {["list", "card"].map((mode) => <button
     key={mode}
@@ -1296,8 +1296,8 @@ function ApplicantsList() {
       padding: "6px 10px",
       border: "none",
       cursor: "pointer",
-      background: viewMode === mode ? "#800000" : "transparent",
-      color: viewMode === mode ? "#fff" : isdarkmode ? "#6b7280" : "#9ca3af",
+      background: viewMode === mode ? "var(--admin-accent)" : "transparent",
+      color: viewMode === mode ? "#fff" : "var(--admin-text-faint)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -1311,10 +1311,10 @@ function ApplicantsList() {
             </div>
           </div>
 
-          <div className={`rounded-3xl overflow-hidden shadow-sm border ${isdarkmode ? "bg-[#181818] border-white/5" : "bg-white border-gray-100"}`}>
+          <div className={`rounded-3xl overflow-hidden shadow-sm border bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
             {isLoading ? <div className="flex items-center justify-center py-20">
                 <div className="text-center space-y-3">
-                  <div className="inline-block h-7 w-7 animate-spin rounded-full border-4 border-solid border-[#800000] border-r-transparent" />
+                  <div className="inline-block h-7 w-7 animate-spin rounded-full border-4 border-solid border-[var(--admin-accent)] border-r-transparent" />
                   <p className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>Loading applicants…</p>
                 </div>
               </div> : filtered.length === 0 ? <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -1326,8 +1326,8 @@ function ApplicantsList() {
     style={{
       borderRadius: "16px",
       padding: "16px",
-      background: isdarkmode ? "rgba(255,255,255,0.03)" : "#f9fafb",
-      border: `1px solid ${isdarkmode ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+      background: "var(--admin-bg-soft)",
+      border: `1px solid ${"var(--admin-border-strong)"}`,
       display: "flex",
       flexDirection: "column",
       gap: "10px",
@@ -1337,24 +1337,24 @@ function ApplicantsList() {
   >
                     <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "space-between" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-                        <div style={{ width: "38px", height: "38px", borderRadius: "12px", background: "rgba(128,0,0,0.1)", color: "#800000", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "12px", flexShrink: 0 }}>
+                        <div style={{ width: "38px", height: "38px", borderRadius: "12px", background: "color-mix(in srgb, var(--admin-accent) 10%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "12px", flexShrink: 0 }}>
                           {applicant.firstName?.[0]}{applicant.lastName?.[0]}
                         </div>
                         <div style={{ minWidth: 0 }}>
-                          <p style={{ ...poppins, fontSize: "12px", fontWeight: 600, color: isdarkmode ? "#fff" : "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{applicant.firstName} {applicant.lastName}</p>
+                          <p style={{ ...poppins, fontSize: "12px", fontWeight: 600, color: "var(--admin-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{applicant.firstName} {applicant.lastName}</p>
                           <p style={{ ...poppins, fontSize: "10px", color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{applicant.email}</p>
                         </div>
                       </div>
                       <span className={statusBadge(applicant.status)} style={poppins}>{applicant.status}</span>
                     </div>
                     {applicant.services && applicant.services.length > 0 && <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {applicant.services.slice(0, 2).map((s) => <span key={s} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "2px 8px", borderRadius: "6px", background: isdarkmode ? "rgba(128,0,0,0.2)" : "rgba(128,0,0,0.07)", color: isdarkmode ? "#ff8080" : "#800000" }}>{s}</span>)}
+                        {applicant.services.slice(0, 2).map((s) => <span key={s} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "2px 8px", borderRadius: "6px", background: "var(--admin-accent-soft)", color: "var(--admin-accent-text)" }}>{s}</span>)}
                         {applicant.services.length > 2 && <span style={{ ...poppins, fontSize: "10px", color: "#9ca3af" }}>+{applicant.services.length - 2}</span>}
                       </div>}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span style={{ ...poppins, fontSize: "10px", color: "#9ca3af" }}>{applicant.appliedAt ? formatDate(applicant.appliedAt) : "\u2014"}</span>
                       <div style={{ display: "flex", gap: "6px" }}>
-                        <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: selectedApplicantLoading ? "not-allowed" : "pointer", opacity: selectedApplicantLoading ? 0.6 : 1, background: isdarkmode ? "rgba(255,255,255,0.07)" : "#eeeeee", color: isdarkmode ? "#d1d5db" : "#374151" }}>View</button>
+                        <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: selectedApplicantLoading ? "not-allowed" : "pointer", opacity: selectedApplicantLoading ? 0.6 : 1, background: "var(--admin-border)", color: "var(--admin-text-sub)" }}>View</button>
                         {applicant.status === "pending" && <>
                             <button onClick={() => handleAction(applicant._id, "approve")} disabled={!!actionLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: "pointer", background: "rgba(5,150,105,0.1)", color: "#059669" }}>✓</button>
                             <button onClick={() => handleAction(applicant._id, "reject")} disabled={!!actionLoading} style={{ ...poppins, fontSize: "10px", fontWeight: 500, padding: "4px 10px", borderRadius: "8px", border: "none", cursor: "pointer", background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>✕</button>
@@ -1365,24 +1365,24 @@ function ApplicantsList() {
               </div> : <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className={`border-b ${isdarkmode ? "border-white/5" : "border-gray-50"}`}>
-                      {["Applicant", "Desired Position(s)", "Applied", "Status", "Actions"].map((col) => <th key={col} className={`px-6 py-4 text-left ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ ...poppins, fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{col}</th>)}
+                    <tr className={`border-b border-[var(--admin-border)]`}>
+                      {["Applicant", "Desired Position(s)", "Applied", "Status", "Actions"].map((col) => <th key={col} className={`px-6 py-4 text-left text-[var(--admin-text-faint)]`} style={{ ...poppins, fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{col}</th>)}
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((applicant) => <tr key={applicant._id} className={`border-b transition-colors ${isdarkmode ? "border-white/[0.03] hover:bg-white/[0.02]" : "border-gray-50 hover:bg-gray-50/60"}`}>
+                    {filtered.map((applicant) => <tr key={applicant._id} className={`border-b transition-colors border-[var(--admin-border)] hover:bg-[var(--admin-bg-hover)]`}>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-[#800000]/10 text-[#800000] flex items-center justify-center shrink-0 font-semibold" style={{ ...poppins, fontSize: "11px" }}>{applicant.firstName?.[0]}{applicant.lastName?.[0]}</div>
+                            <div className="w-9 h-9 rounded-xl bg-[var(--admin-accent)]/10 text-[var(--admin-accent)] flex items-center justify-center shrink-0 font-semibold" style={{ ...poppins, fontSize: "11px" }}>{applicant.firstName?.[0]}{applicant.lastName?.[0]}</div>
                             <div>
-                              <p className={isdarkmode ? "text-white" : "text-gray-800"} style={{ ...poppins, fontSize: "11px", fontWeight: 500 }}>{applicant.firstName} {applicant.lastName}</p>
+                              <p className={"text-[var(--admin-text)]"} style={{ ...poppins, fontSize: "11px", fontWeight: 500 }}>{applicant.firstName} {applicant.lastName}</p>
                               <p className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>{applicant.email}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 max-w-[220px]">
                           {applicant.services && applicant.services.length > 0 ? <div className="flex flex-wrap gap-1">
-                              {applicant.services.slice(0, 2).map((s) => <span key={s} className={`px-2 py-0.5 rounded-md font-medium ${isdarkmode ? "bg-[#800000]/20 text-[#ff6666]" : "bg-[#800000]/10 text-[#800000]"}`} style={{ ...poppins, fontSize: "11px" }}>{s}</span>)}
+                              {applicant.services.slice(0, 2).map((s) => <span key={s} className={`px-2 py-0.5 rounded-md font-medium bg-[var(--admin-accent-soft)] text-[var(--admin-accent-text)]`} style={{ ...poppins, fontSize: "11px" }}>{s}</span>)}
                               {applicant.services.length > 2 && <span className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>+{applicant.services.length - 2} more</span>}
                             </div> : <span className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>—</span>}
                         </td>
@@ -1390,7 +1390,7 @@ function ApplicantsList() {
                         <td className="px-6 py-4"><span className={statusBadge(applicant.status)} style={poppins}>{applicant.status}</span></td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-none transition-all active:scale-95 ${isdarkmode ? "bg-white/5 text-gray-300 hover:bg-white/10" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`} style={{ ...poppins, fontSize: "11px", fontWeight: 500, cursor: selectedApplicantLoading ? "not-allowed" : "pointer", opacity: selectedApplicantLoading ? 0.6 : 1 }}>
+                            <button onClick={() => openApplicant(applicant)} disabled={selectedApplicantLoading} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-none transition-all active:scale-95 bg-[var(--admin-bg-soft)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`} style={{ ...poppins, fontSize: "11px", fontWeight: 500, cursor: selectedApplicantLoading ? "not-allowed" : "pointer", opacity: selectedApplicantLoading ? 0.6 : 1 }}>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>View
                             </button>
                             {applicant.status === "pending" && <>
@@ -1433,7 +1433,7 @@ function ApplicantsList() {
         /* \u2500\u2500 Thin modal scrollbar \u2500\u2500 */
         .modal-scroll {
           scrollbar-width: thin;
-          scrollbar-color: rgba(128, 0, 0, 0.35) transparent;
+          scrollbar-color: color-mix(in srgb, var(--admin-accent) 35%, transparent) transparent;
         }
         .modal-scroll::-webkit-scrollbar {
           width: 4px;
@@ -1443,11 +1443,11 @@ function ApplicantsList() {
           border-radius: 999px;
         }
         .modal-scroll::-webkit-scrollbar-thumb {
-          background: rgba(128, 0, 0, 0.35);
+          background: color-mix(in srgb, var(--admin-accent) 35%, transparent);
           border-radius: 999px;
         }
         .modal-scroll::-webkit-scrollbar-thumb:hover {
-          background: rgba(128, 0, 0, 0.6);
+          background: color-mix(in srgb, var(--admin-accent) 60%, transparent);
         }
       `}</style>
     </div>;

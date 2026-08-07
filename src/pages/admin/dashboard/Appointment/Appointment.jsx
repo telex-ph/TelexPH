@@ -63,9 +63,9 @@ function MiniCalendar({ appointmentDates, today, cardBg, subtleBg, borderColor, 
             <p style={{ fontSize: 16, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{MONTHS[month]}</p>
             <p style={{ fontSize: 11, color: textMuted, margin: "1px 0 0", fontFamily: "'Poppins', sans-serif" }}>{year}</p>
           </div>
-          <div style={{ background: dark ? "rgba(255,255,255,0.10)" : "rgba(128,0,0,0.09)", border: dark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(128,0,0,0.18)", borderRadius: 10, padding: "4px 10px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: 15, fontWeight: 700, color: dark ? "#ffffff" : "#800000", lineHeight: 1, fontFamily: "'Poppins', sans-serif" }}>{appointmentDates.size}</span>
-            <span style={{ fontSize: 9, color: dark ? "rgba(255,255,255,0.70)" : "#800000", opacity: 0.7, fontFamily: "'Poppins', sans-serif", marginTop: 1 }}>appts</span>
+          <div style={{ background: dark ? "rgba(255,255,255,0.10)" : "color-mix(in srgb, var(--admin-accent) 9%, transparent)", border: dark ? "1px solid rgba(255,255,255,0.18)" : "1px solid color-mix(in srgb, var(--admin-accent) 18%, transparent)", borderRadius: 10, padding: "4px 10px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: dark ? "#ffffff" : "var(--admin-accent)", lineHeight: 1, fontFamily: "'Poppins', sans-serif" }}>{appointmentDates.size}</span>
+            <span style={{ fontSize: 9, color: dark ? "rgba(255,255,255,0.70)" : "var(--admin-accent)", opacity: 0.7, fontFamily: "'Poppins', sans-serif", marginTop: 1 }}>appts</span>
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", marginBottom: 4 }}>
@@ -78,14 +78,14 @@ function MiniCalendar({ appointmentDates, today, cardBg, subtleBg, borderColor, 
     const isToday = ds === todayDs;
     const hasAppt = appointmentDates.has(ds);
     return <div key={ds} style={{ height: 36, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: isToday ? "#800000" : "transparent", color: isToday ? "#fff" : textMuted, fontSize: 12, fontWeight: isToday ? 700 : 400, fontFamily: "'Poppins', sans-serif" }}>{day}</div>
-                {hasAppt && !isToday && <span style={{ position: "absolute", bottom: 3, left: "50%", transform: "translateX(-50%)", width: 4, height: 4, borderRadius: "50%", background: "#800000" }} />}
+                <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: isToday ? "var(--admin-accent)" : "transparent", color: isToday ? "#fff" : textMuted, fontSize: 12, fontWeight: isToday ? 700 : 400, fontFamily: "'Poppins', sans-serif" }}>{day}</div>
+                {hasAppt && !isToday && <span style={{ position: "absolute", bottom: 3, left: "50%", transform: "translateX(-50%)", width: 4, height: 4, borderRadius: "50%", background: "var(--admin-accent)" }} />}
               </div>;
   })}
         </div>
       </div>
       <div style={{ borderTop: `1px solid ${borderColor}`, padding: "12px 16px" }}>
-        <button onClick={onClick} style={{ width: "100%", padding: "10px", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "opacity .15s" }}>
+        <button onClick={onClick} style={{ width: "100%", padding: "10px", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "opacity .15s" }}>
           <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
           Open Full Calendar
         </button>
@@ -129,18 +129,18 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
   };
   const prevMonth = () => shiftMonth(-1);
   const nextMonth = () => shiftMonth(1);
-  const RED = "#800000";
+  const RED = "var(--admin-accent)";
   const border = dark ? "rgba(255,255,255,0.09)" : "#e5e7eb";
   const txt1 = dark ? "#f0f0f0" : "#1f2937";
   const txt2 = dark ? "#6b7280" : "#6b7280";
-  const bgPage = dark ? "#0f0f0f" : "#f8f9fa";
-  const bgCard = dark ? "#1a1a1a" : "#ffffff";
+  const bgPage = "var(--admin-bg)";
+  const bgCard = "var(--admin-surface)";
   const initials = (name) => {
     if (!name) return "?";
     const parts = name.trim().split(" ");
     return parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
   };
-  const avatarColors = ["#800000", "#059669", "#3b82f6", "#ca8a04", "#7c3aed", "#0891b2"];
+  const avatarColors = ["var(--admin-accent)", "#059669", "#3b82f6", "#ca8a04", "#7c3aed", "#0891b2"];
   const avatarColor = (name) => avatarColors[(name?.charCodeAt(0) || 0) % avatarColors.length];
   const dayAppts = appointments.filter((a) => a.startTime?.startsWith(selectedDate));
   const monthApptCount = appointments.filter(
@@ -189,7 +189,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
           {
       /* Badge cell: number on top, label on bottom */
     }
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#800000", borderRadius: 12, padding: isMobileCal ? "8px 14px" : "10px 18px", flexShrink: 0, minWidth: isMobileCal ? 52 : 64 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--admin-accent)", borderRadius: 12, padding: isMobileCal ? "8px 14px" : "10px 18px", flexShrink: 0, minWidth: isMobileCal ? 52 : 64 }}>
             <span style={{ fontSize: isMobileCal ? 20 : 26, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{dayAppts.length}</span>
             <span style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.80)", marginTop: 3, letterSpacing: "0.04em", textTransform: "uppercase" }}>appt{dayAppts.length !== 1 ? "s" : ""}</span>
           </div>
@@ -221,7 +221,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
             {["all", "morning", "afternoon", "evening"].map((f) => {
       const labels = { all: "All", morning: isMobileCal ? "AM" : "Morning", afternoon: isMobileCal ? "PM" : "Afternoon", evening: isMobileCal ? "Eve" : "Evening" };
       const active = timeFilter === f;
-      return <button key={f} onClick={() => setTimeFilter(f)} style={{ padding: isMobileCal ? "5px 10px" : "5px 12px", borderRadius: 8, border: `1px solid ${active ? RED : border}`, background: active ? "#800000" : dark ? "rgba(255,255,255,0.04)" : "#f9fafb", color: active ? "#ffffff" : txt2, fontSize: 11, fontWeight: active ? 600 : 400, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
+      return <button key={f} onClick={() => setTimeFilter(f)} style={{ padding: isMobileCal ? "5px 10px" : "5px 12px", borderRadius: 8, border: `1px solid ${active ? RED : border}`, background: active ? "var(--admin-accent)" : dark ? "rgba(255,255,255,0.04)" : "#f9fafb", color: active ? "#ffffff" : txt2, fontSize: 11, fontWeight: active ? 600 : 400, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
                   {labels[f]}
                 </button>;
     })}
@@ -249,7 +249,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         borderRadius: 14,
         overflow: "hidden",
         transition: "border-color 0.2s, box-shadow 0.2s",
-        boxShadow: isExpanded ? dark ? "0 4px 24px rgba(128,0,0,0.18)" : "0 4px 24px rgba(128,0,0,0.08)" : "none"
+        boxShadow: isExpanded ? dark ? "0 4px 24px color-mix(in srgb, var(--admin-accent) 18%, transparent)" : "0 4px 24px color-mix(in srgb, var(--admin-accent) 8%, transparent)" : "none"
       }}>
               {
         /* Clickable header row */
@@ -258,7 +258,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         onClick={() => setExpandedDayId(isExpanded ? null : appt._id)}
         style={{ padding: isMobileCal ? "12px 14px" : "14px 16px", display: "flex", alignItems: "center", gap: isMobileCal ? 10 : 14, cursor: "pointer", userSelect: "none" }}
       >
-                <div style={{ width: isMobileCal ? 36 : 40, height: isMobileCal ? 36 : 40, borderRadius: "50%", background: avatarColor(appt.name), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: isExpanded ? "2px solid rgba(128,0,0,0.3)" : "2px solid transparent", transition: "border 0.2s" }}>
+                <div style={{ width: isMobileCal ? 36 : 40, height: isMobileCal ? 36 : 40, borderRadius: "50%", background: avatarColor(appt.name), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: isExpanded ? "2px solid color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "2px solid transparent", transition: "border 0.2s" }}>
                   <span style={{ fontSize: isMobileCal ? 11 : 13, fontWeight: 700, color: "#fff", fontFamily: "'Poppins', sans-serif" }}>{initials(appt.name)}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -266,7 +266,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
                   <p style={{ fontSize: 11, color: txt2, margin: 0 }}>{formatTime(appt.startTime)}{appt.endTime ? ` \u2013 ${formatTime(appt.endTime)}` : ""}</p>
                 </div>
                 {appt.appointmentStatus && !isMobileCal && <span style={getStatusStyle(appt.appointmentStatus, dark)}>{appt.appointmentStatus}</span>}
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: isExpanded ? dark ? "rgba(128,0,0,0.25)" : "rgba(128,0,0,0.08)" : dark ? "rgba(255,255,255,0.06)" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.2s" }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: isExpanded ? dark ? "color-mix(in srgb, var(--admin-accent) 25%, transparent)" : "color-mix(in srgb, var(--admin-accent) 8%, transparent)" : dark ? "rgba(255,255,255,0.06)" : "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.2s" }}>
                   <svg width="12" height="12" fill="none" stroke={isExpanded ? RED : txt2} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ transition: "transform 0.2s", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
@@ -277,7 +277,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         /* â”€â”€ Expanded full details â”€â”€ */
       }
               {isExpanded && <>
-                  <div style={{ height: 1, background: `linear-gradient(to right, transparent, ${dark ? "rgba(128,0,0,0.4)" : "rgba(128,0,0,0.2)"}, transparent)` }} />
+                  <div style={{ height: 1, background: `linear-gradient(to right, transparent, ${dark ? "color-mix(in srgb, var(--admin-accent) 40%, transparent)" : "color-mix(in srgb, var(--admin-accent) 20%, transparent)"}, transparent)` }} />
                   <div style={{ padding: isMobileCal ? "12px 14px 14px" : "16px 20px 18px" }}>
 
                     {
@@ -371,7 +371,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         borderBottom: !isLastRow ? `1px solid ${border}` : "none",
         padding: isMobileCal ? "4px 2px 2px" : "8px 6px 6px",
         cursor: "pointer",
-        background: isSelected ? dark ? "rgba(128,0,0,0.12)" : "rgba(128,0,0,0.04)" : isToday ? dark ? "rgba(128,0,0,0.08)" : "rgba(128,0,0,0.03)" : "transparent",
+        background: isSelected ? dark ? "color-mix(in srgb, var(--admin-accent) 12%, transparent)" : "color-mix(in srgb, var(--admin-accent) 4%, transparent)" : isToday ? dark ? "color-mix(in srgb, var(--admin-accent) 8%, transparent)" : "color-mix(in srgb, var(--admin-accent) 3%, transparent)" : "transparent",
         position: "relative",
         display: "flex",
         flexDirection: "column",
@@ -418,7 +418,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         display: "flex",
         alignItems: "center",
         gap: 6,
-        background: dark ? "#2a2a2a" : "#ffffff",
+        background: "var(--admin-bg-soft)",
         border: dark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e8e8e8",
         borderRadius: 8,
         padding: "5px 7px",
@@ -493,7 +493,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         height: 22,
         borderRadius: "50%",
         background: avatarColor(oa.name),
-        border: `2px solid ${dark ? "#1a1a1a" : "#ffffff"}`,
+        border: `2px solid "var(--admin-surface)"`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -518,8 +518,8 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
       height: 18,
       minWidth: 24,
       borderRadius: 10,
-      background: dark ? "rgba(128,0,0,0.25)" : "rgba(128,0,0,0.10)",
-      border: `1px solid ${dark ? "rgba(128,0,0,0.5)" : "rgba(128,0,0,0.25)"}`,
+      background: dark ? "color-mix(in srgb, var(--admin-accent) 25%, transparent)" : "color-mix(in srgb, var(--admin-accent) 10%, transparent)",
+      border: `1px solid ${dark ? "color-mix(in srgb, var(--admin-accent) 50%, transparent)" : "color-mix(in srgb, var(--admin-accent) 25%, transparent)"}`,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -572,7 +572,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
         {
     /* â”€â”€ Top bar â”€â”€ */
   }
-        <div style={{ background: "#800000", borderBottom: "1px solid rgba(255,255,255,0.12)", padding: isMobileCal ? "10px 14px" : "14px 24px", flexShrink: 0 }}>
+        <div style={{ background: "var(--admin-accent)", borderBottom: "1px solid rgba(255,255,255,0.12)", padding: isMobileCal ? "10px 14px" : "14px 24px", flexShrink: 0 }}>
           {
     /* Row 1 (mobile) or single row (desktop) */
   }
@@ -580,7 +580,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
             {
     /* Left: Back button */
   }
-            <button onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 6, padding: isMobileCal ? "5px 10px" : "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.25)", background: "#ffffff", color: "#800000", fontSize: 11, fontWeight: 600, cursor: "pointer", transition: "all .15s", flexShrink: 0 }}>
+            <button onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 6, padding: isMobileCal ? "5px 10px" : "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.25)", background: "#ffffff", color: "var(--admin-accent)", fontSize: 11, fontWeight: 600, cursor: "pointer", transition: "all .15s", flexShrink: 0 }}>
               <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg>
               Back
             </button>
@@ -589,14 +589,14 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
     /* Center: prev arrow + date label + next arrow */
   }
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: isMobileCal ? 6 : 10 }}>
-              <button onClick={prevMonth} style={{ width: isMobileCal ? 28 : 30, height: isMobileCal ? 28 : 30, borderRadius: 8, border: "1px solid rgba(255,255,255,0.25)", background: "#ffffff", color: "#800000", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}>
+              <button onClick={prevMonth} style={{ width: isMobileCal ? 28 : 30, height: isMobileCal ? 28 : 30, borderRadius: 8, border: "1px solid rgba(255,255,255,0.25)", background: "#ffffff", color: "var(--admin-accent)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}>
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg>
               </button>
               <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
                 <span style={{ fontSize: isMobileCal ? 14 : 16, fontWeight: 700, color: "#ffffff" }}>{isMobileCal ? MONTHS_SHORT[viewMonth] : MONTHS[viewMonth]},</span>
                 <span style={{ fontSize: isMobileCal ? 12 : 14, color: "rgba(255,255,255,0.75)", fontWeight: 400 }}>{viewYear}</span>
               </div>
-              <button onClick={nextMonth} style={{ width: isMobileCal ? 28 : 30, height: isMobileCal ? 28 : 30, borderRadius: 8, border: "1px solid rgba(255,255,255,0.25)", background: "#ffffff", color: "#800000", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}>
+              <button onClick={nextMonth} style={{ width: isMobileCal ? 28 : 30, height: isMobileCal ? 28 : 30, borderRadius: 8, border: "1px solid rgba(255,255,255,0.25)", background: "#ffffff", color: "var(--admin-accent)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}>
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg>
               </button>
             </div>
@@ -612,7 +612,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
                 {["Day", "Month"].map((v) => <button key={v} onClick={() => {
     setCalView(v.toLowerCase());
     if (v === "Day") setSidebarOpen(false);
-  }} style={{ padding: isMobileCal ? "4px 10px" : "5px 14px", borderRadius: 6, border: "none", background: calView === v.toLowerCase() ? "#ffffff" : "transparent", color: calView === v.toLowerCase() ? "#800000" : "rgba(255,255,255,0.8)", fontSize: 11, fontWeight: calView === v.toLowerCase() ? 600 : 500, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
+  }} style={{ padding: isMobileCal ? "4px 10px" : "5px 14px", borderRadius: 6, border: "none", background: calView === v.toLowerCase() ? "#ffffff" : "transparent", color: calView === v.toLowerCase() ? "var(--admin-accent)" : "rgba(255,255,255,0.8)", fontSize: 11, fontWeight: calView === v.toLowerCase() ? 600 : 500, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
                     {v}
                   </button>)}
               </div>
@@ -697,7 +697,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
               {
       /* â”€â”€ Header â”€â”€ */
     }
-              <div style={{ flexShrink: 0, position: "relative", overflow: "hidden", background: "linear-gradient(135deg, #800000 0%, #a00000 60%, #6b0000 100%)", borderBottom: `1px solid rgba(255,255,255,0.12)` }}>
+              <div style={{ flexShrink: 0, position: "relative", overflow: "hidden", background: "linear-gradient(135deg, var(--admin-accent) 0%, #a00000 60%, #6b0000 100%)", borderBottom: `1px solid rgba(255,255,255,0.12)` }}>
                 {
       /* Decorative background circles */
     }
@@ -824,7 +824,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
       top,
       width: TOOLTIP_W,
       zIndex: 9999,
-      background: dark ? "#1e1e1e" : "#ffffff",
+      background: "var(--admin-surface)",
       border: `1px solid ${dark ? "rgba(255,255,255,0.12)" : "#e5e7eb"}`,
       borderRadius: 16,
       boxShadow: dark ? "0 20px 60px rgba(0,0,0,0.7)" : "0 16px 48px rgba(0,0,0,0.18)",
@@ -842,7 +842,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
       [arrowSide]: -7,
       width: 13,
       height: 13,
-      background: "#800000",
+      background: "var(--admin-accent)",
       transform: "rotate(45deg)",
       borderRadius: 2,
       zIndex: -1
@@ -851,7 +851,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
             {
       /* Header */
     }
-            <div style={{ background: "linear-gradient(135deg, #800000 0%, #a00000 60%, #6b0000 100%)", borderRadius: "16px 16px 0 0", padding: "13px 15px", display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
+            <div style={{ background: "linear-gradient(135deg, var(--admin-accent) 0%, #a00000 60%, #6b0000 100%)", borderRadius: "16px 16px 0 0", padding: "13px 15px", display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
               <div style={{ width: 38, height: 38, borderRadius: "50%", background: avatarColor(appt.name), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "2px solid rgba(255,255,255,0.3)" }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{tooltipInitials(appt.name)}</span>
               </div>
@@ -884,9 +884,9 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
 function AppointmentsPage() {
   const { isdarkmode: dark } = useDarkMode();
   const isMobile = useIsMobile();
-  const pageBg = dark ? "#0f0f0f" : "#f8f9fa";
-  const cardBg = dark ? "#1a1a1a" : "#ffffff";
-  const subtleBg = dark ? "#202020" : "#f9fafb";
+  const pageBg = "var(--admin-bg)";
+  const cardBg = "var(--admin-surface)";
+  const subtleBg = "var(--admin-bg-soft)";
   const borderColor = dark ? "rgba(255,255,255,0.08)" : "#e5e7eb";
   const textPrimary = dark ? "#f0f0f0" : "#1f2937";
   const textMuted = dark ? "#6b7280" : "#6b7280";
@@ -1021,7 +1021,7 @@ function AppointmentsPage() {
     return d >= yearStart && d <= today;
   }).length;
   const statCards = [
-    { label: "Total appointments", value: appointments.length, sub: `${upcoming.length} upcoming`, isDark: false, iconEl: <StatIcon bg={dark ? "rgba(128,0,0,0.20)" : "rgba(128,0,0,0.09)"} stroke={dark ? "#f87171" : "#800000"}><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></StatIcon> },
+    { label: "Total appointments", value: appointments.length, sub: `${upcoming.length} upcoming`, isDark: false, iconEl: <StatIcon bg={dark ? "color-mix(in srgb, var(--admin-accent) 20%, transparent)" : "color-mix(in srgb, var(--admin-accent) 9%, transparent)"} stroke={dark ? "#f87171" : "var(--admin-accent)"}><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></StatIcon> },
     { label: "Today", value: todayCount, sub: "Appointments today", isDark: false, iconEl: <StatIcon bg={dark ? "rgba(52,211,153,0.15)" : "rgba(5,150,105,0.10)"} stroke={dark ? "#34d399" : "#059669"}><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></StatIcon> },
     { label: "This week", value: weekCount, sub: "Appointments this week", isDark: false, iconEl: <StatIcon bg={dark ? "rgba(96,165,250,0.15)" : "rgba(59,130,246,0.10)"} stroke={dark ? "#60a5fa" : "#3b82f6"}><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></StatIcon> },
     { label: "This month", value: monthCount, sub: "Appointments this month", isDark: false, iconEl: <StatIcon bg={dark ? "rgba(251,191,36,0.15)" : "rgba(202,138,4,0.10)"} stroke={dark ? "#fbbf24" : "#ca8a04"}><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></StatIcon> },
@@ -1083,7 +1083,7 @@ function AppointmentsPage() {
           {appt.description && <p style={{ fontSize: 11, color: textMuted, margin: "0 0 8px", fontFamily: "'Poppins', sans-serif", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{appt.description}</p>}
           {appt.email && <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, flexWrap: "wrap", marginTop: "auto", paddingTop: 8 }}>
               {feedback && <span style={{ fontSize: 11, padding: "4px 12px", borderRadius: 8, background: feedback.type === "success" ? dark ? "rgba(5,150,105,0.15)" : "rgba(5,150,105,0.09)" : dark ? "rgba(220,38,38,0.15)" : "rgba(220,38,38,0.09)", color: feedback.type === "success" ? "#059669" : "#dc2626", fontFamily: "'Poppins', sans-serif" }}>{feedback.text}</span>}
-              <button onClick={() => handleConfirm(appt)} disabled={isConfirming} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, border: "none", background: "#800000", color: "#fff", fontSize: 11, fontWeight: 500, cursor: isConfirming ? "not-allowed" : "pointer", opacity: isConfirming ? 0.7 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
+              <button onClick={() => handleConfirm(appt)} disabled={isConfirming} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 11, fontWeight: 500, cursor: isConfirming ? "not-allowed" : "pointer", opacity: isConfirming ? 0.7 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
                 {isConfirming ? <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Confirming…</> : <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>Confirm &amp; Send Credentials</>}
               </button>
             </div>}
@@ -1106,7 +1106,7 @@ function AppointmentsPage() {
         <p style={{ fontSize: 11, color: textMuted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "'Poppins', sans-serif" }}>{appt.calendarName || "\u2014"}</p>
         <div>{appt.appointmentStatus && <span style={getStatusStyle(appt.appointmentStatus, dark)}>{appt.appointmentStatus}</span>}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
-          {appt.email && <button onClick={() => handleConfirm(appt)} disabled={isConfirming} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: "#800000", color: "#fff", fontSize: 11, fontWeight: 500, cursor: isConfirming ? "not-allowed" : "pointer", opacity: isConfirming ? 0.7 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap" }}>{isConfirming ? "Confirming\u2026" : "Confirm & Send"}</button>}
+          {appt.email && <button onClick={() => handleConfirm(appt)} disabled={isConfirming} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 11, fontWeight: 500, cursor: isConfirming ? "not-allowed" : "pointer", opacity: isConfirming ? 0.7 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap" }}>{isConfirming ? "Confirming\u2026" : "Confirm & Send"}</button>}
           {feedback && <span style={{ fontSize: 10, color: feedback.type === "success" ? "#059669" : "#dc2626", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap" }}>{feedback.type === "success" ? "\u2713" : "\u2717"}</span>}
         </div>
       </div>;
@@ -1154,7 +1154,7 @@ function AppointmentsPage() {
               {
     /* Right: resync button only */
   }
-              <button onClick={handleResync} disabled={isSyncing} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, border: "none", background: "#800000", color: "#ffffff", fontSize: 12, fontWeight: 500, cursor: isSyncing ? "not-allowed" : "pointer", opacity: isSyncing ? 0.6 : 1, transition: "all .15s" }}>
+              <button onClick={handleResync} disabled={isSyncing} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "#ffffff", fontSize: 12, fontWeight: 500, cursor: isSyncing ? "not-allowed" : "pointer", opacity: isSyncing ? 0.6 : 1, transition: "all .15s" }}>
                 <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: isSyncing ? "spin .8s linear infinite" : "none" }}><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
                 {isSyncing ? "Syncing..." : "Resync"}
               </button>
@@ -1171,15 +1171,15 @@ function AppointmentsPage() {
         flapD: ["#2e1e1e", "#3a2424"],
         bodyL: "linear-gradient(145deg,#ffffff 0%,#fef6f6 40%,#faeaea 80%,#f6e4e4 100%)",
         bodyD: "linear-gradient(145deg,#2a1e1e 0%,#221616 40%,#1a1010 100%)",
-        w1L: "rgba(128,0,0,0.13)",
-        w2L: "rgba(128,0,0,0.07)",
+        w1L: "color-mix(in srgb, var(--admin-accent) 13%, transparent)",
+        w2L: "color-mix(in srgb, var(--admin-accent) 7%, transparent)",
         w1D: "rgba(180,60,60,0.22)",
         w2D: "rgba(140,40,40,0.14)",
-        ovL: "linear-gradient(135deg,rgba(128,0,0,0.06) 0%,transparent 55%)",
+        ovL: "linear-gradient(135deg,color-mix(in srgb, var(--admin-accent) 6%, transparent) 0%,transparent 55%)",
         ovD: "linear-gradient(135deg,rgba(180,50,50,0.10) 0%,transparent 55%)",
-        shL: "rgba(128,0,0,0.20)",
+        shL: "color-mix(in srgb, var(--admin-accent) 20%, transparent)",
         shD: "rgba(200,100,100,0.35)",
-        barL: "linear-gradient(90deg,#800000 0%,rgba(128,0,0,0) 100%)",
+        barL: "linear-gradient(90deg,var(--admin-accent) 0%,color-mix(in srgb, var(--admin-accent) 0%, transparent) 100%)",
         barD: "linear-gradient(90deg,#b05050 0%,rgba(176,80,80,0) 100%)",
         valD: "#f5eeee"
       },
@@ -1360,7 +1360,7 @@ function AppointmentsPage() {
                 </div>
                 {!isMobile && <div style={{ width: 1, height: 22, background: borderColor, flexShrink: 0 }} />}
                 <div style={{ display: "flex", gap: 4 }}>
-                  {[{ key: "all", label: "All", count: appointments.length }, { key: "upcoming", label: "Upcoming", count: upcomingFilterCount }, { key: "past", label: "Past", count: pastFilterCount }].map((tab) => <button key={tab.key} onClick={() => setStatusFilter(tab.key)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, border: "none", background: statusFilter === tab.key ? "#800000" : "transparent", color: statusFilter === tab.key ? "#fff" : textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s" }}>
+                  {[{ key: "all", label: "All", count: appointments.length }, { key: "upcoming", label: "Upcoming", count: upcomingFilterCount }, { key: "past", label: "Past", count: pastFilterCount }].map((tab) => <button key={tab.key} onClick={() => setStatusFilter(tab.key)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, border: "none", background: statusFilter === tab.key ? "var(--admin-accent)" : "transparent", color: statusFilter === tab.key ? "#fff" : textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s" }}>
                       {tab.label}
                       <span style={{ fontSize: 10, fontWeight: 600, background: statusFilter === tab.key ? "rgba(255,255,255,0.25)" : dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)", color: statusFilter === tab.key ? "#fff" : textMuted, borderRadius: 20, padding: "1px 7px", lineHeight: "16px" }}>{tab.count}</span>
                     </button>)}
@@ -1379,8 +1379,8 @@ function AppointmentsPage() {
                 <span style={{ fontSize: 11, color: textMuted, whiteSpace: "nowrap" }}>Showing <strong style={{ color: textPrimary }}>{sorted.length}</strong> of <strong style={{ color: textPrimary }}>{appointments.length}</strong></span>
                 {!isMobile && <div style={{ width: 1, height: 22, background: borderColor, flexShrink: 0 }} />}
                 <div style={{ display: "flex", gap: 3 }}>
-                  <button onClick={() => setViewMode("cards")} style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: viewMode === "cards" ? "#800000" : "transparent", color: viewMode === "cards" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg></button>
-                  <button onClick={() => setViewMode("list")} style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: viewMode === "list" ? "#800000" : "transparent", color: viewMode === "list" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg></button>
+                  <button onClick={() => setViewMode("cards")} style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: viewMode === "cards" ? "var(--admin-accent)" : "transparent", color: viewMode === "cards" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg></button>
+                  <button onClick={() => setViewMode("list")} style={{ width: 32, height: 32, borderRadius: 8, border: "none", background: viewMode === "list" ? "var(--admin-accent)" : "transparent", color: viewMode === "list" ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg></button>
                 </div>
               </div>
 
@@ -1410,7 +1410,7 @@ function AppointmentsPage() {
                         <span style={{ fontSize: 11, color: textMuted }}>Showing <strong style={{ color: textPrimary }}>{(currentPage - 1) * PAGE_SIZE + 1}</strong>{" \u2013 "}<strong style={{ color: textPrimary }}>{Math.min(currentPage * PAGE_SIZE, allSorted.length)}</strong>{" out of "}<strong style={{ color: textPrimary }}>{allSorted.length}</strong></span>
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: cardBg, color: currentPage === 1 ? dark ? "#3f3f3f" : "#d1d5db" : textMuted, fontSize: 11, fontWeight: 500, cursor: currentPage === 1 ? "not-allowed" : "pointer", transition: "all .15s" }}>Prev</button>
-                          {getPageNumbers().map((pg, i) => pg === "..." ? <span key={`el-${i}`} style={{ width: 32, textAlign: "center", fontSize: 11, color: textMuted }}>…</span> : <button key={pg} onClick={() => setCurrentPage(pg)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${currentPage === pg ? "#800000" : borderColor}`, background: currentPage === pg ? "#800000" : cardBg, color: currentPage === pg ? "#fff" : textMuted, fontSize: 11, fontWeight: currentPage === pg ? 600 : 400, cursor: "pointer", transition: "all .15s" }}>{pg}</button>)}
+                          {getPageNumbers().map((pg, i) => pg === "..." ? <span key={`el-${i}`} style={{ width: 32, textAlign: "center", fontSize: 11, color: textMuted }}>…</span> : <button key={pg} onClick={() => setCurrentPage(pg)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${currentPage === pg ? "var(--admin-accent)" : borderColor}`, background: currentPage === pg ? "var(--admin-accent)" : cardBg, color: currentPage === pg ? "#fff" : textMuted, fontSize: 11, fontWeight: currentPage === pg ? 600 : 400, cursor: "pointer", transition: "all .15s" }}>{pg}</button>)}
                           <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: cardBg, color: currentPage === totalPages ? dark ? "#3f3f3f" : "#d1d5db" : textMuted, fontSize: 11, fontWeight: 500, cursor: currentPage === totalPages ? "not-allowed" : "pointer", transition: "all .15s" }}>Next</button>
                         </div>
                       </div>}
@@ -1436,7 +1436,7 @@ function AppointmentsPage() {
     if (e.target === e.currentTarget) setCredentialsModal(null);
   }}>
           <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, width: "100%", maxWidth: 440, boxShadow: "0 32px 80px rgba(0,0,0,0.32)", overflow: "hidden" }}>
-            <div style={{ background: "#800000", padding: "28px 32px", textAlign: "center" }}>
+            <div style={{ background: "var(--admin-accent)", padding: "28px 32px", textAlign: "center" }}>
               <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}><svg width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg></div>
               <p style={{ fontSize: 16, fontWeight: 600, color: "#fff", margin: "0 0 4px" }}>Client Account Created</p>
               <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: 0 }}>Generated login credentials for this appointment</p>
@@ -1454,13 +1454,13 @@ function AppointmentsPage() {
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: "0 0 6px" }}>TEMPORARY PASSWORD</p>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                    <p style={{ fontSize: 20, fontWeight: 700, color: "#800000", margin: 0, fontFamily: "monospace, Poppins, sans-serif", letterSpacing: 4 }}>{credentialsModal.password}</p>
+                    <p style={{ fontSize: 20, fontWeight: 700, color: "var(--admin-accent)", margin: 0, fontFamily: "monospace, Poppins, sans-serif", letterSpacing: 4 }}>{credentialsModal.password}</p>
                     <button onClick={() => navigator.clipboard.writeText(credentialsModal.password)} style={{ width: 28, height: 28, borderRadius: 8, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg></button>
                   </div>
                 </div>
               </div>
               <p style={{ fontSize: 11, color: textMuted, margin: "0 0 18px", textAlign: "center" }}>Save these credentials. The password cannot be retrieved after closing this window.</p>
-              <button onClick={() => setCredentialsModal(null)} style={{ width: "100%", padding: "12px 0", borderRadius: 12, border: "none", background: "#800000", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>Done</button>
+              <button onClick={() => setCredentialsModal(null)} style={{ width: "100%", padding: "12px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>Done</button>
             </div>
           </div>
         </div>}

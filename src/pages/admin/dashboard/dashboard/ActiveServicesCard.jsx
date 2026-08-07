@@ -97,14 +97,14 @@ function ServiceRow({ svc, subtleBg, borderColor, textPrimary, textMuted, isdark
       borderRadius: 10,
       overflow: "hidden",
       flexShrink: 0,
-      background: isdarkmode ? "rgba(128,0,0,0.15)" : "rgba(128,0,0,0.07)",
-      border: "1px solid rgba(128,0,0,0.15)",
+      background: "var(--admin-accent-soft)",
+      border: "1px solid color-mix(in srgb, var(--admin-accent) 15%, transparent)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center"
     }}
   >
-        {svc.coverPhoto ? <img src={svc.coverPhoto} alt={svc.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 13, fontWeight: 700, color: "#800000" }}>
+        {svc.coverPhoto ? <img src={svc.coverPhoto} alt={svc.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 13, fontWeight: 700, color: "var(--admin-accent)" }}>
             {svc.name.charAt(0)}
           </span>}
       </div>

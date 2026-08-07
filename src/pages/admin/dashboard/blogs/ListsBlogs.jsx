@@ -93,7 +93,7 @@ function ListBlogs() {
   const getstatusstyles = (status) => {
     switch (status?.toLowerCase()) {
       case "published":
-        return "bg-[#800000] text-white";
+        return "bg-[var(--admin-accent)] text-white";
       case "scheduled":
         return "bg-[#FF4500] text-white";
       case "draft":
@@ -337,7 +337,7 @@ function ListBlogs() {
         @media (min-width: 1024px) { .action-btn-sm { padding: 10px 20px; border-radius: 16px; } }
       ` }} />
 
-      <div className={`page-wrap transition-colors duration-500 ${isdarkmode ? "bg-[#0f0f0f]" : "bg-[#f8f9fa]"}`}>
+      <div className={`page-wrap transition-colors duration-500 bg-[var(--admin-bg)]`}>
 
         {
     /* Error Toast */
@@ -351,10 +351,10 @@ function ListBlogs() {
     /* â”€â”€ Header â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <h2 className={`tracking-tight transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 16, fontWeight: 500 }}>
+          <h2 className={`tracking-tight transition-colors text-[var(--admin-text)]`} style={{ fontSize: 16, fontWeight: 500 }}>
             Blog Management
           </h2>
-          <p className={`mt-1 transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+          <p className={`mt-1 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
             Manage and organize your blog posts
           </p>
         </div>
@@ -415,13 +415,13 @@ function ListBlogs() {
     /* â”€â”€ Filters â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <div className={`rounded-2xl border transition-all duration-500 overflow-hidden ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
+          <div className={`rounded-2xl border transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
 
             {
     /* Status tabs */
   }
-            <div className={`status-tabs-row border-b ${isdarkmode ? "border-white/5" : "border-gray-100"}`}>
-              <span style={{ fontSize: 10, fontWeight: 500, color: isdarkmode ? "#6b7280" : "#9ca3af", marginRight: 8, flexShrink: 0 }}>
+            <div className={`status-tabs-row border-b border-[var(--admin-border)]`}>
+              <span style={{ fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginRight: 8, flexShrink: 0 }}>
                 Status
               </span>
               {statusTabs.map((tab) => {
@@ -438,9 +438,9 @@ function ListBlogs() {
         border: "none",
         cursor: "pointer",
         transition: "all 0.2s",
-        background: isActive ? "#800000" : "transparent",
-        color: isActive ? "#ffffff" : isdarkmode ? "#9ca3af" : "#6b7280",
-        boxShadow: isActive ? "0 2px 8px rgba(128,0,0,0.3)" : "none",
+        background: isActive ? "var(--admin-accent)" : "transparent",
+        color: isActive ? "#ffffff" : "var(--admin-text-faint)",
+        boxShadow: isActive ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none",
         whiteSpace: "nowrap",
         flexShrink: 0
       }}
@@ -455,7 +455,7 @@ function ListBlogs() {
   }
             <div className="filter-row">
               <div style={{ flex: 1, minWidth: 160 }}>
-                <label style={{ display: "block", fontSize: 10, fontWeight: 500, color: isdarkmode ? "#6b7280" : "#9ca3af", marginBottom: 6 }}>
+                <label style={{ display: "block", fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginBottom: 6 }}>
                   Main Category
                 </label>
                 <select
@@ -466,9 +466,9 @@ function ListBlogs() {
       fontSize: 11,
       padding: "9px 14px",
       borderRadius: 10,
-      border: isdarkmode ? "1.5px solid rgba(255,255,255,0.1)" : "1.5px solid #e5e7eb",
-      background: isdarkmode ? "#202020" : "#f9fafb",
-      color: isdarkmode ? "#d1d5db" : "#374151",
+      border: "1.5px solid var(--admin-border)",
+      background: "var(--admin-bg-soft)",
+      color: "var(--admin-text-sub)",
       outline: "none",
       appearance: "auto",
       cursor: "pointer"
@@ -480,7 +480,7 @@ function ListBlogs() {
               </div>
 
               <div style={{ flex: 1, minWidth: 160 }}>
-                <label style={{ display: "block", fontSize: 10, fontWeight: 500, color: isdarkmode ? "#6b7280" : "#9ca3af", marginBottom: 6 }}>
+                <label style={{ display: "block", fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginBottom: 6 }}>
                   Subcategory
                 </label>
                 <select
@@ -492,9 +492,9 @@ function ListBlogs() {
       fontSize: 11,
       padding: "9px 14px",
       borderRadius: 10,
-      border: isdarkmode ? "1.5px solid rgba(255,255,255,0.1)" : "1.5px solid #e5e7eb",
-      background: isdarkmode ? "#202020" : "#f9fafb",
-      color: isdarkmode ? "#d1d5db" : "#374151",
+      border: "1.5px solid var(--admin-border)",
+      background: "var(--admin-bg-soft)",
+      color: "var(--admin-text-sub)",
       outline: "none",
       appearance: "auto",
       cursor: selectedmaincategory === "All" ? "not-allowed" : "pointer",
@@ -507,7 +507,7 @@ function ListBlogs() {
               </div>
 
               <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
-                <span style={{ fontSize: 10, fontWeight: 500, color: isdarkmode ? "#6b7280" : "#9ca3af", marginRight: 4 }}>View</span>
+                <span style={{ fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginRight: 4 }}>View</span>
                 {[
     { mode: "grid", icon: <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> },
     { mode: "list", icon: <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg> }
@@ -520,12 +520,12 @@ function ListBlogs() {
       border: "none",
       cursor: "pointer",
       transition: "all 0.2s",
-      background: viewmode === mode ? "#800000" : isdarkmode ? "rgba(255,255,255,0.05)" : "#f3f4f6",
-      color: viewmode === mode ? "#fff" : isdarkmode ? "#9ca3af" : "#6b7280",
+      background: viewmode === mode ? "var(--admin-accent)" : "var(--admin-bg-hover)",
+      color: viewmode === mode ? "#fff" : "var(--admin-text-faint)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      boxShadow: viewmode === mode ? "0 2px 8px rgba(128,0,0,0.3)" : "none"
+      boxShadow: viewmode === mode ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none"
     }}
   >
                     {icon}
@@ -541,17 +541,17 @@ function ListBlogs() {
         <div className="w-full max-w-7xl mx-auto">
           {isloading ? <div className="p-16 sm:p-20 text-center">
               <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-red-900 border-t-transparent" />
-              <p className={`mt-5 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 12, fontWeight: 400 }}>Loading blogs...</p>
-            </div> : currentblogs.length === 0 ? <div className={`rounded-[2rem] border p-14 sm:p-20 text-center transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
+              <p className={`mt-5 transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 12, fontWeight: 400 }}>Loading blogs...</p>
+            </div> : currentblogs.length === 0 ? <div className={`rounded-[2rem] border p-14 sm:p-20 text-center transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
               <div className="text-5xl sm:text-6xl mb-4">📝</div>
-              <p className={`mb-2 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 13, fontWeight: 500 }}>No blogs found</p>
-              <p className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 11, fontWeight: 400 }}>Try adjusting your filters or create a new blog post</p>
+              <p className={`mb-2 transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 13, fontWeight: 500 }}>No blogs found</p>
+              <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Try adjusting your filters or create a new blog post</p>
             </div> : viewmode === "grid" ? (
     /* â”€â”€ GRID VIEW â”€â”€ */
     <div className="blog-grid">
               {currentblogs.map((blog) => <div
       key={blog._id}
-      className={`rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}
+      className={`rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full bg-[var(--admin-surface)] border-[var(--admin-border)]`}
     >
                   <div className="relative h-36 sm:h-44 overflow-hidden group flex-shrink-0">
                     <img src={blog.picture || "/placeholder-blog.jpg"} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
@@ -564,23 +564,23 @@ function ListBlogs() {
 
                   <div className="p-4 sm:p-5 lg:p-6 flex flex-col flex-grow">
                     <div className="flex items-center gap-1.5 mb-2.5 flex-wrap">
-                      <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#800000] text-white rounded-lg" style={{ fontSize: 9, fontWeight: 500 }}>
+                      <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[var(--admin-accent)] text-white rounded-lg" style={{ fontSize: 9, fontWeight: 500 }}>
                         {getCategoryIcon(blog.mainCategory)} {blog.mainCategory}
                       </span>
-                      {blog.subcategory && <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#800000]/70 text-white rounded-lg" style={{ fontSize: 9, fontWeight: 500 }}>
+                      {blog.subcategory && <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[var(--admin-accent)]/70 text-white rounded-lg" style={{ fontSize: 9, fontWeight: 500 }}>
                           {blog.subcategory}
                         </span>}
                     </div>
 
-                    <p className={`mb-1.5 line-clamp-2 transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 12, fontWeight: 600 }}>
+                    <p className={`mb-1.5 line-clamp-2 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 12, fontWeight: 600 }}>
                       {blog.title}
                     </p>
 
-                    <p className={`mb-3 line-clamp-2 flex-grow transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 10, fontWeight: 400 }}>
+                    <p className={`mb-3 line-clamp-2 flex-grow transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400 }}>
                       {blog.shortDescription}
                     </p>
 
-                    <div className={`flex items-center gap-3 mb-3 pb-3 border-t pt-3 transition-colors ${isdarkmode ? "text-gray-500 border-white/10" : "text-gray-400 border-gray-100"}`} style={{ fontSize: 9 }}>
+                    <div className={`flex items-center gap-3 mb-3 pb-3 border-t pt-3 transition-colors text-[var(--admin-text-faint)] border-[var(--admin-border)]`} style={{ fontSize: 9 }}>
                       <div className="flex items-center gap-1">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -598,7 +598,7 @@ function ListBlogs() {
                     <div className="flex gap-1.5 sm:gap-2">
                       <button
       onClick={() => handleview(blog)}
-      className={`flex-1 py-2 sm:py-2.5 rounded-[0.75rem] sm:rounded-[1rem] transition-all flex items-center justify-center gap-1.5 ${isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+      className={`flex-1 py-2 sm:py-2.5 rounded-[0.75rem] sm:rounded-[1rem] transition-all flex items-center justify-center gap-1.5 bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}
       style={{ fontSize: 10, fontWeight: 500 }}
     >
                         <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -609,7 +609,7 @@ function ListBlogs() {
                       </button>
                       <button
       onClick={() => handleedit(blog)}
-      className="flex-1 py-2 sm:py-2.5 bg-[#800000] text-white rounded-[0.75rem] sm:rounded-[1rem] hover:bg-[#600000] transition-all flex items-center justify-center gap-1.5"
+      className="flex-1 py-2 sm:py-2.5 bg-[var(--admin-accent)] text-white rounded-[0.75rem] sm:rounded-[1rem] hover:bg-[#600000] transition-all flex items-center justify-center gap-1.5"
       style={{ fontSize: 10, fontWeight: 500 }}
     >
                         <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -632,10 +632,10 @@ function ListBlogs() {
             </div>
   ) : (
     /* â”€â”€ LIST VIEW â”€â”€ */
-    <div className={`rounded-[1.5rem] sm:rounded-[2rem] border overflow-hidden shadow-xl transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
+    <div className={`rounded-[1.5rem] sm:rounded-[2rem] border overflow-hidden shadow-xl transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
               <div className="overflow-x-auto">
                 <table className="w-full" style={{ minWidth: 360 }}>
-                  <thead className={`border-b transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
+                  <thead className={`border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
                     <tr>
                       {[
       { label: "Blog", cls: "" },
@@ -646,25 +646,25 @@ function ListBlogs() {
       { label: "Actions", cls: "text-right" }
     ].map((col) => <th
       key={col.label}
-      className={`tbl-th text-left uppercase tracking-widest transition-colors ${col.cls} ${isdarkmode ? "text-gray-500" : "text-gray-400"}`}
+      className={`tbl-th text-left uppercase tracking-widest transition-colors ${col.cls} text-[var(--admin-text-faint)]`}
       style={{ fontWeight: 500 }}
     >
                           {col.label}
                         </th>)}
                     </tr>
                   </thead>
-                  <tbody className={`divide-y ${isdarkmode ? "divide-white/5" : "divide-gray-100"}`}>
-                    {currentblogs.map((blog) => <tr key={blog._id} className={`transition-all duration-300 ${isdarkmode ? "hover:bg-[#202020]" : "hover:bg-gray-50"}`}>
+                  <tbody className={`divide-y divide-[var(--admin-border)]`}>
+                    {currentblogs.map((blog) => <tr key={blog._id} className={`transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
                         <td className="tbl-td">
                           <div className="flex items-center gap-2 sm:gap-4">
                             <div className="list-blog-img overflow-hidden flex-shrink-0">
                               <img src={blog.picture || "/placeholder-blog.jpg"} alt={blog.title} className="w-full h-full object-cover" />
                             </div>
                             <div>
-                              <p className={`line-clamp-1 transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 12, fontWeight: 500, maxWidth: 160 }}>
+                              <p className={`line-clamp-1 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 12, fontWeight: 500, maxWidth: 160 }}>
                                 {blog.title}
                               </p>
-                              <p className={`mt-0.5 line-clamp-1 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 10, fontWeight: 400, maxWidth: 160 }}>
+                              <p className={`mt-0.5 line-clamp-1 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400, maxWidth: 160 }}>
                                 {blog.shortDescription}
                               </p>
                             </div>
@@ -672,8 +672,8 @@ function ListBlogs() {
                         </td>
                         <td className="tbl-td tbl-col-category">
                           <div className="flex flex-col gap-1">
-                            <span className="px-2.5 py-1 bg-[#800000] text-white rounded-full w-fit" style={{ fontSize: 9, fontWeight: 500 }}>{blog.mainCategory}</span>
-                            {blog.subcategory && <span className="px-2.5 py-1 bg-[#800000]/60 text-white rounded-full w-fit" style={{ fontSize: 9, fontWeight: 500 }}>{blog.subcategory}</span>}
+                            <span className="px-2.5 py-1 bg-[var(--admin-accent)] text-white rounded-full w-fit" style={{ fontSize: 9, fontWeight: 500 }}>{blog.mainCategory}</span>
+                            {blog.subcategory && <span className="px-2.5 py-1 bg-[var(--admin-accent)]/60 text-white rounded-full w-fit" style={{ fontSize: 9, fontWeight: 500 }}>{blog.subcategory}</span>}
                           </div>
                         </td>
                         <td className="tbl-td">
@@ -682,21 +682,21 @@ function ListBlogs() {
                           </span>
                         </td>
                         <td className="tbl-td tbl-col-date">
-                          <p className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"} whitespace-nowrap`} style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
+                          <p className={`transition-colors text-[var(--admin-text)] whitespace-nowrap`} style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
                             {formatdate(blog.createdAt)}
                           </p>
                         </td>
                         <td className="tbl-td tbl-col-read">
-                          <p className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                          <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                             {calculatereadingtime(blog.mainContent)} min
                           </p>
                         </td>
                         <td className="tbl-td text-right">
                           <div className="flex items-center justify-end gap-1.5 sm:gap-2">
-                            <button onClick={() => handleview(blog)} className={`action-btn-sm transition-all hover:shadow-lg ${isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`} style={{ fontWeight: 500 }}>
+                            <button onClick={() => handleview(blog)} className={`action-btn-sm transition-all hover:shadow-lg bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontWeight: 500 }}>
                               View
                             </button>
-                            <button onClick={() => handleedit(blog)} className="action-btn-sm bg-[#800000] text-white hover:bg-[#600000] transition-all hover:shadow-lg" style={{ fontWeight: 500 }}>
+                            <button onClick={() => handleedit(blog)} className="action-btn-sm bg-[var(--admin-accent)] text-white hover:bg-[#600000] transition-all hover:shadow-lg" style={{ fontWeight: 500 }}>
                               Edit
                             </button>
                             <button
@@ -716,18 +716,18 @@ function ListBlogs() {
                 </table>
               </div>
 
-              {totalPages > 1 && <div className={`px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-                  <p className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-600"}`} style={{ fontSize: 10, fontWeight: 400 }}>
+              {totalPages > 1 && <div className={`px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+                  <p className={`transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 10, fontWeight: 400 }}>
                     Showing <strong>{indexOfFirstCard + 1}</strong>–<strong>{Math.min(indexOfLastCard, filteredblogs.length)}</strong> of <strong>{filteredblogs.length}</strong>
                   </p>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`} style={{ fontSize: 10, fontWeight: 500 }}>
+                    <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
                       Prev
                     </button>
-                    <span className={`transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 10, fontWeight: 500 }}>
+                    <span className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 10, fontWeight: 500 }}>
                       {currentpage} / {totalPages}
                     </span>
-                    <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === totalPages ? "opacity-40 cursor-not-allowed" : isdarkmode ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`} style={{ fontSize: 10, fontWeight: 500 }}>
+                    <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === totalPages ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
                       Next
                     </button>
                   </div>
@@ -739,13 +739,13 @@ function ListBlogs() {
     /* Grid pagination */
   }
           {viewmode === "grid" && totalPages > 1 && <div className="flex justify-center items-center gap-2 mt-6 sm:mt-8 flex-wrap">
-              <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : isdarkmode ? "bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] border border-white/5" : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"}`} style={{ fontSize: 10, fontWeight: 500 }}>
+              <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
                 Previous
               </button>
-              {[...Array(totalPages)].map((_, index) => <button key={index + 1} onClick={() => handlePageChange(index + 1)} className={`px-3 py-2 rounded-[0.875rem] transition-all ${currentpage === index + 1 ? "bg-[#800000] text-white shadow-md" : isdarkmode ? "bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] border border-white/5" : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"}`} style={{ fontSize: 10, fontWeight: currentpage === index + 1 ? 500 : 400 }}>
+              {[...Array(totalPages)].map((_, index) => <button key={index + 1} onClick={() => handlePageChange(index + 1)} className={`px-3 py-2 rounded-[0.875rem] transition-all ${currentpage === index + 1 ? "bg-[var(--admin-accent)] text-white shadow-md" : "bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]"}`} style={{ fontSize: 10, fontWeight: currentpage === index + 1 ? 500 : 400 }}>
                   {index + 1}
                 </button>)}
-              <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === totalPages ? "opacity-40 cursor-not-allowed" : isdarkmode ? "bg-[#1a1a1a] text-gray-300 hover:bg-[#2a2a2a] border border-white/5" : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"}`} style={{ fontSize: 10, fontWeight: 500 }}>
+              <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === totalPages ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
                 Next
               </button>
             </div>}
@@ -756,15 +756,15 @@ function ListBlogs() {
     /* â”€â”€ Archive Confirmation Modal â”€â”€ */
   }
       {blogtoarchive && <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-8">
-          <div className={`rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-sm sm:max-w-md shadow-2xl transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a]" : "bg-white"}`}>
+          <div className={`rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-sm sm:max-w-md shadow-2xl transition-all duration-500 bg-[var(--admin-surface)]`}>
             <div className="p-8 sm:p-12 text-center">
               <div className="text-5xl sm:text-6xl mb-4">📦</div>
-              <h3 className={`mb-2 transition-colors ${isdarkmode ? "text-white" : "text-gray-800"}`} style={{ fontSize: 16, fontWeight: 600 }}>Confirm Archive</h3>
-              <p className={`mb-6 sm:mb-8 transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+              <h3 className={`mb-2 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 16, fontWeight: 600 }}>Confirm Archive</h3>
+              <p className={`mb-6 sm:mb-8 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                 Are you sure you want to archive this blog? It will be hidden from the public but can be recovered later.
               </p>
               <div className="flex gap-3">
-                <button onClick={cancelarchive} className={`flex-1 px-5 py-3 rounded-[1.25rem] transition-all ${isdarkmode ? "bg-white/10 text-gray-200 hover:bg-white/20" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`} style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
+                <button onClick={cancelarchive} className={`flex-1 px-5 py-3 rounded-[1.25rem] transition-all bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
                 <button onClick={() => handlearchive(blogtoarchive)} className="flex-1 px-5 py-3 bg-yellow-500 text-white rounded-[1.25rem] hover:bg-yellow-600 transition-all shadow-lg" style={{ fontSize: 11, fontWeight: 500 }}>Archive</button>
               </div>
             </div>
@@ -775,14 +775,14 @@ function ListBlogs() {
     /* â”€â”€ Blog View Modal â”€â”€ */
   }
       {viewingblog && <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-8 overflow-y-auto">
-          <div className={`rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-3xl shadow-2xl my-4 sm:my-8 transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a]" : "bg-white"}`}>
-            <div className={`sticky top-0 px-5 sm:px-10 py-4 sm:py-5 rounded-t-[1.5rem] sm:rounded-t-[2.5rem] flex items-center justify-between z-10 border-b transition-all duration-500 ${isdarkmode ? "bg-[#1a1a1a] border-white/5" : "bg-white border-gray-200"}`}>
+          <div className={`rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-3xl shadow-2xl my-4 sm:my-8 transition-all duration-500 bg-[var(--admin-surface)]`}>
+            <div className={`sticky top-0 px-5 sm:px-10 py-4 sm:py-5 rounded-t-[1.5rem] sm:rounded-t-[2.5rem] flex items-center justify-between z-10 border-b transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`px-2.5 py-1 rounded-full ${getstatusstyles(viewingblog.status)}`} style={{ fontSize: 9, fontWeight: 500 }}>{viewingblog.status}</span>
-                <span className={`transition-colors ${isdarkmode ? "text-gray-400" : "text-gray-500"}`} style={{ fontSize: 10, fontWeight: 400 }}>{viewingblog.mainCategory}</span>
-                {viewingblog.subcategory && <span className={`transition-colors ${isdarkmode ? "text-gray-500" : "text-gray-400"}`} style={{ fontSize: 10, fontWeight: 400 }}>• {viewingblog.subcategory}</span>}
+                <span className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400 }}>{viewingblog.mainCategory}</span>
+                {viewingblog.subcategory && <span className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400 }}>• {viewingblog.subcategory}</span>}
               </div>
-              <button onClick={closeviewmodal} className={`p-2 rounded-full transition-colors shrink-0 ${isdarkmode ? "text-gray-400 hover:text-gray-300 hover:bg-white/5" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}>
+              <button onClick={closeviewmodal} className={`p-2 rounded-full transition-colors shrink-0 text-[var(--admin-text-faint)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -793,10 +793,10 @@ function ListBlogs() {
               {viewingblog.picture && <div className="mb-4 sm:mb-5 rounded-[1rem] sm:rounded-[1.5rem] overflow-hidden">
                   <img src={viewingblog.picture} alt={viewingblog.title} className="w-full h-40 sm:h-52 object-cover" />
                 </div>}
-              <h1 className={`mb-3 leading-tight transition-colors ${isdarkmode ? "text-white" : "text-gray-900"}`} style={{ fontSize: 17, fontWeight: 600 }}>
+              <h1 className={`mb-3 leading-tight transition-colors text-[var(--admin-text)]`} style={{ fontSize: 17, fontWeight: 600 }}>
                 {viewingblog.title}
               </h1>
-              <div className={`flex items-center gap-4 mb-4 pb-4 border-b transition-colors ${isdarkmode ? "text-gray-500 border-white/10" : "text-gray-400 border-gray-200"}`} style={{ fontSize: 10 }}>
+              <div className={`flex items-center gap-4 mb-4 pb-4 border-b transition-colors text-[var(--admin-text-faint)] border-[var(--admin-border)]`} style={{ fontSize: 10 }}>
                 <div className="flex items-center gap-1.5">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                   <span>{formatdate(viewingblog.createdAt)}</span>
@@ -807,28 +807,28 @@ function ListBlogs() {
                 </div>
               </div>
               <div className="mb-4">
-                <p className={`leading-relaxed italic border-l-4 border-[#800000] pl-4 py-1 transition-colors ${isdarkmode ? "text-gray-300" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: 500 }}>
+                <p className={`leading-relaxed italic border-l-4 border-[var(--admin-accent)] pl-4 py-1 transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 500 }}>
                   {viewingblog.shortDescription}
                 </p>
               </div>
               <div>
                 {viewingblog.mainContent && Array.isArray(viewingblog.mainContent) && viewingblog.mainContent.map((section, index) => <div key={index} className="mb-4 sm:mb-5">
-                    {section.title && <p className={`mb-2 mt-3 transition-colors ${isdarkmode ? "text-white" : "text-gray-900"}`} style={{ fontSize: 13, fontWeight: 600 }}>{section.title}</p>}
-                    {section.content && <div className={`leading-relaxed whitespace-pre-wrap transition-colors ${isdarkmode ? "text-gray-300" : "text-gray-600"}`} style={{ fontSize: 11, fontWeight: 400 }}>
+                    {section.title && <p className={`mb-2 mt-3 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>{section.title}</p>}
+                    {section.content && <div className={`leading-relaxed whitespace-pre-wrap transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 400 }}>
                         {section.content.split("\n").map((paragraph, pIndex) => paragraph.trim() && <p key={pIndex} className="mb-3">{paragraph}</p>)}
                       </div>}
                   </div>)}
               </div>
             </div>
 
-            <div className={`sticky bottom-0 px-5 sm:px-10 py-4 sm:py-5 rounded-b-[1.5rem] sm:rounded-b-[2.5rem] border-t flex justify-end gap-3 transition-all duration-500 ${isdarkmode ? "bg-[#202020] border-white/5" : "bg-gray-50 border-gray-200"}`}>
-              <button onClick={closeviewmodal} className={`px-5 sm:px-8 py-2.5 sm:py-3 rounded-[1.25rem] border-2 transition-all ${isdarkmode ? "bg-transparent border-white/10 text-gray-300 hover:bg-white/5" : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"}`} style={{ fontSize: 11, fontWeight: 500 }}>
+            <div className={`sticky bottom-0 px-5 sm:px-10 py-4 sm:py-5 rounded-b-[1.5rem] sm:rounded-b-[2.5rem] border-t flex justify-end gap-3 transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+              <button onClick={closeviewmodal} className={`px-5 sm:px-8 py-2.5 sm:py-3 rounded-[1.25rem] border-2 transition-all bg-transparent border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontSize: 11, fontWeight: 500 }}>
                 Close
               </button>
               <button onClick={() => {
     closeviewmodal();
     handleedit(viewingblog);
-  }} className="px-5 sm:px-8 py-2.5 sm:py-3 bg-[#800000] text-white rounded-[1.25rem] hover:bg-[#600000] transition-all shadow-lg" style={{ fontSize: 11, fontWeight: 500 }}>
+  }} className="px-5 sm:px-8 py-2.5 sm:py-3 bg-[var(--admin-accent)] text-white rounded-[1.25rem] hover:bg-[#600000] transition-all shadow-lg" style={{ fontSize: 11, fontWeight: 500 }}>
                 Edit Blog
               </button>
             </div>

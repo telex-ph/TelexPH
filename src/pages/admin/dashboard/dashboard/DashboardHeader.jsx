@@ -49,7 +49,7 @@ function DashboardHeader({ selecteddate, onDateChange }) {
       borderRadius: 10,
       border: `1px solid ${borderColor}`,
       background: inputBg,
-      color: isdarkmode ? "#d1d5db" : "#6b7280",
+      color: "var(--admin-text-sub)",
       fontSize: 11,
       fontWeight: 400,
       cursor: "pointer",
