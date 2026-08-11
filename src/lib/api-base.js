@@ -24,10 +24,14 @@ function getForgotPasswordUrl() {
 function getResetPasswordUrl() {
   return `${getApiBaseUrl()}/auth/reset-password`;
 }
+function getContactAdminUrl() {
+  return `${getApiBaseUrl()}/contact-messages`;
+}
 export {
   getAdminAuthenticateUrl,
   getApiBaseUrl,
   getClientAuthenticateUrl,
+  getContactAdminUrl,
   getForgotPasswordUrl,
   getResetPasswordUrl,
   getVaAuthenticateUrl,

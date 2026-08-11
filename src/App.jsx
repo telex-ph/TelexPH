@@ -35,7 +35,6 @@ const FunnelAutomation = lazy(() => import("@/pages/funnels/automation/Page"));
 const FunnelBuilder = lazy(() => import("@/pages/funnels/funnel-builder/Page"));
 
 /* ---------------- Admin ---------------- */
-const LegacyLogin = lazy(() => import("@/pages/login/Page"));
 const AdminLayout = lazy(() => import("@/pages/admin/Layout"));
 const AdminIndex = lazy(() => import("@/pages/admin/Page"));
 const AdminLogin = lazy(() => import("@/pages/admin/login/Page"));
@@ -48,6 +47,7 @@ const AdminManagementAdd = lazy(() => import("@/pages/admin/dashboard/admin-mana
 const AdminApplicants = lazy(() => import("@/pages/admin/dashboard/Applicants/Page"));
 const AdminAppointment = lazy(() => import("@/pages/admin/dashboard/Appointment/Page"));
 const AdminArchive = lazy(() => import("@/pages/admin/dashboard/Archive/Page"));
+const AdminMessages = lazy(() => import("@/pages/admin/dashboard/Messages/Page"));
 const AdminBlogs = lazy(() => import("@/pages/admin/dashboard/blogs/Page"));
 const AdminBlogsList = lazy(() => import("@/pages/admin/dashboard/blogs/list/Page"));
 const AdminCareers = lazy(() => import("@/pages/admin/dashboard/careers/Page"));
@@ -162,8 +162,9 @@ const App = () => {
         {/* Dynamic segment — was app/funnels/[service] */}
         <Route path="/funnels/:service" element={<FunnelService />} />
 
-        {/* ---------- Legacy redirect ---------- */}
-        <Route path="/login" element={<LegacyLogin />} />
+        {/* /login is not a real entry point — must not reveal or forward to
+            /admin/login. Admin access requires typing /admin/login directly. */}
+        <Route path="/login" element={<NotFound />} />
 
         {/* ---------- Admin ---------- */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -181,6 +182,7 @@ const App = () => {
               <Route path="Applicants" element={<AdminApplicants />} />
               <Route path="Appointment" element={<AdminAppointment />} />
               <Route path="Archive" element={<AdminArchive />} />
+              <Route path="Messages" element={<AdminMessages />} />
               <Route path="blogs" element={<AdminBlogs />} />
               <Route path="blogs/list" element={<AdminBlogsList />} />
               <Route path="careers" element={<AdminCareers />} />

@@ -1,8 +1,30 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useLocation } from "react-router-dom";
 import { Bug, X } from "lucide-react";
 
 const BUG_REPORT_URL = "https://api.texionix.telexph.com/report/telexph.html";
+
+// Pages that fully own their own bottom-right corner (e.g. the 404 illustration's
+// chevrons/dot-grid cluster) can call hideBugReportWidget() while mounted so the
+// fixed widget doesn't visually collide with their artwork.
+let hideCount = 0;
+const listeners = new Set();
+const notify = () => listeners.forEach((l) => l());
+
+export function hideBugReportWidget() {
+  hideCount += 1;
+  notify();
+  return () => {
+    hideCount -= 1;
+    notify();
+  };
+}
+
+const subscribe = (listener) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+const getSnapshot = () => hideCount > 0;
 
 /**
  * Floating button rendered on every page (mounted once in App.jsx).
@@ -17,6 +39,9 @@ const BugReportWidget = () => {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const themed = pathname.startsWith("/admin");
+  const hidden = useSyncExternalStore(subscribe, getSnapshot);
+
+  if (hidden) return null;
 
   const handleConfirm = () => {
     window.open(BUG_REPORT_URL, "_blank", "noopener,noreferrer");

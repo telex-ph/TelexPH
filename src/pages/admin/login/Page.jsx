@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getAdminAuthenticateUrl, getVerifyLoginOtpUrl } from "@/lib/api-base";
 import TurnstileWidget from "@/components/Turnstile/TurnstileWidget";
 import WelcomeSlideshow from "./WelcomeSlideshow";
+import ContactAdminModal from "./ContactAdminModal";
 const POST_LOGIN_TARGET = "/admin/dashboard";
 const REQUEST_TIMEOUT_MS = 15e3;
 function fetchWithTimeout(input, init = {}) {
@@ -51,6 +52,7 @@ function AdminLoginForm() {
   const [otp, setOtp] = useState("");
   const [otpEmail, setOtpEmail] = useState("");
   const [isResending, setIsResending] = useState(false);
+  const [showContactAdmin, setShowContactAdmin] = useState(false);
   const handlelogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -246,7 +248,13 @@ function AdminLoginForm() {
 
       <p className="text-center text-sm text-gray-500 font-open-sans !mt-2">
         Need help?{" "}
-        <span className="text-[#800000] font-semibold cursor-pointer hover:underline">Contact</span> your system administrator.
+        <button
+    type="button"
+    onClick={() => setShowContactAdmin(true)}
+    className="text-[#800000] font-semibold cursor-pointer hover:underline"
+  >
+          Contact
+        </button> your system administrator.
       </p>
 
       <p className="flex items-center justify-center gap-1.5 text-xs text-gray-400 font-open-sans !mt-1.5">
@@ -495,6 +503,8 @@ function AdminLoginForm() {
           <div className="absolute bottom-[-5%] left-[-5%] w-72 h-72 bg-[#800000]/5 rounded-full blur-3xl" />
         </div>
       </div>
+
+      {showContactAdmin && <ContactAdminModal onClose={() => setShowContactAdmin(false)} />}
     </div>;
 }
 export {
