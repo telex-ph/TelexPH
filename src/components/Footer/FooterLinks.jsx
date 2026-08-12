@@ -9,7 +9,7 @@ const FooterLinks = () => {
         Call Us Directly?<br /><span className="text-sm sm:text-base font-medium">0449504196</span>
       </p>
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
-        For Support?<br /><span className="text-sm sm:text-base font-medium">business@telexph.com</span>
+        For Support?<br /><span className="text-sm sm:text-base font-medium">careers@telexph.com</span>
       </p>
       <p className="text-xs sm:text-sm text-gray-300">
         Our Location<br /><span className="text-sm sm:text-base font-medium">Guimba, Nueva Ecija, Philippines</span>

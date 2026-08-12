@@ -105,7 +105,7 @@ const ContactInfo = () => {
             </a>
 
             <a
-    href="mailto:business@telexph.com"
+    href="mailto:careers@telexph.com"
     className={`${FONT_CLASSES.rubikRegular} block transition-colors`}
     style={{
       fontFamily: FONTS.rubik,
@@ -114,7 +114,7 @@ const ContactInfo = () => {
     onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primary}
     onMouseLeave={(e) => e.currentTarget.style.color = secondaryTextColor}
   >
-              business@telexph.com
+              careers@telexph.com
             </a>
           </div>
         </div>

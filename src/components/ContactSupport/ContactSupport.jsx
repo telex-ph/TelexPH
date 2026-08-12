@@ -52,10 +52,10 @@ const ContactSupport = () => {
                   0449504196
                 </a>
                 <a
-    href="mailto:business@telexph.com"
+    href="mailto:careers@telexph.com"
     className={`text-sm sm:text-base md:text-lg lg:text-xl ${FONT_CLASSES.openSansBold} text-gray-500 hover:text-gray-700 transition-colors break-all sm:break-normal`}
   >
-                  business@telexph.com
+                  careers@telexph.com
                 </a>
               </div>
 
