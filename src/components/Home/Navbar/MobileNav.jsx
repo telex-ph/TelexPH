@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { navLinks } from "@/constant/constant";
+import { SERVICE_PAGES } from "@/data/service-pages";
 import { RiCloseFill } from "react-icons/ri";
 import { HiChevronDown } from "react-icons/hi";
 import { Poppins, Open_Sans } from "next/font/google";
@@ -34,6 +35,11 @@ const MobileNav = ({ showNav, closeNav }) => {
         { label: "Our Works", url: "/services#our-works" },
         { label: "Testimonials", url: "/services#testimonials" }
       ]
+    },
+    {
+      id: "specialized",
+      label: "Specialized Services",
+      items: SERVICE_PAGES.map((p) => ({ label: p.h1, url: p.path }))
     }
   ];
   const aboutMegaData = [
@@ -61,19 +67,19 @@ const MobileNav = ({ showNav, closeNav }) => {
       id: "news",
       label: "Industry Use Cases",
       items: [
-        { label: "Industry Overview", url: "/resources/IndustryUseCase#overview" },
-        { label: "Challenges & Pain Points", url: "/resources/IndustryUseCase#challenges" },
-        { label: "Solutions Applied", url: "/resources/IndustryUseCase#solutions" },
-        { label: "Scenarios", url: "/resources/IndustryUseCase#scenarios" },
-        { label: "Benefits & Results", url: "/resources/IndustryUseCase#results" },
-        { label: "Tools & Technology", url: "/resources/IndustryUseCase#tools" },
-        { label: "Why Telex", url: "/resources/IndustryUseCase#why-telex" }
+        { label: "Industry Overview", url: "/resources/industryusecase#overview" },
+        { label: "Challenges & Pain Points", url: "/resources/industryusecase#challenges" },
+        { label: "Solutions Applied", url: "/resources/industryusecase#solutions" },
+        { label: "Scenarios", url: "/resources/industryusecase#scenarios" },
+        { label: "Benefits & Results", url: "/resources/industryusecase#results" },
+        { label: "Tools & Technology", url: "/resources/industryusecase#tools" },
+        { label: "Why Telex", url: "/resources/industryusecase#why-telex" }
       ]
     },
     {
       id: "blogs",
       label: "Blogs",
-      items: [{ label: "Blogs Overview", url: "/resources/Blogs" }]
+      items: [{ label: "Blogs Overview", url: "/resources/blogs" }]
     }
   ];
   const careersMegaData = [

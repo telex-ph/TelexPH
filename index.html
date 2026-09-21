@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#a10000" />
 
+    <!-- Per-page title/description/canonical are set by <RouteSeo> (src/shared/Seo.jsx)
+         and baked into static HTML at build time by scripts/prerender.mjs. -->
     <title>TelexPH</title>
     <meta
       name="description"
-      content="We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success."
+      content="Hire GoHighLevel VAs, customer support and offshore staff from the Philippines. Serving agencies in the US, UK, AU, CA and NZ since 2017."
     />
     <meta name="author" content="TelexPH Team" />
-    <meta
-      name="keywords"
-      content="TelexPH, Multi-Service BPO Philippines, RPA Outsourcing, VoIP Solutions, Cloud Communication, Marketing Outsourcing, Creative Services BPO, Travel BPO"
-    />
 
     <link rel="icon" href="/images/Tlxlogo.webp" />
     <link rel="shortcut icon" href="/images/Tlxlogo.webp" />
@@ -24,13 +22,13 @@
     <meta property="og:title" content="TelexPH: Your trusted partner in Business Process Outsourcing" />
     <meta
       property="og:description"
-      content="We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success."
+      content="Hire GoHighLevel VAs, customer support and offshore staff from the Philippines. Serving agencies in the US, UK, AU, CA and NZ since 2017."
     />
-    <meta property="og:url" content="https://telexph.com" />
+    <meta property="og:url" content="https://www.telexph.com/" />
     <meta property="og:site_name" content="TelexPH" />
-    <meta property="og:image" content="/images/Tlxlogo.webp" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content="https://assets.cdn.filesafe.space/KlBL9XEG0eVNlAqE7m5V/media/6ab0c7bbff484614db70c734.jpg" />
+    <meta property="og:image:width" content="2752" />
+    <meta property="og:image:height" content="1536" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="website" />
 
@@ -39,9 +37,51 @@
     <meta name="twitter:title" content="TelexPH: Your trusted partner in Business Process Outsourcing" />
     <meta
       name="twitter:description"
-      content="We deliver world-class business support services designed to optimize efficiency, reduce costs, and empower your growth. Together, let's build smarter, scalable solutions for your success."
+      content="Hire GoHighLevel VAs, customer support and offshore staff from the Philippines. Serving agencies in the US, UK, AU, CA and NZ since 2017."
     />
-    <meta name="twitter:image" content="/images/Tlxlogo.webp" />
+    <meta name="twitter:image" content="https://assets.cdn.filesafe.space/KlBL9XEG0eVNlAqE7m5V/media/6ab0c7bbff484614db70c734.jpg" />
+
+    <!-- Structured data: who TelexPH is (read by Google and AI answer engines) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://www.telexph.com/#org",
+            "name": "TelexPH",
+            "legalName": "Telex Business Support Services Inc.",
+            "url": "https://www.telexph.com/",
+            "logo": "https://www.telexph.com/images/logo.png",
+            "slogan": "Scale Smarter. Support Better.",
+            "foundingDate": "2017",
+            "telephone": "+63-44-950-4196",
+            "email": "careers@telexph.com",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Guimba",
+              "addressRegion": "Nueva Ecija",
+              "addressCountry": "PH"
+            },
+            "areaServed": ["US", "GB", "AU", "CA", "NZ"],
+            "sameAs": [
+              "https://www.facebook.com/telexph",
+              "https://www.linkedin.com/company/telexph"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.telexph.com/#website",
+            "url": "https://www.telexph.com/",
+            "name": "TelexPH",
+            "publisher": { "@id": "https://www.telexph.com/#org" }
+          }
+        ]
+      }
+    </script>
+
+    <!-- Prerendered markup is for crawlers; keep the pre-JS first paint identical to the SPA. -->
+    <style>#root[data-prerendered] { visibility: hidden; }</style>
 
     <!-- Fonts: replaces next/font/google (Poppins, Open Sans, Rubik) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

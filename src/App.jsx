@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import ScrollToTop from "@/shared/ScrollToTop";
@@ -7,6 +7,8 @@ import RouteFallback from "@/shared/RouteFallback";
 import { registerPrefetch } from "@/shared/prefetch";
 import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTracker";
 import BugReportWidget from "@/shared/BugReportWidget";
+import { RouteSeo } from "@/shared/Seo";
+import { SERVICE_PAGES } from "@/data/service-pages";
 
 /* The landing page is eager so the first paint is immediate. Every other
    route is code-split — Next.js did this per-page automatically, and without
@@ -27,6 +29,7 @@ const Location = lazy(() => import("@/pages/Location"));
 const Platform = lazy(() => import("@/pages/Platform"));
 const Apply = lazy(() => import("@/pages/Apply"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const ServicePage = lazy(() => import("@/pages/ServicePage"));
 
 /* ---------------- Funnels ---------------- */
 const FunnelService = lazy(() => import("@/pages/funnels/$service/Page"));
@@ -114,6 +117,7 @@ registerPrefetch([
   ["/admin/login", () => import("@/pages/admin/login/Page")],
   ["/client/login", () => import("@/pages/client/login/Page")],
   ["/VirtualAssistant/login", () => import("@/pages/VirtualAssistant/login/Page")],
+  ...SERVICE_PAGES.map(({ path }) => [path, () => import("@/pages/ServicePage")]),
 ]);
 
 /**
@@ -127,9 +131,16 @@ registerPrefetch([
  * takes over that job on the client — see src/shared/ProtectedRoute.jsx.
  */
 const App = () => {
+  // Prerendered HTML (scripts/prerender.mjs) is for crawlers; index.html hides it
+  // until React has mounted so visitors see the same first paint as before.
+  useEffect(() => {
+    document.getElementById("root")?.removeAttribute("data-prerendered");
+  }, []);
+
   return (
     <>
       <ScrollToTop />
+      <RouteSeo />
       <SitePageViewTracker />
       <BugReportWidget />
 
@@ -154,6 +165,11 @@ const App = () => {
           path="/resources/CaseStudiesCardDetails"
           element={<CaseStudyDetails />}
         />
+
+        {/* ---------- Service landing pages (data/service-pages.js) ---------- */}
+        {SERVICE_PAGES.map(({ path }) => (
+          <Route key={path} path={path} element={<ServicePage />} />
+        ))}
 
         {/* ---------- Funnels ---------- */}
         <Route path="/funnels/ai-builder" element={<FunnelAiBuilder />} />

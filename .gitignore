@@ -50,3 +50,4 @@ public/images-opt/
 
 # build output
 dist/
+test/
