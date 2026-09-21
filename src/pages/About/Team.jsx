@@ -127,14 +127,14 @@ function Team() {
     img="images/jena_01.webp"
     name="Jenalyn M. Valler"
     title="President & Chief Executive Officer (CEO)"
-    linkedinUrl="https://www.linkedin.com/in/jenalyn-valler"
+    linkedinUrl="https://www.linkedin.com/in/jenavaller/"
     imagePositionClass="object-center translate-y-13 scale-130"
   />
             <MemberCard
     img="images/Arturo_01.webp"
     name="Arturo D. Valler Jr."
     title="Corporate Secretary"
-    linkedinUrl="https://www.linkedin.com/in/arturo-valler"
+    linkedinUrl="https://www.linkedin.com/in/arturo-jr-valler-11b600197/"
     imagePositionClass="object-center translate-y-6 scale-130"
   />
           </div>
@@ -155,7 +155,7 @@ function Team() {
     img="images/Michelle.png"
     name="Michelle D. Soliman"
     title="Executive Coordination Officer"
-    linkedinUrl="https://www.linkedin.com/in/michelle-soliman"
+    linkedinUrl="https://www.linkedin.com/in/michelle-soliman-a8a825426/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>
@@ -176,14 +176,14 @@ function Team() {
     img="images/fatima_01.webp"
     name="Fatima M. Guzman"
     title="Head of People and Administration"
-    linkedinUrl="https://www.linkedin.com/in/fatima-guzman"
+    linkedinUrl="https://www.linkedin.com/in/fatima-guzman-b28b9637b/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
             <MemberCard
     img="images/maybelle_01.webp"
     name="Maybelle A. Cabalar"
     title="Head of Audit and Compliance"
-    linkedinUrl="https://www.linkedin.com/in/maybelle-cabalar"
+    linkedinUrl="https://www.linkedin.com/in/maybelle-cabalar/"
     imagePositionClass="object-center translate-y-12 scale-125"
   />
           </div>
@@ -204,21 +204,21 @@ function Team() {
     img="images/anjeaneth_01.webp"
     name="Anjanneth P. Bilas"
     title="Head of Finance"
-    linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas"
+    linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas-087051117/"
     imagePositionClass="object-center translate-y-3 scale-150"
   />
             <MemberCard
     img="images/joanne_01.webp"
     name="Joanne P. Corpuz"
     title="Senior Operations / Head of Operations"
-    linkedinUrl="https://www.linkedin.com/in/joanne-corpuz"
+    linkedinUrl="https://www.linkedin.com/in/joanne-papua-corpuz-776587358/"
     imagePositionClass="object-center translate-y-13 scale-130"
   />
             <MemberCard
     img="images/Marj.png"
     name="Marjorie Curamen"
     title="Senior Operations"
-    linkedinUrl="https://www.linkedin.com/in/marjorie-curamen"
+    linkedinUrl="https://www.linkedin.com/in/marjorie-curamen-a24b79380/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>
@@ -244,9 +244,9 @@ function Team() {
   />
             <MemberCard
     img="images/HJ.png"
-    name="Hannah D. Joy Reyes"
+    name="Hannah Joy D. Reyes"
     title="Head of Innovation"
-    linkedinUrl="https://www.linkedin.com/in/hannah-reyes"
+    linkedinUrl="https://www.linkedin.com/in/hannah-joy-reyes/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>
@@ -267,7 +267,7 @@ function Team() {
     img="images/RJ.png"
     name="Rocel J. Fernandez"
     title="Head of Growth"
-    linkedinUrl="https://www.linkedin.com/in/rocel-fernandez"
+    linkedinUrl="https://www.linkedin.com/in/rj-fernandez-610469398/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>

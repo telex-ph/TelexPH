@@ -14,7 +14,7 @@ function SitePageViewTracker() {
   const pathname = usePathname();
   const lastSent = useRef(null);
   useEffect(() => {
-    if (!pathname) return;
+    if (!pathname || navigator.webdriver) return; // skip the build-time prerender browser
     if (EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p))) return;
     const now = Date.now();
     if (lastSent.current?.path === pathname && now - lastSent.current.at < 400) {

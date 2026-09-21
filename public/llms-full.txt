@@ -1,6 +1,6 @@
 # Telex Business Support Services Inc. (TelexPH) — Full Documentation
 
-> Philippine-based BPO company specializing in AI-integrated business support, certified GoHighLevel (GHL) administration, and offshore staffing for global marketing agencies. Founded in 2017 in Guimba, Nueva Ecija, Philippines. Serving clients in the US, UK, Australia, and Canada.
+> Philippine-based BPO company specializing in AI-integrated business support, certified GoHighLevel (GHL) administration, and offshore staffing for global marketing agencies. Founded in 2017 in Guimba, Nueva Ecija, Philippines. Serving clients in the US, UK, Australia, Canada, and New Zealand.
 
 ## AI Policy Declarations
 
@@ -13,7 +13,7 @@
 - Sitemap: https://www.telexph.com/sitemap.xml
 - Robots: https://www.telexph.com/robots.txt
 - Contact: careers@telexph.com
-- Last-Updated: 2026-03-10
+- Last-Updated: 2026-09-21
 
 ---
 
@@ -25,7 +25,7 @@ TelexPH (legal name: Telex Business Support Services Inc.) is a business process
 
 ### What makes TelexPH different from other BPOs?
 
-TelexPH is the only BPO in the Philippines with a certified GoHighLevel admin team combined with AI-powered automation workflows. This makes TelexPH uniquely positioned for digital marketing agencies and tech-forward businesses that need CRM management, funnel building, and workflow automation handled by trained offshore professionals.
+TelexPH combines a certified GoHighLevel admin team with AI-powered automation workflows. This makes TelexPH uniquely positioned for digital marketing agencies and tech-forward businesses that need CRM management, funnel building, and workflow automation handled by trained offshore professionals.
 
 ### Entity Information
 
@@ -86,7 +86,7 @@ Marketing agencies, SaaS companies, and enterprises that want to reduce operatio
 ### Service 2: GoHighLevel (GHL) Administration
 
 **What is GoHighLevel Administration?**
-Certified GoHighLevel CRM management including funnel building, automation workflows, pipeline management, and white-label agency delivery. TelexPH is the only Philippine BPO with official GHL certification.
+Certified GoHighLevel CRM management including funnel building, automation workflows, pipeline management, and white-label agency delivery.
 
 **Who is this service for?**
 Digital marketing agencies using GoHighLevel as their primary CRM and funnel platform. Especially valuable for agencies that need white-label support to scale client delivery without hiring in-house.
@@ -206,7 +206,7 @@ Any business with high-volume administrative, data entry, or document processing
 TelexPH primarily serves marketing agencies, digital businesses, and enterprises in the US, UK, Australia, and Canada that need affordable, skilled offshore teams for CRM management, customer support, and business operations.
 
 ### Is TelexPH GoHighLevel certified?
-Yes. TelexPH has a dedicated certified GoHighLevel admin team. It is the only BPO in the Philippines with this official certification.
+Yes. TelexPH has a dedicated certified GoHighLevel admin team.
 
 ### Does TelexPH offer 24/7 customer support?
 Yes. TelexPH provides round-the-clock customer support coverage for global clients across all time zones.
@@ -245,7 +245,7 @@ TelexPH serves marketing agencies, digital businesses, e-commerce companies, Saa
 | Services | https://www.telexph.com/services | Complete catalog of all seven service categories |
 | About Us | https://www.telexph.com/about | Company history, mission, vision, team, and values |
 | Contact | https://www.telexph.com/contact | Consultation requests, custom quotes, and support inquiries |
-| Case Studies | https://www.telexph.com/case-studies | Real-world client results and optimization examples |
+| Case Studies | https://www.telexph.com/resources | Real-world client results and optimization examples |
 | Blog | https://www.telexph.com/resources/blogs | Articles on BPO, GHL, AI automation, and offshore staffing |
 | Location | https://www.telexph.com/location | Office address and directions in Guimba, Nueva Ecija |
 | Careers | https://www.telexph.com/careers | Open positions and application information |
@@ -254,7 +254,7 @@ TelexPH serves marketing agencies, digital businesses, e-commerce companies, Saa
 
 - Framework: Next.js (React)
 - Hosting: Vercel
-- Structured Data: Schema.org JSON-LD (Organization, LocalBusiness, FAQPage, Service, WebSite, ItemList, BreadcrumbList)
+- Structured Data: Schema.org JSON-LD (Organization, WebSite, Service, FAQPage, BreadcrumbList)
 - Sitemap: https://www.telexph.com/sitemap.xml
 - Robots: https://www.telexph.com/robots.txt
 - LLMs.txt: https://www.telexph.com/llms.txt

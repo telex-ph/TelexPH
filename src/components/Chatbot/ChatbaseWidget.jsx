@@ -5,7 +5,7 @@ const GHLChatWidget = () => {
   const SCRIPT_SRC = "https://widgets.leadconnectorhq.com/loader.js";
   const RESOURCES_URL = "https://widgets.leadconnectorhq.com/chat-widget/loader.js";
   useEffect(() => {
-    if (!WIDGET_ID) {
+    if (!WIDGET_ID || navigator.webdriver) { // no widget in the build-time prerender snapshot
       return;
     }
     if (document.querySelector(`script[src="${SCRIPT_SRC}"]`)) {
