@@ -34,6 +34,7 @@
     "swiper": "^12.0.2"
   },
   "devDependencies": {
+    "@sparticuz/chromium": "^153.0.0",
     "@tailwindcss/postcss": "^4",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",

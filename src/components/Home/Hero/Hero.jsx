@@ -125,10 +125,9 @@ const Hero = () => {
     transition={{ duration: 0.8, delay: 0.4 }}
     className="text-white text-xs sm:text-sm leading-relaxed max-w-lg mb-5 sm:mb-6 font-poppins"
   >
-                We deliver world-class business support services designed to
-                optimize efficiency, reduce costs, and empower your growth.
-                Together, let's build smarter, scalable solutions for your
-                success.
+                World-class business support from the Philippines: GoHighLevel
+                VAs, customer support and offshore staffing that reduce costs and
+                empower your growth.
               </motion.p>
 
               <motion.div
@@ -212,9 +211,9 @@ const Hero = () => {
                         {card.icon}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-gray-900 font-open-sans-bold text-base xl:text-lg mb-1 whitespace-nowrap">
+                        <p className="text-gray-900 font-open-sans-bold text-base xl:text-lg mb-1 whitespace-nowrap">
                           {card.title}
-                        </h3>
+                        </p>
                         <p className="text-xs xl:text-sm text-gray-600 leading-relaxed font-poppins">
                           {card.desc}
                         </p>
