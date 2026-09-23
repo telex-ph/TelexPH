@@ -24,11 +24,8 @@ const FALLBACK_DATA = {
   title: "loading case study",
   subtitle: "please wait while we load the content",
   image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
-  author: "Customer Experience Team",
-  authors: [],
   date: ""
 };
-const formatAuthors = (authors) => authors.map((a) => a.name).filter(Boolean).join(", ");
 async function toggleLikeCaseStudy(id, isLiked) {
   try {
     const method = isLiked ? "DELETE" : "POST";
@@ -109,8 +106,6 @@ function DetailsHeader() {
     subtitle: caseStudy.subtitle || "",
     image: caseStudy.cover,
     tags: caseStudy.tags,
-    author: formatAuthors(caseStudy.authors || []),
-    authors: caseStudy.authors || [],
     date: caseStudy.createdAt ? new Date(caseStudy.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : ""
   } : FALLBACK_DATA;
   const titleWords = displayData.title.split(" ");
@@ -248,39 +243,14 @@ function DetailsHeader() {
   }
 
           {
-    /* Author row & Socials */
+    /* Date & Socials */
   }
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8">
             {
-    /* Left: Avatar + Name & Date */
+    /* Left: Date */
   }
             <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-0">
-              {displayData.authors.length > 0 ? <div className="flex -space-x-2">
-                  {displayData.authors.map(
-    (a, i) => a.image ? <img
-      key={i}
-      src={a.image}
-      alt={a.name}
-      title={a.name}
-      className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-white"
-    /> : <div
-      key={i}
-      title={a.name}
-      className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-white flex items-center justify-center text-[13px] md:text-[15px] font-bold"
-      style={{ background: "#f3f4f6", color: "#374151" }}
-    >
-                        {a.name?.charAt(0).toUpperCase()}
-                      </div>
-  )}
-                </div> : <img
-    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayData.author || "Customer Experience Team")}&background=f3f4f6&color=374151`}
-    alt={displayData.author || "Customer Experience Team"}
-    className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
-  />}
               <div className="flex flex-col gap-0.5">
-                <span className="text-[13px] md:text-[15px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: "#282828" }}>
-                  {displayData.author || "Customer Experience Team"}
-                </span>
                 <div className="flex items-center gap-1.5 text-[11px] md:text-[13px]" style={{ fontFamily: FONTS.openSans, color: getColorWithOpacity("dark", 0.6) }}>
                   <FaRegCalendarAlt size={11} />
                   <span>

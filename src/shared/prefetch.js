@@ -14,11 +14,12 @@ const loaders = new Map();
 const started = new Set();
 
 export function registerPrefetch(entries) {
-  for (const [path, loader] of entries) loaders.set(path, loader);
+  for (const [path, loader] of entries) loaders.set(path.toLowerCase(), loader);
 }
 
 /** Longest matching prefix wins, so "/admin/dashboard" beats "/admin". */
 function findLoader(pathname) {
+  pathname = pathname.toLowerCase(); // React Router matches case-insensitively too
   let best = null;
   let bestLen = -1;
   for (const [path, loader] of loaders) {

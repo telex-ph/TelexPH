@@ -110,8 +110,7 @@ function CaseStudiesFilter() {
           status: statusMap[item.status] || "Active",
           description: description || "No description available.",
           fullDescription: fullDescription || "No description available.",
-          image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800",
-          authors: Array.isArray(item.authors) ? item.authors : []
+          image: item.cover || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800"
         };
       });
       setApiCaseStudies(transformedApiData);
@@ -151,26 +150,6 @@ function CaseStudiesFilter() {
     }
   }, [modalCard]);
   const formalColor = "#4b5563";
-  const renderAuthorAvatars = (authors, size, textSize = "text-[9px] md:text-[11px]") => <div className="flex items-center gap-1.5 min-w-0 flex-1">
-      <div className="flex -space-x-1 flex-shrink-0">
-        {authors.slice(0, 3).map(
-    (author, i) => author.image ? <div key={i} className={`${size} rounded-full border-2 border-white bg-gray-200 overflow-hidden`}>
-              <img src={author.image} alt={author.name} className="w-full h-full object-cover" />
-            </div> : <div
-      key={i}
-      className={`${size} rounded-full border-2 border-white flex items-center justify-center ${textSize} font-bold`}
-      style={{ background: "rgba(128,0,0,0.12)", color: "#800000" }}
-      title={author.name}
-    >
-              {author.name?.charAt(0).toUpperCase()}
-            </div>
-  )}
-      </div>
-      {authors.length > 0 && <span className={`${textSize} font-medium text-gray-500 truncate`}>
-          {authors[0]?.name}
-          {authors.length > 1 ? ` +${authors.length - 1}` : ""}
-        </span>}
-    </div>;
   return <section className="w-full">
       <div className="container mx-auto px-4">
         
@@ -286,8 +265,7 @@ function CaseStudiesFilter() {
                         </p>
 
                         <div className="mt-auto flex justify-between items-center gap-2 border-t border-gray-50 pt-3">
-                          {renderAuthorAvatars(card.authors, "w-5 h-5 md:w-7 md:h-7", "text-[9px] md:text-[11px]")}
-                          <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`} className="flex-shrink-0">
+                          <Link href={`/resources/casestudiescarddetails?id=${card.id}`} className="ml-auto flex-shrink-0">
                             <button
         title="Preview article"
         className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
@@ -345,8 +323,7 @@ function CaseStudiesFilter() {
                           </div>
                           <hr className="hidden md:block border-gray-100 mt-auto" />
                           <div className="mt-auto md:mt-0 pt-1 md:pt-3 flex justify-between items-center gap-2">
-                            {renderAuthorAvatars(card.authors, "w-4 h-4 md:w-7 md:h-7", "text-[8px] md:text-[11px]")}
-                            <Link href={`/resources/CaseStudiesCardDetails?id=${card.id}`} className="flex-shrink-0">
+                            <Link href={`/resources/casestudiescarddetails?id=${card.id}`} className="ml-auto flex-shrink-0">
                               <button
       title="Preview article"
       className="w-5 h-5 md:w-8 md:h-8 rounded-full bg-[#800000] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
@@ -430,9 +407,6 @@ function CaseStudiesFilter() {
               <h4 className="text-[20px] font-bold text-[#282828] leading-tight mb-3 flex-shrink-0" style={{ fontFamily: FONTS.poppins }}>
                 {modalCard.title}
               </h4>
-              {modalCard.authors && modalCard.authors.length > 0 && <div className="mb-3 flex-shrink-0">
-                  {renderAuthorAvatars(modalCard.authors, "w-6 h-6", "text-[11px]")}
-                </div>}
               <div className="flex items-center gap-2 mb-2 flex-shrink-0">
                 <span style={{ fontFamily: FONTS.openSans, fontWeight: 700, fontSize: "16px", color: "#282828", opacity: 0.4, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
                   About
