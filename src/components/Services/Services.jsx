@@ -230,12 +230,12 @@ const ServiceCard = ({ service, index = 0 }) => {
               {service.icon}
             </svg>
           </div>
-          <h3
+          <p
     className="flex-1 leading-snug line-clamp-2"
     style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "13px", color: "#111827", marginTop: 3 }}
   >
             {service.title}
-          </h3>
+          </p>
         </div>
 
         {

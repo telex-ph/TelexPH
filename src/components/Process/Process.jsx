@@ -88,12 +88,12 @@ const ProcessStepItem = ({ step }) => {
           {step.number}
         </p>
         <div className="flex-1">
-          <h3
+          <p
     className={`${openSans.className}
                           text-base md:text-lg font-bold text-gray-800 mb-1`}
   >
             {step.title}
-          </h3>
+          </p>
           <p
     className={`${rubik.className}
                       text-gray-600 text-xs md:text-sm`}

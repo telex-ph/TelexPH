@@ -67,12 +67,12 @@ const Partners = ({
                           {feature.icon}
                         </div>
 
-                        <h3 className="font-poppins font-bold text-sm md:text-xl lg:text-2xl text-[#a10000] leading-tight relative z-10">
+                        <p className="font-poppins font-bold text-sm md:text-xl lg:text-2xl text-[#a10000] leading-tight relative z-10">
                           {firstWord}
-                        </h3>
-                        {secondPart && <h3 className="font-poppins font-bold text-sm md:text-xl lg:text-2xl text-[#a10000] mb-1 md:mb-2 relative z-10">
+                        </p>
+                        {secondPart && <p className="font-poppins font-bold text-sm md:text-xl lg:text-2xl text-[#a10000] mb-1 md:mb-2 relative z-10">
                             {secondPart}
-                          </h3>}
+                          </p>}
 
                         <p className={`${rubik.className} text-gray-600 text-[10px] md:text-sm lg:text-base leading-snug md:leading-relaxed relative z-10`}>
                           {feature.description}
