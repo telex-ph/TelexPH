@@ -34,10 +34,21 @@ log("wrote sitemap.xml and app.html");
 let browser;
 try {
   const { default: puppeteer } = await import("puppeteer");
-  const launch = () => puppeteer.launch({ args: ["--no-sandbox"] });
+  // Vercel's build image lacks the system libraries puppeteer's Chrome needs;
+  // @sparticuz/chromium ships a self-contained headless Chromium for it.
+  const launch = async () => {
+    if (!process.env.VERCEL) return puppeteer.launch({ args: ["--no-sandbox"] });
+    const { default: chromium } = await import("@sparticuz/chromium");
+    return puppeteer.launch({
+      args: await puppeteer.defaultArgs({ args: chromium.args, headless: "shell" }),
+      executablePath: await chromium.executablePath(),
+      headless: "shell",
+    });
+  };
   try {
     browser = await launch();
-  } catch {
+  } catch (err) {
+    log("launch failed, installing Chrome and retrying:", err.message);
     execSync("npx puppeteer browsers install chrome", { stdio: "inherit" });
     browser = await launch();
   }
