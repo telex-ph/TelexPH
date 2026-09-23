@@ -44,11 +44,6 @@ async function getAllCaseStudies() {
     return [];
   }
 }
-function avatarFor(seed) {
-  const seedNum = typeof seed === "string" ? seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) : seed;
-  const num = seedNum % 70 + 1;
-  return `https://i.pravatar.cc/150?img=${num}`;
-}
 const RELATED_FALLBACK_IMG = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800";
 function toHttps(url) {
   if (!url) return "";
@@ -70,7 +65,6 @@ function transformRelated(item) {
     title: item.title || "Untitled Case Study",
     description: description || "Read the full case study.",
     image: toHttps(item.cover) || RELATED_FALLBACK_IMG,
-    author: item.author || "Customer Experience Team",
     status: item.status || "Active",
     date: item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-US", {
       day: "numeric",
@@ -846,7 +840,7 @@ function CaseStudyDetailsContent() {
 
                 {related.map((item) => <Link
     key={item.id}
-    href={`/resources/CaseStudiesCardDetails?id=${item.id}`}
+    href={`/resources/casestudiescarddetails?id=${item.id}`}
     className="group block rounded-2xl overflow-hidden border border-zinc-100 bg-white hover:shadow-lg transition-shadow"
   >
                     <div className="relative h-[150px] w-full overflow-hidden">
@@ -896,15 +890,7 @@ function CaseStudyDetailsContent() {
                         {item.description}
                       </p>
                       <div className="flex items-center gap-2">
-                        <img
-    src={avatarFor(item.id)}
-    alt={item.author}
-    className="w-7 h-7 rounded-full object-cover bg-gray-200 flex-shrink-0"
-  />
                         <div className="flex flex-col min-w-0">
-                          <span className="truncate" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "12px", color: T.textDark }}>
-                            {item.author}
-                          </span>
                           <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", color: T.textHint }}>
                             {item.date}{item.date ? " \xB7 " : ""}4 min read
                           </span>
