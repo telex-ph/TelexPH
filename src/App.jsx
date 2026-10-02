@@ -27,6 +27,8 @@ const IndustryUseCase = lazy(() => import("@/pages/IndustryUseCase"));
 const CaseStudyDetails = lazy(() => import("@/pages/CaseStudyDetails"));
 const Location = lazy(() => import("@/pages/Location"));
 const Platform = lazy(() => import("@/pages/Platform"));
+const Logistics = lazy(() => import("@/pages/Logistics"));
+const LogisticsLanding = lazy(() => import("@/pages/LogisticsLanding"));
 const Apply = lazy(() => import("@/pages/Apply"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ServicePage = lazy(() => import("@/pages/ServicePage"));
@@ -153,6 +155,8 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/location" element={<Location />} />
         <Route path="/platform" element={<Platform />} />
+        <Route path="/logistics" element={<Logistics />} />
+        <Route path="/logistics/landing" element={<LogisticsLanding />} />
         <Route path="/Apply" element={<Apply />} />
 
         <Route path="/careers" element={<Careers />} />

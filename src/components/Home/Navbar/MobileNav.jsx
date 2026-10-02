@@ -191,6 +191,9 @@ const MobileNav = ({ showNav, closeNav }) => {
                             </div>}
                         </div>;
     })}
+                    {link.label === "Services" && <a href="/logistics" target="_blank" rel="noopener noreferrer" onClick={closeNav} className="flex items-center px-10 py-3 border-l-4 border-[#a10000]/20 text-[13px] font-normal text-gray-600">
+                        Logistics
+                      </a>}
                   </div>}
               </div>;
   })}
