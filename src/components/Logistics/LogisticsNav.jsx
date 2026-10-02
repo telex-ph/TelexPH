@@ -6,25 +6,15 @@ import { RiCloseFill } from "react-icons/ri";
 import TopBar from "./LogisticsTopBar";
 import { DISCOVERY_CALL_URL } from "@/constant/links";
 
-/* Tabs mirror the sections of the page you are on: each one jumps to that section. */
-const HOME_PAGE_TABS = [
-  { label: "What We Help With", href: "#help" },
-  { label: "Management", href: "#management" },
-  { label: "How We Start", href: "#process" },
-];
+/* Each tab jumps to a section of the page. */
 const LANDING_PAGE_TABS = [
   { label: "Support Scope", href: "#support" },
   { label: "Management", href: "#management" },
   { label: "FAQs", href: "#faqs" },
   { label: "Get Started", href: "#start" },
 ];
-export const isLandingPath = () =>
-  typeof window !== "undefined" && window.location.pathname.replace(/\/$/, "") === "/logistics/landing";
-export const getLogisticsTabs = () => (isLandingPath() ? LANDING_PAGE_TABS : HOME_PAGE_TABS);
-
-/* Each logistics page links to the other one: /logistics -> landing page, landing page -> /logistics. */
-export const LANDING_TAB = { label: "Logistics Customer Support", href: "/logistics/landing" };
-export const HOME_TAB = { label: "Logistics", href: "/logistics" };
+export const getLogisticsTabs = () => LANDING_PAGE_TABS;
+const tabs = LANDING_PAGE_TABS;
 
 const BUTTON_TEXT = "Book a 15-Minute Discovery Call";
 
@@ -43,9 +33,6 @@ const LogisticsNav = () => {
   const [scrolled, setScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.3 });
-  const onLanding = isLandingPath();
-  const tabs = getLogisticsTabs();
-  const otherPage = onLanding ? HOME_TAB : LANDING_TAB;
 
   // highlight the tab whose section is currently under the header
   useEffect(() => {
@@ -82,10 +69,6 @@ const LogisticsNav = () => {
 
           <div className="flex flex-grow items-center justify-end h-full pl-4 pr-4 sm:pl-6 sm:pr-8">
             <div className="hidden min-[1400px]:flex items-center space-x-7 h-full">
-              <a href={otherPage.href} className="group relative py-1 text-gray-700 font-open-sans-bold text-[13px] whitespace-nowrap uppercase tracking-wide transition-colors hover:text-[#a10000]">
-                {otherPage.label}
-                <span aria-hidden className="absolute left-0 right-0 -bottom-0.5 h-[3px] origin-left scale-x-0 bg-[#a10000] transition-transform duration-300 group-hover:scale-x-100" />
-              </a>
               {tabs.map((t) => {
                 const on = active === t.href;
                 return (
@@ -129,9 +112,6 @@ const LogisticsNav = () => {
         <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.22 }} className="min-[1400px]:hidden bg-white border-t border-gray-100 shadow-lg px-6 py-3 flex flex-col">
-            <a href={otherPage.href} className="py-3 text-sm font-bold uppercase tracking-wider text-gray-700 border-b border-gray-100">
-              {otherPage.label}
-            </a>
             {tabs.map((t) => (
               <a
                 key={t.href}

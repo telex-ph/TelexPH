@@ -94,12 +94,6 @@ export const SEO_PAGES = [
   },
   {
     path: "/logistics",
-    title: "Logistics Customer Support Team Philippines",
-    description:
-      "A managed customer support team in the Philippines for logistics businesses: shipment enquiries, customer follow-ups and delivery exceptions within your processes.",
-  },
-  {
-    path: "/logistics/landing",
     title: "Logistics Customer Support Philippines",
     description:
       "Managed customer support team in the Philippines for logistics businesses: shipment enquiries, customer follow-ups and delivery exceptions within your processes.",

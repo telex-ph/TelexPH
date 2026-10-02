@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Settings, Users, Wrench, Award } from "lucide-react";
+import { Headphones, ClipboardList, Truck } from "lucide-react";
 import { Rubik } from "next/font/google";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
 const rubik = Rubik({
@@ -13,30 +13,28 @@ const Partners = ({
 }) => {
   const partnershipFeatures = [
     {
-      icon: <Settings className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Trusted Partnership",
-      description: "Building long-term client relationships worldwide."
+      icon: <Headphones className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Customer Support",
+      description: "Help customers with enquiries, follow-ups, and issue resolution across your agreed support channels."
     },
     {
-      icon: <Users className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Proven Track Record",
-      description: "Delivering results across industries."
+      icon: <ClipboardList className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Back-Office Support",
+      description: "Keep routine administrative work, records, and operational follow-ups organised so your local team can focus on its priorities."
     },
     {
-      icon: <Wrench className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Smart solutions",
-      description: "Tailored outsourcing that scales with you."
-    },
-    {
-      icon: <Award className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Expert Workforce",
-      description: "Professional teams ready to support your goalss."
+      icon: <Truck className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Logistics Customer Support",
+      description: "Support shipment enquiries, delivery follow-ups, and exception handling using your systems and agreed escalation rules."
     }
   ];
   return (
     // 3. APPLIED backgroundColor to the outermost div
     <div className={`w-full pt-16 pb-12 ${backgroundColor}`}> 
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
+        <h2 className="font-poppins-black text-3xl md:text-5xl text-center text-[#1a1a2e] leading-tight mb-10 px-4">
+          Keep Customers Supported. Keep Work Moving.
+        </h2>
         <div className="relative w-full">
           <div className="w-full h-[400px] md:h-[650px] overflow-hidden shadow-2xl relative rounded-xl">
             <Image
@@ -53,7 +51,7 @@ const Partners = ({
             <div className="relative max-w-6xl mx-auto">
               <div className="absolute bottom-0 left-0 right-0 h-40 bg-[#282828] rounded-2xl shadow-2xl" />
               <div className="relative z-10 p-3 md:p-4 lg:p-6">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                   {partnershipFeatures.map((feature, index) => {
       const [firstWord, ...restWords] = feature.title.split(" ");
       const secondPart = restWords.join(" ");

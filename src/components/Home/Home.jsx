@@ -17,7 +17,7 @@ const Home = () => {
       <div id="home">
         <Hero />
       </div>
-      
+
       {
     /* 2. Partners Section - ID: partners */
   }

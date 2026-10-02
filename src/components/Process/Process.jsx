@@ -19,39 +19,27 @@ const rubik = Rubik({
 const processSteps = [
   {
     number: "01",
-    title: "Consultation",
-    description: "We assess your business needs and challenges.",
+    title: "Understand Your Needs",
+    description: "We discuss your workload, current challenges, systems, service hours, and priorities.",
     imageUrl: "/images/process1.webp"
   },
   {
     number: "02",
-    title: "Strategy",
-    description: "A tailored outsourcing plan designed for your goals.",
+    title: "Define the Support Model",
+    description: "We agree on scope, team structure, responsibilities, performance measures, and pricing.",
     imageUrl: "/images/process2.webp"
   },
   {
     number: "03",
-    title: "Onboarding",
-    description: "Seamless setup with training, integration, and dedicated teams.",
+    title: "Prepare for Delivery",
+    description: "We align training, system access, escalation rules, and readiness before launch.",
     imageUrl: "/images/process3.webp"
   },
   {
     number: "04",
-    title: "Execution",
-    description: "Our experts deliver results with efficiency and precision.",
+    title: "Review and Improve",
+    description: "We review performance together and address gaps through coaching and process improvements.",
     imageUrl: "/images/process4.webp"
-  },
-  {
-    number: "05",
-    title: "Customer Support",
-    description: "Continuous tracking of performance and KPIs.",
-    imageUrl: "/images/process5.webp"
-  },
-  {
-    number: "06",
-    title: "Optimization",
-    description: "Regular improvements to maximize efficiency and ROI.",
-    imageUrl: "/images/process6.webp"
   }
 ];
 const ProcessStepItem = ({ step }) => {
@@ -183,12 +171,12 @@ const Process = () => {
                             before:content-[''] before:absolute before:top-1/2 before:-left-8 before:w-6 before:h-px before:bg-[#a10000]
                             after:content-[''] after:absolute after:top-1/2 after:-right-8 after:w-6 after:h-px after:bg-[#a10000]`}
   >
-            SERVICES PROCESS
+            HOW WE START
           </p>
           <h2
     className={`${openSans.className} text-4xl md:text-5xl font-black text-gray-800 mt-2`}
   >
-            Our Work Process
+            Built Around Your Operations
           </h2>
         </div>
 
@@ -198,7 +186,7 @@ const Process = () => {
 
         <div
     className="
-                        hidden lg:grid lg:grid-cols-3
+                        hidden lg:grid lg:grid-cols-2 max-w-4xl mx-auto
                         gap-x-10 gap-y-20
                         px-4
                         pb-10 lg:pb-16 

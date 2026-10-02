@@ -1,3 +1,4 @@
+import { DISCOVERY_CALL_URL } from "@/constant/links";
 import { Poppins, Open_Sans } from "next/font/google";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ const FooterCTA = () => {
     alt="Delivery man on scooter"
     className="
               absolute bottom-0 
-              right-[33%] md:right-[28%] lg:right-[23%] xl:right-[18%]
+              right-[38%] md:right-[34%] lg:right-[29%] xl:right-[25%]
               h-full w-auto
               max-w-[200px] md:max-w-[280px] lg:max-w-[350px] xl:max-w-[400px]
               object-cover object-right-bottom
@@ -40,11 +41,11 @@ const FooterCTA = () => {
           <div className="absolute inset-0 bg-black opacity-10 rounded-lg" />
         </div>
         <a
-    href="https://hiretelex.com/scale-with-telex"
+    href={DISCOVERY_CALL_URL}
     target="_blank"
-    className="z-20 self-start sm:self-auto sm:ml-auto bg-white text-[#a10000] font-open-sans-bold px-4 sm:px-5 md:px-6 lg:px-7 py-2 sm:py-3 md:py-3.5 rounded shadow hover:bg-gray-100 transition whitespace-nowrap text-xs sm:text-sm md:text-base inline-block text-center"
+    className="z-20 self-start sm:self-auto sm:ml-auto bg-white text-[#a10000] font-open-sans-bold px-4 sm:px-5 md:px-6 lg:px-7 py-2 sm:py-3 md:py-3.5 rounded shadow hover:bg-gray-100 transition max-w-[170px] lg:max-w-none whitespace-normal lg:whitespace-nowrap text-xs sm:text-sm md:text-base inline-block text-center"
   >
-          CONTACT US NOW
+          Discuss Your Support Needs
         </a>
       </div>
     </div>;
