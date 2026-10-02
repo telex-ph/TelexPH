@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Headphones, ClipboardList, Truck } from "lucide-react";
+import { Settings, Users, Wrench, Award } from "lucide-react";
 import { Rubik } from "next/font/google";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
 const rubik = Rubik({
@@ -14,46 +13,30 @@ const Partners = ({
 }) => {
   const partnershipFeatures = [
     {
-      icon: <Headphones className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Customer Support",
-      description: "Help customers with enquiries, follow-ups, and issue resolution across your agreed support channels."
+      icon: <Settings className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Trusted Partnership",
+      description: "Building long-term client relationships worldwide."
     },
     {
-      icon: <ClipboardList className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Back-Office Support",
-      description: "Keep routine administrative work, records, and operational follow-ups organised so your local team can focus on its priorities."
+      icon: <Users className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Proven Track Record",
+      description: "Delivering results across industries."
     },
     {
-      icon: <Truck className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
-      title: "Logistics Customer Support",
-      description: "Support shipment enquiries, delivery follow-ups, and exception handling using your systems and agreed escalation rules."
+      icon: <Wrench className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Smart solutions",
+      description: "Tailored outsourcing that scales with you."
+    },
+    {
+      icon: <Award className="w-12 md:w-16 h-12 md:h-16 text-[#a10000]" />,
+      title: "Expert Workforce",
+      description: "Professional teams ready to support your goalss."
     }
   ];
   return (
     // 3. APPLIED backgroundColor to the outermost div
     <div className={`w-full pt-16 pb-12 ${backgroundColor}`}> 
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
-        <motion.div
-    initial={{ opacity: 0, y: 24 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.6 }}
-    transition={{ duration: 0.7, ease: "easeOut" }}
-    className="text-center mb-12 md:mb-14 px-4"
-  >
-          <p className="font-open-sans-bold text-[#a10000] uppercase text-xs sm:text-sm tracking-[0.25em] relative inline-block mb-3 before:content-[''] before:absolute before:top-1/2 before:-left-10 before:w-7 before:h-px before:bg-[#a10000] after:content-[''] after:absolute after:top-1/2 after:-right-10 after:w-7 after:h-px after:bg-[#a10000]">
-            What we help with
-          </p>
-          <h2 className="font-poppins-black text-3xl md:text-5xl text-[#1a1a2e] leading-tight">
-            Keep Customers Supported.
-            <br className="hidden sm:block" />{" "}
-            <span className="text-[#a10000]">Keep Work Moving.</span>
-          </h2>
-          <div className="mt-5 flex items-center justify-center gap-2" aria-hidden>
-            <span className="h-1 w-12 rounded-full bg-[#a10000]" />
-            <span className="h-1 w-3 rounded-full bg-[#a10000]/40" />
-            <span className="h-1 w-1.5 rounded-full bg-[#a10000]/20" />
-          </div>
-        </motion.div>
         <div className="relative w-full">
           <div className="w-full h-[400px] md:h-[650px] overflow-hidden shadow-2xl relative rounded-xl">
             <Image
@@ -70,7 +53,7 @@ const Partners = ({
             <div className="relative max-w-6xl mx-auto">
               <div className="absolute bottom-0 left-0 right-0 h-40 bg-[#282828] rounded-2xl shadow-2xl" />
               <div className="relative z-10 p-3 md:p-4 lg:p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                   {partnershipFeatures.map((feature, index) => {
       const [firstWord, ...restWords] = feature.title.split(" ");
       const secondPart = restWords.join(" ");

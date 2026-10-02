@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { RESPONSIVE_HEIGHT } from "@/constant/layout";
 import { Poppins, Open_Sans } from "next/font/google";
 import PeekingRobot from "./PeekingRobot";
-import { DISCOVERY_CALL_URL } from "@/constant/links";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["900"],
@@ -99,29 +98,37 @@ const Hero = () => {
             {
     /* Left Section */
   }
-            <div className="lg:col-span-12 xl:col-span-5 lg:pl-20 px-4 sm:px-0 xl:max-w-xl">
+            <div className="lg:col-span-12 xl:col-span-5 lg:pl-20 px-4 sm:px-0">
+              <motion.p
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6 }}
+    className="text-sm sm:text-base text-white mb-2 font-open-sans-bold"
+  >
+                Your trusted partner in Business Process Outsourcing
+              </motion.p>
+
               <motion.h1
     initial={{ opacity: 0, y: 30 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 0.2 }}
-    className="text-[30px] sm:text-[36px] md:text-[42px] lg:text-[46px] text-white font-poppins-black leading-tight mb-4 sm:mb-5"
+    className="text-[35px] sm:text-[40px] md:text-[48px] lg:text-[55px] text-white font-poppins-black leading-tight mb-4 sm:mb-5"
   >
-                Managed Offshore Teams for Growing Businesses
+                Your Partner to
+                <br />
+                Scale Smarter
               </motion.h1>
 
-              <motion.div
+              <motion.p
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.8, delay: 0.4 }}
-    className="text-white text-xs sm:text-sm leading-relaxed max-w-xl mb-5 sm:mb-6 font-poppins space-y-3"
+    className="text-white text-xs sm:text-sm leading-relaxed max-w-lg mb-5 sm:mb-6 font-poppins"
   >
-                <p>
-                  Build your customer support and back-office capacity with a Philippine-based team supported by quality assurance, team leadership, and operations management.
-                </p>
-                <p>
-                  For businesses around the world, we help shape the right support model around your workflows, service hours, and customer needs.
-                </p>
-              </motion.div>
+                World-class business support from the Philippines: GoHighLevel
+                VAs, customer support and offshore staffing that reduce costs and
+                empower your growth.
+              </motion.p>
 
               <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -130,12 +137,12 @@ const Hero = () => {
     className="mb-5 sm:mb-6"
   >
                 <a
-    href={DISCOVERY_CALL_URL}
+    href="https://hiretelex.com/scale-with-telex"
     target="_blank"
     rel="noopener noreferrer"
     className="inline-block rounded px-6 sm:px-7 py-2 sm:py-2.5 text-xs font-open-sans-bold uppercase tracking-wide bg-white text-[#a10000] transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:bg-gray-100"
   >
-                  Book a 15-Minute Discovery Call
+                  CONTACT US NOW
                 </a>
               </motion.div>
 

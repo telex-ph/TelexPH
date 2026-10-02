@@ -19,27 +19,39 @@ const rubik = Rubik({
 const processSteps = [
   {
     number: "01",
-    title: "Understand Your Needs",
-    description: "We discuss your workload, current challenges, systems, service hours, and priorities.",
+    title: "Consultation",
+    description: "We assess your business needs and challenges.",
     imageUrl: "/images/process1.webp"
   },
   {
     number: "02",
-    title: "Define the Support Model",
-    description: "We agree on scope, team structure, responsibilities, performance measures, and pricing.",
+    title: "Strategy",
+    description: "A tailored outsourcing plan designed for your goals.",
     imageUrl: "/images/process2.webp"
   },
   {
     number: "03",
-    title: "Prepare for Delivery",
-    description: "We align training, system access, escalation rules, and readiness before launch.",
+    title: "Onboarding",
+    description: "Seamless setup with training, integration, and dedicated teams.",
     imageUrl: "/images/process3.webp"
   },
   {
     number: "04",
-    title: "Review and Improve",
-    description: "We review performance together and address gaps through coaching and process improvements.",
+    title: "Execution",
+    description: "Our experts deliver results with efficiency and precision.",
     imageUrl: "/images/process4.webp"
+  },
+  {
+    number: "05",
+    title: "Customer Support",
+    description: "Continuous tracking of performance and KPIs.",
+    imageUrl: "/images/process5.webp"
+  },
+  {
+    number: "06",
+    title: "Optimization",
+    description: "Regular improvements to maximize efficiency and ROI.",
+    imageUrl: "/images/process6.webp"
   }
 ];
 const ProcessStepItem = ({ step }) => {
@@ -171,12 +183,12 @@ const Process = () => {
                             before:content-[''] before:absolute before:top-1/2 before:-left-8 before:w-6 before:h-px before:bg-[#a10000]
                             after:content-[''] after:absolute after:top-1/2 after:-right-8 after:w-6 after:h-px after:bg-[#a10000]`}
   >
-            HOW WE START
+            SERVICES PROCESS
           </p>
           <h2
     className={`${openSans.className} text-4xl md:text-5xl font-black text-gray-800 mt-2`}
   >
-            Built Around Your Operations
+            Our Work Process
           </h2>
         </div>
 
@@ -186,7 +198,7 @@ const Process = () => {
 
         <div
     className="
-                        hidden lg:grid lg:grid-cols-2 max-w-4xl mx-auto
+                        hidden lg:grid lg:grid-cols-3
                         gap-x-10 gap-y-20
                         px-4
                         pb-10 lg:pb-16 
