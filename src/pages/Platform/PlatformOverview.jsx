@@ -5,6 +5,7 @@ import {
   useRef,
   useCallback
 } from "react";
+import { useLocation } from "react-router-dom";
 import { Barlow_Condensed, Rubik, Open_Sans, Poppins } from "next/font/google";
 const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
@@ -2074,8 +2075,22 @@ function TabIndustries({ onTabSwitch }) {
 
     </>;
 }
+const TAB_KEYS = ["platforms", "tools", "industries"];
+const tabFromSearch = (search) => {
+  const t = new URLSearchParams(search).get("tab");
+  return TAB_KEYS.includes(t) ? t : null;
+};
 function PlatformOverview() {
-  const [activeTab, setActiveTab] = useState("platforms");
+  // the Expertise menu links to /platform?tab=platforms|tools|industries
+  const { search } = useLocation();
+  const [activeTab, setActiveTab] = useState(() => tabFromSearch(search) || "platforms");
+  useEffect(() => {
+    const t = tabFromSearch(search);
+    if (t) {
+      setActiveTab(t);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [search]);
   useEffect(() => {
     const id = "platform-overview-minimal-styles";
     if (!document.getElementById(id)) {

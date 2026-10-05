@@ -9,6 +9,7 @@ import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTr
 import BugReportWidget from "@/shared/BugReportWidget";
 import { RouteSeo } from "@/shared/Seo";
 import { SERVICE_PAGES } from "@/data/service-pages";
+import { ABOUT_PAGES } from "@/data/about-pages";
 
 /* The landing page is eager so the first paint is immediate. Every other
    route is code-split — Next.js did this per-page automatically, and without
@@ -28,9 +29,12 @@ const CaseStudyDetails = lazy(() => import("@/pages/CaseStudyDetails"));
 const Location = lazy(() => import("@/pages/Location"));
 const Platform = lazy(() => import("@/pages/Platform"));
 const LogisticsLanding = lazy(() => import("@/pages/LogisticsLanding"));
+const LogisticsPrivacy = lazy(() => import("@/pages/LogisticsPrivacy"));
+const LogisticsTerms = lazy(() => import("@/pages/LogisticsTerms"));
 const Apply = lazy(() => import("@/pages/Apply"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ServicePage = lazy(() => import("@/pages/ServicePage"));
+const AboutInfo = lazy(() => import("@/pages/AboutInfo"));
 
 /* ---------------- Funnels ---------------- */
 const FunnelService = lazy(() => import("@/pages/funnels/$service/Page"));
@@ -119,6 +123,7 @@ registerPrefetch([
   ["/client/login", () => import("@/pages/client/login/Page")],
   ["/VirtualAssistant/login", () => import("@/pages/VirtualAssistant/login/Page")],
   ...SERVICE_PAGES.map(({ path }) => [path, () => import("@/pages/ServicePage")]),
+  ...ABOUT_PAGES.map(({ path }) => [path, () => import("@/pages/AboutInfo")]),
 ]);
 
 /**
@@ -155,6 +160,10 @@ const App = () => {
         <Route path="/location" element={<Location />} />
         <Route path="/platform" element={<Platform />} />
         <Route path="/logistics" element={<LogisticsLanding />} />
+        <Route path="/logistics/privacy-policy" element={<LogisticsPrivacy />} />
+        <Route path="/logistics/terms-and-conditions" element={<LogisticsTerms />} />
+        <Route path="/logistics/privacy" element={<Navigate to="/logistics/privacy-policy" replace />} />
+        <Route path="/logistics/terms" element={<Navigate to="/logistics/terms-and-conditions" replace />} />
         <Route path="/logistics/landing" element={<Navigate to="/logistics" replace />} />
         <Route path="/Apply" element={<Apply />} />
 
@@ -170,6 +179,10 @@ const App = () => {
         />
 
         {/* ---------- Service landing pages (data/service-pages.js) ---------- */}
+        {ABOUT_PAGES.map(({ path }) => (
+          <Route key={path} path={path} element={<AboutInfo />} />
+        ))}
+
         {SERVICE_PAGES.map(({ path }) => (
           <Route key={path} path={path} element={<ServicePage />} />
         ))}
