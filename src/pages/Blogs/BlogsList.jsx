@@ -1,6 +1,10 @@
 
+import { Link } from "react-router-dom";
 import { HiOutlineArrowRight, HiOutlineArrowUpRight } from "react-icons/hi2";
 import { FONTS, FONT_WEIGHTS } from "@/constant/styles";
+
+// Real <a href> so crawlers can follow from the list to each post.
+const postUrl = (post) => `/resources/blogs/${post.slug}`;
 const TAB_CONTENT = [
   {
     value: "All",
@@ -103,7 +107,7 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
               <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:bottom-6 sm:left-6 md:bottom-8 md:left-8 bg-white px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5 rounded-lg shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] sm:w-[85%] max-w-[600px] border border-gray-50 flex items-center justify-between gap-3 sm:gap-6">
                 <div className="flex-grow min-w-0">
                   <span className="text-[#800000] font-normal text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mb-1 sm:mb-2 block">featured blog</span>
-                  <h1 className="text-sm sm:text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2">{featuredPost.title}</h1>
+                  <h1 className="text-sm sm:text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2"><Link to={postUrl(featuredPost)}>{featuredPost.title}</Link></h1>
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0">
                   <p className="text-[11px] text-gray-400 font-normal whitespace-nowrap hidden sm:block">{formatDate(featuredPost.createdAt)}</p>
@@ -124,9 +128,10 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
         <div className="lg:col-span-4">
           <h2 className="text-xl font-bold text-gray-900 mb-6 tracking-tight border-b border-gray-100 pb-2">Latest Updates</h2>
           <div className="flex flex-col gap-3">
-            {latestUpdates.map((post) => <div
+            {latestUpdates.map((post) => <Link
     key={post._id}
-    onClick={() => onArticleClick(post)}
+    to={postUrl(post)}
+    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
     className="group cursor-pointer flex gap-4 items-center bg-white p-3 rounded-[10px] border border-gray-50 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_35px_-8px_rgba(0,0,0,0.15)] transition-all"
   >
                 <div className="w-16 h-16 rounded-[8px] overflow-hidden flex-shrink-0">
@@ -138,7 +143,7 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
                     {post.title}
                   </h4>
                 </div>
-              </div>)}
+              </Link>)}
           </div>
         </div>
       </div>
@@ -192,10 +197,9 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
                   </div>
                   
                   <h3
-      onClick={() => onArticleClick(blog)}
       className="text-[22px] font-bold text-gray-900 leading-tight mb-3 group-hover:text-[#800000] transition-colors cursor-pointer"
     >
-                    {blog.title}
+                    <Link to={postUrl(blog)}>{blog.title}</Link>
                   </h3>
                   
                   <p className="text-[14px] text-gray-500 font-normal leading-relaxed line-clamp-2">
@@ -242,10 +246,9 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
                 </div>
                 
                 <h3
-      onClick={() => onArticleClick(blog)}
       className="text-[19px] font-bold text-gray-900 leading-tight mb-2 group-hover:text-[#800000] transition-colors cursor-pointer line-clamp-2"
     >
-                  {blog.title}
+                  <Link to={postUrl(blog)}>{blog.title}</Link>
                 </h3>
                 
                 <p className="text-[13px] text-gray-500 font-normal leading-relaxed mb-4 line-clamp-2">
