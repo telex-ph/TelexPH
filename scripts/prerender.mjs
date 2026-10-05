@@ -18,9 +18,22 @@ import { SEO_PAGES, SITE_URL } from "../src/data/seo-pages.js";
 const PORT = 4173;
 const log = (...a) => console.log("[prerender]", ...a);
 
+// 0. Published blog posts each get a page (/resources/blogs/<slug>). Needs VITE_API_ORIGIN
+//    (the backend's /api URL); without it, or if the backend is down, posts are skipped.
+//    Slugs are limited to [a-z0-9-] because they become folder names under dist/.
+const posts = await fetch(`${process.env.VITE_API_ORIGIN}/blogs`, { signal: AbortSignal.timeout(60000) })
+  .then((r) => r.json())
+  .then((all) => all.filter((b) => b.status === "published" && /^[a-z0-9-]+$/.test(b.slug)))
+  .catch((err) => (log("blog posts skipped:", err.message), []));
+const postTitles = new Map(posts.map((b) => [`/resources/blogs/${b.slug}`, b.title]));
+log(`${postTitles.size} blog posts`);
+
 // 1. Sitemap + SPA shell first: both must exist even if prerendering fails.
-const sitemapUrls = SEO_PAGES.filter((p) => p.sitemap !== false)
-  .map((p) => `  <url><loc>${SITE_URL}${p.path}</loc></url>`)
+const sitemapUrls = [
+  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => p.path),
+  ...postTitles.keys(),
+]
+  .map((path) => `  <url><loc>${SITE_URL}${path}</loc></url>`)
   .join("\n");
 await fs.writeFile(
   "dist/sitemap.xml",
@@ -59,7 +72,7 @@ try {
 
 // 3. Render each page. "/" goes last because it overwrites dist/index.html,
 //    which the preview server also uses as its SPA fallback.
-const routes = SEO_PAGES.filter((p) => p.prerender !== false).map((p) => p.path);
+const routes = [...SEO_PAGES.filter((p) => p.prerender !== false).map((p) => p.path), ...postTitles.keys()];
 routes.sort((a, b) => (a === "/") - (b === "/"));
 
 const server = await preview({ preview: { port: PORT, strictPort: true }, logLevel: "error" });
@@ -70,6 +83,14 @@ for (const route of routes) {
     // Backend (Render) may be cold; don't let one slow API call sink the page.
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: "networkidle0", timeout: 60000 })
       .catch((err) => log(`slow network on ${route}, snapshotting anyway:`, err.message));
+    // A post shows a short loading animation before its <h1>; wait for the real article.
+    if (postTitles.has(route)) {
+      await page.waitForFunction(
+        (t) => [...document.querySelectorAll("h1")].some((h) => h.textContent.trim() === t),
+        { timeout: 15000 },
+        postTitles.get(route).trim()
+      );
+    }
     const html = await page.evaluate(() => {
       document.getElementById("root")?.setAttribute("data-prerendered", "");
       return "<!doctype html>\n" + document.documentElement.outerHTML;

@@ -36,7 +36,7 @@ export const SERVICE_PAGES = [
       "Coaches, consultants and service businesses running on GoHighLevel",
     ],
     why: [
-      "TelexPH has provided offshore staffing since 2017 from Guimba, Nueva Ecija, Philippines, and serves clients in the US, UK, Australia, Canada and New Zealand.",
+      "TelexPH has provided offshore staffing since 2021 from Guimba, Nueva Ecija, Philippines, and serves clients in the US, UK, Australia, Canada and New Zealand.",
       "Our GoHighLevel team combines platform training with AI-assisted workflows, which cuts repetitive CRM work and speeds up delivery for agencies.",
     ],
     faqs: [
@@ -77,7 +77,7 @@ export const SERVICE_PAGES = [
     ],
     why: [
       "Our admins work only inside the systems you approve and follow your documented processes.",
-      "TelexPH has run offshore teams since 2017, so you get trained staff with supervision instead of a single freelancer.",
+      "TelexPH has run offshore teams since 2021, so you get trained staff with supervision instead of a single freelancer.",
     ],
     faqs: [
       { q: "What does a GoHighLevel admin do?", a: "A GoHighLevel admin sets up and maintains the platform: sub-accounts, workflows, pipelines, calendars, forms, integrations and user permissions. They also troubleshoot automations that stop working." },
@@ -154,7 +154,7 @@ export const SERVICE_PAGES = [
     ],
     why: [
       "Your clients see your brand only. We work inside your tools and communication channels.",
-      "TelexPH has provided offshore support for international clients since 2017.",
+      "TelexPH has provided offshore support for international clients since 2021.",
     ],
     faqs: [
       { q: "What is GoHighLevel white label support?", a: "It is GoHighLevel build and support work delivered by a partner team under your agency's brand. Your clients deal only with your agency while the partner does the work." },
@@ -192,7 +192,7 @@ export const SERVICE_PAGES = [
       "Companies in the US, UK, Australia, Canada and New Zealand",
     ],
     why: [
-      "TelexPH has provided offshore staffing since 2017 and employs more than 50 professionals in the Philippines.",
+      "TelexPH has provided offshore staffing since 2021 and employs more than 50 professionals in the Philippines.",
       "Our VAs are trained in GoHighLevel, Slack, Notion, Asana, HubSpot and other common tools.",
     ],
     faqs: [
@@ -231,7 +231,7 @@ export const SERVICE_PAGES = [
       "Teams hiring several VAs at once",
     ],
     why: [
-      "TelexPH has recruited and managed offshore staff in the Philippines since 2017.",
+      "TelexPH has recruited and managed offshore staff in the Philippines since 2021.",
       "We screen for English communication, tool skills and reliability before you meet a candidate.",
     ],
     faqs: [

@@ -4,57 +4,65 @@
  * Plain JS (no JSX, no aliases) so Node can import it at build time.
  *
  * Titles get " | TelexPH" appended; keep them under 50 characters.
+ * A title that already starts with the brand people search ("Telex Philippines") is used as is.
  */
 import { SERVICE_PAGES } from "./service-pages.js";
 
 export const SITE_URL = "https://www.telexph.com";
 
+export const BRAND = "TelexPH";
+
+export const fullTitle = (title) => (title.startsWith(BRAND) ? title : `${title} | TelexPH`);
+
+/** One blog post: /resources/blogs/<slug>. Head tags come from the post, not from SEO_PAGES. */
+export const BLOG_POST_PATH = /^\/resources\/blogs\/[^/]+\/?$/i;
+
 export const SEO_PAGES = [
   {
     path: "/",
-    title: "GoHighLevel VAs & Offshore Staffing Philippines",
+    title: "TelexPH",
     description:
-      "Hire GoHighLevel VAs, customer support and offshore staff from the Philippines. Serving agencies in the US, UK, AU, CA and NZ since 2017.",
+      "To become a globally trusted operations and automation partner powered by Filipino talents.",
   },
   {
     path: "/about",
-    title: "About TelexPH: Philippine BPO Since 2017",
+    title: "About TelexPH",
     description:
-      "TelexPH is a Philippine BPO founded in 2017 in Guimba, Nueva Ecija. Meet the team behind our offshore staffing, GoHighLevel and support services.",
+      "TelexPH is a Philippine BPO founded in 2021 in Guimba, Nueva Ecija. Meet the team behind our offshore staffing, GoHighLevel and support services.",
   },
   {
     path: "/services",
-    title: "Virtual Assistant & BPO Services Philippines",
+    title: "TelexPH Services",
     description:
-      "Offshore staffing, virtual assistants, customer support, GoHighLevel admin, automation, web and creative services from our team in the Philippines.",
+      "TelexPH delivers smart, secure and scalable outsourcing that integrates process and technology, with customizable workflows and advanced data security.",
   },
   {
     path: "/contact",
-    title: "Contact Us: Get a Custom Staffing Quote",
+    title: "Contact Us",
     description:
       "Tell us what you need and get a custom quote for offshore staff, virtual assistants or GoHighLevel support. Book a discovery call with TelexPH.",
   },
   {
     path: "/location",
-    title: "Our Office in Guimba, Nueva Ecija, Philippines",
+    title: "Our Office in the Philippines",
     description:
       "Visit or contact the TelexPH office in Guimba, Nueva Ecija, Philippines, home of our offshore staffing and customer support teams.",
   },
   {
     path: "/platform",
-    title: "Our Expertise: Tools and Platforms We Use",
+    title: "Our Expertise",
     description:
       "See the platforms our offshore teams work in every day, including GoHighLevel, CRMs, automation tools and project management software.",
   },
   {
     path: "/careers",
-    title: "Careers: Virtual Assistant Jobs at TelexPH",
+    title: "TelexPH Careers",
     description:
       "Join TelexPH as a virtual assistant or offshore team member. Browse open roles and grow your career with a Philippine BPO serving global clients.",
   },
   {
     path: "/careers/job-details",
-    title: "Virtual Assistant Roles and Hiring Details",
+    title: "Job Details | TelexPH Careers",
     description:
       "Details on TelexPH virtual assistant roles for applicants and for businesses looking to hire a VA from the Philippines.",
     keepQuery: true,

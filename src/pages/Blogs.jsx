@@ -1,5 +1,8 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Seo from "@/shared/Seo";
+import { SITE_URL } from "@/data/seo-pages";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
@@ -16,8 +19,9 @@ function BlogsPage() {
   const [activeTab, setActiveTab] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isArticleView, setIsArticleView] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  // The open post lives in the URL (/resources/blogs/<slug>) so each post can be shared and indexed.
+  const { slug } = useParams();
+  const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const openNavHandler = () => setShowNav(true);
@@ -43,19 +47,21 @@ function BlogsPage() {
     const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || blog.shortDescription.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTab && matchesSearch;
   });
+  const selectedPost = slug ? blogs.find((b) => b.slug === slug) : null;
+  const isArticleView = Boolean(selectedPost);
   const handleArticleClick = (post) => {
-    setSelectedPost(post);
-    setIsArticleView(true);
+    navigate(`/resources/blogs/${post.slug}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const handleBackToList = () => {
-    setIsArticleView(false);
-    setSelectedPost(null);
+    navigate("/resources/blogs");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return <div className="min-h-screen bg-white font-['Poppins',_sans-serif]">
       <Nav openNav={openNavHandler} />
       <MobileNav showNav={showNav} closeNav={closeNavHandler} />
+
+      {slug && !loading && <PostSeo post={selectedPost} />}
 
       <main className="pb-20">
         {isArticleView ? <div className="animate-in fade-in duration-500">
@@ -98,6 +104,28 @@ function BlogsPage() {
 
       <Footer />
     </div>;
+}
+/** Head tags + BlogPosting schema for one post; an unknown or unpublished slug gets noindex. */
+function PostSeo({ post }) {
+  if (!post) return <Seo noindex />;
+  const url = `${SITE_URL}/resources/blogs/${post.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.shortDescription,
+    image: post.picture,
+    url,
+    mainEntityOfPage: url,
+    datePublished: post.createdAt,
+    dateModified: post.updatedAt,
+    author: { "@type": "Person", name: post.author },
+    publisher: { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" },
+  };
+  return <>
+      <Seo title={post.title} description={post.shortDescription} image={post.picture} url={url} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+    </>;
 }
 export {
   BlogsPage as default
