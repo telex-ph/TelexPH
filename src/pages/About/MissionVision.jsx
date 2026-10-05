@@ -1,4 +1,5 @@
-import { Target, Eye, Users, Award, TrendingUp, Heart } from "lucide-react";
+import { motion } from "framer-motion";
+import { Target, Users, Award, TrendingUp, Heart } from "lucide-react";
 import { Rubik } from "next/font/google";
 import { COLORS, FONT_CLASSES, getColorWithOpacity } from "@/constant/styles";
 const rubik = Rubik({
@@ -30,88 +31,53 @@ function MissionVision() {
     /* Mission and Vision Cards */
   }
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
-            {
-    /* Mission Card */
-  }
-            <div className="group">
-              <div className="flex items-start gap-4 sm:gap-6">
-                <div className="flex-shrink-0">
-                  <div
-    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 flex items-center justify-center bg-white relative"
-    style={{ borderColor: COLORS.primary }}
-  >
-                    <Target
-    className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.5]"
-    style={{ color: COLORS.primary }}
-  />
-                    <div
-    className="absolute inset-0 rounded-full border-2 animate-ping opacity-20"
-    style={{ borderColor: COLORS.primary }}
-  />
-                  </div>
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.6 }}
+            className="relative overflow-hidden rounded-[2rem] p-8 text-white shadow-2xl shadow-black/20 md:p-14"
+            style={{ background: "linear-gradient(135deg,#1a1a1a 0%,#282828 55%,#4d0a0a 100%)" }}
+          >
+            <div aria-hidden className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 56px),repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 56px)" }} />
+            <motion.div aria-hidden className="absolute -bottom-32 -right-20 h-[26rem] w-[26rem] rounded-full opacity-30 blur-3xl" style={{ background: COLORS.primary }}
+              animate={{ x: [0, -30, 0], y: [0, -20, 0] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }} />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-4 -top-10 select-none text-[9rem] leading-none md:text-[16rem]"
+              style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 900, opacity: 0.12 }}
+            >
+              <span style={{ WebkitTextStroke: "1.5px #fff", WebkitTextFillColor: "transparent" }}>MTP</span>
+            </div>
 
-                <div className="flex-1">
-                  <h2
-    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl mb-4 sm:mb-6 tracking-tight`}
-    style={{ color: COLORS.dark }}
-  >
-                    MISSION
-                  </h2>
-                  <p
-    className={`${rubik.className} text-sm sm:text-base leading-relaxed`}
-    style={{ color: getColorWithOpacity("dark", 0.7) }}
-  >
-                    To empower businesses through innovative outsourcing
-                    solutions, cutting-edge technology, and adaptive strategies
-                    that drive efficiency, growth, and long-term success.
+            <div className="relative grid items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-14">
+              {/* target */}
+              <div className="relative mx-auto h-36 w-36 md:h-44 md:w-44">
+                {[0, 1, 2].map((i) => (
+                  <motion.span key={i} className="absolute inset-0 rounded-full border-2" style={{ borderColor: COLORS.primary }}
+                    initial={{ opacity: 0.4 }} animate={{ scale: [0.7, 1.35], opacity: [0.6, 0] }} transition={{ duration: 3.6, repeat: Infinity, delay: i * 1.2, ease: "easeOut" }} />
+                ))}
+                <div className="absolute inset-3 flex items-center justify-center rounded-full border-4" style={{ borderColor: COLORS.primary, background: "rgba(255,255,255,0.05)" }}>
+                  <Target className="h-16 w-16 stroke-[2] md:h-20 md:w-20" style={{ color: "#fff" }} />
+                </div>
+              </div>
+
+              {/* text */}
+              <div>
+                <h2 className={`${FONT_CLASSES.poppinsBlack} text-5xl tracking-tight md:text-7xl`}>MTP</h2>
+                <div className="mt-4 h-1 w-16" style={{ backgroundColor: COLORS.primary }} />
+                <div className="relative mt-8">
+                  <span aria-hidden className="absolute -left-2 -top-8 select-none text-8xl leading-none md:-left-6 md:text-9xl" style={{ color: COLORS.primary, fontFamily: "Georgia, serif", opacity: 0.55 }}>&ldquo;</span>
+                  <p className={`${rubik.className} relative max-w-4xl text-xl leading-relaxed text-gray-200 md:text-3xl md:leading-snug`}>
+                    Creating <strong className="font-semibold" style={{ color: "#e25555" }}>Abundant Opportunities</strong> and{" "}
+                    <strong className="font-semibold" style={{ color: "#e25555" }}>Innovative Pathways</strong> that set the{" "}
+                    <strong className="font-semibold" style={{ color: "#e25555" }}>Global Benchmark</strong> for every{" "}
+                    <strong className="font-semibold" style={{ color: "#e25555" }}>Filipino</strong>.&rdquo;
                   </p>
                 </div>
               </div>
             </div>
-
-            {
-    /* Vision Card */
-  }
-            <div className="group">
-              <div className="flex items-start gap-4 sm:gap-6">
-                <div className="flex-shrink-0">
-                  <div
-    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 flex items-center justify-center bg-white relative"
-    style={{ borderColor: COLORS.dark }}
-  >
-                    <Eye
-    className="w-8 h-8 sm:w-10 sm:h-10 stroke-[2.5]"
-    style={{ color: COLORS.dark }}
-  />
-                    <div
-    className="absolute inset-0 rounded-full border-2 animate-ping opacity-20"
-    style={{ borderColor: COLORS.dark }}
-  />
-                  </div>
-                </div>
-
-                <div className="flex-1">
-                  <h2
-    className={`${FONT_CLASSES.poppinsBlack} text-3xl sm:text-5xl mb-4 sm:mb-6 tracking-tight`}
-    style={{ color: COLORS.dark }}
-  >
-                    VISION
-                  </h2>
-                  <p
-    className={`${rubik.className} text-sm sm:text-base leading-relaxed`}
-    style={{ color: getColorWithOpacity("dark", 0.7) }}
-  >
-                    To be a global leader in business process solutions,
-                    recognized for harnessing innovation, people, and technology
-                    to create sustainable value, transform industries, and shape
-                    the future of work.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

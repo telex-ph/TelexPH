@@ -6,6 +6,7 @@
  * Titles get " | TelexPH" appended; keep them under 50 characters.
  */
 import { SERVICE_PAGES } from "./service-pages.js";
+import { ABOUT_PAGES } from "./about-pages.js";
 
 export const SITE_URL = "https://www.telexph.com";
 
@@ -98,6 +99,19 @@ export const SEO_PAGES = [
     description:
       "Managed customer support team in the Philippines for logistics businesses: shipment enquiries, customer follow-ups and delivery exceptions within your processes.",
   },
+  {
+    path: "/logistics/privacy-policy",
+    title: "Privacy Policy for Logistics Support",
+    description:
+      "How TelexPH collects, uses, stores and protects personal information provided through the TelexPH Logistics website and related services.",
+  },
+  {
+    path: "/logistics/terms-and-conditions",
+    title: "Terms and Conditions for Logistics Support",
+    description:
+      "Terms governing access to and use of the TelexPH Logistics website and related services.",
+  },
+  ...ABOUT_PAGES.map(({ path, seoTitle, description }) => ({ path, title: seoTitle, description })),
   ...SERVICE_PAGES.map(({ path, title, description }) => ({ path, title, description })),
 ];
 

@@ -84,7 +84,12 @@ const Harbour = () => {
 
 const jumpTo = (e, href) => {
   const el = document.querySelector(href);
-  if (!el) return;
+  if (!el) {
+    // on the legal pages the sections live on the landing page
+    e.preventDefault();
+    window.location.href = `/logistics${href}`;
+    return;
+  }
   e.preventDefault();
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: "smooth" });
 };
@@ -214,7 +219,7 @@ const LogisticsFooter = () => {
         </motion.div>
       </div>
 
-      <div className="relative"><FooterBottom /></div>
+      <div className="relative"><FooterBottom privacyHref="/logistics/privacy-policy" termsHref="/logistics/terms-and-conditions" /></div>
     </footer>
   );
 };

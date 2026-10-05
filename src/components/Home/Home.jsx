@@ -1,5 +1,5 @@
 import Hero from "./Hero/Hero";
-import Choose from "@/components/Choose/Choose";
+import WhatWeOffer from "@/components/About/WhatWeOffer";
 import Footer from "@/components/Footer/Footer";
 import Partners from "../Partners/Partners";
 import AboutUs from "../AboutUs/AboutUs";
@@ -33,17 +33,17 @@ const Home = () => {
       </div>
 
       {
-    /* 4. Choose Section - ID: choose */
-  }
-      <div id="choose">
-        <Choose />
-      </div>
-
-      {
     /* 5. PartnerLogos Section - ID: partnerlogos */
   }
       <div id="partnerlogos">
         <PartnerLogos />
+      </div>
+
+      {
+    /* 4. Choose Section - ID: choose */
+  }
+      <div id="choose">
+        <WhatWeOffer />
       </div>
 
       {

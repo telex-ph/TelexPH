@@ -48,8 +48,8 @@ const MobileNav = ({ showNav, closeNav }) => {
       label: "Company",
       items: [
         { label: "Company Overview", url: "/about#overview" },
-        { label: "Mission, Vision & Values", url: "/about#mission-vision" },
-        { label: "Why Choose Us", url: "/about#choose-us" },
+        { label: "MTP & Core Values", url: "/about#mtp" },
+        { label: "What We Offer", url: "/about#what-we-offer" },
         { label: "Our Team", url: "/about#our-team" }
       ]
     },
@@ -57,7 +57,36 @@ const MobileNav = ({ showNav, closeNav }) => {
       id: "platforms",
       label: "Expertise",
       items: [
-        { label: "Expertise Overview", url: "/platform" }
+        { label: "Platforms", url: "/platform?tab=platforms" },
+        { label: "Tools", url: "/platform?tab=tools" },
+        { label: "Industries", url: "/platform?tab=industries" }
+      ]
+    },
+    {
+      id: "hardware",
+      label: "Hardware & Infrastructure",
+      items: [
+        { label: "Power & Business Continuity", url: "/about/hardware-infrastructure#power-backup" },
+        { label: "Workstations", url: "/about/hardware-infrastructure#workstations" },
+        { label: "Internet Redundancy", url: "/about/hardware-infrastructure#internet-redundancy" }
+      ]
+    },
+    {
+      id: "compliance",
+      label: "Compliance & Security",
+      items: [
+        { label: "Compliance", url: "/about/compliance-security#compliance" },
+        { label: "Security", url: "/about/compliance-security#security" }
+      ]
+    },
+    {
+      id: "operations",
+      label: "Operations",
+      items: [
+        { label: "Seating & Headcount", url: "/about/operations#seating-headcount" },
+        { label: "Operations & Service Capability", url: "/about/operations#operations-service-capability" },
+        { label: "Performance & Quality Excellence", url: "/about/operations#performance-quality" },
+        { label: "Workplace Environment", url: "/about/operations#workplace-environment" }
       ]
     }
   ];
