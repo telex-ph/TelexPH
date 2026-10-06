@@ -1,8 +1,13 @@
 
 import Image from "next/image";
-import { Phone } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { COLORS, FONT_CLASSES } from "@/constant/styles";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
+const CONTACT_ITEMS = [
+  { Icon: Phone, label: "Call Us Directly?", value: "0443252836", href: "tel:+63443252836" },
+  { Icon: Mail, label: "For Support?", value: "careers@telexph.com", href: "mailto:careers@telexph.com" },
+  { Icon: MapPin, label: "Our Location", value: "Guimba, Nueva Ecija, Philippines" }
+];
 const ContactSupport = () => {
   const CARD_INNER_WIDTH_CLASS = DEFAULT_MAX_WIDTH_CLASS.replace(
     "max-w-[1400px]",
@@ -44,19 +49,19 @@ const ContactSupport = () => {
                 Have Any Questions? Call Us
               </h2>
 
-              <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center sm:justify-center md:justify-start md:items-start lg:items-baseline gap-1 sm:gap-2 md:gap-1 lg:gap-3 mb-1 sm:mb-2">
-                <a
-    href="tel:+63443252836"
-    className={`text-base sm:text-lg md:text-xl lg:text-2xl ${FONT_CLASSES.openSansBold} text-[${COLORS.primary}] hover:text-[${COLORS.dark}] transition-colors whitespace-nowrap`}
-  >
-                  0443252836
-                </a>
-                <a
-    href="mailto:careers@telexph.com"
-    className={`text-sm sm:text-base md:text-lg lg:text-xl ${FONT_CLASSES.openSansBold} text-gray-500 hover:text-gray-700 transition-colors break-all sm:break-normal`}
-  >
-                  careers@telexph.com
-                </a>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap md:flex-col lg:flex-row items-center md:items-start sm:justify-center md:justify-start gap-3 sm:gap-x-8 sm:gap-y-3 mb-3 sm:mb-4">
+                {CONTACT_ITEMS.map(({ Icon, label, value, href }) => {
+                  const valueClass = `block text-sm sm:text-base ${FONT_CLASSES.openSansBold} whitespace-nowrap ${href ? "text-[#a10000] hover:text-[#282828] transition-colors" : "text-[#282828]"}`;
+                  return <div key={label} className="flex items-center gap-3 text-left">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#fce5e5] text-[#a10000]">
+                      <Icon className="h-5 w-5" strokeWidth={2} />
+                    </span>
+                    <span className={`${FONT_CLASSES.rubikRegular} block text-xs text-gray-500 leading-tight`}>
+                      {label}
+                      {href ? <a href={href} className={valueClass}>{value}</a> : <span className={valueClass}>{value}</span>}
+                    </span>
+                  </div>;
+                })}
               </div>
 
               <p
