@@ -46,10 +46,10 @@ const ContactSupport = () => {
 
               <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center sm:justify-center md:justify-start md:items-start lg:items-baseline gap-1 sm:gap-2 md:gap-1 lg:gap-3 mb-1 sm:mb-2">
                 <a
-    href="tel:+630443315040"
+    href="tel:+63443252836"
     className={`text-base sm:text-lg md:text-xl lg:text-2xl ${FONT_CLASSES.openSansBold} text-[${COLORS.primary}] hover:text-[${COLORS.dark}] transition-colors whitespace-nowrap`}
   >
-                  0449504196
+                  0443252836
                 </a>
                 <a
     href="mailto:careers@telexph.com"

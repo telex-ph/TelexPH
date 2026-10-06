@@ -92,7 +92,7 @@ const ContactInfo = () => {
             </h3>
 
             <a
-    href="tel:+6344331-5040"
+    href="tel:+63443252836"
     className={`${FONT_CLASSES.rubikRegular} block transition-colors`}
     style={{
       fontFamily: FONTS.rubik,
@@ -101,7 +101,7 @@ const ContactInfo = () => {
     onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primary}
     onMouseLeave={(e) => e.currentTarget.style.color = secondaryTextColor}
   >
-              0449504196
+              0443252836
             </a>
 
             <a

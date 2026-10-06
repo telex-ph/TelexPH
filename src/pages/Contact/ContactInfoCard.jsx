@@ -63,14 +63,14 @@ const ContactInfoCard = () => {
             Support Center
           </p>
           <a
-    href="tel:+63443315040"
+    href="tel:+63443252836"
     className="text-lg font-semibold transition-colors duration-200 hover:underline"
     style={{
       color: COLORS.primary,
       fontFamily: FONTS.poppins
     }}
   >
-            0449504196
+            0443252836
           </a>
         </div>
 

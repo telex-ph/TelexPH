@@ -4,7 +4,7 @@ import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
 import Partners from "@/components/Partners/Partners";
-import WhatWeOffer from "@/components/About/WhatWeOffer";
+import Choose from "@/components/Choose/Choose";
 import PartnerLogos from "@/components/PartnerLogos/PartnerLogos";
 import AboutHero from "./About/AboutHero";
 import { ABOUT_SCENES } from "@/components/About/AboutScenes";
@@ -41,11 +41,11 @@ function AboutPage() {
           <MissionVision />
         </section>
 
-        <PartnerLogos />
-
-        <section id="what-we-offer">
-          <WhatWeOffer />
+        <section id="choose-us">
+          <Choose />
         </section>
+
+        <PartnerLogos />
 
         <section id="our-team">
           <Team />

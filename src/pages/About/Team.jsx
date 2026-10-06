@@ -201,11 +201,11 @@ function Team() {
         <div className="flex justify-center mb-16">
           <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:max-w-4xl md:justify-center md:overflow-x-visible">
             <MemberCard
-    img="images/anjeaneth_01.webp"
-    name="Anjanneth P. Bilas"
+    img="images/eloi_02.webp"
+    name="Eloisa Mae Dacayo"
     title="Head of Finance"
     linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas-087051117/"
-    imagePositionClass="object-center translate-y-3 scale-150"
+    imagePositionClass="object-top"
   />
             <MemberCard
     img="images/joanne_01.webp"
