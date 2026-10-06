@@ -45,6 +45,11 @@ function AdminLoginForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileKey, setTurnstileKey] = useState(0);
+  const resetTurnstile = () => {
+    setTurnstileToken("");
+    setTurnstileKey((k) => k + 1);
+  };
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -88,6 +93,7 @@ function AdminLoginForm() {
       goToDashboard();
     } catch (err) {
       setError(err instanceof DOMException && err.name === "AbortError" ? "The server took too long to respond. Please try again." : err instanceof Error ? err.message : "An error occurred during login");
+      resetTurnstile();
       setIsLoading(false);
     }
   };
@@ -235,6 +241,7 @@ function AdminLoginForm() {
 
       <div className="animate-fade-in-up" style={{ animationDelay: "0.24s" }}>
         <TurnstileWidget
+    key={turnstileKey}
     onVerify={setTurnstileToken}
     onExpire={() => setTurnstileToken("")}
   />

@@ -23,6 +23,11 @@ function VALoginPage() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileKey, setTurnstileKey] = useState(0);
+  const resetTurnstile = () => {
+    setTurnstileToken("");
+    setTurnstileKey((k) => k + 1);
+  };
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState("credentials");
@@ -63,6 +68,7 @@ function VALoginPage() {
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || data.message || "Invalid email or password.");
+        resetTurnstile();
         setIsLoading(false);
         return;
       }
@@ -75,6 +81,7 @@ function VALoginPage() {
       router.push("/VirtualAssistant/dashboard?welcome=1");
     } catch {
       setError("Unable to connect. Please try again.");
+      resetTurnstile();
       setIsLoading(false);
     }
   };
@@ -230,6 +237,7 @@ function VALoginPage() {
 
       <div className="animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
         <TurnstileWidget
+    key={turnstileKey}
     onVerify={setTurnstileToken}
     onExpire={() => setTurnstileToken("")}
   />
@@ -796,6 +804,7 @@ function VALoginPage() {
               </button>
 
               <TurnstileWidget
+    key={turnstileKey}
     onVerify={setTurnstileToken}
     onExpire={() => setTurnstileToken("")}
   />
