@@ -12,6 +12,11 @@ function ClientLoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileKey, setTurnstileKey] = useState(0);
+  const resetTurnstile = () => {
+    setTurnstileToken("");
+    setTurnstileKey((k) => k + 1);
+  };
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -56,6 +61,7 @@ function ClientLoginPage() {
       router.push("/client/dashboard?welcome=1");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred during login");
+      resetTurnstile();
       setIsLoading(false);
     }
   };
@@ -185,6 +191,7 @@ function ClientLoginPage() {
 
       <div className="animate-fade-in-up" style={{ animationDelay: "0.22s" }}>
         <TurnstileWidget
+    key={turnstileKey}
     onVerify={setTurnstileToken}
     onExpire={() => setTurnstileToken("")}
   />
