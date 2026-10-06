@@ -172,6 +172,7 @@ const App = () => {
 
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/Blogs" element={<Blogs />} />
+        <Route path="/resources/blogs/:slug" element={<Blogs />} />
         <Route path="/resources/IndustryUseCase" element={<IndustryUseCase />} />
         <Route
           path="/resources/CaseStudiesCardDetails"

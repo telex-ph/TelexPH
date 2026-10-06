@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { SITE_URL, findSeoPage } from "@/data/seo-pages";
+import { SITE_URL, BRAND, BLOG_POST_PATH, fullTitle, findSeoPage } from "@/data/seo-pages";
 
-const BASE_TITLE = "TelexPH";
+const BASE_TITLE = BRAND;
 
 const setMeta = (attr, key, content) => {
   if (!content) return undefined;
@@ -57,7 +57,7 @@ const setCanonical = (href) => {
 const Seo = ({ title, description, image, url, noindex }) => {
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = title ? `${title} | ${BASE_TITLE}` : BASE_TITLE;
+    document.title = title ? fullTitle(title) : BASE_TITLE;
 
     const cleanups = [
       setMeta("name", "description", description),
@@ -87,6 +87,7 @@ const Seo = ({ title, description, image, url, noindex }) => {
  */
 export const RouteSeo = () => {
   const { pathname, search } = useLocation();
+  if (BLOG_POST_PATH.test(pathname)) return null; // pages/Blogs.jsx sets the post's own head tags
   const page = findSeoPage(pathname);
   if (!page) return <Seo noindex />;
 
