@@ -6,7 +6,7 @@ const FooterLinks = () => {
       </div>
 
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
-        Call Us Directly?<br /><span className="text-sm sm:text-base font-medium">0449504196</span>
+        Call Us Directly?<br /><span className="text-sm sm:text-base font-medium">0443252836</span>
       </p>
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
         For Support?<br /><span className="text-sm sm:text-base font-medium">careers@telexph.com</span>

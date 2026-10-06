@@ -139,7 +139,7 @@ function CompanyOverview() {
     className={`${FONT_CLASSES.openSansBold} text-xl`}
     style={{ color: COLORS.dark }}
   >
-                      (044) 331 - 5040
+                      (044) 325 - 2836
                     </p>
                   </div>
                 </div>

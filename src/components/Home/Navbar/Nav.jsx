@@ -86,7 +86,7 @@ const Nav = ({ openNav }) => {
       items: [
         { label: "Company Overview", url: "/about#overview" },
         { label: "MTP & Core Values", url: "/about#mtp" },
-        { label: "What We Offer", url: "/about#what-we-offer" },
+        { label: "Why Choose Us", url: "/about#choose-us" },
         { label: "Our Team", url: "/about#our-team" }
       ]
     },

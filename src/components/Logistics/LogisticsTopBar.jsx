@@ -50,8 +50,9 @@ const LogisticsTopBar = () => {
       <Container>
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-6 py-1.5 sm:py-0 sm:h-10 text-[11px] sm:text-sm">
           <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-6">
+            <Item Icon={Mail} href="mailto:business@telexph.com">business@telexph.com</Item>
             <Item Icon={Mail} href="mailto:careers@telexph.com">careers@telexph.com</Item>
-            <Item Icon={Phone} href="tel:0449504196">0449504196</Item>
+            <Item Icon={Phone} href="tel:0443252836">0443252836</Item>
           </div>
           <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
             <Link href="/location" className="group flex items-center gap-2 transition-opacity hover:opacity-90">

@@ -95,7 +95,7 @@ const jumpTo = (e, href) => {
 };
 
 const CONTACTS = [
-  { Icon: Phone, label: "Call Us Directly?", value: "0449504196", href: "tel:0449504196" },
+  { Icon: Phone, label: "Call Us Directly?", value: "0443252836", href: "tel:0443252836" },
   { Icon: Mail, label: "For Support?", value: "careers@telexph.com", href: "mailto:careers@telexph.com" },
   { Icon: MapPin, label: "Our Location", value: "Guimba, Nueva Ecija, Philippines" },
 ];
