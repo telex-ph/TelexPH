@@ -1,5 +1,9 @@
 
+import PageHeader from "@/components/PageHeader";
 import React, { useState, useRef, useEffect } from "react";
+import DashboardLoader, { Spinner, useInitialLoad } from "@/components/DashboardLoader";
+import RichTextArea from "@/components/RichTextArea";
+import { toHtml } from "@/lib/rich-text";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 const PLACEHOLDER_COVERS = [
@@ -8,6 +12,12 @@ const PLACEHOLDER_COVERS = [
   "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80",
   "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&q=80"
 ];
+// ISO -> value for <input type="datetime-local"> in the admin's local time.
+const toLocalInput = (iso) => {
+  const d = new Date(iso);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+};
 const transformBackendRecord = (item) => ({
   _id: item._id,
   title: item.title || "",
@@ -18,6 +28,7 @@ const transformBackendRecord = (item) => ({
   start: item.startDate ? new Date(item.startDate).toISOString().split("T")[0] : "",
   end: item.endDate ? new Date(item.endDate).toISOString().split("T")[0] : "",
   cover: item.cover || "",
+  scheduleAt: item.scheduleDate ? toLocalInput(item.scheduleDate) : "",
   // challenge and solution are arrays of { title, text } — extract the text
   challenge: Array.isArray(item.challenge) ? item.challenge.map((c) => c.text || "").join("\n\n") : item.challenge || "",
   solution: Array.isArray(item.solution) ? item.solution.map((s) => s.text || "").join("\n\n") : item.solution || "",
@@ -54,6 +65,7 @@ const getDefaultForm = () => ({
   tags: [],
   startDate: "",
   endDate: "",
+  scheduleAt: "",
   challenge: "",
   solution: "",
   sections: [{ topic: "", content: "" }]
@@ -122,7 +134,7 @@ const StatTile = ({ label, count, gradient, gradientLight, accentColor, accentCo
       </div>
     </div>
     <p style={{ position: "relative", fontSize: 34, fontWeight: 700, margin: "0 0 14px", lineHeight: 1, color: dark ? "#ffffff" : "#111827", fontFamily: "'Poppins', sans-serif", letterSpacing: "-0.02em" }}>{count}</p>
-    <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 6 }}>
+    <div style={{ position: "relative", display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
       <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 20, background: dark ? "rgba(0,0,0,0.22)" : "rgba(255,255,255,0.65)", backdropFilter: "blur(4px)", border: dark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(255,255,255,0.9)", color: changeUp ? dark ? "#34d399" : "#059669" : dark ? "#f87171" : "#dc2626", fontFamily: "'Poppins', sans-serif" }}>
         {changeUp ? "\u2191" : "\u2193"} {change.split(" ")[0]}
       </span>
@@ -145,7 +157,7 @@ const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, textMuted
     const isToday = d === today;
     const ds = dateStr(d);
     const hasEv = records.some((r) => r.start === ds);
-    return <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 10, borderRadius: 8, cursor: "pointer", fontWeight: isToday ? 700 : 400, background: isToday ? "var(--admin-accent)" : "transparent", color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
+    return <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ aspectRatio: "1", width: "100%", maxWidth: 40, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 10, borderRadius: 8, cursor: "pointer", fontWeight: isToday ? 700 : 400, background: isToday ? "var(--admin-accent)" : "transparent", color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
               {d}
               {hasEv && <div style={{ width: 4, height: 4, borderRadius: "50%", background: isToday ? "rgba(255,255,255,0.8)" : "#3b82f6" }} />}
             </div>;
@@ -217,19 +229,13 @@ const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGeneratin
           style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: `1px solid ${borderColor}`, background: inputBg, color: textPrimary, fontSize: 12, outline: "none", resize: "none", fontFamily: "'Poppins', sans-serif", boxSizing: "border-box", marginBottom: 10 }}
         />
         <button onClick={onExpandPrompt} disabled={busy || !prompt.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 0", borderRadius: 10, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 12, fontWeight: 500, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.6 : 1, fontFamily: "'Poppins', sans-serif", marginBottom: busy ? 10 : 18 }}>
-          {isExpanding ? <svg className="animate-spin" width="13" height="13" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg> : <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>}
+          {isExpanding ? <Spinner size={13} /> : <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>}
           {isExpanding ? "Generating prompt…" : "Generate Prompt"}
         </button>
 
         {busy && <div style={{ marginBottom: 18, padding: "22px 20px", borderRadius: 14, border: `1px solid ${borderColor}`, background: inputBg, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <div style={{ position: "relative", width: 52, height: 52, marginBottom: 6 }}>
-              <svg width="52" height="52" className="animate-spin" style={{ animationDuration: "2s" }} viewBox="0 0 56 56" fill="none">
-                <circle cx="28" cy="28" r="24" stroke={"var(--admin-border)"} strokeWidth="4" />
-                <circle cx="28" cy="28" r="24" stroke="var(--admin-accent)" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
-              </svg>
+              <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--admin-accent)" }}><Spinner size={52} thickness={4} /></span>
               <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="18" height="18" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
               </div>
@@ -256,10 +262,7 @@ const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGeneratin
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={onClose} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: busy ? "not-allowed" : "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
           <button onClick={onGenerate} disabled={busy || !prompt.trim()} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}>
-            {isGenerating ? <svg className="animate-spin" width="13" height="13" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg> : null}
+            {isGenerating ? <Spinner size={13} /> : null}
             {isGenerating ? "Generating image…" : "Generate Image"}
           </button>
         </div>
@@ -329,7 +332,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
   }
           {data.challenge && <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: "var(--admin-accent)", margin: "0 0 5px", textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'Poppins', sans-serif" }}>Challenge</p>
-              <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{data.challenge}</p>
+              <div className="rta-view" style={{ fontSize: 12, color: textMuted, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }} dangerouslySetInnerHTML={{ __html: toHtml(data.challenge) }} />
             </div>}
 
           {
@@ -337,7 +340,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
   }
           {data.solution && <div style={{ marginBottom: 14, padding: "12px 14px", borderRadius: 12, background: subtleBg, border: `1px solid ${borderColor}` }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: "#059669", margin: "0 0 5px", textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'Poppins', sans-serif" }}>Solution</p>
-              <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{data.solution}</p>
+              <div className="rta-view" style={{ fontSize: 12, color: textMuted, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }} dangerouslySetInnerHTML={{ __html: toHtml(data.solution) }} />
             </div>}
 
           {
@@ -348,7 +351,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {data.sections.filter((s) => s.topic || s.content).map((s, i) => <div key={i} style={{ padding: "10px 14px", borderRadius: 10, background: subtleBg, border: `1px solid ${borderColor}` }}>
                     {s.topic && <p style={{ fontSize: 12, fontWeight: 600, color: textSecondary, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif" }}>{s.topic}</p>}
-                    {s.content && <p style={{ fontSize: 12, color: textMuted, margin: 0, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }}>{s.content}</p>}
+                    {s.content && <div className="rta-view" style={{ fontSize: 12, color: textMuted, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif" }} dangerouslySetInnerHTML={{ __html: toHtml(s.content) }} />}
                   </div>)}
               </div>
             </div>}
@@ -466,7 +469,8 @@ const DateModal = ({ isOpen, dateStr, studies, onClose, onSelectStudy, cardBg, b
 const Toast = ({ message, type }) => <div style={{ position: "fixed", top: 24, right: 24, zIndex: 2e3, padding: "14px 22px", borderRadius: 16, background: type === "success" ? "#059669" : "#dc2626", color: "#fff", fontSize: 13, fontWeight: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", fontFamily: "'Poppins', sans-serif" }}>
     {message}
   </div>;
-function CaseStudies() {
+function CaseStudies({ mode = "list" }) {
+  const addMode = mode === "add";
   const formRef = useRef(null);
   const fileRef = useRef(null);
   const authorFileRefs = useRef([]);
@@ -482,6 +486,7 @@ function CaseStudies() {
   const hoverBg = dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)";
   const [records, setRecords] = useState([]);
   const [isFetchingRecords, setIsFetchingRecords] = useState(true);
+  const initialLoading = useInitialLoad(isFetchingRecords);
   const fetchRecords = async () => {
     try {
       setIsFetchingRecords(true);
@@ -545,7 +550,7 @@ function CaseStudies() {
   const [viewMode, setViewMode] = useState("grid");
   const [activeTab, setActiveTab] = useState("All");
   const [activeTagFilter, setActiveTagFilter] = useState("All");
-  const [showFormOnly, setShowFormOnly] = useState(false);
+  const [showFormOnly, setShowFormOnly] = useState(addMode);
   const [showCalendarPage, setShowCalendarPage] = useState(false);
   const [returnTo, setReturnTo] = useState("main");
   const [showAllEvents, setShowAllEvents] = useState(false);
@@ -616,7 +621,7 @@ function CaseStudies() {
   };
   const resetForm = () => {
     clearForm();
-    setShowFormOnly(false);
+    setShowFormOnly(addMode);
     setShowCalendarPage(false);
     setShowAllEvents(false);
     setEventPanelTab("month");
@@ -709,6 +714,11 @@ function CaseStudies() {
       setShowConfirm(false);
       return;
     }
+    if (form.status === "Scheduled" && (!form.scheduleAt || new Date(form.scheduleAt) <= /* @__PURE__ */ new Date())) {
+      showToast("Pick a schedule date and time in the future.", "error");
+      setShowConfirm(false);
+      return;
+    }
     setIsLoading(true);
     try {
       const formDataToSend = new FormData();
@@ -726,11 +736,15 @@ function CaseStudies() {
       if (form.tags.length > 0) formDataToSend.append("tags", form.tags.map((t) => t.toLowerCase()).join(","));
       if (form.startDate) formDataToSend.append("startDate", form.startDate);
       if (form.endDate) formDataToSend.append("endDate", form.endDate);
-      formDataToSend.append("challenge", form.challenge);
-      formDataToSend.append("solution", form.solution);
+      if (form.status === "Scheduled") {
+        formDataToSend.append("scheduleDate", new Date(form.scheduleAt).toISOString());
+        formDataToSend.append("scheduleTime", form.scheduleAt.slice(11, 16));
+      }
+      formDataToSend.append("challenge", toHtml(form.challenge));
+      formDataToSend.append("solution", toHtml(form.solution));
       form.sections.forEach((s, i) => {
         formDataToSend.append(`subtitle${i}`, s.topic);
-        formDataToSend.append(`text${i}`, s.content);
+        formDataToSend.append(`text${i}`, toHtml(s.content));
       });
       if (fileRef.current?.files?.[0]) {
         formDataToSend.append("cover", fileRef.current.files[0]);
@@ -776,6 +790,7 @@ function CaseStudies() {
       tags: data.tags,
       startDate: data.start,
       endDate: data.end,
+      scheduleAt: data.scheduleAt,
       challenge: data.challenge,
       solution: data.solution,
       sections: data.sections.length > 0 ? data.sections : [{ topic: "", content: "" }]
@@ -856,11 +871,10 @@ function CaseStudies() {
     { label: "Draft", count: counts.Draft, gradient: "linear-gradient(135deg, #1a1a2e 0%, #1c1917 60%, #292524 100%)", gradientLight: "linear-gradient(150deg, #ffd8a8 0%, #ffedd5 50%, #fecb8a 100%)", accentColor: "#fb923c", accentColorLight: "#c2410c", iconPath: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z", change: "-3.1% from Last Month", changeUp: false },
     { label: "Schedule", count: counts.Scheduled, gradient: "linear-gradient(135deg, #1a1a2e 0%, #14532d 60%, #166534 100%)", gradientLight: "linear-gradient(150deg, #a8f0cc 0%, #dcfce7 50%, #90eabc 100%)", accentColor: "#4ade80", accentColorLight: "#15803d", iconPath: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", change: "+15.3% from Last Month", changeUp: true }
   ];
-  return <div className="cs-page-wrap" style={{ minHeight: "100vh", padding: "28px 24px", fontFamily: "'Poppins', sans-serif" }}>
+  return <div className="cs-page-wrap" style={{ minHeight: "100vh", padding: "32px 24px", fontFamily: "'Poppins', sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         @keyframes slideIn { from { opacity:0; transform:translateY(-10px) } to { opacity:1; transform:translateY(0) } }
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; box-sizing: border-box; }
+        *, *::before, *::after { font-family: var(--font-body) !important; box-sizing: border-box; }
         input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .cs-card { transition: transform .18s, box-shadow .18s, border-color .18s; }
         .cs-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.10) !important; border-color: rgba(0,0,0,.13) !important; }
@@ -943,13 +957,7 @@ function CaseStudies() {
           </div>;
   })()}
 
-      {isFetchingFull && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.48)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100, fontFamily: "'Poppins', sans-serif" }}>
-          <div style={{ background: cardBg, borderRadius: 20, padding: "28px 36px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, border: `1px solid ${borderColor}`, boxShadow: "0 24px 64px rgba(0,0,0,0.28)" }}>
-            <div style={{ width: 28, height: 28, border: "3px solid #e5e7eb", borderTopColor: "var(--admin-accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-            <p style={{ fontSize: 13, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Loading case study...</p>
-          </div>
-        </div>}
-      <ConfirmModal isOpen={showConfirm} isEdit={isEditMode} isLoading={isLoading} onClose={() => setShowConfirm(false)} onConfirm={handleSubmit} {...modalTheme} />
+      <DashboardLoader isVisible={isFetchingFull} message="Loading case study…" />
       <DeleteModal isOpen={showDelete} isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
       <AiImageModal
         isOpen={showAiImageModal}
@@ -978,12 +986,7 @@ function CaseStudies() {
         {
     /* PAGE HEADER */
   }
-        <div className="cs-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${borderColor}` }}>
-          <div>
-            <h1 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, lineHeight: 1.3, fontFamily: "'Poppins', sans-serif" }}>Case study</h1>
-            <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Manage your case studies / Create, edit, and organize your research projects with ease</p>
-          </div>
-          {showFormOnly || showCalendarPage ? <button onClick={() => {
+        <PageHeader title={addMode ? "Add case study" : "Case study list"} subtitle="Manage your case studies / Create, edit, and organize your research projects with ease" actions={addMode ? null : showFormOnly || showCalendarPage ? <button onClick={() => {
     setShowFormOnly(false);
     setShowCalendarPage(false);
     setIsEditMode(false);
@@ -995,28 +998,18 @@ function CaseStudies() {
   }} className="cs-header-btn" style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
               Back to Case Studies
-            </button> : <button onClick={() => {
-    setIsEditMode(false);
-    setForm(getDefaultForm());
-    authorFileRefs.current = [];
-    setShowFormOnly(true);
-    setShowCalendarPage(false);
-  }} className="cs-header-btn" style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
-              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-              Add Case Study
-            </button>}
-        </div>
+            </button> : null} />
 
         {
     /* TOP ROW */
   }
-        {!showFormOnly && !showCalendarPage && <div className="cs-top-row" style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 16, marginBottom: 16, alignItems: "stretch" }}>
+        {!showFormOnly && !showCalendarPage && <div className="cs-top-row" style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 3fr)", gap: 16, marginBottom: 16, alignItems: "stretch" }}>
           <div style={{ ...card, padding: "22px 22px" }}>
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Quick stats</p>
               <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Current system overview and counts</p>
             </div>
-            <div className="cs-stat-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 0 }}>
+            <div className="cs-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10, marginBottom: 0 }}>
               {statTileConfigs.map((cfg, idx) => <div key={idx} className="stat-tile" style={{ transition: "transform .18s" }}>
                   <StatTile label={cfg.label} count={cfg.count} gradient={cfg.gradient} gradientLight={cfg.gradientLight} accentColor={cfg.accentColor} accentColorLight={cfg.accentColorLight} iconPath={cfg.iconPath} change={cfg.change} changeUp={cfg.changeUp} dark={dark} />
                 </div>)}
@@ -1113,6 +1106,11 @@ function CaseStudies() {
                         </button>;
   })}
                   </div>
+                  {form.status === "Scheduled" && <div style={{ maxWidth: 320, marginTop: 14 }}>
+                      <span style={lbl}>Schedule date &amp; time <span style={{ color: "var(--admin-accent)" }}>*</span></span>
+                      <input type="datetime-local" style={inp()} value={form.scheduleAt} onChange={(e) => updateForm("scheduleAt", e.target.value)} />
+                      <p style={{ fontSize: 10, color: textMuted, margin: "5px 0 0" }}>Becomes Active (visible on the public site) automatically at this time.</p>
+                    </div>}
                 </div>
               </div>
             </div>
@@ -1209,11 +1207,11 @@ function CaseStudies() {
             <div className="cs-form-challenge-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div>
                 <span style={lbl}>Challenge <span style={{ color: "var(--admin-accent)" }}>*</span></span>
-                <textarea style={inp({ minHeight: 84, resize: "vertical" })} placeholder="Describe the challenge or problem..." value={form.challenge} onChange={(e) => updateForm("challenge", e.target.value)} />
+                <RichTextArea placeholder="Describe the challenge or problem..." value={form.challenge} onChange={(html) => updateForm("challenge", html)} minHeight={84} />
               </div>
               <div>
                 <span style={lbl}>Solution <span style={{ color: "var(--admin-accent)" }}>*</span></span>
-                <textarea style={inp({ minHeight: 84, resize: "vertical" })} placeholder="Describe the solution and approach..." value={form.solution} onChange={(e) => updateForm("solution", e.target.value)} />
+                <RichTextArea placeholder="Describe the solution and approach..." value={form.solution} onChange={(html) => updateForm("solution", html)} minHeight={84} />
               </div>
             </div>
           </div>
@@ -1243,7 +1241,7 @@ function CaseStudies() {
                   </div>
                   <div>
                     <span style={{ ...lbl, marginBottom: 6 }}>Content</span>
-                    <input style={inp()} placeholder="Write content for this section..." value={s.content} onChange={(e) => updateSection(i, "content", e.target.value)} />
+                    <RichTextArea placeholder="Write content for this section..." value={s.content} onChange={(html) => updateSection(i, "content", html)} minHeight={60} />
                   </div>
                   {form.sections.length > 1 && <button onClick={() => removeSection(i)} className="icon-btn" style={{ marginTop: 21, width: 34, height: 34, borderRadius: 9, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -1556,18 +1554,14 @@ function CaseStudies() {
   })}
           </div>
 
-          {isFetchingRecords && <div style={{ padding: "48px 20px", textAlign: "center" }}>
-              <div style={{ display: "inline-block", width: 24, height: 24, border: "3px solid #e5e7eb", borderTopColor: "var(--admin-accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <p style={{ fontSize: 12, color: textMuted, marginTop: 10, fontFamily: "'Poppins', sans-serif" }}>Loading case studies...</p>
-            </div>}
+          <DashboardLoader isVisible={initialLoading} message="Loading case studies…" />
 
-          {!isFetchingRecords && filtered.length === 0 && <div style={{ padding: "48px 20px", textAlign: "center" }}>
+          {!initialLoading && filtered.length === 0 && <div style={{ padding: "48px 20px", textAlign: "center" }}>
               <p style={{ fontSize: 13, color: textMuted, fontWeight: 500, margin: "0 0 4px", fontFamily: "'Poppins', sans-serif" }}>No case studies found</p>
               <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: "'Poppins', sans-serif" }}>{search ? "Try adjusting your search." : "Create your first case study above."}</p>
             </div>}
 
-          {!isFetchingRecords && filtered.length > 0 && viewMode === "grid" && <div className="cs-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14, padding: 16 }}>
+          {!initialLoading && filtered.length > 0 && viewMode === "grid" && <div className="cs-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14, padding: 16 }}>
               {filtered.map((r) => {
     const st = getStatusStyle(r.status);
     const isBeingEdited = editingId === r._id;
@@ -1613,7 +1607,7 @@ function CaseStudies() {
   })}
             </div>}
 
-          {!isFetchingRecords && filtered.length > 0 && viewMode === "list" && <div>
+          {!initialLoading && filtered.length > 0 && viewMode === "list" && <div>
               <div className="cs-list-header" style={{ display: "grid", gridTemplateColumns: "48px 2fr 1fr 2fr 110px 130px", gap: 14, padding: "9px 18px", background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${borderColor}`, fontFamily: "'Poppins', sans-serif" }}>
                 <span>Cover</span><span>Title</span><span>Authors</span><span>Tags</span><span>Status</span><span style={{ textAlign: "right" }}>Actions</span>
               </div>

@@ -5,7 +5,7 @@ import { THEMES, useAdminTheme } from "@/lib/admin-theme";
 // live right now, defeating the point of a preview grid.
 // Mirrors the values in styles/admin-theme.css.
 const PALETTES = {
-  light:           { bg: "#fafafa", surface: "#ffffff", border: "#f0eeee", text: "#1a1a2e", textSub: "#999999" },
+  light:           { bg: "#f5f5f4", surface: "#ffffff", border: "#e7e5e4", text: "#282828", textSub: "#8c8c8a" },
   "light-cream":   { bg: "#f7f3ea", surface: "#fffdf7", border: "#e9ddc6", text: "#2b2420", textSub: "#9c8f7f" },
   "light-blush":   { bg: "#fdf5f5", surface: "#ffffff", border: "#f5dede", text: "#2e1a1a", textSub: "#ad8c8c" },
   "light-sand":    { bg: "#f5f0e8", surface: "#fbf8f2", border: "#e3d7c1", text: "#33291e", textSub: "#a4967f" },
@@ -13,7 +13,7 @@ const PALETTES = {
   "light-sage":    { bg: "#f3f6f3", surface: "#fbfdfb", border: "#dee8dd", text: "#1e2620", textSub: "#8fa090" },
   "dark-obsidian": { bg: "#000000", surface: "#0a0a0a", border: "#1f1f1f", text: "#f5f5f5", textSub: "#6b6b6b" },
   "dark-slate":    { bg: "#0f1115", surface: "#171a20", border: "#262b34", text: "#f3f4f6", textSub: "#6b7280" },
-  "dark-maroon":   { bg: "#140d0d", surface: "#1d1414", border: "#33201f", text: "#f5edec", textSub: "#8a7371" },
+  "dark-maroon":   { bg: "#1c1c1c", surface: "#282828", border: "#3a3a39", text: "#f5f5f4", textSub: "#85847f" },
   "dark-indigo":   { bg: "#10111a", surface: "#171925", border: "#282b40", text: "#edeef7", textSub: "#6b6e8a" },
   "dark-charcoal": { bg: "#1c1c1e", surface: "#262628", border: "#38383b", text: "#fafafa", textSub: "#7d7d80" },
   "dark-espresso": { bg: "#1c140f", surface: "#261c15", border: "#40301f", text: "#f3e9df", textSub: "#8f7563" },
@@ -27,8 +27,8 @@ const PALETTES = {
   "solarized-dark":   { bg: "#002b36", surface: "#073642", border: "#0d4957", text: "#839496", textSub: "#586e75", accent: "#2aa198" },
 };
 
-// TelexPH maroon — the accent for every theme that doesn't override it.
-const DEFAULT_ACCENT = "#800000";
+// TelexPH brand red — the accent for every theme that doesn't override it.
+const DEFAULT_ACCENT = "#A10000";
 
 function ThemeTile({ themeKey, label, active, onSelect }) {
   const p = PALETTES[themeKey];

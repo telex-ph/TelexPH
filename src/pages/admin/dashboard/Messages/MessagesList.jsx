@@ -1,4 +1,6 @@
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect, useMemo } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import api from "@/lib/api/axios";
 
@@ -20,6 +22,7 @@ export default function MessagesList() {
 
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const initialLoading = useInitialLoad(isLoading);
   const [error, setError] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,23 +73,18 @@ export default function MessagesList() {
 
   return (
     <div className="flex flex-col items-start justify-start p-8 space-y-6 min-h-screen bg-transparent" style={poppins}>
-      <div className="w-full flex justify-between items-end px-2">
-        <div className="space-y-2">
-          <h2 className="text-xl leading-none tracking-tight font-bold" style={{ color: dm ? "#f3f4f6" : "#4a5565" }}>
-            Contact Admin Messages
-          </h2>
-          <p className="text-[11px] tracking-wide italic text-gray-400">
-            Messages sent by users who couldn&apos;t log in via the &quot;Contact Admin&quot; form.
-          </p>
-        </div>
-        {unreadCount > 0 && (
-          <span
+      <div className="w-full px-2">
+        <PageHeader
+          title="Contact Admin Messages"
+          subtitle={<>Messages sent by users who couldn&apos;t log in via the &quot;Contact Admin&quot; form.</>}
+          style={{ marginBottom: 0 }}
+          actions={unreadCount > 0 ? <span
             className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl text-white"
-            style={{ background: "#800000" }}
+            style={{ background: "var(--admin-accent)" }}
           >
             {unreadCount} unread
-          </span>
-        )}
+          </span> : null}
+        />
       </div>
 
       <div className="w-full mt-6">
@@ -113,7 +111,7 @@ export default function MessagesList() {
                     border: "none",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
-                    background: isActive ? "#800000" : "transparent",
+                    background: isActive ? "var(--admin-accent)" : "transparent",
                     color: isActive ? "#ffffff" : dm ? "#e5e7eb" : "#111827",
                   }}
                 >
@@ -142,11 +140,8 @@ export default function MessagesList() {
           <div className="bg-red-50 text-red-600 text-xs font-semibold rounded-xl px-4 py-3 mb-4">{error}</div>
         )}
 
-        {isLoading ? (
-          <div className="bg-white p-20 rounded-2xl text-center border border-gray-50" style={dm ? { background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" } : undefined}>
-            <p className="text-[11px] text-gray-300 tracking-widest uppercase font-bold italic">loading messages...</p>
-          </div>
-        ) : filtered.length === 0 ? (
+        <DashboardLoader isVisible={initialLoading} message="Loading messages…" />
+        {initialLoading ? null : filtered.length === 0 ? (
           <div className="bg-white p-20 rounded-2xl text-center border border-gray-50" style={dm ? { background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" } : undefined}>
             <p className="text-[11px] text-gray-300 tracking-widest uppercase font-bold italic">no messages found</p>
           </div>
@@ -164,7 +159,7 @@ export default function MessagesList() {
               >
                 <div
                   className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0"
-                  style={{ background: msg.status === "unread" ? "#800000" : "transparent", border: msg.status === "unread" ? "none" : "2px solid #e5e7eb" }}
+                  style={{ background: msg.status === "unread" ? "var(--admin-accent)" : "transparent", border: msg.status === "unread" ? "none" : "2px solid #e5e7eb" }}
                 />
                 <div className="flex-grow min-w-0">
                   <div className="flex items-center justify-between gap-3">
@@ -202,7 +197,7 @@ export default function MessagesList() {
             </button>
 
             <div className="px-8 pt-10 pb-8">
-              <p className="text-xs font-semibold text-[#800000] tracking-widest uppercase mb-1">Contact Admin message</p>
+              <p className="text-xs font-semibold text-[var(--admin-accent)] tracking-widest uppercase mb-1">Contact Admin message</p>
               <h2 className="text-xl font-bold tracking-tight mb-1" style={{ color: dm ? "#f3f4f6" : "#111827" }}>{selected.name}</h2>
               <p className="text-gray-400 text-sm mb-1">{selected.email}</p>
               <p className="text-gray-400 text-[11px] mb-6">{formatDate(selected.createdAt)}</p>
@@ -213,7 +208,7 @@ export default function MessagesList() {
               </div>
               <a
                 href={`mailto:${selected.email}`}
-                className="mt-6 inline-flex items-center justify-center gap-2 w-full bg-[#800000] text-white py-3 rounded-xl font-semibold text-sm tracking-wide hover:bg-[#600000] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98]"
+                className="mt-6 inline-flex items-center justify-center gap-2 w-full bg-[var(--admin-accent)] text-white py-3 rounded-xl font-semibold text-sm tracking-wide hover:bg-[var(--admin-accent-hover)] transition-all shadow-xl shadow-[#800000]/20 active:scale-[0.98]"
               >
                 Reply via email
               </a>

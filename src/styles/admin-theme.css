@@ -13,26 +13,49 @@
  * colors instead of unstyled/transparent backgrounds.
  */
 
+/*
+ * TelexPH brand — single source of truth for the admin palette and type.
+ * Reference these (or the --admin-* semantic tokens), never raw hex.
+ * See CLAUDE.md "Admin design branding".
+ */
+:root {
+  --brand-red: #A10000;
+  --brand-black: #282828;
+  --brand-gray: #F5F5F4;
+  --brand-white: #FFFFFF;
+  --brand-maroon: #530607;
+  --brand-red-dark: var(--brand-maroon);
+
+  /* Dashboard-wide UI scale (applied as html zoom in dashboard/Layout.jsx). */
+  --admin-zoom: 1.28;
+
+  --font-heading: "Poppins", sans-serif; /* always weight 900 */
+  --font-body: "Open Sans", sans-serif;
+  /* "Bright (DEMO)" has no web-font file in the repo, so this falls back to a
+     slab serif. Add an @font-face named "Bright" and it is picked up here. */
+  --font-accent: "Bright", "Rockwell", "Roboto Slab", Georgia, serif;
+}
+
 :root,
 :root[data-admin-theme="light"] {
-  --admin-bg: #fafafa;
-  --admin-bg-soft: #f7f5f5;
-  --admin-bg-hover: #f4f2f2;
+  --admin-bg: #f5f5f4;
+  --admin-bg-soft: #ecebea;
+  --admin-bg-hover: #e4e3e1;
   --admin-surface: #ffffff;
   --admin-surface-raised: #ffffff;
 
-  --admin-text: #1a1a2e;
-  --admin-text-sub: #666666;
-  --admin-text-faint: #999999;
+  --admin-text: #282828;
+  --admin-text-sub: #444442;
+  --admin-text-faint: #6b6b69;
   --admin-text-on-accent: #ffffff;
 
-  --admin-border: #f0eeee;
-  --admin-border-strong: #e0dcdc;
+  --admin-border: #e7e5e4;
+  --admin-border-strong: #d6d3d1;
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #660000;
-  --admin-accent-soft: #fff5f5;
-  --admin-accent-text: #800000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: var(--brand-red-dark);
+  --admin-accent-soft: rgba(161, 0, 0, 0.07);
+  --admin-accent-text: var(--brand-red);
 
   --admin-danger: #c0392b;
   --admin-danger-bg: #fff5f5;
@@ -66,10 +89,10 @@
   --admin-border: #e9ddc6;
   --admin-border-strong: #dccdad;
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #660000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: var(--brand-red-dark);
   --admin-accent-soft: #fbeeee;
-  --admin-accent-text: #800000;
+  --admin-accent-text: var(--brand-red);
 
   --admin-danger: #c0392b;
   --admin-danger-bg: #fdeeea;
@@ -103,10 +126,10 @@
   --admin-border: #f5dede;
   --admin-border-strong: #e8c6c6;
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #660000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: var(--brand-red-dark);
   --admin-accent-soft: #f9e3e3;
-  --admin-accent-text: #800000;
+  --admin-accent-text: var(--brand-red);
 
   --admin-danger: #c0392b;
   --admin-danger-bg: #fbe6e2;
@@ -140,10 +163,10 @@
   --admin-border: #e3d7c1;
   --admin-border-strong: #d3c2a3;
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #660000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: var(--brand-red-dark);
   --admin-accent-soft: #f6e9e5;
-  --admin-accent-text: #800000;
+  --admin-accent-text: var(--brand-red);
 
   --admin-danger: #c0392b;
   --admin-danger-bg: #f7e6e0;
@@ -177,10 +200,10 @@
   --admin-border: #e2e7ef;
   --admin-border-strong: #cdd5e2;
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #660000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: var(--brand-red-dark);
   --admin-accent-soft: #fbeeee;
-  --admin-accent-text: #800000;
+  --admin-accent-text: var(--brand-red);
 
   --admin-danger: #c0392b;
   --admin-danger-bg: #fdeeea;
@@ -214,10 +237,10 @@
   --admin-border: #dee8dd;
   --admin-border-strong: #c7d6c5;
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #660000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: var(--brand-red-dark);
   --admin-accent-soft: #f9ecec;
-  --admin-accent-text: #800000;
+  --admin-accent-text: var(--brand-red);
 
   --admin-danger: #c0392b;
   --admin-danger-bg: #fbeae6;
@@ -251,8 +274,8 @@
   --admin-border: rgba(255, 255, 255, 0.08);
   --admin-border-strong: rgba(255, 255, 255, 0.16);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 100, 95, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -288,8 +311,8 @@
   --admin-border: rgba(255, 255, 255, 0.08);
   --admin-border-strong: rgba(255, 255, 255, 0.14);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -309,24 +332,24 @@
   --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
 }
 
-/* Maroon — warm, brand-tinted brown-black */
+/* Maroon — brand dark mode: #282828 surfaces, #A10000 accent */
 :root[data-admin-theme="dark-maroon"] {
-  --admin-bg: #140d0d;
-  --admin-bg-soft: #1a1212;
-  --admin-bg-hover: #2a1c1c;
-  --admin-surface: #1d1414;
-  --admin-surface-raised: #261a1a;
+  --admin-bg: #1c1c1c;
+  --admin-bg-soft: #232323;
+  --admin-bg-hover: #333333;
+  --admin-surface: #282828;
+  --admin-surface-raised: #303030;
 
-  --admin-text: #f5edec;
-  --admin-text-sub: #b8a5a3;
-  --admin-text-faint: #8a7371;
+  --admin-text: #f5f5f4;
+  --admin-text-sub: #c9c8c5;
+  --admin-text-faint: #a5a49f;
   --admin-text-on-accent: #ffffff;
 
-  --admin-border: rgba(255, 220, 215, 0.1);
-  --admin-border-strong: rgba(255, 220, 215, 0.18);
+  --admin-border: rgba(245, 245, 244, 0.1);
+  --admin-border-strong: rgba(245, 245, 244, 0.18);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -362,8 +385,8 @@
   --admin-border: rgba(180, 185, 255, 0.1);
   --admin-border-strong: rgba(180, 185, 255, 0.18);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -399,8 +422,8 @@
   --admin-border: rgba(255, 255, 255, 0.12);
   --admin-border-strong: rgba(255, 255, 255, 0.2);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -436,8 +459,8 @@
   --admin-border: rgba(255, 214, 178, 0.1);
   --admin-border-strong: rgba(255, 214, 178, 0.18);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -473,8 +496,8 @@
   --admin-border: rgba(255, 180, 190, 0.1);
   --admin-border-strong: rgba(255, 180, 190, 0.18);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -510,8 +533,8 @@
   --admin-border: rgba(255, 200, 210, 0.12);
   --admin-border-strong: rgba(255, 200, 210, 0.2);
 
-  --admin-accent: #800000;
-  --admin-accent-hover: #a10000;
+  --admin-accent: var(--brand-red);
+  --admin-accent-hover: color-mix(in srgb, var(--brand-red) 80%, #fff);
   --admin-accent-soft: rgba(224, 93, 93, 0.14);
   --admin-accent-text: #e0645f;
 
@@ -752,3 +775,16 @@
   --admin-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
   --admin-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
 }
+
+/* RichTextArea (src/components/RichTextArea.jsx) */
+.rta:focus-within { border-color: var(--admin-accent) !important; }
+.rta-btn { width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: var(--admin-text-sub); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.rta-btn:hover { background: var(--admin-accent-soft); color: var(--admin-accent-text); }
+.rta-editor { padding: 10px 12px; outline: none; font-size: 12px; line-height: 1.6; color: var(--admin-text); overflow-wrap: anywhere; }
+.rta-editor:empty::before { content: attr(data-placeholder); color: var(--admin-text-faint); pointer-events: none; }
+.rta-editor p, .rta-view p { margin: 0 0 0.6em; }
+.rta-editor ul, .rta-view ul { list-style: disc; padding-left: 1.4em; margin: 0 0 0.6em; }
+.rta-editor ol, .rta-view ol { list-style: decimal; padding-left: 1.4em; margin: 0 0 0.6em; }
+.rta-editor h3, .rta-view h3 { font-family: var(--font-body); font-size: 1.15em; font-weight: 700; margin: 0.4em 0 0.4em; }
+.rta-editor blockquote, .rta-view blockquote { margin: 0 0 0.6em; padding-left: 0.9em; border-left: 3px solid var(--admin-accent); color: var(--admin-text-sub); }
+.rta-editor a, .rta-view a { color: var(--admin-accent-text); text-decoration: underline; }

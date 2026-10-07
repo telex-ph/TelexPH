@@ -1,5 +1,7 @@
 ﻿
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { Spinner, useInitialLoad } from "@/components/DashboardLoader";
 import { useRouter } from "next/navigation";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import AdminThemeGallery from "@/components/AdminThemeGallery";
@@ -39,6 +41,7 @@ function AdminSettings() {
   const inputBg = "var(--admin-bg-soft)";
   const [activetab, setactivetab] = useState("profile");
   const [loading, setLoading] = useState(true);
+  const initialLoading = useInitialLoad(loading);
   const [saving, setSaving] = useState(false);
   const [userData, setUserData] = useState(null);
   const [toast, setToast] = useState(null);
@@ -199,25 +202,15 @@ function AdminSettings() {
         </svg>
     }
   ];
-  if (loading) {
-    return <div style={{ minHeight: "100vh", background: pageBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 12px", display: "inline-block" }} />
-          <p style={{ fontSize: 11, color: textMuted, fontFamily: "'Poppins', sans-serif", margin: 0, letterSpacing: 0 }}>Loading...</p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-        </div>
-      </div>;
-  }
+  if (initialLoading) return <DashboardLoader isVisible message="Loading settings…" />;
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+        *, *::before, *::after { font-family: var(--font-body) !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        input, textarea, select, option, button { font-family: var(--font-body) !important; letter-spacing: 0 !important; }
         input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .as-nav:hover  { background: ${"var(--admin-bg-soft)"} !important; }
         .as-ghost:hover { background: ${"var(--admin-bg-hover)"} !important; }
         .as-upload:hover { opacity: 0.82; }
-        @keyframes spin { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
       `}</style>
@@ -251,12 +244,7 @@ function AdminSettings() {
           {
     /* â”€â”€ Page header â”€â”€ */
   }
-          <div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: textPrimary, margin: 0 }}>Admin Settings</h2>
-            <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400 }}>
-              Configure your administrator account and security preferences.
-            </p>
-          </div>
+          <PageHeader title="Admin Settings" subtitle="Configure your administrator account and security preferences." style={{ marginBottom: 4 }} />
 
           {
     /* â”€â”€ Profile summary banner â”€â”€ */
@@ -605,7 +593,7 @@ function AdminSettings() {
     }}
   >
                       {saving ? <>
-                          <div style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", animation: "spin .7s linear infinite" }} />
+                          <Spinner size={12} />
                           Saving...
                         </> : <>
                           <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5" /></svg>
@@ -755,7 +743,7 @@ function AdminSettings() {
     }}
   >
                       {saving ? <>
-                          <div style={{ width: 12, height: 12, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", animation: "spin .7s linear infinite" }} />
+                          <Spinner size={12} />
                           Updating...
                         </> : <>
                           <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>

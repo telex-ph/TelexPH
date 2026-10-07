@@ -416,7 +416,7 @@ const FormSection = ({
     type="button"
     onClick={onSubmit}
     disabled={isLoading}
-    className="flex-1 px-6 py-3 bg-[var(--admin-accent)] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors disabled:opacity-50"
+    className="flex-1 px-6 py-3 bg-[var(--admin-accent)] text-white rounded-2xl font-bold hover:bg-[var(--admin-accent-hover)] transition-colors disabled:opacity-50"
   >
           {isLoading ? "Processing..." : isEditMode ? "Update Case Study" : "Create Case Study"}
         </button>

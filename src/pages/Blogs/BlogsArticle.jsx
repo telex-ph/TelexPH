@@ -475,7 +475,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
                         </div>
                       </div>}
                     <div
-      className="text-[14px] md:text-[16px] leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828]"
+      className="text-[14px] md:text-[16px] leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-5 [&_ol]:space-y-2 [&_blockquote]:border-l-4 [&_blockquote]:border-[#a10000] [&_blockquote]:pl-4 [&_blockquote]:mb-5 [&_blockquote]:italic [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828]"
       style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }}
     />

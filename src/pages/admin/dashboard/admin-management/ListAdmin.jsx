@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import EditAdmin from "./EditAdmin";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function ListAdmin() {
@@ -10,6 +12,7 @@ function ListAdmin() {
   const [viewingAdmin, setViewingAdmin] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const initialLoading = useInitialLoad(isLoading);
   const [error, setError] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState("All");
   const [selectedRole, setSelectedRole] = useState("All");
@@ -177,15 +180,13 @@ function ListAdmin() {
   }
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+        *, *::before, *::after { font-family: var(--font-body) !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        input, textarea, select, option, button { font-family: var(--font-body) !important; letter-spacing: 0 !important; }
         input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .la-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .la-pill:hover { opacity: .78; }
         .la-card:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.28) !important; }
-        @keyframes spin { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
       `}</style>
@@ -207,14 +208,7 @@ function ListAdmin() {
           {
     /* â”€â”€ Page header â”€â”€ */
   }
-          <div>
-            <h2 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-              Admin Management
-            </h2>
-            <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-              Manage your team administrators, roles, and permissions.
-            </p>
-          </div>
+          <PageHeader title="Admin Management" subtitle="Manage your team administrators, roles, and permissions." style={{ marginBottom: 4 }} />
 
           {
     /* â”€â”€ Summary stat cards â”€â”€ */
@@ -543,15 +537,12 @@ function ListAdmin() {
             {
     /* â”€â”€ Loading â”€â”€ */
   }
-            {isLoading && <div style={{ padding: "80px 20px", textAlign: "center" }}>
-                <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
-                <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Loading administrators...</p>
-              </div>}
+            <DashboardLoader isVisible={initialLoading} message="Loading administrators…" />
 
             {
     /* â”€â”€ Empty â”€â”€ */
   }
-            {!isLoading && filteredAdmins.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
+            {!initialLoading && filteredAdmins.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
                 <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -562,7 +553,7 @@ function ListAdmin() {
             {
     /* â•â• LIST VIEW â•â• */
   }
-            {!isLoading && filteredAdmins.length > 0 && viewMode === "list" && <>
+            {!initialLoading && filteredAdmins.length > 0 && viewMode === "list" && <>
                 <div style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr 1fr 1.4fr 140px", gap: 16, padding: "11px 24px", background: subtleBg, borderBottom: `1px solid ${borderColor}` }}>
                   {["Administrator", "Department", "Role", "Contact", "Actions"].map((col, i) => <span key={col} style={{ fontSize: 10, fontWeight: 500, color: textMuted, textAlign: i === 4 ? "right" : "left", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{col}</span>)}
                 </div>
@@ -601,7 +592,7 @@ function ListAdmin() {
             {
     /* â•â• GRID VIEW â•â• */
   }
-            {!isLoading && filteredAdmins.length > 0 && viewMode === "grid" && <div style={{ padding: "24px", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+            {!initialLoading && filteredAdmins.length > 0 && viewMode === "grid" && <div style={{ padding: "24px", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
                 {currentCards.map((admin) => <div key={admin._id} className="la-card" onClick={() => handleView(admin)} style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 18, overflow: "hidden", cursor: "pointer", transition: "all .2s" }}>
                     <div style={{ padding: "18px 20px", borderBottom: `1px solid ${borderColor}`, display: "flex", alignItems: "center", gap: 12 }}>
                       <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
@@ -639,7 +630,7 @@ function ListAdmin() {
             {
     /* â”€â”€ Pagination â”€â”€ */
   }
-            {!isLoading && filteredAdmins.length > 0 && totalPages > 1 && <div style={{ padding: "14px 24px", background: subtleBg, borderTop: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            {!initialLoading && filteredAdmins.length > 0 && totalPages > 1 && <div style={{ padding: "14px 24px", background: subtleBg, borderTop: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
                   Page <strong style={{ color: textPrimary }}>{currentPage}</strong> of <strong style={{ color: textPrimary }}>{totalPages}</strong>
                 </p>

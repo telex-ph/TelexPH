@@ -2,6 +2,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { COLORS, FONTS } from "@/constant/styles";
+import { htmlToText } from "@/lib/rich-text";
 import {
   HiMagnifyingGlass,
   HiXMark,
@@ -80,6 +81,7 @@ function CaseStudiesFilter() {
         } else if (Array.isArray(item.solution) && item.solution.length > 0) {
           description = item.solution[0]?.text || "";
         }
+        description = htmlToText(description);
         const fullDescription = description;
         if (description.length > 150) {
           description = description.substring(0, 150) + "...";

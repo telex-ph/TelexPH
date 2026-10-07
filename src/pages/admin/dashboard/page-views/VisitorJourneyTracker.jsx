@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { Spinner } from "@/components/DashboardLoader";
 import api from "@/lib/api/axios";
 import {
   AreaChart,
@@ -260,7 +261,7 @@ function VisitorJourneyTracker({ range }) {
       }
     }}
   >
-          <span style={loading ? { display: "inline-block", animation: "spin 0.8s linear infinite" } : {}}><IconRefresh /></span>
+          {loading ? <Spinner size={14} /> : <IconRefresh />}
           {loading ? "Refreshing\u2026" : "Refresh"}
         </button>
       </div>

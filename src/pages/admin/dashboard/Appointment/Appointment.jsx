@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect, useRef } from "react";
+import DashboardLoader, { Spinner, useInitialLoad } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 
 const API_BASE =
@@ -697,7 +699,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
               {
       /* â”€â”€ Header â”€â”€ */
     }
-              <div style={{ flexShrink: 0, position: "relative", overflow: "hidden", background: "linear-gradient(135deg, var(--admin-accent) 0%, #a00000 60%, #6b0000 100%)", borderBottom: `1px solid rgba(255,255,255,0.12)` }}>
+              <div style={{ flexShrink: 0, position: "relative", overflow: "hidden", background: "linear-gradient(135deg, var(--admin-accent) 0%, #A10000 60%, #530607 100%)", borderBottom: `1px solid rgba(255,255,255,0.12)` }}>
                 {
       /* Decorative background circles */
     }
@@ -851,7 +853,7 @@ function FullCalendarView({ appointmentDates, appointments, today, onClose, card
             {
       /* Header */
     }
-            <div style={{ background: "linear-gradient(135deg, var(--admin-accent) 0%, #a00000 60%, #6b0000 100%)", borderRadius: "16px 16px 0 0", padding: "13px 15px", display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
+            <div style={{ background: "linear-gradient(135deg, var(--admin-accent) 0%, #A10000 60%, #530607 100%)", borderRadius: "16px 16px 0 0", padding: "13px 15px", display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
               <div style={{ width: 38, height: 38, borderRadius: "50%", background: avatarColor(appt.name), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "2px solid rgba(255,255,255,0.3)" }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{tooltipInitials(appt.name)}</span>
               </div>
@@ -892,6 +894,7 @@ function AppointmentsPage() {
   const textMuted = dark ? "#6b7280" : "#6b7280";
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const initialLoading = useInitialLoad(isLoading);
   const [showFullCalendar, setShowFullCalendar] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(null);
@@ -1045,7 +1048,7 @@ function AppointmentsPage() {
     >
             <path
       d="M0,0 H48 V68 L24,54 L0,68 Z"
-      fill="#5a0000"
+      fill="#530607"
     />
           </svg>
           {
@@ -1084,7 +1087,7 @@ function AppointmentsPage() {
           {appt.email && <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, flexWrap: "wrap", marginTop: "auto", paddingTop: 8 }}>
               {feedback && <span style={{ fontSize: 11, padding: "4px 12px", borderRadius: 8, background: feedback.type === "success" ? dark ? "rgba(5,150,105,0.15)" : "rgba(5,150,105,0.09)" : dark ? "rgba(220,38,38,0.15)" : "rgba(220,38,38,0.09)", color: feedback.type === "success" ? "#059669" : "#dc2626", fontFamily: "'Poppins', sans-serif" }}>{feedback.text}</span>}
               <button onClick={() => handleConfirm(appt)} disabled={isConfirming} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 11, fontWeight: 500, cursor: isConfirming ? "not-allowed" : "pointer", opacity: isConfirming ? 0.7 : 1, transition: "all .15s", fontFamily: "'Poppins', sans-serif" }}>
-                {isConfirming ? <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Confirming…</> : <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>Confirm &amp; Send Credentials</>}
+                {isConfirming ? <><Spinner size={11} />Confirming…</> : <><svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>Confirm &amp; Send Credentials</>}
               </button>
             </div>}
         </div>
@@ -1117,14 +1120,11 @@ function AppointmentsPage() {
     </div>;
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; }
+        *, *::before, *::after { font-family: var(--font-body) !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        input, textarea, select, option, button { font-family: var(--font-body) !important; }
         .appt-card:hover  { box-shadow: 0 6px 24px rgba(0,0,0,.1) !important; transform: translateY(-1px); }
         .appt-row:hover   { background: ${dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"} !important; }
         .stat-card:hover  { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.10) !important; }
-        @keyframes spin   { to { transform: rotate(360deg) } }
-        @keyframes pulse  { 0%,100% { opacity:1 } 50% { opacity:.5 } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
         @media (max-width: 639px) {
@@ -1141,25 +1141,10 @@ function AppointmentsPage() {
 
           {syncMessage && <div style={{ position: "fixed", top: 28, right: 28, background: syncMessage.type === "success" ? "#059669" : "#dc2626", color: "#fff", padding: "14px 24px", borderRadius: 20, fontSize: 12, fontWeight: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", zIndex: 50 }}>{syncMessage.text}</div>}
 
-          <div style={{ paddingBottom: 20, borderBottom: `1px solid ${borderColor}` }}>
-            <div style={{ display: "flex", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", gap: 12 }}>
-              {
-    /* Left: title + subtitle */
-  }
-              <div>
-                <h1 style={{ fontSize: 20, fontWeight: 700, color: textPrimary, margin: 0, letterSpacing: "-0.3px" }}>Appointments</h1>
-                <p style={{ fontSize: 12, color: textMuted, margin: "3px 0 0", fontWeight: 400 }}>View and manage all scheduled appointments</p>
-              </div>
-
-              {
-    /* Right: resync button only */
-  }
-              <button onClick={handleResync} disabled={isSyncing} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "#ffffff", fontSize: 12, fontWeight: 500, cursor: isSyncing ? "not-allowed" : "pointer", opacity: isSyncing ? 0.6 : 1, transition: "all .15s" }}>
+          <PageHeader title="Appointments" subtitle="View and manage all scheduled appointments" style={{ marginBottom: 4 }} actions={<button onClick={handleResync} disabled={isSyncing} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "#ffffff", fontSize: 12, fontWeight: 500, cursor: isSyncing ? "not-allowed" : "pointer", opacity: isSyncing ? 0.6 : 1, transition: "all .15s" }}>
                 <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: isSyncing ? "spin .8s linear infinite" : "none" }}><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
                 {isSyncing ? "Syncing..." : "Resync"}
-              </button>
-            </div>
-          </div>
+              </button>} />
 
           {!showFullCalendar && <>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)", gap: isMobile ? 10 : 14 }}>
@@ -1384,9 +1369,9 @@ function AppointmentsPage() {
                 </div>
               </div>
 
-              {isLoading && <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{[1, 2, 3].map((i) => <div key={i} style={{ height: 90, borderRadius: 18, background: subtleBg, border: `1px solid ${borderColor}`, animation: "pulse 1.5s ease-in-out infinite" }} />)}</div>}
+              <DashboardLoader isVisible={initialLoading} message="Loading appointments…" />
 
-              {!isLoading && (() => {
+              {!initialLoading && (() => {
     const allSorted = sorted;
     const totalPages = Math.ceil(allSorted.length / PAGE_SIZE);
     const pageItems = allSorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
