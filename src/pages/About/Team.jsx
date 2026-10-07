@@ -122,7 +122,7 @@ function Team() {
           Executive Leadership
         </h2>
         <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:max-w-4xl md:justify-center md:overflow-x-visible">
             <MemberCard
     img="images/jena_01.webp"
     name="Jenalyn M. Valler"
@@ -137,20 +137,6 @@ function Team() {
     linkedinUrl="https://www.linkedin.com/in/arturo-jr-valler-11b600197/"
     imagePositionClass="object-center translate-y-6 scale-130"
   />
-          </div>
-        </div>
-
-        {
-    /* Executive Assistant Office */
-  }
-        <h2
-    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
-    style={{ color: SEMANTIC_COLORS.text.primary }}
-  >
-          Executive Coordination Office
-        </h2>
-        <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-1 md:gap-8 md:max-w-xs md:justify-center md:overflow-x-visible">
             <MemberCard
     img="images/Michelle.png"
     name="Michelle D. Soliman"
@@ -171,7 +157,7 @@ function Team() {
           Administration & Governance
         </h2>
         <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:max-w-4xl md:justify-center md:overflow-x-visible">
             <MemberCard
     img="images/fatima_01.webp"
     name="Fatima M. Guzman"
@@ -180,11 +166,53 @@ function Team() {
     imagePositionClass="object-center translate-y-5 scale-130"
   />
             <MemberCard
+    img="images/trixia_01.webp"
+    name="Trixia Anne Nagaño"
+    title="Head of People and Administration"
+    linkedinUrl="https://www.linkedin.com/in/trixia-anne-nagano-7a96483a0/"
+    imagePositionClass="object-center"
+  />
+            <MemberCard
     img="images/maybelle_01.webp"
     name="Maybelle A. Cabalar"
     title="Head of Audit and Compliance"
     linkedinUrl="https://www.linkedin.com/in/maybelle-cabalar/"
+    imagePositionClass="object-center"
+  />
+          </div>
+        </div>
+
+        {
+    /* Technology & Innovation */
+  }
+        <h2
+    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
+    style={{ color: SEMANTIC_COLORS.text.primary }}
+  >
+          Technology, Innovation & Digital Growth
+        </h2>
+        <div className="flex justify-center mb-16">
+          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-3 md:gap-8 md:max-w-4xl md:justify-center md:overflow-x-visible">
+            <MemberCard
+    img="images/mark_01.webp"
+    name="Mark Jayson G. Robes"
+    title="Information Technology Head"
+    linkedinUrl="https://www.linkedin.com/in/mark-jayson-robes-7747b3441/"
     imagePositionClass="object-center translate-y-12 scale-125"
+  />
+            <MemberCard
+    img="images/HJ.png"
+    name="Hannah Joy D. Reyes"
+    title="Head of Innovation"
+    linkedinUrl="https://www.linkedin.com/in/hannah-joy-reyes/"
+    imagePositionClass="object-center translate-y-5 scale-130"
+  />
+            <MemberCard
+    img="images/RJ.png"
+    name="Rocel J. Fernandez"
+    title="Head of Growth"
+    linkedinUrl="https://www.linkedin.com/in/rj-fernandez-610469398/"
+    imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>
         </div>
@@ -204,7 +232,7 @@ function Team() {
     img="images/eloi_02.webp"
     name="Eloisa Mae Dacayo"
     title="Head of Finance"
-    linkedinUrl="https://www.linkedin.com/in/anjanneth-bilas-087051117/"
+    linkedinUrl="https://www.linkedin.com/in/eloisa-mae-dacayo-a447a6264/"
     imagePositionClass="object-top"
   />
             <MemberCard
@@ -212,62 +240,13 @@ function Team() {
     name="Joanne P. Corpuz"
     title="Senior Operations / Head of Operations"
     linkedinUrl="https://www.linkedin.com/in/joanne-papua-corpuz-776587358/"
-    imagePositionClass="object-center translate-y-13 scale-130"
+    imagePositionClass="object-center"
   />
             <MemberCard
     img="images/Marj.png"
     name="Marjorie Curamen"
     title="Senior Operations"
     linkedinUrl="https://www.linkedin.com/in/marjorie-curamen-a24b79380/"
-    imagePositionClass="object-center translate-y-5 scale-130"
-  />
-          </div>
-        </div>
-
-        {
-    /* Technology & Innovation */
-  }
-        <h2
-    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
-    style={{ color: SEMANTIC_COLORS.text.primary }}
-  >
-          Technology & Digital Innovation
-        </h2>
-        <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-2 md:gap-8 md:max-w-xl md:justify-center md:overflow-x-visible">
-            <MemberCard
-    img="images/mark_01.webp"
-    name="Mark Jayson G. Robes"
-    title="Information Technology Head"
-    linkedinUrl="https://www.linkedin.com/in/mark-robes"
-    imagePositionClass="object-center translate-y-12 scale-125"
-  />
-            <MemberCard
-    img="images/HJ.png"
-    name="Hannah Joy D. Reyes"
-    title="Head of Innovation"
-    linkedinUrl="https://www.linkedin.com/in/hannah-joy-reyes/"
-    imagePositionClass="object-center translate-y-5 scale-130"
-  />
-          </div>
-        </div>
-
-        {
-    /* Creatives & Marketing */
-  }
-        <h2
-    className={`${FONT_CLASSES.poppinsBlack} text-3xl mb-8`}
-    style={{ color: SEMANTIC_COLORS.text.primary }}
-  >
-          Creatives & Marketing
-        </h2>
-        <div className="flex justify-center mb-16">
-          <div className="flex flex-row overflow-x-auto justify-start gap-4 sm:gap-6 md:grid md:grid-cols-1 md:gap-8 md:max-w-xs md:justify-center md:overflow-x-visible">
-            <MemberCard
-    img="images/RJ.png"
-    name="Rocel J. Fernandez"
-    title="Head of Growth"
-    linkedinUrl="https://www.linkedin.com/in/rj-fernandez-610469398/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
           </div>
