@@ -6,6 +6,10 @@ import Footer from "@/components/Footer/Footer";
 import DetailsHeader from "./Resources/DetailsHeader";
 import { FaFilePdf } from "react-icons/fa";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
+import { htmlToText, toHtml } from "@/lib/rich-text";
+
+// Inner markup of formatted case-study text (toolbar output).
+const RICH = "[&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_li]:mb-1 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-current [&_blockquote]:pl-4 [&_blockquote]:mb-4 [&_blockquote]:italic [&_h3]:font-bold [&_h3]:text-[1.15em] [&_h3]:mt-4 [&_h3]:mb-2";
 const T = {
   primary: "#a10000",
   primaryDark: "#7a0000",
@@ -58,7 +62,7 @@ function transformRelated(item) {
   } else if (Array.isArray(item.solution) && item.solution.length > 0) {
     description = item.solution[0]?.text || "";
   }
-  description = item.subtitle || description;
+  description = item.subtitle || htmlToText(description);
   if (description.length > 90) description = description.slice(0, 90) + "\u2026";
   return {
     id: item._id,
@@ -424,12 +428,7 @@ function CaseStudyDetailsContent() {
   >
                   {study.body[0].title}
                 </h2>
-                <p
-    className="drop-cap-p print-overview-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px]"
-    style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
-  >
-                  {study.body[0].text}
-                </p>
+                <div className={`drop-cap-p print-overview-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px] ${RICH}`} style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }} dangerouslySetInnerHTML={{ __html: toHtml(study.body[0].text) }} />
                 <p className="print-overview-desc leading-[1.85] mt-6 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
                   {FIRST_SECTION_EXTRA}
                 </p>
@@ -450,9 +449,7 @@ function CaseStudyDetailsContent() {
                     <span className="flex-1 h-[1px] bg-zinc-100" />
                     <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>0{idx + 2}</span>
                   </div>
-                  <p className="print-section-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
-                    {item.text}
-                  </p>
+                  <div className={`print-section-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px] ${RICH}`} style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }} dangerouslySetInnerHTML={{ __html: toHtml(item.text) }} />
                 </div>)}
 
             </article>
@@ -479,9 +476,7 @@ function CaseStudyDetailsContent() {
                   Challenge
                 </h3>
                 <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "14px" }} />
-                <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
-                  {study.challenge}
-                </p>
+                <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.challenge) }} />
                 <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.whiteAlpha10}` }}>
                   <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.whiteAlpha30 }}>Industry Intelligence · 2026</span>
                 </div>
@@ -507,9 +502,7 @@ function CaseStudyDetailsContent() {
                   Solution
                 </h3>
                 <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "14px" }} />
-                <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
-                  {study.solution}
-                </p>
+                <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.solution) }} />
                 <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.textHint }}>Industry Intelligence · 2026</span>
                   <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: T.primary, fontWeight: FONT_WEIGHTS.medium }}>Resolved ✓</span>
@@ -572,7 +565,7 @@ function CaseStudyDetailsContent() {
                         </div>
                         <div className="cs-card-bottom">
                           <span className="cs-meta-label">The Problem</span>
-                          <span className="cs-meta-value">{study.challenge.slice(0, 52)}…</span>
+                          <span className="cs-meta-value">{htmlToText(study.challenge).slice(0, 52)}…</span>
                         </div>
                       </div>
                     </div>
@@ -592,7 +585,7 @@ function CaseStudyDetailsContent() {
                         </div>
                         <div className="cs-card-bottom">
                           <span className="cs-meta-label" style={{ color: T.primaryDark }}>The Resolution</span>
-                          <span className="cs-meta-value" style={{ color: T.primary }}>{study.solution.slice(0, 52)}…</span>
+                          <span className="cs-meta-value" style={{ color: T.primary }}>{htmlToText(study.solution).slice(0, 52)}…</span>
                         </div>
                       </div>
                     </div>
@@ -673,9 +666,7 @@ function CaseStudyDetailsContent() {
                       Challenge
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
-                      {study.challenge}
-                    </p>
+                    <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.challenge) }} />
                     <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.whiteAlpha10}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.whiteAlpha30 }}>Industry Intelligence · 2026</span>
                       <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: T.pinkLight, fontWeight: FONT_WEIGHTS.medium, opacity: 0.6 }}>click to close</span>
@@ -717,9 +708,7 @@ function CaseStudyDetailsContent() {
                       Solution
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
-                      {study.solution}
-                    </p>
+                    <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.solution) }} />
                     <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.textHint }}>Industry Intelligence · 2026</span>
                       <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: T.primary, fontWeight: FONT_WEIGHTS.medium, opacity: 0.45 }}>click to close</span>
@@ -763,9 +752,7 @@ function CaseStudyDetailsContent() {
                       Challenge
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }}>
-                      {study.challenge}
-                    </p>
+                    <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.challenge) }} />
                   </div>
 
                   {
@@ -803,9 +790,7 @@ function CaseStudyDetailsContent() {
                       Solution
                     </h3>
                     <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "16px" }} />
-                    <p style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }}>
-                      {study.solution}
-                    </p>
+                    <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.solution) }} />
                     <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.textHint }}>Industry Intelligence · 2026</span>
                       <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.primary, fontWeight: FONT_WEIGHTS.medium }}>Resolved ✓</span>

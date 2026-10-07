@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/shared/ScrollToTop";
 import ProtectedRoute from "@/shared/ProtectedRoute";
 import RouteFallback from "@/shared/RouteFallback";
+import DashboardLoader from "@/components/DashboardLoader";
 import { registerPrefetch } from "@/shared/prefetch";
 import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTracker";
 import BugReportWidget from "@/shared/BugReportWidget";
@@ -60,6 +61,7 @@ const AdminBlogs = lazy(() => import("@/pages/admin/dashboard/blogs/Page"));
 const AdminBlogsList = lazy(() => import("@/pages/admin/dashboard/blogs/list/Page"));
 const AdminCareers = lazy(() => import("@/pages/admin/dashboard/careers/Page"));
 const AdminCaseStudies = lazy(() => import("@/pages/admin/dashboard/CaseStudies/Page"));
+const AdminCaseStudiesList = lazy(() => import("@/pages/admin/dashboard/CaseStudies/list/Page"));
 const AdminPageViews = lazy(() => import("@/pages/admin/dashboard/page-views/Page"));
 const AdminServices = lazy(() => import("@/pages/admin/dashboard/Services/Page"));
 const AdminSettings = lazy(() => import("@/pages/admin/dashboard/settings/Page"));
@@ -206,7 +208,7 @@ const App = () => {
           <Route path="login/forgot-password" element={<AdminForgotPassword />} />
 
           {/* Everything below requires a valid session */}
-          <Route element={<ProtectedRoute loginPath="/admin/login" />}>
+          <Route element={<ProtectedRoute loginPath="/admin/login" loader={<DashboardLoader isVisible message="Loading your workspace…" />} />}>
             <Route path="dashboard" element={<AdminDashboardLayout />}>
               <Route index element={<AdminDashboardHome />} />
               <Route path="ActivityLogs" element={<AdminActivityLogs />} />
@@ -220,6 +222,7 @@ const App = () => {
               <Route path="blogs/list" element={<AdminBlogsList />} />
               <Route path="careers" element={<AdminCareers />} />
               <Route path="CaseStudies" element={<AdminCaseStudies />} />
+              <Route path="CaseStudies/list" element={<AdminCaseStudiesList />} />
               <Route path="page-views" element={<AdminPageViews />} />
               <Route path="Services" element={<AdminServices />} />
               <Route path="settings" element={<AdminSettings />} />

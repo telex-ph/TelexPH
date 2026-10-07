@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useRef } from "react";
+import { Spinner } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import api from "@/lib/api/axios";
 function AddAdmin() {
@@ -163,15 +165,13 @@ function AddAdmin() {
     /* â”€â”€ Global styles â”€â”€ */
   }
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+        *, *::before, *::after { font-family: var(--font-body) !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        input, textarea, select, option, button { font-family: var(--font-body) !important; letter-spacing: 0 !important; }
         input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .aa-pill:hover   { opacity: .78; }
         .aa-row:hover    { background: ${"var(--admin-bg-soft)"} !important; }
         .upload-zone:hover { border-color: var(--admin-accent) !important; background: color-mix(in srgb, var(--admin-accent) 3%, transparent) !important; }
         .aa-tab:hover    { background: ${"var(--admin-bg-soft)"} !important; }
-        @keyframes spin  { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
 
@@ -246,14 +246,7 @@ function AddAdmin() {
           {
     /* â”€â”€ Page header â”€â”€ */
   }
-          <div>
-            <h2 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0 }}>
-              Add New Administrator
-            </h2>
-            <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400 }}>
-              Create a new administrator account and assign their role and department.
-            </p>
-          </div>
+          <PageHeader title="Add New Administrator" subtitle="Create a new administrator account and assign their role and department." style={{ marginBottom: 4 }} />
 
           {
     /* â”€â”€ Outer grid â”€â”€ */
@@ -298,7 +291,7 @@ function AddAdmin() {
                   </div>}
 
                 {isCompressing && <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "9px 14px", borderRadius: 10, background: subtleBg }}>
-                    <svg width="13" height="13" fill="none" stroke={textMuted} strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite", flexShrink: 0 }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                    <Spinner size={13} />
                     <p style={{ fontSize: 11, color: textMuted, margin: 0 }}>Compressing image...</p>
                   </div>}
               </div>
@@ -495,7 +488,7 @@ function AddAdmin() {
       transition: "all .15s"
     }}
   >
-                  {isSubmitting ? <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Creating...</> : <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Create Administrator</>}
+                  {isSubmitting ? <><Spinner size={12} />Creating...</> : <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Create Administrator</>}
                 </button>
               </div>
 
@@ -558,7 +551,7 @@ function AddAdmin() {
     disabled={isSubmitting}
     style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: isSubmitting ? "not-allowed" : "pointer", opacity: isSubmitting ? 0.75 : 1, transition: "all .15s", display: "flex", alignItems: "center", gap: 7 }}
   >
-                  {isSubmitting ? <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Creating...</> : "Confirm & Create"}
+                  {isSubmitting ? <><Spinner size={12} />Creating...</> : "Confirm & Create"}
                 </button>
               </div>
             </div>

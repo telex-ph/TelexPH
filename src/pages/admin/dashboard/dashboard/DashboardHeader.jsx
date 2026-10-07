@@ -26,6 +26,7 @@ function DashboardHeader({ selecteddate, onDateChange }) {
           Dashboard overview
         </h2>
         <p
+    className="font-accent"
     style={{
       fontSize: 12,
       color: textMuted,

@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect, useCallback } from "react";
+import DashboardLoader, { Spinner, useInitialLoad } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const departments = {
   1: "Compliance",
@@ -22,6 +24,7 @@ function ListArchivedServices() {
   const [archivedcasestudies, setarchivedcasestudies] = useState([]);
   const [archivedadmins, setarchivedadmins] = useState([]);
   const [isloading, setisloading] = useState(true);
+  const initialLoading = useInitialLoad(isloading);
   const [error, seterror] = useState(null);
   const [restoringid, setrestoringid] = useState(null);
   const [successmsg, setsuccessmsg] = useState(null);
@@ -183,7 +186,7 @@ function ListArchivedServices() {
   };
   const getTypeBadge = (t) => {
     const map = {
-      blog: { bg: "#8B0000", color: "#fff" },
+      blog: { bg: "#A10000", color: "#fff" },
       casestudy: { bg: "#0066CC", color: "#fff" },
       admin: { bg: "#4B0082", color: "#fff" }
     };
@@ -201,7 +204,7 @@ function ListArchivedServices() {
     };
   };
   const getRoleBadge = (role) => ({
-    background: role === 1 ? "#8B0000" : "#B45309",
+    background: role === 1 ? "#A10000" : "#B45309",
     color: "#fff",
     padding: "3px 12px",
     borderRadius: 20,
@@ -268,7 +271,7 @@ function ListArchivedServices() {
       label: "Blogs",
       value: totB,
       subtitle: "Archived blog posts",
-      iconColor: "#8B0000",
+      iconColor: "#A10000",
       dark: false,
       image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400&q=80",
       icon: <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
@@ -305,7 +308,6 @@ function ListArchivedServices() {
     transition: "border-color .15s",
     ...extra
   });
-  const Spinner = () => <div style={{ width: 11, height: 11, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "arc-spin 0.8s linear infinite" }} />;
   const RestoreIcon = () => <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
     </svg>;
@@ -329,16 +331,9 @@ function ListArchivedServices() {
   const RBtn = ({ loading, onClick, disabled }) => <button className="arc-rbtn" onClick={onClick} disabled={disabled} style={rBtn(loading)}>
       {loading ? <><Spinner /><span className="arc-rbtn-label">Restoring...</span></> : <><RestoreIcon /><span className="arc-rbtn-label">Restore</span></>}
     </button>;
-  if (isloading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: pageBg, fontFamily: FONT }}>
-      <style>{`@keyframes arc-spin { to { transform: rotate(360deg) } }`}</style>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ width: 44, height: 44, border: "4px solid var(--admin-accent)", borderTopColor: "transparent", borderRadius: "50%", animation: "arc-spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
-        <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: FONT }}>Loading archived content...</p>
-      </div>
-    </div>;
+  if (initialLoading) return <DashboardLoader isVisible message="Loading archive…" />;
   return <div style={{ minHeight: "100vh", background: pageBg, padding: "clamp(16px, 4vw, 32px)", fontFamily: FONT }}>
       <style>{`
-        @keyframes arc-spin { to { transform: rotate(360deg) } }
         .arc-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .arc-card { transition: transform .18s, box-shadow .18s, border-color .18s; }
         .arc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,${isdarkmode ? ".35" : ".09"}) !important; border-color: ${"var(--admin-border-strong)"} !important; }
@@ -422,7 +417,7 @@ function ListArchivedServices() {
         }
       `}</style>
 
-      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", paddingTop: 32, display: "flex", flexDirection: "column", gap: 24 }}>
 
         {
     /* â”€â”€ Toasts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -438,18 +433,14 @@ function ListArchivedServices() {
         {
     /* â”€â”€ Page Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   }
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
-          <div>
-            <h2 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: FONT }}>
-              Archived Content
-            </h2>
-            <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400, fontFamily: FONT }}>
-              Manage archived blogs, case studies{isMainAdmin ? ", and admin accounts" : ""}. Restore items to make them visible again.
-            </p>
-          </div>
+        <PageHeader
+    title="Archived Content"
+    subtitle={`Manage archived blogs, case studies${isMainAdmin ? ", and admin accounts" : ""}. Restore items to make them visible again.`}
+    style={{ marginBottom: 4 }}
+    actions={
           <button
     onClick={loadAll}
-    style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 20px", borderRadius: 12, background: "#8B0000", color: "#ffffff", fontSize: 12, fontWeight: 500, border: "none", cursor: "pointer", fontFamily: FONT, transition: "opacity .15s, transform .15s", boxShadow: "0 2px 8px rgba(139,0,0,0.3)" }}
+    style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 20px", borderRadius: 12, background: "#A10000", color: "#ffffff", fontSize: 12, fontWeight: 500, border: "none", cursor: "pointer", fontFamily: FONT, transition: "opacity .15s, transform .15s", boxShadow: "0 2px 8px rgba(139,0,0,0.3)" }}
     onMouseOver={(e) => {
       e.currentTarget.style.opacity = "0.85";
       e.currentTarget.style.transform = "translateY(-1px)";
@@ -464,12 +455,8 @@ function ListArchivedServices() {
             </svg>
             Refresh
           </button>
-        </div>
-
-        {
-    /* â”€â”€ Divider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  }
-        <div style={{ height: 1, background: borderColor, width: "100%" }} />
+}
+  />
 
         {
     /* â”€â”€ Stat Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -478,7 +465,7 @@ function ListArchivedServices() {
           {statCards.map((card, i) => {
     const gradients = [
       { from: "#059669", to: "#047857", accent: "#34d399", mid: "#05966988" },
-      { from: "#8B0000", to: "#6b0000", accent: "#fca5a5", mid: "#8B000088" },
+      { from: "#A10000", to: "#530607", accent: "#fca5a5", mid: "#A1000088" },
       { from: "#0066CC", to: "#004fa3", accent: "#93c5fd", mid: "#0066CC88" },
       { from: "#2d4a35", to: "#1a2e20", accent: "#86efac", mid: "#2d4a3588" }
     ];
@@ -760,7 +747,7 @@ function ListArchivedServices() {
     const author = isAdmin ? `${admin?.firstName} ${admin?.lastName}` : isBlog ? blog?.author || "" : (cs?.authors || []).map((a) => a.name).join(", ");
     const date = fmtDate(item.updatedAt || item.createdAt);
     const status = isAdmin ? admin?.role === 1 ? "Main Admin" : "Admin" : item.status || "";
-    const accentColor = isAdmin ? "#4B0082" : isBlog ? "#8B0000" : "#0066CC";
+    const accentColor = isAdmin ? "#4B0082" : isBlog ? "#A10000" : "#0066CC";
     const type = isAdmin ? "admin" : isBlog ? "blog" : "casestudy";
     return <div key={item._id} className="arc-card" style={{
       background: cardBg,
@@ -856,7 +843,7 @@ function ListArchivedServices() {
     const author = isAdmin ? admin?.email || "" : isBlog ? blog?.author || "" : (cs?.authors || []).map((a) => a.name).join(", ");
     const date = fmtDate(item.updatedAt || item.createdAt);
     const status = item.status || "";
-    const accentColor = isAdmin ? "#4B0082" : isBlog ? "#8B0000" : "#0066CC";
+    const accentColor = isAdmin ? "#4B0082" : isBlog ? "#A10000" : "#0066CC";
     const type = isAdmin ? "admin" : isBlog ? "blog" : "casestudy";
     const isEven = idx % 2 === 0;
     return <div key={item._id} className="arc-row arc-list-grid" style={{

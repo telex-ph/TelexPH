@@ -7,8 +7,7 @@ function SettingsMenu({ isdarkmode }) {
   const iconBg = "var(--admin-bg-soft)";
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-        * { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; -webkit-font-smoothing: antialiased; }
+        * { font-family: var(--font-body) !important; letter-spacing: 0 !important; -webkit-font-smoothing: antialiased; }
         .settings-link {
           display: flex;
           align-items: center;

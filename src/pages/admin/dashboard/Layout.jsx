@@ -3,11 +3,10 @@ import { Outlet } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import Logout, { performAdminLogout, goToAdminLogin } from "./settings/logout";
+import { performAdminLogout, goToAdminLogin } from "./settings/logout";
 import LogoutConfirmModal from "@/components/LogoutConfirmModal";
 import LogoutOverlay from "@/components/LogoutOverlay";
-import SettingsMenu from "./settings/SettingsMenu";
-import MiniActivityLogs from "./MiniActivityLogs";
+import DashboardLoader from "@/components/DashboardLoader";
 import api from "@/lib/api/axios";
 import { AdminThemeProvider, useAdminTheme } from "@/lib/admin-theme";
 import "@/styles/admin-theme.css";
@@ -46,11 +45,7 @@ function DashboardLayoutInner() {
   const [issidebarcollapsed, setissidebarcollapsed] = useState(false);
   const [ismobilemenuopen, setismobilemenuopen] = useState(false);
   const [opendropdowns, setopendropdowns] = useState({});
-  const [isactivitylogsopen, setisactivitylogsopen] = useState(false);
   const [unreadcount, setunreadcount] = useState(0);
-  const [isheaderdropdownopen, setisheaderdropdownopen] = useState(false);
-  const dropdownref = useRef(null);
-  const activitylogsref = useRef(null);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutDone, setLogoutDone] = useState(false);
@@ -101,7 +96,6 @@ function DashboardLayoutInner() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setIsLoadingUser(true);
         const response = await Promise.race([
           api.get("/users/me"),
           new Promise(
@@ -144,16 +138,6 @@ function DashboardLayoutInner() {
     return () => clearInterval(interval);
   }, []);
   useEffect(() => {
-    function handleclickoutside(event) {
-      if (dropdownref.current && !dropdownref.current.contains(event.target))
-        setisheaderdropdownopen(false);
-      if (activitylogsref.current && !activitylogsref.current.contains(event.target))
-        setisactivitylogsopen(false);
-    }
-    document.addEventListener("mousedown", handleclickoutside);
-    return () => document.removeEventListener("mousedown", handleclickoutside);
-  }, []);
-  useEffect(() => {
     setismobilemenuopen(false);
   }, [pathname]);
   useEffect(() => {
@@ -170,22 +154,18 @@ function DashboardLayoutInner() {
     const isactive = pathname === path || hasdropdown && pathname.startsWith(path);
     const collapsedpadding = issidebarcollapsed ? "lg:justify-center lg:px-0" : "px-3 sm:px-4";
     if (isactive) return `bg-[var(--admin-accent)] text-[var(--admin-text-on-accent)] shadow-md border-none ${collapsedpadding}`;
-    return `bg-transparent text-[var(--admin-text-faint)] hover:bg-[var(--admin-bg-hover)] border-none ${collapsedpadding}`;
+    return `bg-transparent text-[var(--admin-text)] hover:bg-[var(--admin-accent-soft)] hover:text-[var(--admin-accent-text)] border-none ${collapsedpadding}`;
+  };
+  const getnavchip = (path, hasdropdown = false) => {
+    const isactive = pathname === path || hasdropdown && pathname.startsWith(path);
+    return isactive ? "bg-white/15" : "bg-[var(--admin-bg-soft)] text-[var(--admin-accent-text)] group-hover/nav:bg-[var(--admin-surface)]";
   };
   const getsubnavstyle = (path) => {
     const isactive = pathname === path;
-    if (isactive) return "text-[var(--admin-accent-text)] rounded-xl bg-[var(--admin-bg-soft)]";
-    return "text-[var(--admin-text-faint)] hover:text-[var(--admin-text)] rounded-xl hover:bg-[var(--admin-bg-hover)]";
+    if (isactive) return "text-[var(--admin-accent-text)] font-bold rounded-xl bg-[var(--admin-accent-soft)]";
+    return "text-[var(--admin-text-sub)] hover:text-[var(--admin-accent-text)] rounded-xl hover:bg-[var(--admin-accent-soft)]";
   };
-  if (isLoadingUser) {
-    return <div className="flex h-[100dvh] items-center justify-center bg-[var(--admin-bg)]">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[var(--admin-accent)] border-r-transparent" />
-          <p className="mt-4 text-[var(--admin-text-sub)]" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "11px" }}>Authenticating...</p>
-          <p className="mt-2 text-[var(--admin-text-faint)]" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "10px" }}>Please wait</p>
-        </div>
-      </div>;
-  }
+  if (isLoadingUser) return <DashboardLoader isVisible message="Loading your workspace…" />;
   if (authError || !userData) return null;
   const getUserInitials = () => {
     if (!userData) return "?";
@@ -229,7 +209,12 @@ function DashboardLayoutInner() {
     {
       name: "Case studies",
       path: "/admin/dashboard/CaseStudies",
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>,
+      hasDropdown: true,
+      subItems: [
+        { name: "Add case study", path: "/admin/dashboard/CaseStudies" },
+        { name: "Case study list", path: "/admin/dashboard/CaseStudies/list" }
+      ]
     },
     {
       name: "Activity logs",
@@ -288,14 +273,14 @@ function DashboardLayoutInner() {
               </div>
               <div className="flex flex-col min-w-0">
                 <span
-    className={`transition-colors truncate text-[var(--admin-text)]`}
-    style={{ ...poppins, fontSize: "12px", fontWeight: 600, letterSpacing: "0.05em" }}
+    className={`font-heading transition-colors truncate text-[var(--admin-text)]`}
+    style={{ fontSize: "15px", letterSpacing: "0.04em" }}
   >
                   TELEXPH
                 </span>
                 <span
-    className={`transition-colors truncate text-[var(--admin-text-faint)]`}
-    style={{ ...poppins, fontSize: "9px", letterSpacing: "0.02em" }}
+    className={`transition-colors truncate text-[var(--admin-text-sub)]`}
+    style={{ ...poppins, fontSize: "11px", letterSpacing: "0.02em" }}
   >
                   Administration Side
                 </span>
@@ -349,24 +334,18 @@ function DashboardLayoutInner() {
     /* Navigation */
   }
       <nav className={`flex-1 overflow-y-auto no-scrollbar pt-2 pb-6 space-y-1 transition-all duration-300 ${iscollapsed ? "px-2" : "px-3 sm:px-5"}`}>
-        {!iscollapsed && <div
-    className={`mb-3 px-3 sm:px-4 transition-colors text-[var(--admin-text-faint)]`}
-    style={{ ...poppins, fontSize: "9px" }}
-  >
-            Main menu
-          </div>}
 
         {(() => {
     const renderItem = (item) => <div key={item.name}>
               {item.hasDropdown ? <>
                   <button
       onClick={() => toggledropdown(item.name)}
-      className={`w-full flex items-center rounded-2xl transition-all duration-300 active:scale-95 border-none outline-none touch-manipulation ${iscollapsed ? "justify-center py-3" : "justify-between py-2.5 sm:py-3"} ${getnavstyle(item.path, true)}`}
-      style={{ ...poppins, fontSize: "11px" }}
+      className={`w-full flex items-center rounded-2xl transition-all duration-300 active:scale-95 border-none outline-none touch-manipulation ${iscollapsed ? "justify-center py-3" : "justify-between py-1.5 sm:py-2"} ${getnavstyle(item.path, true)} group/nav`}
+      style={{ ...poppins, fontSize: "13px", fontWeight: 600 }}
     >
                     <div className={`flex items-center ${iscollapsed ? "" : "gap-2 sm:gap-3"}`}>
-                      <span className="shrink-0">{item.icon}</span>
-                      {(!iscollapsed || ismobilemenuopen) && <span style={poppins}>{item.name}</span>}
+                      <span className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${getnavchip(item.path, !!item.hasDropdown)}`}>{item.icon}</span>
+                      {(!iscollapsed || ismobilemenuopen) && <span style={{ ...poppins, fontWeight: "inherit" }}>{item.name}</span>}
                     </div>
                     {(!iscollapsed || ismobilemenuopen) && <svg
       className={`w-3.5 h-3.5 transition-transform shrink-0 ${opendropdowns[item.name] ? "rotate-180" : ""}`}
@@ -386,19 +365,23 @@ function DashboardLayoutInner() {
       className={`group relative flex items-center py-2 pl-5 sm:pl-6 pr-3 sm:pr-4 no-underline transition-all active:scale-95 my-1 mx-2 touch-manipulation ${getsubnavstyle(sub.path)}`}
     >
                           <div className={`absolute left-[-8px] w-4 h-px top-1/2 bg-[var(--admin-border-strong)] rounded-tr-lg`} />
-                          <span className="transition-colors" style={{ ...poppins, fontSize: "10px" }}>{sub.name}</span>
+                          <span className="transition-colors" style={{ ...poppins, fontSize: "12px", fontWeight: "inherit" }}>{sub.name}</span>
                         </Link>)}
                     </div>
                   </div>
                 </> : <Link
       href={item.path}
-      className={`w-full flex items-center rounded-2xl transition-all duration-300 active:scale-95 border-none outline-none no-underline touch-manipulation ${iscollapsed ? "justify-center py-3" : "justify-between py-2.5 sm:py-3"} ${getnavstyle(item.path)}`}
-      style={{ ...poppins, fontSize: "11px" }}
+      className={`w-full flex items-center rounded-2xl transition-all duration-300 active:scale-95 border-none outline-none no-underline touch-manipulation ${iscollapsed ? "justify-center py-3" : "justify-between py-1.5 sm:py-2"} ${getnavstyle(item.path)} group/nav`}
+      style={{ ...poppins, fontSize: "13px", fontWeight: 600 }}
     >
                   <div className={`flex items-center ${iscollapsed ? "" : "gap-2 sm:gap-3"}`}>
-                    <span className="shrink-0">{item.icon}</span>
-                    {(!iscollapsed || ismobilemenuopen) && <span style={poppins}>{item.name}</span>}
+                    <span className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${getnavchip(item.path, !!item.hasDropdown)}`}>{item.icon}</span>
+                    {(!iscollapsed || ismobilemenuopen) && <span style={{ ...poppins, fontWeight: "inherit" }}>{item.name}</span>}
                   </div>
+                  {item.name === "Activity logs" && unreadcount > 0 && (!iscollapsed || ismobilemenuopen) && <span
+      className="min-w-5 h-5 px-1.5 rounded-full flex items-center justify-center bg-[var(--admin-accent)] text-[var(--admin-text-on-accent)]"
+      style={{ fontSize: "10px", fontWeight: 700 }}
+    >{unreadcount > 9 ? "9+" : unreadcount}</span>}
                 </Link>}
             </div>;
     return <>
@@ -427,17 +410,33 @@ function DashboardLayoutInner() {
             </div>
             {(!iscollapsed || ismobilemenuopen) && <div className="flex flex-col text-left min-w-0">
                 <span
-    className={`tracking-tight transition-colors truncate text-[var(--admin-text)]`}
-    style={{ ...poppins, fontSize: "11px" }}
+    className={`transition-colors truncate text-[var(--admin-text)]`}
+    style={{ ...poppins, fontSize: "13px", fontWeight: 600 }}
   >
                   {getUserFullName()}
                 </span>
-                <span className="text-[var(--admin-text-faint)] truncate" style={{ ...poppins, fontSize: "9px" }}>
+                <span className="text-[var(--admin-text-sub)] truncate" style={{ ...poppins, fontSize: "11px" }}>
                   {getDepartmentName(userData.department)}
                 </span>
               </div>}
           </div>
         </Link>
+
+        {
+    /* Logout (Settings opens from the profile card above) */
+  }
+        <div className="space-y-1">
+          <button
+    onClick={() => setConfirmLogout(true)}
+    className={`group/nav w-full flex items-center rounded-2xl border-none bg-transparent cursor-pointer transition-all active:scale-95 touch-manipulation text-[var(--admin-danger)] hover:bg-[var(--admin-danger-bg)] py-1.5 ${iscollapsed && !ismobilemenuopen ? "justify-center" : "gap-3 px-3"}`}
+    style={{ ...poppins, fontSize: "13px", fontWeight: 600 }}
+  >
+            <span className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--admin-danger-bg)]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+            </span>
+            {(!iscollapsed || ismobilemenuopen) && <span>Log out</span>}
+          </button>
+        </div>
       </div>
     </>;
   return <>
@@ -454,13 +453,19 @@ function DashboardLayoutInner() {
     onDone={goToAdminLogin}
   />}
       <div
-    className={`flex h-[100dvh] overflow-hidden antialiased transition-colors duration-500 bg-[var(--admin-bg)] text-[var(--admin-text-sub)]`}
+    className={`fixed inset-0 flex overflow-hidden antialiased transition-colors duration-500 bg-[var(--admin-bg)] text-[var(--admin-text-sub)]`}
     style={poppins}
   >
         <style dangerouslySetInnerHTML={{ __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
-          * { font-family: 'Poppins', sans-serif !important; }
-          body { font-family: 'Poppins', sans-serif; font-weight: 400; }
+          /* Brand type (tokens in styles/admin-theme.css). !important is what lets
+             this win over the many inline fontFamily styles in the pages. */
+          * { font-family: var(--font-body) !important; }
+          :is(h1,h2,h3,h4,h5,h6,.font-heading), :is(h1,h2,h3,h4,h5,h6,.font-heading) * { font-family: var(--font-heading) !important; font-weight: 900 !important; letter-spacing: 0 !important; }
+          .font-accent { font-family: var(--font-accent) !important; }
+          body { font-weight: 400; }
+          /* Dashboard was authored at 9-12px; scale the whole UI so it reads at 100% browser zoom. */
+          html { zoom: var(--admin-zoom); }
+          html, body { overflow: hidden; }
           .no-scrollbar::-webkit-scrollbar { display: none; }
           .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
           * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
@@ -502,94 +507,25 @@ function DashboardLayoutInner() {
         {
     /* Main content area */
   }
-        <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden w-0 min-w-0">
+        <main className="flex-1 flex flex-col h-full overflow-hidden w-0 min-w-0">
 
           {
-    /* Header — shorter on mobile */
+    /* No top bar: the sidebar carries everything. Mobile keeps a floating menu button to open it. */
   }
-          <header
-    className={`flex items-center justify-between shrink-0 transition-colors duration-500
-            h-14 sm:h-16 lg:h-20
-            px-4 sm:px-6 lg:px-8 xl:px-10
-            bg-[var(--admin-surface)] border-b border-[var(--admin-border)]`}
-  >
-            <div className="flex items-center gap-2 sm:gap-4">
-              {
-    /* Mobile/Tablet hamburger */
-  }
-              <button
+          <button
     onClick={() => setismobilemenuopen(true)}
-    className={`lg:hidden p-2 sm:p-2.5 rounded-xl border-none transition-all active:scale-90 touch-manipulation bg-[var(--admin-bg-soft)] text-[var(--admin-text-sub)]`}
+    aria-label="Open menu"
+    className="lg:hidden fixed top-3 left-3 z-30 p-2.5 rounded-xl border border-[var(--admin-border)] shadow-md touch-manipulation bg-[var(--admin-surface)] text-[var(--admin-text)]"
   >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="relative flex items-center gap-2 sm:gap-3">
-              {
-    /* Activity logs */
-  }
-              <div className="relative" ref={activitylogsref}>
-                <button
-    onClick={() => setisactivitylogsopen(!isactivitylogsopen)}
-    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center relative cursor-pointer transition-all border-none outline-none active:scale-90 touch-manipulation bg-[var(--admin-bg-soft)] hover:bg-[var(--admin-bg-hover)]`}
-  >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  {unreadcount > 0 && <span
-    className="absolute top-0.5 right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[var(--admin-accent)] text-[var(--admin-text-on-accent)] flex items-center justify-center rounded-full border border-[var(--admin-surface)]"
-    style={{ ...poppins, fontSize: "8px", fontWeight: 600 }}
-  >
-                      {unreadcount > 9 ? "9+" : unreadcount}
-                    </span>}
-                </button>
-
-                {isactivitylogsopen && <div className="absolute right-0 mt-2 sm:mt-3 z-[100] animate-in fade-in zoom-in-95 duration-200">
-                    <MiniActivityLogs
-    isdarkmode={isdarkmode}
-    onUnreadCountChange={(count) => setunreadcount(count)}
-    onClose={() => setisactivitylogsopen(false)}
-  />
-                  </div>}
-              </div>
-
-              {
-    /* Header dropdown */
-  }
-              <div className="relative" ref={dropdownref}>
-                <button
-    onClick={() => setisheaderdropdownopen(!isheaderdropdownopen)}
-    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center cursor-pointer transition-all border-none outline-none active:scale-90 touch-manipulation bg-[var(--admin-bg-soft)] hover:bg-[var(--admin-bg-hover)]`}
-  >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                    <circle cx="12" cy="12" r="1" fill="currentColor" />
-                    <circle cx="19" cy="12" r="1" fill="currentColor" />
-                    <circle cx="5" cy="12" r="1" fill="currentColor" />
-                  </svg>
-                </button>
-
-                {isheaderdropdownopen && <div className={`absolute right-0 mt-2 sm:mt-4 w-60 sm:w-72 rounded-[20px] sm:rounded-[35px] shadow-2xl border p-2 sm:p-3 z-[100] animate-in fade-in zoom-in-95 duration-200 bg-[var(--admin-surface-raised)] border-[var(--admin-border)]`}>
-                    <div onClick={() => setisheaderdropdownopen(false)}>
-                      <SettingsMenu isdarkmode={isdarkmode} />
-                    </div>
-                    <div className={`h-[1px] mx-4 sm:mx-6 my-2 bg-[var(--admin-border)]`} />
-                    <div onClick={() => setisheaderdropdownopen(false)}>
-                      <Logout isdarkmode={isdarkmode} onRequestConfirm={() => setConfirmLogout(true)} />
-                    </div>
-                  </div>}
-              </div>
-            </div>
-          </header>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
 
           {
     /* Page content */
   }
-          <section className="flex-1 overflow-y-auto no-scrollbar px-4 sm:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 lg:py-8">
+          <section className="flex-1 overflow-y-auto no-scrollbar px-4 sm:px-6 lg:px-8 xl:px-10 pt-16 pb-4 sm:pb-6 lg:pt-6 lg:pb-8">
             {children}
           </section>
         </main>

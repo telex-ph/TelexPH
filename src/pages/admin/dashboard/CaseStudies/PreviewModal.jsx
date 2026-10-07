@@ -118,7 +118,7 @@ const PreviewModal = ({ isOpen, data, onClose, onEdit }) => {
           </button>
           <button
     onClick={onClose}
-    className="px-8 py-3 bg-[var(--admin-accent)] text-white rounded-2xl font-bold hover:bg-[#600000] transition-colors"
+    className="px-8 py-3 bg-[var(--admin-accent)] text-white rounded-2xl font-bold hover:bg-[var(--admin-accent-hover)] transition-colors"
   >
             Close Preview
           </button>

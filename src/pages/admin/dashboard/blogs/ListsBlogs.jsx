@@ -1,7 +1,10 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import EditBlogs from "./EditBlogs";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import { htmlToText, toHtml } from "@/lib/rich-text";
 const STAT_CARD_IMAGES = [
   "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=500&q=80&fit=crop",
   // Total blogs  — open notebook
@@ -33,6 +36,7 @@ function ListBlogs() {
   const [currentpage, setcurrentpage] = useState(1);
   const cardsperpage = 6;
   const [isloading, setisloading] = useState(true);
+  const initialLoading = useInitialLoad(isloading);
   const [error, seterror] = useState(null);
   const [selectedmaincategory, setselectedmaincategory] = useState("All");
   const [selectedsubcategory, setselectedsubcategory] = useState("All");
@@ -108,7 +112,7 @@ function ListBlogs() {
   };
   const calculatereadingtime = (content) => {
     if (!content || !Array.isArray(content)) return 5;
-    const totalwords = content.reduce((acc, section) => acc + (section.content || "").split(/\s+/).length, 0);
+    const totalwords = content.reduce((acc, section) => acc + htmlToText(section.content).split(/\s+/).length, 0);
     return Math.max(1, Math.ceil(totalwords / 200));
   };
   const getCategoryIcon = (mainCategory) => {
@@ -206,10 +210,9 @@ function ListBlogs() {
   }
   return <>
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; -webkit-font-smoothing: antialiased; }
+        *, *::before, *::after { font-family: var(--font-body) !important; -webkit-font-smoothing: antialiased; }
         input, textarea, button, select, option,
-        input::placeholder, textarea::placeholder { font-family: 'Poppins', sans-serif !important; }
+        input::placeholder, textarea::placeholder { font-family: var(--font-body) !important; }
 
         /* \u2500\u2500 Stat image card \u2500\u2500 */
         .stat-img-card {
@@ -351,12 +354,7 @@ function ListBlogs() {
     /* â”€â”€ Header â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <h2 className={`tracking-tight transition-colors text-[var(--admin-text)]`} style={{ fontSize: 16, fontWeight: 500 }}>
-            Blog Management
-          </h2>
-          <p className={`mt-1 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-            Manage and organize your blog posts
-          </p>
+          <PageHeader title="Blog Management" subtitle="Manage and organize your blog posts" style={{ marginBottom: 0 }} />
         </div>
 
         {
@@ -539,10 +537,8 @@ function ListBlogs() {
     /* â”€â”€ Blog Content â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          {isloading ? <div className="p-16 sm:p-20 text-center">
-              <div className="inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-red-900 border-t-transparent" />
-              <p className={`mt-5 transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 12, fontWeight: 400 }}>Loading blogs...</p>
-            </div> : currentblogs.length === 0 ? <div className={`rounded-[2rem] border p-14 sm:p-20 text-center transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+          <DashboardLoader isVisible={initialLoading} message="Loading blogs…" />
+          {initialLoading ? null : currentblogs.length === 0 ? <div className={`rounded-[2rem] border p-14 sm:p-20 text-center transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
               <div className="text-5xl sm:text-6xl mb-4">📝</div>
               <p className={`mb-2 transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 13, fontWeight: 500 }}>No blogs found</p>
               <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Try adjusting your filters or create a new blog post</p>
@@ -609,7 +605,7 @@ function ListBlogs() {
                       </button>
                       <button
       onClick={() => handleedit(blog)}
-      className="flex-1 py-2 sm:py-2.5 bg-[var(--admin-accent)] text-white rounded-[0.75rem] sm:rounded-[1rem] hover:bg-[#600000] transition-all flex items-center justify-center gap-1.5"
+      className="flex-1 py-2 sm:py-2.5 bg-[var(--admin-accent)] text-white rounded-[0.75rem] sm:rounded-[1rem] hover:bg-[var(--admin-accent-hover)] transition-all flex items-center justify-center gap-1.5"
       style={{ fontSize: 10, fontWeight: 500 }}
     >
                         <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -696,7 +692,7 @@ function ListBlogs() {
                             <button onClick={() => handleview(blog)} className={`action-btn-sm transition-all hover:shadow-lg bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontWeight: 500 }}>
                               View
                             </button>
-                            <button onClick={() => handleedit(blog)} className="action-btn-sm bg-[var(--admin-accent)] text-white hover:bg-[#600000] transition-all hover:shadow-lg" style={{ fontWeight: 500 }}>
+                            <button onClick={() => handleedit(blog)} className="action-btn-sm bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all hover:shadow-lg" style={{ fontWeight: 500 }}>
                               Edit
                             </button>
                             <button
@@ -814,9 +810,7 @@ function ListBlogs() {
               <div>
                 {viewingblog.mainContent && Array.isArray(viewingblog.mainContent) && viewingblog.mainContent.map((section, index) => <div key={index} className="mb-4 sm:mb-5">
                     {section.title && <p className={`mb-2 mt-3 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>{section.title}</p>}
-                    {section.content && <div className={`leading-relaxed whitespace-pre-wrap transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                        {section.content.split("\n").map((paragraph, pIndex) => paragraph.trim() && <p key={pIndex} className="mb-3">{paragraph}</p>)}
-                      </div>}
+                    {section.content && <div className={`rta-view leading-relaxed transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 400 }} dangerouslySetInnerHTML={{ __html: toHtml(section.content) }} />}
                   </div>)}
               </div>
             </div>
@@ -828,7 +822,7 @@ function ListBlogs() {
               <button onClick={() => {
     closeviewmodal();
     handleedit(viewingblog);
-  }} className="px-5 sm:px-8 py-2.5 sm:py-3 bg-[var(--admin-accent)] text-white rounded-[1.25rem] hover:bg-[#600000] transition-all shadow-lg" style={{ fontSize: 11, fontWeight: 500 }}>
+  }} className="px-5 sm:px-8 py-2.5 sm:py-3 bg-[var(--admin-accent)] text-white rounded-[1.25rem] hover:bg-[var(--admin-accent-hover)] transition-all shadow-lg" style={{ fontSize: 11, fontWeight: 500 }}>
                 Edit Blog
               </button>
             </div>
