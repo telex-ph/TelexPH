@@ -138,11 +138,11 @@ function Team() {
     imagePositionClass="object-center translate-y-6 scale-130"
   />
             <MemberCard
-    img="images/Michelle.png"
+    img="images/michelle_01.webp"
     name="Michelle D. Soliman"
     title="Executive Coordination Officer"
     linkedinUrl="https://www.linkedin.com/in/michelle-soliman-a8a825426/"
-    imagePositionClass="object-center translate-y-5 scale-130"
+    imagePositionClass="object-center"
   />
           </div>
         </div>
@@ -166,7 +166,7 @@ function Team() {
     imagePositionClass="object-center translate-y-5 scale-130"
   />
             <MemberCard
-    img="images/trixia_01.webp"
+    img="images/trixia_02.webp"
     name="Trixia Anne Nagaño"
     title="Head of People and Administration"
     linkedinUrl="https://www.linkedin.com/in/trixia-anne-nagano-7a96483a0/"
@@ -196,23 +196,23 @@ function Team() {
             <MemberCard
     img="images/mark_01.webp"
     name="Mark Jayson G. Robes"
-    title="Information Technology Head"
+    title="Head of Information Technology"
     linkedinUrl="https://www.linkedin.com/in/mark-jayson-robes-7747b3441/"
     imagePositionClass="object-center translate-y-12 scale-125"
   />
             <MemberCard
     img="images/HJ.png"
     name="Hannah Joy D. Reyes"
-    title="Head of Innovation"
+    title="Head of Digital Innovation"
     linkedinUrl="https://www.linkedin.com/in/hannah-joy-reyes/"
     imagePositionClass="object-center translate-y-5 scale-130"
   />
             <MemberCard
-    img="images/RJ.png"
+    img="images/rj_01.webp"
     name="Rocel J. Fernandez"
     title="Head of Growth"
     linkedinUrl="https://www.linkedin.com/in/rj-fernandez-610469398/"
-    imagePositionClass="object-center translate-y-5 scale-130"
+    imagePositionClass="object-center"
   />
           </div>
         </div>
@@ -243,11 +243,11 @@ function Team() {
     imagePositionClass="object-center"
   />
             <MemberCard
-    img="images/Marj.png"
+    img="images/marj_01.webp"
     name="Marjorie Curamen"
-    title="Senior Operations"
+    title="Senior Operations / Head of Operations"
     linkedinUrl="https://www.linkedin.com/in/marjorie-curamen-a24b79380/"
-    imagePositionClass="object-center translate-y-5 scale-130"
+    imagePositionClass="object-center"
   />
           </div>
         </div>
