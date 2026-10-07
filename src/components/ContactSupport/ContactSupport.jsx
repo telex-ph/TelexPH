@@ -60,7 +60,7 @@ const ContactSupport = () => {
               })}
             </div>
 
-            <div className="flex w-full md:w-auto md:justify-start">
+            <div className="flex w-full md:justify-end md:mt-auto">
               <button
     type="button"
     onClick={() => window.open("https://intl.telexph.com", "_blank")}

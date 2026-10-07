@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Headphones, ClipboardList, Truck } from "lucide-react";
 import { Rubik } from "next/font/google";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
@@ -32,9 +33,27 @@ const Partners = ({
     // 3. APPLIED backgroundColor to the outermost div
     <div className={`w-full pt-16 pb-12 ${backgroundColor}`}> 
       <div className={DEFAULT_MAX_WIDTH_CLASS}>
-        <h2 className="font-poppins-black text-3xl md:text-5xl text-center text-[#1a1a2e] leading-tight mb-10 px-4">
-          Keep Customers Supported. Keep Work Moving.
-        </h2>
+        <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.6 }}
+    transition={{ duration: 0.7, ease: "easeOut" }}
+    className="text-center mb-12 md:mb-14 px-4"
+  >
+          <p className="font-open-sans-bold text-[#a10000] uppercase text-xs sm:text-sm tracking-[0.25em] relative inline-block mb-3 before:content-[''] before:absolute before:top-1/2 before:-left-10 before:w-7 before:h-px before:bg-[#a10000] after:content-[''] after:absolute after:top-1/2 after:-right-10 after:w-7 after:h-px after:bg-[#a10000]">
+            What we help with
+          </p>
+          <h2 className="font-poppins-black text-3xl md:text-5xl text-[#1a1a2e] leading-tight">
+            Keep Customers Supported.
+            <br className="hidden sm:block" />{" "}
+            <span className="text-[#a10000]">Keep Work Moving.</span>
+          </h2>
+          <div className="mt-5 flex items-center justify-center gap-2" aria-hidden>
+            <span className="h-1 w-12 rounded-full bg-[#a10000]" />
+            <span className="h-1 w-3 rounded-full bg-[#a10000]/40" />
+            <span className="h-1 w-1.5 rounded-full bg-[#a10000]/20" />
+          </div>
+        </motion.div>
         <div className="relative w-full">
           <div className="w-full h-[400px] md:h-[650px] overflow-hidden shadow-2xl relative rounded-xl">
             <Image
