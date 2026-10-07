@@ -2,7 +2,7 @@
 import CaseStudies from "./CaseStudies";
 function CaseStudiesPage() {
   return <div className="w-full">
-      <CaseStudies />
+      <CaseStudies mode="add" />
     </div>;
 }
 export {

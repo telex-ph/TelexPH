@@ -1,5 +1,7 @@
 ﻿
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function ActivityLogs() {
   const { isdarkmode } = useDarkMode();
@@ -14,7 +16,8 @@ function ActivityLogs() {
   const [logs, setlogs] = useState([]);
   const [pagination, setpagination] = useState(null);
   const [stats, setstats] = useState(null);
-  const [isloading, setisloading] = useState(false);
+  const [isloading, setisloading] = useState(true);
+  const initialLoading = useInitialLoad(isloading);
   const [error, seterror] = useState(null);
   const availableModules = ["CASESTUDY", "BLOGS", "ACCOUNT_SETTINGS", "AUTH"];
   const actionTypes = ["All", "CREATED", "UPDATED", "DELETED", "ARCHIVED", "RESTORED", "LOGIN", "LOGOUT"];
@@ -137,7 +140,7 @@ function ActivityLogs() {
     const map = {
       CREATED: { bg: "#00A651", color: "#fff" },
       UPDATED: { bg: "#0066CC", color: "#fff" },
-      DELETED: { bg: "#8B0000", color: "#fff" },
+      DELETED: { bg: "#A10000", color: "#fff" },
       ARCHIVED: { bg: "#B45309", color: "#fff" },
       RESTORED: { bg: "#0891B2", color: "#fff" },
       LOGIN: { bg: "#4B0082", color: "#fff" },
@@ -149,7 +152,7 @@ function ActivityLogs() {
   const getModuleBadgeStyle = (module) => {
     const map = {
       CASESTUDY: "#505050",
-      BLOGS: "#8B0000",
+      BLOGS: "#A10000",
       ACCOUNT_SETTINGS: "#4B0082",
       AUTH: "#505050"
     };
@@ -230,9 +233,8 @@ function ActivityLogs() {
   });
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+        *, *::before, *::after { font-family: var(--font-body) !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        input, textarea, select, option, button { font-family: var(--font-body) !important; letter-spacing: 0 !important; }
         input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .al-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .al-pill:hover { opacity: .78; }
@@ -304,14 +306,7 @@ function ActivityLogs() {
           {
     /* â”€â”€ Header â”€â”€ */
   }
-          <div>
-            <h2 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-              Activity Logs
-            </h2>
-            <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-              Monitor and track all system activities, admin actions, and user interactions in real-time.
-            </p>
-          </div>
+          <PageHeader title="Activity Logs" subtitle="Monitor and track all system activities, admin actions, and user interactions in real-time." style={{ marginBottom: 4 }} />
 
           {
     /* â”€â”€ Stat Cards â”€â”€ */
@@ -473,16 +468,12 @@ function ActivityLogs() {
             {
     /* Loading */
   }
-            {isloading && <div style={{ padding: "80px 20px", textAlign: "center" }}>
-                <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
-                <p style={{ fontSize: 12, color: textMuted, fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Loading activity logs...</p>
-                <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-              </div>}
+            <DashboardLoader isVisible={initialLoading} message="Loading activity logs…" />
 
             {
     /* Empty */
   }
-            {!isloading && logs.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
+            {!initialLoading && logs.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
                 <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -493,7 +484,7 @@ function ActivityLogs() {
             {
     /* Table */
   }
-            {!isloading && logs.length > 0 && <>
+            {!initialLoading && logs.length > 0 && <>
                 {
     /* Desktop table */
   }

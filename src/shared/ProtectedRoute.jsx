@@ -17,6 +17,7 @@ const ProtectedRoute = ({
   probe = "/users/me",
   loginPath = "/admin/login",
   label = "Authenticating...",
+  loader = null, // replaces the default spinner (the admin dashboard passes <DashboardLoader />)
 }) => {
   const [status, setStatus] = useState("checking"); // checking | authed | denied
   const location = useLocation();
@@ -43,6 +44,7 @@ const ProtectedRoute = ({
   }, [probe]);
 
   if (status === "checking") {
+    if (loader) return loader;
     return (
       <div className="flex h-[100dvh] items-center justify-center bg-[#f8f9fa]">
         <div className="text-center">

@@ -1,17 +1,11 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from "recharts";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import api from "@/lib/api/axios";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
+import EngagementMetricsCard from "./dashboard/EngagementMetricsCard";
 const STAT_CARD_IMAGES = [
   "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80&fit=crop",
   // Total views  — analytics
@@ -41,15 +35,7 @@ function AdminPage() {
   const isPageViewsAnalyticsRoute = pathname === "/admin/dashboard/page-views";
   const { isdarkmode } = useDarkMode();
   const [selecteddate, setselecteddate] = useState("2026-01-28");
-  const [engagementdata, setengagementdata] = useState([
-    { name: "jan", views: 0, likes: 0 },
-    { name: "feb", views: 0, likes: 0 },
-    { name: "mar", views: 0, likes: 0 },
-    { name: "apr", views: 0, likes: 0 },
-    { name: "may", views: 0, likes: 0 },
-    { name: "jun", views: 0, likes: 0 },
-    { name: "jul", views: 0, likes: 0 }
-  ]);
+  const [engagementloading, setengagementloading] = useState(true);
   const [casestudystats, setcasestudystats] = useState({
     totalAllTime: 0,
     totalUnique: 0,
@@ -58,10 +44,8 @@ function AdminPage() {
     monthly: 0,
     yearly: 0
   });
-  const [loading, setloading] = useState(true);
   const [statsloading, setstatsloading] = useState(true);
   const [error, seterror] = useState(null);
-  const [resourceFilter, setResourceFilter] = useState("all");
   useEffect(() => {
     const fetchCaseStudyStats = async () => {
       try {
@@ -80,26 +64,12 @@ function AdminPage() {
     fetchCaseStudyStats();
   }, []);
   useEffect(() => {
-    const fetchEngagementMetrics = async () => {
-      try {
-        setloading(true);
-        const response = await api.get(
-          `/dashboard/engagement-metrics?resourceType=${resourceFilter}`
-        );
-        setengagementdata(response.data);
-      } catch (error2) {
-      } finally {
-        setloading(false);
-      }
-    };
-    fetchEngagementMetrics();
-  }, [resourceFilter]);
-  useEffect(() => {
     if (error) {
       const t = setTimeout(() => seterror(null), 5e3);
       return () => clearTimeout(t);
     }
   }, [error]);
+  const initialLoading = useInitialLoad(statsloading || engagementloading);
   const stats = [
     {
       label: "Total views",
@@ -148,60 +118,16 @@ function AdminPage() {
     { customer: "mike wilson", date: "jan 23, 2026", amount: "$2,150", status: "completed" },
     { customer: "emma davis", date: "jan 22, 2026", amount: "$675", status: "completed" }
   ];
-  const performanceItems = [
-    { label: "revenue", value: "$12,482", change: "+12.5% from Last Month", up: true },
-    { label: "orders", value: "1,248", change: "+8.2% from Last Month", up: true },
-    { label: "avg. order", value: "$9.80", change: "-3.1% from Last Month", up: false },
-    { label: "customers", value: "892", change: "+15.3% from Last Month", up: true }
-  ];
   const regions = [
     { country: "united states", percentage: 85 },
     { country: "united kingdom", percentage: 62 },
     { country: "canada", percentage: 45 },
     { country: "australia", percentage: 30 }
   ];
-  const cardMeta = [
-    {
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>,
-      gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)",
-      gradientLight: "linear-gradient(135deg, #e8f4fd 0%, #dbeafe 60%, #bfdbfe 100%)",
-      accentColor: "#60a5fa",
-      accentColorLight: "#1d4ed8"
-    },
-    {
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
-        </svg>,
-      gradient: "linear-gradient(135deg, #1a1a2e 0%, #1e1b4b 60%, #312e81 100%)",
-      gradientLight: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 60%, #ddd6fe 100%)",
-      accentColor: "#a78bfa",
-      accentColorLight: "#6d28d9"
-    },
-    {
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" />
-        </svg>,
-      gradient: "linear-gradient(135deg, #1a1a2e 0%, #1c1917 60%, #292524 100%)",
-      gradientLight: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 60%, #fed7aa 100%)",
-      accentColor: "#fb923c",
-      accentColorLight: "#c2410c"
-    },
-    {
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>,
-      gradient: "linear-gradient(135deg, #1a1a2e 0%, #14532d 60%, #166534 100%)",
-      gradientLight: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 60%, #bbf7d0 100%)",
-      accentColor: "#4ade80",
-      accentColorLight: "#15803d"
-    }
-  ];
   return <>
+      <DashboardLoader isVisible={initialLoading} message="Loading dashboard…" />
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        * { font-family: 'Poppins', sans-serif !important; }
+        * { font-family: var(--font-body) !important; }
         input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
@@ -354,7 +280,7 @@ function AdminPage() {
       ` }} />
 
       <div
-    className={`flex flex-col items-start justify-start space-y-5 sm:space-y-6 lg:space-y-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}
+    className={`flex flex-col items-start justify-start space-y-5 sm:space-y-6 lg:space-y-8 pt-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}
   >
         {
     /* â”€â”€ Error Toast â”€â”€ */
@@ -370,34 +296,18 @@ function AdminPage() {
     /* â”€â”€ Header â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <div
-    className={`flex items-center justify-between pb-4 sm:pb-5 lg:pb-6 border-b transition-colors duration-500 border-[var(--admin-border)]`}
-  >
-            <div>
-              <h2
-    className={`tracking-tight transition-colors text-[var(--admin-text)]`}
-    style={{ fontSize: 15, fontWeight: 500, margin: 0 }}
-  >
-                {isPageViewsAnalyticsRoute ? "Page views analytics" : "Dashboard overview"}
-              </h2>
-              <p
-    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 11, fontWeight: 400, margin: "4px 0 0" }}
-  >
-                {isPageViewsAnalyticsRoute ? "Case study views, engagement, and traffic metrics" : "Key metrics and performance at a glance"}
-              </p>
-            </div>
-            {
-    /* Hide date picker on tiny phones to save space */
-  }
-            <input
+          <PageHeader
+    title={isPageViewsAnalyticsRoute ? "Page views analytics" : "Dashboard overview"}
+    subtitle={isPageViewsAnalyticsRoute ? "Case study views, engagement, and traffic metrics" : "Key metrics and performance at a glance"}
+    style={{ marginBottom: 0 }}
+    actions={<input
     type="date"
     value={selecteddate}
     onChange={(e) => setselecteddate(e.target.value)}
     className={`hidden sm:block px-3 sm:px-5 py-2 sm:py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] focus:border-[var(--admin-border-strong)]`}
     style={{ fontSize: 11, fontWeight: 400 }}
+  />}
   />
-          </div>
         </div>
 
         {
@@ -483,131 +393,9 @@ function AdminPage() {
   }
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_280px] xl:grid-cols-[1fr_300px] gap-3 sm:gap-4">
 
-          {
-    /* Performance Overview */
-  }
-          <div
-    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}
-  >
-            <div style={{ marginBottom: 20 }}>
-              <p
-    className={`transition-colors text-[var(--admin-text)]`}
-    style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
-  >
-                Performance overview
-              </p>
-              <p
-    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0" }}
-  >
-                Key business metrics compared to last month
-              </p>
-            </div>
+            <EngagementMetricsCard onLoadingChange={setengagementloading} />
 
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              {performanceItems.map((item, idx) => {
-    const meta = cardMeta[idx];
-    return <div
-      key={idx}
-      className="perf-mini-card"
-      style={{
-        background: isdarkmode ? meta.gradient : meta.gradientLight,
-        border: "1px solid var(--admin-border)"
-      }}
-    >
-                    {
-      /* Glassy blob background accent */
-    }
-                    <div style={{
-      position: "absolute",
-      top: -20,
-      right: -20,
-      width: 80,
-      height: 80,
-      borderRadius: "50%",
-      background: isdarkmode ? `radial-gradient(circle, ${meta.accentColor}22 0%, transparent 70%)` : `radial-gradient(circle, ${meta.accentColorLight}18 0%, transparent 70%)`,
-      pointerEvents: "none"
-    }} />
-
-                    {
-      /* Top row: label + icon */
-    }
-                    <div className="flex items-start justify-between mb-3 sm:mb-4">
-                      <p style={{
-      fontSize: 9,
-      fontWeight: 600,
-      letterSpacing: "0.1em",
-      textTransform: "uppercase",
-      margin: 0,
-      color: "var(--admin-text-faint)"
-    }}>
-                        {item.label}
-                      </p>
-                      <div style={{
-      width: 28,
-      height: 28,
-      borderRadius: 8,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: isdarkmode ? `${meta.accentColor}20` : `${meta.accentColorLight}18`,
-      color: isdarkmode ? meta.accentColor : meta.accentColorLight,
-      flexShrink: 0
-    }}>
-                        {meta.icon}
-                      </div>
-                    </div>
-
-                    {
-      /* Value */
-    }
-                    <p
-      className="perf-mini-value"
-      style={{ color: "var(--admin-text)" }}
-    >
-                      {item.value}
-                    </p>
-
-                    {
-      /* Divider */
-    }
-                    <div style={{
-      height: 1,
-      background: "var(--admin-border-strong)",
-      marginBottom: 10
-    }} />
-
-                    {
-      /* Change badge */
-    }
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 3,
-      fontSize: 10,
-      fontWeight: 600,
-      padding: "2px 7px",
-      borderRadius: 5,
-      background: item.up ? "rgba(5,150,105,0.15)" : "rgba(220,38,38,0.15)",
-      color: item.up ? "#34d399" : "#f87171"
-    }}>
-                        {item.up ? "\u2191" : "\u2193"} {item.change.split(" ")[0]}
-                      </span>
-                      <span style={{
-      fontSize: 10,
-      fontWeight: 400,
-      color: "var(--admin-text-faint)"
-    }}>
-                        vs last month
-                      </span>
-                    </div>
-                  </div>;
-  })}
-            </div>
-          </div>
-
-          {
+        {
     /* Popular Categories */
   }
           <div
@@ -686,137 +474,6 @@ function AdminPage() {
         </div>
 
         {
-    /* â”€â”€ Engagement Metrics Chart â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto">
-          <div
-    className={`card-inner rounded-xl border shadow-sm transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}
-  >
-            {
-    /* Chart Header — stacks on mobile */
-  }
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
-              <div>
-                <p
-    className={`transition-colors text-[var(--admin-text)]`}
-    style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
-  >
-                  Engagement Metrics
-                </p>
-                <p
-    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 10, fontWeight: 400, margin: "3px 0 0" }}
-  >
-                  {resourceFilter === "all" && "Views and Likes from Blogs & Case Studies"}
-                  {resourceFilter === "blog" && "Views and Likes from Blogs Only"}
-                  {resourceFilter === "casestudy" && "Views and Likes from Case Studies Only"}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-                {
-    /* Resource filter pills */
-  }
-                <div
-    className={`flex gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-md border transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}
-  >
-                  {["all", "blog", "casestudy"].map((f) => <button
-    key={f}
-    onClick={() => setResourceFilter(f)}
-    className={`px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg transition-all ${resourceFilter === f ? "bg-[var(--admin-accent)] text-white shadow-md" : "text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]"}`}
-    style={{ fontSize: 10, fontWeight: resourceFilter === f ? 500 : 400, whiteSpace: "nowrap" }}
-  >
-                      {f === "all" ? "All" : f === "blog" ? "Blogs" : "Case Studies"}
-                    </button>)}
-                </div>
-
-                {
-    /* Legend */
-  }
-                {[
-    { color: "var(--admin-accent)", label: "views" },
-    { color: "#6b7280", label: "likes" }
-  ].map((l) => <div key={l.label} className="flex items-center gap-1.5">
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: l.color }} />
-                    <span
-    className={`transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 10, fontWeight: 400 }}
-  >
-                      {l.label}
-                    </span>
-                  </div>)}
-
-                {loading && <span
-    className={`transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 10, fontStyle: "italic" }}
-  >
-                    loading data...
-                  </span>}
-              </div>
-            </div>
-
-            {
-    /* Chart — height clamps gracefully */
-  }
-            <div style={{ height: "clamp(180px, 35vw, 280px)", width: "100%" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={engagementdata}>
-                  <defs>
-                    <linearGradient id="colorviews" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--admin-accent)" stopOpacity={0.12} />
-                      <stop offset="95%" stopColor="var(--admin-accent)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-    strokeDasharray="3 3"
-    vertical={false}
-    stroke={"var(--admin-bg-hover)"}
-  />
-                  <XAxis
-    dataKey="name"
-    axisLine={false}
-    tickLine={false}
-    tick={{ fontSize: 10, fill: "var(--admin-text-faint)", fontWeight: 400 }}
-    dy={10}
-  />
-                  <YAxis
-    axisLine={false}
-    tickLine={false}
-    tick={{ fontSize: 10, fill: "var(--admin-text-faint)", fontWeight: 400 }}
-    width={30}
-  />
-                  <Tooltip
-    contentStyle={{
-      borderRadius: 14,
-      border: `1px solid ${"var(--admin-border)"}`,
-      boxShadow: "0 4px 16px rgba(0,0,0,.10)",
-      fontSize: 12,
-      backgroundColor: "var(--admin-surface)",
-      color: "var(--admin-text)"
-    }}
-  />
-                  <Area
-    type="monotone"
-    dataKey="views"
-    stroke="var(--admin-accent)"
-    strokeWidth={3}
-    fillOpacity={1}
-    fill="url(#colorviews)"
-  />
-                  <Area
-    type="monotone"
-    dataKey="likes"
-    stroke="#6b7280"
-    strokeWidth={2}
-    fill="transparent"
-  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {
     /* â”€â”€ Bottom Row: Transactions + Regional â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 pb-6 sm:pb-8">
@@ -848,7 +505,7 @@ function AdminPage() {
                 </p>
               </div>
               <button
-    className="px-3 sm:px-4 py-1.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#600000] transition-all shrink-0"
+    className="px-3 sm:px-4 py-1.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all shrink-0"
     style={{ fontSize: 10, fontWeight: 500 }}
   >
                 View all

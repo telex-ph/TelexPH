@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function UserManagement() {
   const { isdarkmode } = useDarkMode();
@@ -7,6 +9,7 @@ function UserManagement() {
   const [stats, setstats] = useState(null);
   const [pagination, setpagination] = useState(null);
   const [isloading, setisloading] = useState(false);
+  const initialLoading = useInitialLoad(isloading);
   const [error, seterror] = useState(null);
   const [success, setsuccess] = useState(null);
   const [searchquery, setsearchquery] = useState("");
@@ -162,7 +165,7 @@ function UserManagement() {
       VERIFIED: { bg: "#0066CC", color: "#fff" },
       ACTIVE: { bg: "#059669", color: "#fff" },
       INACTIVE: { bg: "#6b7280", color: "#fff" },
-      REJECTED: { bg: "#8B0000", color: "#fff" }
+      REJECTED: { bg: "#A10000", color: "#fff" }
     };
     const s = map[status] || { bg: "#6b7280", color: "#fff" };
     return {
@@ -223,8 +226,6 @@ function UserManagement() {
   ];
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        @keyframes spin { to { transform: rotate(360deg) } }
         .um-row:hover { background: ${"var(--admin-bg-soft)"} !important; }
         .um-pill:hover { opacity: .85 !important; }
         .um-btn:hover  { opacity: .88 !important; }
@@ -274,19 +275,12 @@ function UserManagement() {
         }
       `}</style>
 
-      <div style={{ fontFamily: "'Poppins', sans-serif", maxWidth: 1200, margin: "0 auto" }}>
+      <div style={{ fontFamily: "'Poppins', sans-serif", maxWidth: 1200, margin: "0 auto", paddingTop: 32 }}>
 
         {
     /* â”€â”€ Page header â”€â”€ */
   }
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-            User Management
-          </h1>
-          <p style={{ fontSize: 12, color: textMuted, margin: "6px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>
-            View, verify, and manage Virtual Assistant accounts in real-time.
-          </p>
-        </div>
+        <PageHeader title="User Management" subtitle="View, verify, and manage Virtual Assistant accounts in real-time." />
 
         {
     /* â”€â”€ Toast: error â”€â”€ */
@@ -474,15 +468,12 @@ function UserManagement() {
           {
     /* Loading */
   }
-          {isloading && <div style={{ padding: "80px 20px", textAlign: "center" }}>
-              <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid var(--admin-accent)", borderTopColor: "transparent", animation: "spin 0.8s linear infinite", margin: "0 auto 16px", display: "inline-block" }} />
-              <p style={{ fontSize: 12, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>Loading virtual assistants...</p>
-            </div>}
+          <DashboardLoader isVisible={initialLoading} message="Loading virtual assistants…" />
 
           {
     /* Empty */
   }
-          {!isloading && vas.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
+          {!initialLoading && vas.length === 0 && <div style={{ padding: "72px 20px", textAlign: "center" }}>
               <svg style={{ margin: "0 auto 16px", display: "block", color: "var(--admin-border-strong)" }} width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -493,7 +484,7 @@ function UserManagement() {
           {
     /* â”€â”€ LIST VIEW â”€â”€ */
   }
-          {!isloading && vas.length > 0 && viewmode === "list" && <>
+          {!initialLoading && vas.length > 0 && viewmode === "list" && <>
               {
     /* Desktop table */
   }
@@ -631,7 +622,7 @@ function UserManagement() {
           {
     /* â”€â”€ CARD VIEW â”€â”€ */
   }
-          {!isloading && vas.length > 0 && viewmode === "card" && <>
+          {!initialLoading && vas.length > 0 && viewmode === "card" && <>
               <div style={{ padding: 24, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
                 {vas.map((va) => <div
     key={va._id}

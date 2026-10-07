@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import api from "@/lib/api/axios";
 import { WebsitePageViews, COLORS, F } from "./WebsitePageViews";
 import { FunnelsTab } from "./FunnelsTab";
@@ -169,6 +171,7 @@ function PageViewsAnalytics() {
   const [range, setRange] = useState("30d");
   const [overview, setOverview] = useState(MOCK_OVERVIEW);
   const [loading, setLoading] = useState(true);
+  const initialLoading = useInitialLoad(loading);
   const [loadError, setLoadError] = useState(null);
   const [downloadingVisitors, setDownloadingVisitors] = useState(false);
   useEffect(() => {
@@ -238,55 +241,20 @@ function PageViewsAnalytics() {
         ::-webkit-scrollbar-track { background: #F1F5F9; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
         input[type="search"]::-webkit-search-cancel-button { display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      <div style={{ fontFamily: F, color: "#0F172A", display: "flex", flexDirection: "column", gap: "1.25rem", animation: "fadeIn 0.3s ease" }}>
+      <div style={{ fontFamily: F, color: "#0F172A", paddingTop: 32, display: "flex", flexDirection: "column", gap: "1.25rem", animation: "fadeIn 0.3s ease" }}>
 
         {
     /* ── Header ── */
   }
-        <div style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 12,
-    paddingBottom: 20,
-    borderBottom: "1px solid #E2E8F0"
-  }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{
-    width: 44,
-    height: 44,
-    borderRadius: 13,
-    background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 4px 14px rgba(79,70,229,0.25)"
-  }}>
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24">
-                <path d="M18 20V10M12 20V4M6 20v-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, fontFamily: F, letterSpacing: "-0.5px", color: "#0F172A" }}>
-                Analytics Dashboard
-              </h2>
-              <p style={{ fontSize: 12, color: "#94A3B8", margin: "3px 0 0", fontFamily: F }}>
-                Track performance, funnels & visitor journeys
-              </p>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <PageHeader title="Analytics Dashboard" subtitle="Track performance, funnels & visitor journeys" style={{ marginBottom: 4 }} actions={<>
             {tab === "pageviews" && <DownloadBtn onClick={handleDownloadPageViews} label="Export Views" disabled={!overview} />}
             {tab === "funnels" && <DownloadBtn onClick={handleDownloadFunnels} label="Export CSV" disabled={funnels.length === 0} />}
             {tab === "visitors" && <DownloadBtn onClick={handleDownloadVisitors} label={downloadingVisitors ? "Downloading\u2026" : "Export Visitors"} disabled={downloadingVisitors} />}
             <RangeToggle value={range} onChange={setRange} />
-          </div>
-        </div>
+        </>} />
 
         {loadError && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 12 }}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#DC2626" strokeWidth="1.5" /><path d="M12 8v4M12 16h.01" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -328,7 +296,7 @@ function PageViewsAnalytics() {
     fontFamily: F,
     lineHeight: 1.7
   }}>
-                  {loading ? "\u2026" : t.badge}
+                  {initialLoading ? "\u2026" : t.badge}
                 </span>}
             </button>)}
         </div>
@@ -336,25 +304,22 @@ function PageViewsAnalytics() {
         {
     /* ── Loading state ── */
   }
-        {loading && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "24px 0" }}>
-            <div style={{ width: 16, height: 16, border: "2px solid #E2E8F0", borderTopColor: COLORS.primary, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-            <p style={{ fontSize: 13, color: "#94A3B8", fontFamily: F, margin: 0 }}>Loading analytics…</p>
-          </div>}
+        <DashboardLoader isVisible={initialLoading} message="Loading analytics…" />
 
         {
     /* ── Page Views Tab ── */
   }
-        {tab === "pageviews" && !loading && <WebsitePageViews overview={overview} />}
+        {tab === "pageviews" && !initialLoading && <WebsitePageViews overview={overview} />}
 
         {
     /* ── Funnels Tab ── */
   }
-        {tab === "funnels" && !loading && <FunnelsTab range={range} onRangeChange={setRange} />}
+        {tab === "funnels" && !initialLoading && <FunnelsTab range={range} onRangeChange={setRange} />}
 
         {
     /* ── Visitor Journey Tab ── */
   }
-        {tab === "visitors" && !loading && <VisitorJourneyTracker range={range} />}
+        {tab === "visitors" && !initialLoading && <VisitorJourneyTracker range={range} />}
       </div>
     </>;
 }

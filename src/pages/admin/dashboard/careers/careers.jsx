@@ -151,8 +151,7 @@ function Careers() {
   if (isediting) {
     return <div className="flex flex-col items-start justify-start p-8 space-y-6 min-h-screen bg-transparent" style={{ fontFamily: "'Poppins', sans-serif" }}>
         <style dangerouslySetInnerHTML={{ __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-          * { font-family: 'Poppins', sans-serif !important; text-transform: none; font-weight: 400 !important; }
+          * { font-family: var(--font-body) !important; text-transform: none; font-weight: 400 !important; }
           input, textarea, select { 
             background-color: #f9fafb !important; 
             border: none !important; 
@@ -213,7 +212,7 @@ function Careers() {
       setisediting(false);
       resetform();
     }} className="px-6 py-2.5 text-[10px] bg-gray-100 text-gray-500 rounded-xl font-bold uppercase tracking-widest">Discard</button>
-              <button onClick={handlesave} className="px-8 py-2.5 text-[11px] bg-[var(--admin-accent)] text-white rounded-xl shadow-md font-bold hover:bg-[#600000] transition-all">Confirm & Publish</button>
+              <button onClick={handlesave} className="px-8 py-2.5 text-[11px] bg-[var(--admin-accent)] text-white rounded-xl shadow-md font-bold hover:bg-[var(--admin-accent-hover)] transition-all">Confirm & Publish</button>
             </div>
           </div>
         </div>
@@ -221,8 +220,7 @@ function Careers() {
   }
   return <div className="flex flex-col items-start justify-start p-8 space-y-6 min-h-screen bg-transparent" style={{ fontFamily: "'Poppins', sans-serif" }}> 
       <style dangerouslySetInnerHTML={{ __html: ` 
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'Poppins', sans-serif !important; text-transform: none; font-weight: 400 !important; }
+        * { font-family: var(--font-body) !important; text-transform: none; font-weight: 400 !important; }
       ` }} />
 
       <div className="w-full flex justify-between items-end px-2">
@@ -230,7 +228,7 @@ function Careers() {
           <h2 className="text-xl leading-none tracking-tight font-bold" style={{ color: "#4a5565" }}>Career Opportunities</h2>
           <p className="text-[11px] tracking-wide italic text-gray-400">Reviewing recruitment progress — your contributions are shaping meaningful solutions!</p>
         </div>
-        <button onClick={() => setisediting(true)} className="px-8 py-4 bg-[var(--admin-accent)] text-white text-[10px] font-bold uppercase tracking-widest rounded-xl shadow-md hover:bg-[#600000] transition-all">
+        <button onClick={() => setisediting(true)} className="px-8 py-4 bg-[var(--admin-accent)] text-white text-[10px] font-bold uppercase tracking-widest rounded-xl shadow-md hover:bg-[var(--admin-accent-hover)] transition-all">
           Add new position
         </button>
       </div>

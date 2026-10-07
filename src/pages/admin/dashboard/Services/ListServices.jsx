@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import { useRouter } from "next/navigation";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 const API_BASE =
@@ -1421,6 +1422,7 @@ function ListServices() {
   }, []);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const initialLoading = useInitialLoad(loading);
   const [searchquery, setsearchquery] = useState("");
   const [viewmode, setviewmode] = useState("grid");
   const [filtermode, setfiltermode] = useState("all");
@@ -1524,34 +1526,7 @@ function ListServices() {
   const hoverBg = "var(--admin-bg-soft)";
   const subtleBg = "var(--admin-bg-soft)";
   const inputBg = "var(--admin-surface)";
-  if (loading) {
-    return <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        // âœ… No background — inherits layout bg
-        fontFamily: "'Poppins', sans-serif"
-      }}
-    >
-        <div style={{ textAlign: "center" }}>
-          <div
-      style={{
-        width: 36,
-        height: 36,
-        border: "2px solid",
-        borderColor: `${borderColor} ${borderColor} ${borderColor} var(--admin-accent)`,
-        borderRadius: "50%",
-        animation: "spin 0.8s linear infinite",
-        margin: "0 auto 12px"
-      }}
-    />
-          <p style={{ fontSize: 13, color: textMuted, fontWeight: 400 }}>Loading services...</p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-        </div>
-      </div>;
-  }
+  if (initialLoading) return <DashboardLoader isVisible message="Loading services…" />;
   const cardStyle = {
     background: cardBg,
     border: `1px solid ${borderColor}`,
@@ -1600,7 +1575,7 @@ function ListServices() {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: isActive ? "linear-gradient(135deg, var(--admin-accent), #a00000)" : "rgba(255, 255, 255, 0.08)",
+    background: isActive ? "linear-gradient(135deg, var(--admin-accent), #A10000)" : "rgba(255, 255, 255, 0.08)",
     backdropFilter: isActive ? void 0 : "blur(8px)",
     WebkitBackdropFilter: isActive ? void 0 : "blur(8px)",
     border: isActive ? void 0 : "1px solid rgba(255,255,255,0.10)",
@@ -1611,8 +1586,7 @@ function ListServices() {
     // âœ… FIX: Removed background: pageBg — now inherits layout bg, matching Archived Content
     <div style={{ minHeight: "100vh", fontFamily: "'Poppins', sans-serif" }}>
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-        * { font-family: 'Poppins', sans-serif !important; box-sizing: border-box; }
+        * { font-family: var(--font-body) !important; box-sizing: border-box; }
         .svc-row:hover { background: ${hoverBg} !important; }
         .edit-btn { opacity: 0; transition: opacity 0.15s; }
         .svc-card:hover .edit-btn { opacity: 1; }
@@ -1691,7 +1665,7 @@ function ListServices() {
         gap: 7,
         padding: isMobile ? "7px 12px" : "9px 18px",
         borderRadius: 8,
-        background: "linear-gradient(135deg, var(--admin-accent), #a00000)",
+        background: "linear-gradient(135deg, var(--admin-accent), #A10000)",
         color: "#fff",
         fontSize: isMobile ? 11 : 12,
         fontWeight: 500,

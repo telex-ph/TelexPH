@@ -449,19 +449,7 @@ function FunnelDetailView({
           </div>
         </div>
 
-        {seriesLoading ? <div style={{ height: 180, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-            <div
-    style={{
-      width: 14,
-      height: 14,
-      border: `2px solid #E2E8F0`,
-      borderTopColor: funnel.color,
-      borderRadius: "50%",
-      animation: "spin 0.8s linear infinite"
-    }}
-  />
-            <span style={{ fontSize: 12, color: "#94A3B8", fontFamily: F }}>Loading chart…</span>
-          </div> : seriesData.length === 0 ? <div style={{ height: 180, display: "flex", alignItems: "center", justifyContent: "center", color: "#94A3B8", fontSize: 13, fontFamily: F }}>
+        {seriesLoading ? <div style={{ height: 180 }} /> : seriesData.length === 0 ? <div style={{ height: 180, display: "flex", alignItems: "center", justifyContent: "center", color: "#94A3B8", fontSize: 13, fontFamily: F }}>
             No traffic data for this period.
           </div> : <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={seriesData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
@@ -506,7 +494,7 @@ function FunnelDetailView({
           </ResponsiveContainer>}
       </Card>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{``}</style>
     </div>;
 }
 function FunnelsTab({
@@ -580,50 +568,7 @@ function FunnelsTab({
     { name: "Unique Visitors", value: totalUnique, fill: COLORS.chart2, label: totalViews > 0 ? `${(totalUnique / totalViews * 100).toFixed(1)}%` : "0%" },
     { name: "Conversions", value: totalConversions, fill: COLORS.chart3, label: totalUnique > 0 ? `${(totalConversions / totalUnique * 100).toFixed(1)}%` : "0%" }
   ];
-  if (isLoading) {
-    return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
-          {[1, 2, 3, 4, 5].map((i) => <div key={i} style={{
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
-      borderRadius: 16,
-      padding: "20px 22px",
-      display: "flex",
-      flexDirection: "column",
-      gap: 12,
-      height: 120
-    }}>
-              <div style={{
-      width: "60%",
-      height: 12,
-      background: "#E2E8F0",
-      borderRadius: 6,
-      animation: "pulse 1.5s ease-in-out infinite"
-    }} />
-              <div style={{
-      width: "40%",
-      height: 20,
-      background: "#E2E8F0",
-      borderRadius: 6,
-      animation: "pulse 1.5s ease-in-out infinite 0.2s"
-    }} />
-              <div style={{
-      width: "80%",
-      height: 10,
-      background: "#E2E8F0",
-      borderRadius: 6,
-      animation: "pulse 1.5s ease-in-out infinite 0.4s"
-    }} />
-            </div>)}
-        </div>
-        <style>{`
-          @keyframes pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 0.4; }
-          }
-        `}</style>
-      </div>;
-  }
+  if (isLoading && funnels.length === 0) return null;
   if (error) {
     return <Card>
         <div style={{ padding: "40px 0", textAlign: "center" }}>

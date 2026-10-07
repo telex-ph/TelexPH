@@ -1,6 +1,10 @@
 
+import PageHeader from "@/components/PageHeader";
 import React, { useState, useRef } from "react";
+import { Spinner } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import RichTextArea from "@/components/RichTextArea";
+import { htmlToText, toHtml } from "@/lib/rich-text";
 
 const API_BASE =
   import.meta.env.VITE_API_ORIGIN || "/api";
@@ -22,10 +26,6 @@ const SHORT_DESC_MIN = 5;
 const SHORT_DESC_MAX = 55;
 const MAIN_CONTENT_MIN = 25;
 const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
-const Spinner = () => <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-  </svg>;
 const SparkleIcon = ({ className = "w-4 h-4" }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
   strokeLinecap="round"
@@ -58,110 +58,6 @@ const PaperclipIcon = ({ className = "w-3.5 h-3.5" }) => <svg className={classNa
   d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
 />
   </svg>;
-const CustomDropdown = ({ value, onChange, options, placeholder = "Select...", isdarkmode }) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  React.useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-  const selected = options.find((o) => o.value === value);
-  return <div ref={ref} className="relative w-full">
-      <button
-    type="button"
-    onClick={() => setOpen((prev) => !prev)}
-    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none text-[12px] bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] hover:border-[var(--admin-border-strong)] ${open ? "border-[var(--admin-border-strong)]" : ""}`}
-  >
-        <span className={selected ? "" : "text-[var(--admin-text-faint)]"}>
-          {selected ? selected.label : placeholder}
-        </span>
-        <svg
-    className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""} text-[var(--admin-text-faint)]`}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {open && <div className={`absolute z-30 mt-1.5 w-full rounded-lg border shadow-lg overflow-hidden transition-all duration-200 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-          {options.map((opt) => <button
-    key={opt.value}
-    type="button"
-    onClick={() => {
-      onChange(opt.value);
-      setOpen(false);
-    }}
-    className={`w-full text-left px-4 py-2.5 text-[12px] transition-all duration-150 flex items-center gap-2 ${opt.value === value ? "bg-[var(--admin-accent)] text-white" : "text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]"}`}
-  >
-              {opt.value === value && <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>}
-              <span className={opt.value === value ? "" : "ml-5"}>{opt.label}</span>
-            </button>)}
-        </div>}
-    </div>;
-};
-async function generateWithGemini(mode, prompt, modelId) {
-  const response = await fetch(`${API_BASE}/ai/generate-blog`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mode, prompt, modelId })
-  });
-  if (!response.ok) {
-    const err = await response.json().catch(() => null);
-    throw new Error(err?.error || "Gemini API error");
-  }
-  return response.json();
-}
-async function generatePollinationsImage(prompt, modelId) {
-  const response = await fetch(`${API_BASE}/ai/generate-image`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, modelId })
-  });
-  if (!response.ok) {
-    const err = await response.json().catch(() => null);
-    throw new Error(err?.error || "Image generation failed");
-  }
-  const { dataUrl: sourceDataUrl } = await response.json();
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const maxW = 800;
-      let w = img.width, h = img.height;
-      if (w > maxW) {
-        h = maxW / w * h;
-        w = maxW;
-      }
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        return reject(new Error("Canvas error"));
-      }
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-      canvas.toBlob((b) => {
-        if (!b) return reject(new Error("Blob error"));
-        resolve({ dataUrl, file: new File([b], "ai-generated.jpg", { type: "image/jpeg" }) });
-      }, "image/jpeg", 0.7);
-    };
-    img.onerror = () => {
-      reject(new Error("Image load error"));
-    };
-    img.src = sourceDataUrl;
-  });
-}
 const MODAL_CONFIGS = {
   image: { title: "Generate AI Image", hint: "Enter a topic or description to generate a professional cover image.", placeholder: "e.g., Customer support team in a modern office...", withImageAttach: false, steps: ["Analyzing prompt", "Creating cover image"] },
   title: { title: "Generate Title", hint: "Enter a topic (or attach an image) to generate a catchy title.", placeholder: "e.g., Best outsourcing practices for e-commerce...", withImageAttach: true, steps: ["Analyzing topic", "Writing title"] },
@@ -169,29 +65,63 @@ const MODAL_CONFIGS = {
   full: { title: "Generate Full Blog", hint: "Enter a content topic and a separate image description — AI will generate the title, description, all content sections, and a matching cover image.", placeholder: "e.g., How TelexPH helps startups reduce operational costs...", withImageAttach: false, steps: ["Analyzing prompts", "Writing content", "Structuring sections", "Creating cover image"] },
   expand: { title: "Generate Prompt", hint: "Enter a rough idea and AI will expand it into a detailed content prompt and image prompt, ready to use in Generate Full Blog.", placeholder: "e.g., BPO tips for small businesses...", withImageAttach: false, steps: ["Analyzing your idea", "Expanding into prompts"] }
 };
-const TABS = [
-  {
-    key: "details",
-    label: "Blog Details",
-    icon: <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-  },
-  {
-    key: "content",
-    label: "Content Body",
-    icon: <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-  },
-  {
-    key: "sections",
-    label: "Extra Sections",
-    icon: <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-      </svg>
-  }
+
+// ── Layout helpers (same look as the Create Case Study form) ──────────────
+const card = {
+  background: "var(--admin-surface)",
+  border: "1px solid var(--admin-border)",
+  borderRadius: 16,
+  boxShadow: "var(--admin-shadow-sm)"
+};
+const lbl = { fontSize: 12, fontWeight: 600, color: "var(--admin-text-sub)", display: "block", marginBottom: 6 };
+const inp = (overrides = {}) => ({
+  width: "100%",
+  padding: "10px 12px",
+  borderRadius: 8,
+  border: "1px solid var(--admin-border-strong)",
+  background: "var(--admin-surface)",
+  color: "var(--admin-text)",
+  fontSize: 13,
+  outline: "none",
+  fontWeight: 400,
+  boxSizing: "border-box",
+  transition: "border-color .15s",
+  ...overrides
+});
+const pillStyle = (sel) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  padding: "8px 14px",
+  borderRadius: 10,
+  border: sel ? "1px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)" : "1px solid var(--admin-border)",
+  background: sel ? "color-mix(in srgb, var(--admin-accent) 8%, transparent)" : "transparent",
+  color: sel ? "var(--admin-accent-text)" : "var(--admin-text-sub)",
+  fontSize: 13,
+  fontWeight: 500,
+  cursor: "pointer",
+  transition: "all .15s"
+});
+const headerBtnBase = { display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 };
+const headerBtnGhost = { ...headerBtnBase, border: "1px solid var(--admin-border)", background: "transparent", color: "var(--admin-text-sub)", fontWeight: 500 };
+const headerBtnPrimary = { ...headerBtnBase, border: "none", background: "var(--admin-accent)", color: "var(--admin-text-on-accent)", fontWeight: 600 };
+const ghostAccentBtn = { display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--admin-accent-text)", background: "transparent", border: "1px solid var(--admin-border)", borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, flexShrink: 0 };
+const STATUS_OPTIONS = [
+  { value: "draft", label: "Draft", icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+  { value: "published", label: "Published", icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" },
+  { value: "scheduled", label: "Scheduled", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
 ];
+const StepHead = ({ n, title, subtitle, action }) => <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+      <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent-text)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{n}</div>
+      <div>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "var(--admin-text)", margin: 0 }}>{title}</p>
+        <p style={{ fontSize: 12, color: "var(--admin-text-sub)", margin: "3px 0 0", fontWeight: 400 }}>{subtitle}</p>
+      </div>
+    </div>
+    {action}
+  </div>;
+
 function AddBlogs() {
   const { isdarkmode } = useDarkMode();
   const fileRef = useRef(null);
@@ -208,9 +138,6 @@ function AddBlogs() {
   const [status, setStatus] = useState("draft");
   const [scheduledDate, setScheduledDate] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [activeTab, setActiveTab] = useState("details");
-  const [publishingOpen, setPublishingOpen] = useState(true);
-  const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [isCompressing, setIsCompressing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageError, setImageError] = useState("");
@@ -280,17 +207,17 @@ function AddBlogs() {
     setIsImageModelMenuOpen(false);
   };
   const getTotalWordCount = () => {
-    let n = (mainContentTitle + " " + mainContentText).split(/\s+/).filter(Boolean).length;
+    let n = (mainContentTitle + " " + htmlToText(mainContentText)).split(/\s+/).filter(Boolean).length;
     contentSections.forEach((s) => {
-      n += (s.title + " " + s.content).split(/\s+/).filter(Boolean).length;
+      n += (s.title + " " + htmlToText(s.content)).split(/\s+/).filter(Boolean).length;
     });
     return n;
   };
   const isFormValid = () => {
     const t = title.trim(), a = authorName.trim(), d = shortDescription.trim();
-    const mt = mainContentTitle.trim(), mb = mainContentText.trim();
+    const mt = mainContentTitle.trim(), mb = htmlToText(mainContentText);
     return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && d.length <= SHORT_DESC_MAX && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
-      const st = s.title.trim(), sc = s.content.trim();
+      const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
     }) && (status !== "scheduled" || scheduledDate));
@@ -430,6 +357,22 @@ function AddBlogs() {
       setGenerationStepIndex(0);
     }
   };
+  const resetForm = () => {
+    setTitle("");
+    setAuthorName("");
+    setMainCategory("");
+    setSubcategory("");
+    setShortDescription("");
+    setMainContentTitle("");
+    setMainContentText("");
+    setContentSections([{ title: "", content: "" }]);
+    setStatus("draft");
+    setScheduledDate("");
+    setSelectedImage(null);
+    setImageError("");
+    actualFileRef.current = null;
+    if (fileRef.current) fileRef.current.value = "";
+  };
   const handleFinalConfirm = async () => {
     if (!actualFileRef.current) {
       setErrorMessage("Please upload or generate a cover image.");
@@ -440,11 +383,11 @@ function AddBlogs() {
     setIsSubmitting(true);
     try {
       const allMainContent = [];
-      if (mainContentTitle.trim() || mainContentText.trim()) {
-        allMainContent.push({ title: mainContentTitle.trim(), content: mainContentText.trim() });
+      if (mainContentTitle.trim() || htmlToText(mainContentText)) {
+        allMainContent.push({ title: mainContentTitle.trim(), content: toHtml(mainContentText) });
       }
       contentSections.forEach((s) => {
-        if (s.title.trim() || s.content.trim()) allMainContent.push({ title: s.title.trim(), content: s.content.trim() });
+        if (s.title.trim() || htmlToText(s.content)) allMainContent.push({ title: s.title.trim(), content: toHtml(s.content) });
       });
       const formData = new FormData();
       formData.append("title", title.trim());
@@ -465,20 +408,7 @@ function AddBlogs() {
       }
       setShowConfirmModal(false);
       setShowSuccessModal(true);
-      setTitle("");
-      setAuthorName("");
-      setMainCategory("");
-      setSubcategory("");
-      setShortDescription("");
-      setMainContentTitle("");
-      setMainContentText("");
-      setContentSections([{ title: "", content: "" }]);
-      setStatus("draft");
-      setScheduledDate("");
-      setSelectedImage(null);
-      setImageError("");
-      actualFileRef.current = null;
-      if (fileRef.current) fileRef.current.value = "";
+      resetForm();
     } catch (err) {
       setErrorMessage(err.message || "Failed to create blog");
       setShowConfirmModal(false);
@@ -503,528 +433,245 @@ function AddBlogs() {
   const getAvailableSubcategories = () => mainCategory ? SUBCATEGORIES[mainCategory] || [] : [];
   const modalCfg = activeModal ? MODAL_CONFIGS[activeModal] : null;
   const CharCount = ({ value, max, min }) => {
-    const trimmed = value.trim();
+    const trimmed = htmlToText(value);
     const tooShort = trimmed.length > 0 && trimmed.length < min;
     const tooLong = max !== void 0 && trimmed.length > max;
     return <div className="flex justify-between items-center mt-1 px-1">
-        <span className={`text-[9px] ${tooShort || tooLong ? "text-red-500" : "text-transparent select-none"}`}>
+        <span className={`text-[11px] ${tooShort || tooLong ? "text-red-500" : "text-transparent select-none"}`}>
           {tooShort ? `Min ${min} chars required.` : tooLong ? `Max ${max} chars allowed.` : "."}
         </span>
-        <span className={`text-[9px] ${tooLong ? "text-red-500" : "text-[var(--admin-text-faint)]"}`}>
+        <span className={`text-[11px] ${tooLong ? "text-red-500" : "text-[var(--admin-text-sub)]"}`}>
           {max !== void 0 ? `${trimmed.length}/${max}` : `${trimmed.length} chars`}
         </span>
       </div>;
   };
-  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
-  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] focus:border-[var(--admin-border-strong)]`;
   const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
-  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`;
-  const sectionHeader = `flex items-center justify-between px-6 py-4 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`;
   const labelCls = `uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`;
-  const dividerCls = `divide-y transition-all duration-500 divide-[var(--admin-border)]`;
-  const rowHoverCls = `flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`;
   return <>
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'Poppins', sans-serif !important; }
+        * { font-family: var(--font-body) !important; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
       ` }} />
 
-      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}>
+      <div style={{ padding: "32px 24px", minHeight: "100vh", background: "var(--admin-bg)" }}>
+        <style>{`
+          .ab-pill:hover { opacity: .78; }
+          .ab-cover-row { display: grid; grid-template-columns: clamp(300px, 36%, 520px) 1fr; gap: 22px; }
+          .ab-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+          .ab-input:focus { border-color: var(--admin-accent) !important; }
+          .ab-input::placeholder { color: var(--admin-text-sub); opacity: .6; }
+          @media (max-width: 760px) {
+            .ab-cover-row, .ab-two { grid-template-columns: 1fr; }
+            .ab-header { flex-direction: column; align-items: flex-start !important; }
+            .ab-actions { flex-direction: column; }
+          }
+        `}</style>
 
-        {
-    /* â”€â”€ Page Header â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto">
-          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 border-[var(--admin-border)]`}>
-            <div>
-              <h2
-    className={`tracking-tight transition-colors text-[var(--admin-text)]`}
-    style={{ fontSize: 18, fontWeight: 500, margin: 0 }}
-  >
-                Create New Blog Post
-              </h2>
-              <p
-    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0" }}
-  >
-                Share your insights and expertise with the community
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+          {/* PAGE HEADER */}
+          <PageHeader title="Create New Blog Post" subtitle="Share your insights and expertise with the community" actions={<>
               {aiUsage && <div
-    className={`flex flex-col gap-1 px-3 py-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)]`}
-    title={aiUsage.models.map((m) => `${m.label}: ${m.used}/${m.limit}${m.active ? " (active)" : ""}`).join("\n")}
-  >
-                  {aiUsage.models.map((m) => <div key={m.id} className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : "bg-[var(--admin-border-strong)]"}`} />
-                      <span className={`${m.active ? "text-[var(--admin-text)]" : "text-[var(--admin-text-faint)]"}`} style={{ fontSize: 10, fontWeight: m.active ? 600 : 400 }}>
-                        {m.label}
-                      </span>
-                      <span className={"text-[var(--admin-text-faint)]"} style={{ fontSize: 10, fontWeight: 400 }}>
-                        {m.used}/{m.limit}
-                      </span>
-                    </div>)}
-                </div>}
-              <button
-    onClick={() => openModal("expand")}
-    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
+                style={{ display: "flex", flexDirection: "column", gap: 4, padding: "6px 12px", borderRadius: 8, border: "1px solid var(--admin-border)", background: "var(--admin-surface)" }}
+                title={aiUsage.models.map((m) => `${m.label}: ${m.used}/${m.limit}${m.active ? " (active)" : ""}`).join("\n")}
+              >
+                {aiUsage.models.map((m) => <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : "bg-[var(--admin-border-strong)]"}`} />
+                  <span style={{ fontSize: 11, fontWeight: m.active ? 600 : 400, color: m.active ? "var(--admin-text)" : "var(--admin-text-sub)" }}>{m.label}</span>
+                  <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>{m.used}/{m.limit}</span>
+                </div>)}
+              </div>}
+              <button onClick={() => openModal("expand")} style={headerBtnGhost}>
                 <SparkleIcon className="w-3.5 h-3.5" />
                 Generate Prompt
               </button>
-              <button
-    onClick={() => openModal("full")}
-    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all shadow-sm"
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
+              <button onClick={() => openModal("full")} style={headerBtnPrimary}>
                 <LayersIcon className="w-3.5 h-3.5" />
                 Generate Full Blog
               </button>
-            </div>
-          </div>
-        </div>
+          </>} />
 
-        {
-    /* â”€â”€ Main Grid â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-          {
-    /* â”€â”€ Left Column â”€â”€ */
-  }
-          <div className="lg:col-span-4 space-y-4">
-
-            {
-    /* Blog Cover Image */
-  }
-            <div className={sectionCard}>
-              <div className={sectionHeader}>
+            {/* STEP 1 — Cover & Basic Information */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead n={1} title="Cover & Basic Information" subtitle="Add a compelling cover and essential details" />
+              <div className="ab-cover-row">
                 <div>
-                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Blog Cover Image</p>
-                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Upload or generate a cover photo
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <input ref={fileRef} type="file" accept=".png,.jpg,.jpeg,.webp" onChange={handleFileChange} className="hidden" />
-                <input ref={modalImageRef} type="file" accept="image/*" onChange={handleModalImageAttach} className="hidden" />
-
-                {
-    /* Drop zone */
-  }
-                <div
-    onClick={() => fileRef.current?.click()}
-    className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${imageError ? "border-red-400 bg-red-50/5" : selectedImage ? "border-[var(--admin-accent)]/40" : "border-[var(--admin-border)] hover:border-[var(--admin-border-strong)] bg-[var(--admin-bg-soft)]"}`}
-    style={{ aspectRatio: "16/9" }}
-  >
-                  {isCompressing ? <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <Spinner />
-                      <span className={`text-[10px] text-[var(--admin-text-faint)]`}>Compressing...</span>
+                  <input ref={fileRef} type="file" accept=".png,.jpg,.jpeg,.webp" onChange={handleFileChange} className="hidden" />
+                  <input ref={modalImageRef} type="file" accept="image/*" onChange={handleModalImageAttach} className="hidden" />
+                  <div
+                    onClick={() => fileRef.current?.click()}
+                    style={{ position: "relative", border: `1.5px dashed ${imageError ? "var(--admin-danger)" : "var(--admin-border)"}`, borderRadius: 14, cursor: "pointer", overflow: "hidden", aspectRatio: "16/9", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
+                  >
+                    {isCompressing ? <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--admin-accent-text)" }}>
+                      <Spinner size={20} />
+                      <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>Compressing...</span>
                     </div> : selectedImage ? <>
-                      <img src={selectedImage} alt="Cover preview" className="w-full h-full object-cover" />
+                      <img src={selectedImage} alt="Cover preview" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} />
                       <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-[11px] font-medium">Click to change</span>
+                        <span className="text-white" style={{ fontSize: 11, fontWeight: 500 }}>Click to change</span>
                       </div>
-                    </> : <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <div className={`w-11 h-11 rounded-full flex items-center justify-center bg-[var(--admin-bg-hover)]`}>
-                        <svg className={`w-5 h-5 text-[var(--admin-text-faint)]`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
+                    </> : <>
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+                        <svg width="18" height="18" fill="none" stroke="var(--admin-accent-text)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       </div>
-                      <div className="text-center">
-                        <p className={`text-[11px] font-medium text-[var(--admin-text-sub)]`}>Drop or click to upload</p>
-                        <p className={`text-[10px] mt-0.5 text-[var(--admin-text-faint)]`}>JPG, PNG, WEBP</p>
-                      </div>
-                    </div>}
-                </div>
-                {imageError && <p className="text-red-500 text-[10px]">{imageError}</p>}
-
-                {
-    /* Image action buttons */
-  }
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-    onClick={() => fileRef.current?.click()}
-    className={`flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all border-2 border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    Browse
-                  </button>
-                  <button
-    onClick={() => openModal("image")}
-    className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    AI Image
+                      <p style={{ fontSize: 12, color: "var(--admin-text)", margin: 0, fontWeight: 600 }}>Upload cover image</p>
+                      <p style={{ fontSize: 11, color: "var(--admin-text-sub)", margin: "5px 0 0" }}>PNG, JPG, WebP</p>
+                      <p style={{ fontSize: 11, color: "var(--admin-text-sub)", margin: "2px 0 0" }}>Recommended: 16:9 ratio</p>
+                    </>}
+                  </div>
+                  {imageError && <p style={{ fontSize: 10, color: "var(--admin-danger)", margin: "6px 0 0" }}>{imageError}</p>}
+                  <button type="button" onClick={() => openModal("image")} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "var(--admin-text-on-accent)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                    <SparkleIcon className="w-3.5 h-3.5" />
+                    Generate with AI
                   </button>
                 </div>
-              </div>
-            </div>
 
-            {
-    /* Publishing Options — Accordion */
-  }
-            <div className={`${sectionCard} ${publishingOpen ? "!overflow-visible" : ""}`}>
-              <button
-    type="button"
-    onClick={() => setPublishingOpen((prev) => !prev)}
-    className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)] ${!publishingOpen ? "rounded-xl" : `border-b border-[var(--admin-border)]`}`}
-  >
-                <div className="text-left">
-                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Publishing Options</p>
-                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Set status and schedule
-                  </p>
-                </div>
-                <svg
-    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${publishingOpen ? "rotate-180" : ""} text-[var(--admin-text-faint)]`}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className={`transition-all duration-300 ease-in-out ${publishingOpen ? "max-h-none opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Status</p>
-                    <CustomDropdown
-    value={status}
-    onChange={(val) => setStatus(val)}
-    options={[
-      { value: "draft", label: "Draft" },
-      { value: "published", label: "Published" },
-      { value: "scheduled", label: "Scheduled" }
-    ]}
-    placeholder="Select Status"
-    isdarkmode={isdarkmode}
-  />
-                  </div>
-                  {status === "scheduled" && <div>
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Schedule Date</p>
-                      <input
-    type="datetime-local"
-    value={scheduledDate}
-    onChange={(e) => setScheduledDate(e.target.value)}
-    className={inputBase}
-  />
-                    </div>}
-                </div>
-              </div>
-            </div>
-
-            {
-    /* Categories — Accordion */
-  }
-            <div className={`${sectionCard} ${categoriesOpen ? "!overflow-visible" : ""}`}>
-              <button
-    type="button"
-    onClick={() => setCategoriesOpen((prev) => !prev)}
-    className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)] ${!categoriesOpen ? "rounded-xl" : `border-b border-[var(--admin-border)]`}`}
-  >
-                <div className="text-left">
-                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Categories</p>
-                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Assign topic and subcategory
-                  </p>
-                </div>
-                <svg
-    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${categoriesOpen ? "rotate-180" : ""} text-[var(--admin-text-faint)]`}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className={`transition-all duration-300 ease-in-out ${categoriesOpen ? "max-h-none opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Main Category</p>
-                    <CustomDropdown
-    value={mainCategory}
-    onChange={handleMainCategoryChange}
-    options={Object.values(MAIN_CATEGORIES).map((c) => ({ value: c, label: c }))}
-    placeholder="Select Category"
-    isdarkmode={isdarkmode}
-  />
-                  </div>
-                  {mainCategory && <div>
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Subcategory</p>
-                      <CustomDropdown
-    value={subcategory}
-    onChange={setSubcategory}
-    options={getAvailableSubcategories().map((s) => ({ value: s, label: s }))}
-    placeholder="Select Subcategory"
-    isdarkmode={isdarkmode}
-  />
-                    </div>}
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {
-    /* â”€â”€ Right Column â”€â”€ */
-  }
-          <div className="lg:col-span-8 space-y-4">
-
-            {
-    /* â”€â”€ Tabbed Panel â”€â”€ */
-  }
-            <div className={sectionCard}>
-
-              {
-    /* Tab Bar */
-  }
-              <div className={`flex items-center border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
-                {TABS.map((tab) => {
-    const isActive = activeTab === tab.key;
-    return <button
-      key={tab.key}
-      onClick={() => setActiveTab(tab.key)}
-      className={`relative flex items-center gap-2 px-5 py-4 transition-all duration-200 ${isActive ? "text-[var(--admin-text)]" : "text-[var(--admin-text-faint)] hover:text-[var(--admin-text-sub)]"}`}
-      style={{ fontSize: 12, fontWeight: isActive ? 600 : 400 }}
-    >
-                      {tab.icon}
-                      {tab.label}
-                      {
-      /* Active indicator */
-    }
-                      {isActive && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--admin-accent)] rounded-full" />}
-                    </button>;
-  })}
-
-                {
-    /* Right-side action button per tab */
-  }
-                <div className="ml-auto px-4">
-                  {activeTab === "details" && <button
-    onClick={() => openModal("title")}
-    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
-    style={{ fontSize: 10, fontWeight: 500 }}
-  >
-                      <SparkleIcon className="w-3 h-3" />
-                      AI Title
-                    </button>}
-                  {activeTab === "content" && <button
-    onClick={() => openModal("content")}
-    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                      <SparkleIcon className="w-3.5 h-3.5" />
-                      Write with AI
-                    </button>}
-                  {activeTab === "sections" && <button
-    onClick={addContentSection}
-    className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Add Section
-                    </button>}
-                </div>
-              </div>
-
-              {
-    /* â”€â”€ Tab: Blog Details â”€â”€ */
-  }
-              {activeTab === "details" && <div className={dividerCls}>
-                  {
-    /* Title row */
-  }
-                  <div className={rowHoverCls}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Title <span className="text-[var(--admin-accent)]">•</span>
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <input
-    value={title}
-    onChange={(e) => setTitle(e.target.value)}
-    maxLength={HEADLINE_MAX}
-    placeholder="e.g., Top 10 Hidden Gems in Palawan"
-    className={inputBase}
-  />
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div className="ab-two">
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                        <span style={{ ...lbl, marginBottom: 0 }}>Title <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                        <button type="button" onClick={() => openModal("title")} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--admin-accent-text)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                          <SparkleIcon className="w-3 h-3" />
+                          AI Title
+                        </button>
+                      </div>
+                      <input className="ab-input" style={inp()} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={HEADLINE_MAX} placeholder="e.g., Top 10 Hidden Gems in Palawan" />
                       <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                     </div>
-                  </div>
-
-                  {
-    /* Author row */
-  }
-                  <div className={rowHoverCls}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Author <span className="text-[var(--admin-accent)]">•</span>
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <input
-    value={authorName}
-    onChange={(e) => setAuthorName(e.target.value)}
-    maxLength={HEADLINE_MAX}
-    placeholder="e.g., Admin Team"
-    className={inputBase}
-  />
+                    <div>
+                      <span style={lbl}>Author <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                      <input className="ab-input" style={inp()} value={authorName} onChange={(e) => setAuthorName(e.target.value)} maxLength={HEADLINE_MAX} placeholder="e.g., Admin Team" />
                       <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
                     </div>
                   </div>
-
-                  {
-    /* Short Description row */
-  }
-                  <div className={rowHoverCls}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Description <span className="text-[var(--admin-accent)]">•</span>
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <input
-    value={shortDescription}
-    onChange={(e) => setShortDescription(e.target.value)}
-    maxLength={SHORT_DESC_MAX}
-    placeholder="Brief summary for listing card..."
-    className={inputBase}
-  />
-                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
+                  <div>
+                    <span style={lbl}>Description <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <input className="ab-input" style={inp()} value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} maxLength={SHORT_DESC_MAX} placeholder="Brief summary for listing card..." />
+                    <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
+                  </div>
+                  <div>
+                    <span style={lbl}>Status <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {STATUS_OPTIONS.map((s) => <button key={s.value} type="button" className="ab-pill" onClick={() => setStatus(s.value)} style={pillStyle(status === s.value)}>
+                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={s.icon} /></svg>
+                        {s.label}
+                        {status === s.value && <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
+                      </button>)}
                     </div>
                   </div>
-                </div>}
-
-              {
-    /* â”€â”€ Tab: Content Body â”€â”€ */
-  }
-              {activeTab === "content" && <div className={dividerCls}>
-                  {
-    /* Main Section Title row */
-  }
-                  <div className={rowHoverCls}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
-                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
-                    </div>
-                    <div className="flex-1">
-                      <input
-    value={mainContentTitle}
-    onChange={(e) => setMainContentTitle(e.target.value)}
-    maxLength={HEADLINE_MAX}
-    placeholder="Main Section Title..."
-    className={inputBase}
-  />
-                      <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                    </div>
-                  </div>
-
-                  {
-    /* Main Content Text row */
-  }
-                  <div className={rowHoverCls}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
-                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>
-                        Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <textarea
-    value={mainContentText}
-    onChange={(e) => setMainContentText(e.target.value)}
-    placeholder="Write your main content here..."
-    rows={6}
-    className={textareaBase}
-  />
-                      <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
-                    </div>
-                  </div>
-                </div>}
-
-              {
-    /* â”€â”€ Tab: Additional Sections â”€â”€ */
-  }
-              {activeTab === "sections" && <div className={dividerCls}>
-                  {contentSections.map((section, i) => <div key={i} className={`px-6 py-5 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-[var(--admin-accent)] flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-[9px] font-bold">{i + 1}</span>
-                          </div>
-                          <p className={`transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 500 }}>
-                            Section {i + 1}
-                          </p>
-                        </div>
-                        {contentSections.length > 1 && <button
-    onClick={() => removeContentSection(i)}
-    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-all"
-    style={{ fontSize: 10, fontWeight: 500 }}
-  >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            Remove
-                          </button>}
-                      </div>
-                      <div className="space-y-3">
-                        <div>
-                          <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Title</p>
-                          <input
-    value={section.title}
-    onChange={(e) => updateContentSection(i, "title", e.target.value)}
-    maxLength={HEADLINE_MAX}
-    placeholder="Section Title..."
-    className={inputBase}
-  />
-                          <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                        </div>
-                        <div>
-                          <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Content</p>
-                          <textarea
-    value={section.content}
-    onChange={(e) => updateContentSection(i, "content", e.target.value)}
-    placeholder="Section content..."
-    rows={4}
-    className={textareaBase}
-  />
-                          <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
-                        </div>
-                      </div>
-                    </div>)}
-                </div>}
-
+                  {status === "scheduled" && <div style={{ maxWidth: 320 }}>
+                    <span style={lbl}>Schedule date <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <input className="ab-input" type="datetime-local" style={inp()} value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} />
+                  </div>}
+                </div>
+              </div>
             </div>
 
-            {
-    /* Footer / Submit */
-  }
-            <div className={`rounded-xl border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-              <div className={`flex items-center justify-between px-6 py-4 transition-all duration-500 bg-[var(--admin-bg-soft)] rounded-xl`}>
-                <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                  Review your entry before finalizing.
-                </p>
-                <button
-    onClick={() => setShowConfirmModal(true)}
-    disabled={!isFormValid() || isSubmitting}
-    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] shadow-md" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed"}`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                  {isSubmitting ? "Saving..." : "Save Blog Entry"}
+            {/* STEP 2 — Categories */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead n={2} title="Categories" subtitle="Assign a topic and subcategory" />
+              <div style={{ marginBottom: mainCategory ? 18 : 0 }}>
+                <span style={{ ...lbl, marginBottom: 8 }}>Main category <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {Object.values(MAIN_CATEGORIES).map((c) => <button key={c} type="button" className="ab-pill" onClick={() => handleMainCategoryChange(c)} style={pillStyle(mainCategory === c)}>{c}</button>)}
+                </div>
+              </div>
+              {mainCategory && <div>
+                <span style={{ ...lbl, marginBottom: 8 }}>Subcategory <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {getAvailableSubcategories().map((s) => <button key={s} type="button" className="ab-pill" onClick={() => setSubcategory(s)} style={pillStyle(subcategory === s)}>{s}</button>)}
+                </div>
+              </div>}
+            </div>
+
+            {/* STEP 3 — Content Body */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead
+                n={3}
+                title="Content Body"
+                subtitle="Write the main section of your post"
+                action={<button type="button" onClick={() => openModal("content")} style={ghostAccentBtn}>
+                  <SparkleIcon className="w-3 h-3" />
+                  Write with AI
+                </button>}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div>
+                  <span style={lbl}>Main title <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                  <input className="ab-input" style={inp()} value={mainContentTitle} onChange={(e) => setMainContentTitle(e.target.value)} maxLength={HEADLINE_MAX} placeholder="Main section title..." />
+                  <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                </div>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                    <span style={{ ...lbl, marginBottom: 0 }}>Main body <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read</span>
+                  </div>
+                  <RichTextArea value={mainContentText} onChange={setMainContentText} placeholder="Write your main content here..." minHeight={140} />
+                  <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 4 — Extra Sections */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead
+                n={4}
+                title="Extra Sections"
+                subtitle="Organize the rest of your post into sections"
+                action={<button type="button" onClick={addContentSection} style={ghostAccentBtn}>
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                  Add section
+                </button>}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {contentSections.map((section, i) => <div key={i} style={{ padding: "14px 16px", borderRadius: 14, background: "var(--admin-bg-soft)", border: "1px solid var(--admin-border)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                    <span style={{ ...lbl, marginBottom: 0 }}>Section {i + 1}</span>
+                    {contentSections.length > 1 && <button type="button" onClick={() => removeContentSection(i)} aria-label={`Remove section ${i + 1}`} style={{ width: 34, height: 34, borderRadius: 9, border: "1px solid var(--admin-border)", background: "transparent", color: "var(--admin-text-faint)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div>
+                      <span style={lbl}>Title</span>
+                      <input className="ab-input" style={inp()} value={section.title} onChange={(e) => updateContentSection(i, "title", e.target.value)} maxLength={HEADLINE_MAX} placeholder="Section title..." />
+                      <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                    </div>
+                    <div>
+                      <span style={lbl}>Content</span>
+                      <RichTextArea value={section.content} onChange={(html) => updateContentSection(i, "content", html)} placeholder="Section content..." minHeight={96} />
+                      <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
+                    </div>
+                  </div>
+                </div>)}
+                <button type="button" onClick={addContentSection} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 0", borderRadius: 12, border: "1.5px dashed var(--admin-border)", background: "transparent", color: "var(--admin-text-sub)", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                  Add another section
                 </button>
               </div>
+            </div>
+
+            {/* Actions */}
+            <div className="ab-actions" style={{ display: "flex", gap: 10 }}>
+              <button type="button" onClick={resetForm} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 1, padding: "13px 0", borderRadius: 12, border: "1px solid var(--admin-border)", background: "var(--admin-surface)", color: "var(--admin-text-sub)", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                Reset form
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(true)}
+                disabled={!isFormValid() || isSubmitting}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 2, padding: "13px 0", borderRadius: 12, border: "none", background: isFormValid() && !isSubmitting ? "var(--admin-accent)" : "var(--admin-bg-soft)", color: isFormValid() && !isSubmitting ? "var(--admin-text-on-accent)" : "var(--admin-text-faint)", fontSize: 14, fontWeight: 700, cursor: isFormValid() && !isSubmitting ? "pointer" : "not-allowed", boxShadow: isFormValid() && !isSubmitting ? "var(--admin-shadow-sm)" : "none" }}
+              >
+                {isSubmitting ? <><Spinner size={14} /> Saving...</> : <>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Create blog post
+                </>}
+              </button>
             </div>
 
           </div>
@@ -1202,10 +849,7 @@ function AddBlogs() {
 
             {isGenerating && modalCfg && <div className={`mx-6 mb-4 px-6 py-6 rounded-xl border flex flex-col items-center justify-center gap-1 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
                 <div className="relative w-14 h-14 mb-2">
-                  <svg className="w-14 h-14 animate-spin" style={{ animationDuration: "2s" }} viewBox="0 0 56 56" fill="none">
-                    <circle cx="28" cy="28" r="24" stroke={"var(--admin-border)"} strokeWidth="4" />
-                    <circle cx="28" cy="28" r="24" stroke="var(--admin-accent)" strokeWidth="4" strokeLinecap="round" strokeDasharray="150.8" strokeDashoffset="110" />
-                  </svg>
+                  <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--admin-accent-text)" }}><Spinner size={14} thickness={4} /></span>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <SparkleIcon className={`w-5 h-5 text-[var(--admin-text-sub)]`} />
                   </div>
@@ -1249,7 +893,7 @@ function AddBlogs() {
               <button
     onClick={handleGenerate}
     disabled={isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim())}
-    className={`flex-1 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all ${isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim()) ? "bg-[var(--admin-accent)]/40 text-white cursor-not-allowed" : "bg-[var(--admin-accent)] text-white hover:bg-[#6a0000]"}`}
+    className={`flex-1 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all ${isGenerating || !modalPrompt.trim() || (activeModal === "full" && !modalImagePrompt.trim()) ? "bg-[var(--admin-accent)]/40 text-white cursor-not-allowed" : "bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)]"}`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 {isGenerating ? <><Spinner /> Generating...</> : <><SparkleIcon className="w-3.5 h-3.5" /> Generate</>}
@@ -1283,7 +927,7 @@ function AddBlogs() {
               <button
     onClick={handleFinalConfirm}
     disabled={isSubmitting}
-    className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50"
+    className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all disabled:opacity-50"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 {isSubmitting ? "Saving..." : "Confirm"}
@@ -1308,7 +952,7 @@ function AddBlogs() {
             <div className="p-6">
               <button
     onClick={() => setShowSuccessModal(false)}
-    className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
+    className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 Close
@@ -1333,7 +977,7 @@ function AddBlogs() {
             <div className="p-6">
               <button
     onClick={() => setShowErrorModal(false)}
-    className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all"
+    className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all"
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                 Close

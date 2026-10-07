@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useRef } from "react";
+import { Spinner } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function EditAdmin({ admin, onClose, onSave }) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -143,14 +145,12 @@ function EditAdmin({ admin, onClose, onSave }) {
     /* â”€â”€ Global styles — identical to ActivityLogs â”€â”€ */
   }
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
-        *, *::before, *::after { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        input, textarea, select, option, button { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+        *, *::before, *::after { font-family: var(--font-body) !important; letter-spacing: 0 !important; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        input, textarea, select, option, button { font-family: var(--font-body) !important; letter-spacing: 0 !important; }
         input:focus, textarea:focus, select:focus { border-color: var(--admin-accent) !important; outline: none !important; box-shadow: none !important; }
         .ea-row:hover  { background: ${"var(--admin-bg-soft)"} !important; }
         .ea-pill:hover { opacity: .78; }
         .upload-zone:hover { border-color: var(--admin-accent) !important; background: color-mix(in srgb, var(--admin-accent) 3%, transparent) !important; }
-        @keyframes spin { to { transform: rotate(360deg) } }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
       `}</style>
@@ -161,23 +161,18 @@ function EditAdmin({ admin, onClose, onSave }) {
           {
     /* â”€â”€ Page header â”€â”€ */
   }
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-            <div>
-              <h2 style={{ fontSize: 18, fontWeight: 500, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                Edit Administrator
-              </h2>
-              <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>
-                Update information for <strong style={{ color: textPrimary, fontWeight: 600 }}>{admin.firstName} {admin.lastName}</strong>
-              </p>
-            </div>
-            <button
+          <PageHeader
+    title="Edit Administrator"
+    subtitle={<>Update information for <strong style={{ color: "var(--admin-text)", fontWeight: 600 }}>{admin.firstName} {admin.lastName}</strong></>}
+    style={{ marginBottom: 4 }}
+    actions={<button
     onClick={onClose}
     style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 16px", borderRadius: 10, border: `1px solid ${borderColor}`, background: subtleBg, color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", letterSpacing: 0, transition: "all .15s" }}
   >
               <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" /></svg>
               Close
-            </button>
-          </div>
+            </button>}
+  />
 
           {
     /* â”€â”€ Two-column layout â”€â”€ */
@@ -233,7 +228,7 @@ function EditAdmin({ admin, onClose, onSave }) {
                   </div>}
 
                 {isCompressing && <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "9px 14px", borderRadius: 10, background: subtleBg }}>
-                    <svg width="13" height="13" fill="none" stroke={textMuted} strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite", flexShrink: 0 }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                    <Spinner size={13} />
                     <p style={{ fontSize: 11, color: textMuted, margin: 0, fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Compressing...</p>
                   </div>}
               </div>
@@ -367,7 +362,7 @@ function EditAdmin({ admin, onClose, onSave }) {
       letterSpacing: 0
     }}
   >
-                      {isSubmitting ? <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Updating...</> : <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Update Administrator</>}
+                      {isSubmitting ? <><Spinner size={12} />Updating...</> : <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Update Administrator</>}
                     </button>
                   </div>
                 </div>
@@ -427,7 +422,7 @@ function EditAdmin({ admin, onClose, onSave }) {
                   Cancel
                 </button>
                 <button onClick={handleFinalConfirm} disabled={isSubmitting} style={{ display: "flex", alignItems: "center", gap: 7, padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: isSubmitting ? "not-allowed" : "pointer", opacity: isSubmitting ? 0.75 : 1, fontFamily: "'Poppins', sans-serif", letterSpacing: 0, transition: "all .15s" }}>
-                  {isSubmitting ? <><svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin .8s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>Updating...</> : "Confirm & Update"}
+                  {isSubmitting ? <><Spinner size={12} />Updating...</> : "Confirm & Update"}
                 </button>
               </div>
             </div>

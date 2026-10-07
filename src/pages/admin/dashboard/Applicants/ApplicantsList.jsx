@@ -1,5 +1,7 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
+import DashboardLoader, { Spinner, useInitialLoad } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 
 const API_ORIGIN =
@@ -364,32 +366,7 @@ function PipelineLoadingOverlay({ stage, dm }) {
     /* Animated maroon spinner ring */
   }
       <div style={{ position: "relative", width: "56px", height: "56px" }}>
-        <svg
-    width="56"
-    height="56"
-    viewBox="0 0 56 56"
-    style={{ animation: "spinRing 1s linear infinite", position: "absolute", inset: 0 }}
-  >
-          <circle
-    cx="28"
-    cy="28"
-    r="22"
-    fill="none"
-    stroke={dm ? "color-mix(in srgb, var(--admin-accent) 20%, transparent)" : "color-mix(in srgb, var(--admin-accent) 10%, transparent)"}
-    strokeWidth="4"
-  />
-          <circle
-    cx="28"
-    cy="28"
-    r="22"
-    fill="none"
-    stroke="var(--admin-accent)"
-    strokeWidth="4"
-    strokeLinecap="round"
-    strokeDasharray="138.2"
-    strokeDashoffset="104"
-  />
-        </svg>
+        <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--admin-accent)" }}><Spinner size={56} thickness={4} /></span>
         {
     /* Center icon — next stage icon */
   }
@@ -410,21 +387,6 @@ function PipelineLoadingOverlay({ stage, dm }) {
         <p style={{ ...poppins, fontSize: "11px", color: "#9ca3af" }}>Please wait…</p>
       </div>
 
-      {
-    /* Animated progress dots */
-  }
-      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-        {[0, 1, 2].map((i) => <div
-    key={i}
-    style={{
-      width: "6px",
-      height: "6px",
-      borderRadius: "50%",
-      background: "var(--admin-accent)",
-      animation: `pulseDot 1.2s ease-in-out ${i * 0.2}s infinite`
-    }}
-  />)}
-      </div>
     </div>;
 }
 function ApplicantModal({
@@ -544,7 +506,7 @@ function ApplicantModal({
     /* â”€â”€ Maroon Banner â”€â”€ */
   }
         <div style={{
-    background: "linear-gradient(135deg, var(--admin-accent) 0%, #550000 100%)",
+    background: "linear-gradient(135deg, var(--admin-accent) 0%, #530607 100%)",
     borderRadius: "24px 24px 0 0",
     padding: "22px 22px 0"
   }}>
@@ -804,7 +766,7 @@ function ApplicantModal({
       width: "100%",
       padding: "12px",
       borderRadius: "14px",
-      background: isPipelineLoading ? "linear-gradient(135deg, #5a0000 0%, #3a0000 100%)" : "linear-gradient(135deg, var(--admin-accent) 0%, #550000 100%)",
+      background: isPipelineLoading ? "linear-gradient(135deg, #530607 0%, #3a0000 100%)" : "linear-gradient(135deg, var(--admin-accent) 0%, #530607 100%)",
       color: "#fff",
       border: "none",
       cursor: isAnyLoading ? "not-allowed" : "pointer",
@@ -840,32 +802,7 @@ function ApplicantModal({
     alignItems: "center",
     justifyContent: "center"
   }}>
-                      <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    style={{ animation: "spinRing 0.75s linear infinite" }}
-  >
-                        <circle
-    cx="12"
-    cy="12"
-    r="9"
-    fill="none"
-    stroke="rgba(255,255,255,0.25)"
-    strokeWidth="3"
-  />
-                        <circle
-    cx="12"
-    cy="12"
-    r="9"
-    fill="none"
-    stroke="#ffffff"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeDasharray="56.5"
-    strokeDashoffset="42"
-  />
-                      </svg>
+                      <Spinner size={16} />
                     </span>
                     <span>Processing…</span>
                   </> : <>
@@ -929,7 +866,7 @@ function ApplicantModal({
       transition: "opacity 0.15s ease"
     }}
   >
-                  {isApproveLoading ? <span style={{ width: "13px", height: "13px", border: "2px solid rgba(5,150,105,0.4)", borderTopColor: "#059669", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} /> : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>}
+                  {isApproveLoading ? <Spinner size={13} /> : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>}
                   Approve Applicant
                 </button>
                 <button
@@ -959,7 +896,7 @@ function ApplicantModal({
       transition: "opacity 0.15s ease"
     }}
   >
-                  {isRejectLoading ? <span style={{ width: "13px", height: "13px", border: "2px solid rgba(220,38,38,0.4)", borderTopColor: "#dc2626", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} /> : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  {isRejectLoading ? <Spinner size={13} /> : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                       </svg>}
                   Reject Applicant
@@ -1032,6 +969,7 @@ function ApplicantsList() {
   const { isdarkmode } = useDarkMode();
   const [applicants, setApplicants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const initialLoading = useInitialLoad(isLoading);
   const [actionLoading, setActionLoading] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [toast, setToast] = useState(null);
@@ -1184,7 +1122,7 @@ function ApplicantsList() {
     background: active ? "var(--admin-accent)" : "var(--admin-bg-soft)",
     color: active ? "#fff" : "var(--admin-text-sub)"
   });
-  return <div className="space-y-6" style={poppins}>
+  return <div className="space-y-6 pt-8" style={poppins}>
       {
     /* Global toast (only shown when modal is closed) */
   }
@@ -1206,31 +1144,25 @@ function ApplicantsList() {
       {
     /* â”€â”€ Page Header â”€â”€ */
   }
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div>
-          <h1 className={"text-[var(--admin-text)]"} style={{ ...poppins, fontSize: "18px", fontWeight: 600 }}>List of Applicants</h1>
-          <p className="text-gray-400 mt-0.5" style={{ ...poppins, fontSize: "11px" }}>Review and manage job applicants</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {showAnalytics && !isLoading && <button onClick={handleDownload} disabled={downloading || applicants.length === 0} style={{ ...headerBtn(), opacity: applicants.length === 0 ? 0.4 : 1, cursor: applicants.length === 0 ? "not-allowed" : "pointer" }}>
-              {downloading ? <span style={{ width: "13px", height: "13px", border: "2px solid currentColor", borderTopColor: "transparent", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} /> : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>}
+      <PageHeader title="List of Applicants" subtitle="Review and manage job applicants" style={{ marginBottom: 0 }} actions={<>
+          {showAnalytics && !initialLoading && <button onClick={handleDownload} disabled={downloading || applicants.length === 0} style={{ ...headerBtn(), opacity: applicants.length === 0 ? 0.4 : 1, cursor: applicants.length === 0 ? "not-allowed" : "pointer" }}>
+              {downloading ? <Spinner size={13} /> : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>}
               {downloading ? "Preparing\u2026" : "Download Report"}
             </button>}
           <button onClick={() => setShowAnalytics((v) => !v)} style={headerBtn(showAnalytics)}>
             {showAnalytics ? <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>View List</> : <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>Analytics</>}
           </button>
-        </div>
-      </div>
+      </>} />
 
       {
     /* â”€â”€ Analytics â”€â”€ */
   }
-      {showAnalytics && !isLoading && <AnalyticsSection applicants={applicants} isdarkmode={isdarkmode} />}
+      {showAnalytics && !initialLoading && <AnalyticsSection applicants={applicants} isdarkmode={isdarkmode} />}
 
       {
     /* â”€â”€ Table Stat Cards â”€â”€ */
   }
-      {!isLoading && !showAnalytics && <TableStatCards applicants={applicants} filtered={filtered} filterStatus={filterStatus} isdarkmode={isdarkmode} />}
+      {!initialLoading && !showAnalytics && <TableStatCards applicants={applicants} filtered={filtered} filterStatus={filterStatus} isdarkmode={isdarkmode} />}
 
       {
     /* â”€â”€ List View â”€â”€ */
@@ -1312,12 +1244,8 @@ function ApplicantsList() {
           </div>
 
           <div className={`rounded-3xl overflow-hidden shadow-sm border bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-            {isLoading ? <div className="flex items-center justify-center py-20">
-                <div className="text-center space-y-3">
-                  <div className="inline-block h-7 w-7 animate-spin rounded-full border-4 border-solid border-[var(--admin-accent)] border-r-transparent" />
-                  <p className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>Loading applicants…</p>
-                </div>
-              </div> : filtered.length === 0 ? <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <DashboardLoader isVisible={initialLoading} message="Loading applicants…" />
+            {initialLoading ? null : filtered.length === 0 ? <div className="flex flex-col items-center justify-center py-20 gap-3">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
                 <p className="text-gray-400" style={{ ...poppins, fontSize: "11px" }}>No applicants found{filterStatus !== "all" ? ` for "${filterStatus}"` : ""}{searchQuery ? ` matching "${searchQuery}"` : ""}.</p>
               </div> : viewMode === "card" ? <div style={{ padding: "16px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "12px" }}>
@@ -1395,10 +1323,10 @@ function ApplicantsList() {
                             </button>
                             {applicant.status === "pending" && <>
                                 <button onClick={() => handleAction(applicant._id, "approve")} disabled={!!actionLoading} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-none cursor-pointer transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" style={{ ...poppins, fontSize: "11px", fontWeight: 500 }}>
-                                  {actionLoading === `${applicant._id}-approve` ? <div className="w-3 h-3 border-2 border-white border-r-transparent rounded-full animate-spin" /> : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>}Approve
+                                  {actionLoading === `${applicant._id}-approve` ? <Spinner size={14} /> : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>}Approve
                                 </button>
                                 <button onClick={() => handleAction(applicant._id, "reject")} disabled={!!actionLoading} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white border-none cursor-pointer transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" style={{ ...poppins, fontSize: "11px", fontWeight: 500 }}>
-                                  {actionLoading === `${applicant._id}-reject` ? <div className="w-3 h-3 border-2 border-white border-r-transparent rounded-full animate-spin" /> : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>}Reject
+                                  {actionLoading === `${applicant._id}-reject` ? <Spinner size={14} /> : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>}Reject
                                 </button>
                               </>}
                           </div>
@@ -1411,8 +1339,6 @@ function ApplicantsList() {
         </>}
 
       <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes spinRing { to { transform: rotate(360deg); } }
         @keyframes slideDownFade {
           from { opacity: 0; transform: translateY(-8px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -1424,10 +1350,6 @@ function ApplicantsList() {
         @keyframes shimmer {
           0%   { transform: translateX(-100%); }
           100% { transform: translateX(200%); }
-        }
-        @keyframes pulseDot {
-          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-          40%            { transform: scale(1);   opacity: 1;   }
         }
 
         /* \u2500\u2500 Thin modal scrollbar \u2500\u2500 */

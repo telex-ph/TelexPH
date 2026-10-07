@@ -1,6 +1,10 @@
 
+import PageHeader from "@/components/PageHeader";
 import { useState, useRef } from "react";
+import { Spinner } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import RichTextArea from "@/components/RichTextArea";
+import { htmlToText, toHtml } from "@/lib/rich-text";
 
 const API_BASE =
   import.meta.env.VITE_API_ORIGIN || "/api";
@@ -64,17 +68,17 @@ function EditBlogs({ blog, onClose, onSave }) {
   const [selectedImage, setSelectedImage] = useState(blog.picture || null);
   const [imageChanged, setImageChanged] = useState(false);
   const getTotalWordCount = () => {
-    let n = (mainContentTitle + " " + mainContentText).split(/\s+/).filter(Boolean).length;
+    let n = (mainContentTitle + " " + htmlToText(mainContentText)).split(/\s+/).filter(Boolean).length;
     contentSections.forEach((s) => {
-      n += (s.title + " " + s.content).split(/\s+/).filter(Boolean).length;
+      n += (s.title + " " + htmlToText(s.content)).split(/\s+/).filter(Boolean).length;
     });
     return n;
   };
   const isFormValid = () => {
     const t = title.trim(), a = authorName.trim(), d = shortDescription.trim();
-    const mt = mainContentTitle.trim(), mb = mainContentText.trim();
+    const mt = mainContentTitle.trim(), mb = htmlToText(mainContentText);
     return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && d.length <= SHORT_DESC_MAX && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
-      const st = s.title.trim(), sc = s.content.trim();
+      const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
     }) && (status !== "scheduled" || scheduledDate));
@@ -122,11 +126,11 @@ function EditBlogs({ blog, onClose, onSave }) {
     setIsSubmitting(true);
     try {
       const allMainContent = [];
-      if (mainContentTitle.trim() || mainContentText.trim()) {
-        allMainContent.push({ title: mainContentTitle.trim(), content: mainContentText.trim() });
+      if (mainContentTitle.trim() || htmlToText(mainContentText)) {
+        allMainContent.push({ title: mainContentTitle.trim(), content: toHtml(mainContentText) });
       }
       contentSections.forEach((s) => {
-        if (s.title.trim() || s.content.trim()) allMainContent.push({ title: s.title.trim(), content: s.content.trim() });
+        if (s.title.trim() || htmlToText(s.content)) allMainContent.push({ title: s.title.trim(), content: toHtml(s.content) });
       });
       if (imageChanged && actualFileRef.current) {
         const formData = new FormData();
@@ -235,7 +239,7 @@ function EditBlogs({ blog, onClose, onSave }) {
       </div>;
   };
   const CharCount = ({ value, max, min }) => {
-    const trimmed = value.trim();
+    const trimmed = htmlToText(value);
     const tooShort = trimmed.length > 0 && trimmed.length < min;
     const tooLong = max !== void 0 && trimmed.length > max;
     return <div className="flex justify-between items-center mt-1 px-1">
@@ -249,8 +253,7 @@ function EditBlogs({ blog, onClose, onSave }) {
   };
   return <>
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'Poppins', sans-serif !important; }
+        * { font-family: var(--font-body) !important; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
       ` }} />
@@ -261,32 +264,20 @@ function EditBlogs({ blog, onClose, onSave }) {
     /* â”€â”€ Page Header â”€â”€ */
   }
         <div className="w-full max-w-7xl mx-auto">
-          <div className={`flex items-center justify-between pb-6 border-b transition-colors duration-500 border-[var(--admin-border)]`}>
-            <div className="flex items-center gap-4">
-              <button
+          <PageHeader
+    title="Edit Blog Post"
+    subtitle="Update your blog post details below"
+    style={{ marginBottom: 0 }}
+    before={<button
     onClick={onClose}
+    aria-label="Back to blog list"
     className={`w-9 h-9 rounded-lg flex items-center justify-center border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
   >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-              </button>
-              <div>
-                <h2
-    className={`tracking-tight transition-colors text-[var(--admin-text)]`}
-    style={{ fontSize: 18, fontWeight: 500, margin: 0 }}
-  >
-                  Edit Blog Post
-                </h2>
-                <p
-    className={`mt-1 transition-colors text-[var(--admin-text-faint)]`}
-    style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0" }}
-  >
-                  Update your blog post details below
-                </p>
-              </div>
-            </div>
-          </div>
+              </button>}
+  />
         </div>
 
         {
@@ -321,10 +312,7 @@ function EditBlogs({ blog, onClose, onSave }) {
     style={{ aspectRatio: "16/9" }}
   >
                   {isCompressing ? <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <svg className="animate-spin w-5 h-5 text-[var(--admin-accent)]" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                      </svg>
+                      <span className="text-[var(--admin-accent)]"><Spinner size={20} /></span>
                       <span className={`text-[10px] text-[var(--admin-text-faint)]`}>Compressing...</span>
                     </div> : selectedImage ? <>
                       <img src={selectedImage} alt="Cover preview" className="w-full h-full object-cover" />
@@ -530,7 +518,7 @@ function EditBlogs({ blog, onClose, onSave }) {
                       </p>
                     </div>
                     <div className="flex-1">
-                      <textarea value={mainContentText} onChange={(e) => setMainContentText(e.target.value)} placeholder="Write your main content here..." rows={7} className={textareaBase} />
+                      <RichTextArea value={mainContentText} onChange={setMainContentText} placeholder="Write your main content here..." minHeight={160} />
                       <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
                     </div>
                   </div>
@@ -598,13 +586,7 @@ function EditBlogs({ blog, onClose, onSave }) {
                         </div>
                         <div>
                           <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Content</p>
-                          <textarea
-    value={section.content}
-    onChange={(e) => updateContentSection(i, "content", e.target.value)}
-    placeholder="Section content..."
-    rows={4}
-    className={textareaBase}
-  />
+                          <RichTextArea value={section.content} onChange={(html) => updateContentSection(i, "content", html)} placeholder="Section content..." minHeight={100} />
                           <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
                         </div>
                       </div>
@@ -632,7 +614,7 @@ function EditBlogs({ blog, onClose, onSave }) {
                   <button
     onClick={() => setShowConfirmModal(true)}
     disabled={!isFormValid() || isSubmitting}
-    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] shadow-md" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed"}`}
+    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] shadow-md" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed"}`}
     style={{ fontSize: 11, fontWeight: 500 }}
   >
                     {isSubmitting ? "Saving..." : "Save Changes"}
@@ -656,7 +638,7 @@ function EditBlogs({ blog, onClose, onSave }) {
             </div>
             <div className="flex gap-3 p-6">
               <button onClick={() => setShowConfirmModal(false)} disabled={isSubmitting} className={`flex-1 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
-              <button onClick={handleFinalConfirm} disabled={isSubmitting} className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500 }}>{isSubmitting ? "Saving..." : "Confirm"}</button>
+              <button onClick={handleFinalConfirm} disabled={isSubmitting} className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500 }}>{isSubmitting ? "Saving..." : "Confirm"}</button>
             </div>
           </div>
         </div>}
@@ -671,7 +653,7 @@ function EditBlogs({ blog, onClose, onSave }) {
               <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Your blog post has been updated successfully.</p>
             </div>
             <div className="p-6">
-              <button onClick={handleSuccessClose} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Back to Blog List</button>
+              <button onClick={handleSuccessClose} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Back to Blog List</button>
             </div>
           </div>
         </div>}
@@ -686,7 +668,7 @@ function EditBlogs({ blog, onClose, onSave }) {
               <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>{errorMessage || "Something went wrong. Please try again."}</p>
             </div>
             <div className="p-6">
-              <button onClick={() => setShowErrorModal(false)} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[#6a0000] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Close</button>
+              <button onClick={() => setShowErrorModal(false)} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Close</button>
             </div>
           </div>
         </div>}
