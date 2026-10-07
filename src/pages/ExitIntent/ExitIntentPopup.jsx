@@ -170,7 +170,7 @@ const ExitIntentPopup = () => {
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.5 }}
-    href="https://hiretelex.com/scale-with-telex"
+    href="https://intl.telexph.com"
     target="_blank"
     rel="noopener noreferrer"
     className="inline-flex items-center justify-center gap-2 md:gap-3 font-bold px-6 py-3 md:px-8 md:py-4 rounded-full transition-all duration-300 text-base md:text-lg group w-full md:w-fit"
