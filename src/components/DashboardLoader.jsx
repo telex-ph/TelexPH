@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 // Brand tokens. The auth check shows this loader before the lazy Layout chunk (which also imports this) has loaded.
 import "@/styles/admin-theme.css";
@@ -9,6 +9,8 @@ import "@/styles/admin-theme.css";
  * title and a rotating hint).
  *
  *   <DashboardLoader isVisible={initialLoading} message="Loading blogs…" />
+ *
+ * <DashboardLoaderHost /> is mounted once in App.jsx and draws the overlay.
  *
  * Rules (see CLAUDE.md "Loading"):
  *  - Page open only. Wrap the page's loading flag in `useInitialLoad()` so
@@ -38,7 +40,6 @@ const shuffled = (n) => {
 };
 let hintQueue = [];
 let iconQueue = [];
-let lastHint = HINTS[0];
 const nextHint = () => {
   if (!hintQueue.length) hintQueue = shuffled(HINTS.length);
   return HINTS[hintQueue.pop()];
@@ -132,56 +133,75 @@ const ICONS = [
     </svg>
   ),
 ];
-// Auth check -> user fetch -> page data render one loader after another. A
-// loader that appears right after another one reuses its icon and skips the
-// fade-in, so the chain reads as a single continuous animation.
-const CHAIN_MS = 1500;
-let lastActive = 0;
-let mounted = 0; // loaders currently on screen (the next one renders before the old one's cleanup runs)
-let lastIcon = 0;
+// One overlay for the whole app. <DashboardLoader> only REGISTERS a request;
+// <DashboardLoaderHost> (mounted once in App) draws a single overlay while any
+// request is open. Auth check -> route chunk -> user fetch -> page data used to
+// each mount their own overlay, so the icon and text restarted at every
+// hand-off (the "loader keeps retriggering on refresh" bug).
+const GRACE_MS = 200; // keeps the overlay up across the gap between two hand-offs
+const requests = new Map();
+const listeners = new Set();
+const EMPTY = [];
+let snapshot = EMPTY;
+const emit = () => {
+  snapshot = [...requests.values()];
+  listeners.forEach((l) => l());
+};
+const subscribe = (l) => {
+  listeners.add(l);
+  return () => listeners.delete(l);
+};
+const getSnapshot = () => snapshot;
+const getServerSnapshot = () => EMPTY;
 const nextIconIdx = () => {
   if (!iconQueue.length) iconQueue = shuffled(ICONS.length);
   return iconQueue.pop();
 };
 
-/** Full-screen overlay. Stays mounted for EXIT_MS after `isVisible` flips off so it can fade out. */
+/** Declares "something is loading". Renders nothing; <DashboardLoaderHost> draws the overlay. */
 export default function DashboardLoader({ isVisible, message = "Loading…", subMessage = null }) {
-  const [rendered, setRendered] = useState(isVisible);
-  const [exiting, setExiting] = useState(false);
-  const [continued] = useState(() => mounted > 0 || Date.now() - lastActive < CHAIN_MS);
-  const [hint, setHint] = useState(() => (continued ? lastHint : nextHint()));
-  const [iconIdx, setIconIdx] = useState(() => (continued ? lastIcon : nextIconIdx()));
-  const exitTimer = useRef(null);
-
+  const id = useId();
   useEffect(() => {
-    // Recorded here, not in the initializers: StrictMode runs those twice in dev.
-    lastIcon = iconIdx;
-    lastHint = hint;
-    mounted++;
+    if (!isVisible) return;
+    requests.set(id, { message, subMessage });
+    emit();
     return () => {
-      mounted--;
-      lastActive = Date.now();
+      requests.delete(id);
+      emit();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isVisible, id, message, subMessage]);
+  return null;
+}
+
+/** Mount ONCE, outside any <Suspense>. Fades out EXIT_MS after the last request closes. */
+export function DashboardLoaderHost() {
+  const entries = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const active = entries.length > 0;
+  const [look, setLook] = useState(null); // icon + hint, picked once per appearance; null = not on screen
+  const [exiting, setExiting] = useState(false);
+  const lastEntry = useRef(null);
+  if (active) lastEntry.current = entries[entries.length - 1]; // keep the text while fading out
 
   useEffect(() => {
-    if (isVisible) {
-      clearTimeout(exitTimer.current);
-      setRendered(true);
+    if (active) {
+      setLook((l) => l ?? { iconIdx: nextIconIdx(), hint: nextHint() });
       setExiting(false);
-    } else {
-      setExiting(true);
-      exitTimer.current = setTimeout(() => {
-        setRendered(false);
-        setExiting(false);
-      }, EXIT_MS);
+      return;
     }
-    return () => clearTimeout(exitTimer.current);
-  }, [isVisible]);
+    const fade = setTimeout(() => setExiting(true), GRACE_MS);
+    const remove = setTimeout(() => {
+      setLook(null);
+      setExiting(false);
+    }, GRACE_MS + EXIT_MS);
+    return () => {
+      clearTimeout(fade);
+      clearTimeout(remove);
+    };
+  }, [active]);
 
-  if (!rendered) return null;
-  const sub = subMessage ?? hint;
+  if (!look) return null;
+  const { message = "Loading…", subMessage = null } = lastEntry.current ?? {};
+  const sub = subMessage ?? look.hint;
 
   return createPortal(
     <>
@@ -206,10 +226,10 @@ export default function DashboardLoader({ isVisible, message = "Loading…", sub
           background: "color-mix(in srgb, var(--admin-bg) 92%, transparent)",
           backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28,
-          animation: exiting ? `_dl_out ${EXIT_MS}ms ease forwards` : continued ? "none" : "_dl_in .18s ease forwards",
+          animation: exiting ? `_dl_out ${EXIT_MS}ms ease forwards` : "_dl_in .18s ease forwards",
         }}
       >
-        {ICONS[iconIdx]()}
+        {ICONS[look.iconIdx]()}
         <div style={{ textAlign: "center", animation: "_dl_up .25s ease forwards" }}>
           <h2 style={{ fontFamily: "var(--font-heading)", fontWeight: 900, fontSize: 17, color: "var(--admin-text)", margin: "0 0 6px" }}>{message}</h2>
           {sub && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--admin-accent-text)", margin: 0 }}>{sub}</p>}

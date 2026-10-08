@@ -5,26 +5,7 @@ import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import EditBlogs from "./EditBlogs";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import { htmlToText, toHtml } from "@/lib/rich-text";
-const STAT_CARD_IMAGES = [
-  "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=500&q=80&fit=crop",
-  // Total blogs  — open notebook
-  "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=500&q=80&fit=crop",
-  // Published    — laptop writing
-  "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=500&q=80&fit=crop",
-  // Draft        — pen + paper
-  "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=500&q=80&fit=crop"
-  // Scheduled    — planner/calendar
-];
-const STAT_CARD_COLORS = [
-  "#1e6e4a",
-  // Total blogs  — green
-  "#8b0f0f",
-  // Published    — deep red
-  "#92580a",
-  // Draft        — amber
-  "#103f9e"
-  // Scheduled    — blue
-];
+import { StatTile, MiniCalendar, CalendarModal, DateModal } from "./BlogOverview";
 function ListBlogs() {
   const [blogs, setblogs] = useState([]);
   const [activetab, setactivetab] = useState("All");
@@ -34,7 +15,12 @@ function ListBlogs() {
   const [selectedblog, setselectedblog] = useState(null);
   const [viewingblog, setviewingblog] = useState(null);
   const [currentpage, setcurrentpage] = useState(1);
-  const cardsperpage = 6;
+  const cardsperpage = 8;
+  const [search, setsearch] = useState("");
+  const [showcalendar, setshowcalendar] = useState(false);
+  const [selecteddate, setselecteddate] = useState("");
+  const [calmonth, setcalmonth] = useState(new Date().getMonth());
+  const [sortby, setsortby] = useState("date-newest");
   const [isloading, setisloading] = useState(true);
   const initialLoading = useInitialLoad(isloading);
   const [error, seterror] = useState(null);
@@ -87,7 +73,7 @@ function ListBlogs() {
   }, [selectedmaincategory, selectedsubcategory]);
   useEffect(() => {
     setcurrentpage(1);
-  }, [activetab, selectedmaincategory, selectedsubcategory]);
+  }, [activetab, selectedmaincategory, selectedsubcategory, search, sortby]);
   useEffect(() => {
     if (selectedmaincategory !== "All") {
       const avail = getAvailableSubcategories();
@@ -124,7 +110,8 @@ function ListBlogs() {
     };
     return iconMap[mainCategory] || "\u{1F4DD}";
   };
-  const filteredblogs = activetab === "All" ? blogs : blogs.filter((blog) => (blog.status || "").toLowerCase() === activetab.toLowerCase());
+  const q = search.trim().toLowerCase();
+  const filteredblogs = blogs.filter((blog) => (activetab === "All" || (blog.status || "").toLowerCase() === activetab.toLowerCase()) && (!q || [blog.title, blog.author, blog.shortDescription].some((v) => (v || "").toLowerCase().includes(q)))).sort((a, b) => sortby === "alpha-asc" ? (a.title || "").localeCompare(b.title || "") : sortby === "alpha-desc" ? (b.title || "").localeCompare(a.title || "") : sortby === "date-oldest" ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt));
   const totalPages = Math.ceil(filteredblogs.length / cardsperpage);
   const indexOfLastCard = currentpage * cardsperpage;
   const indexOfFirstCard = indexOfLastCard - cardsperpage;
@@ -166,48 +153,54 @@ function ListBlogs() {
   const publishedCount = blogs.filter((b) => b.status?.toLowerCase() === "published").length;
   const draftCount = blogs.filter((b) => b.status?.toLowerCase() === "draft").length;
   const scheduledCount = blogs.filter((b) => b.status?.toLowerCase() === "scheduled").length;
-  const blogStats = [
-    {
-      label: "Total Blogs",
-      value: blogs.length.toLocaleString(),
-      subValue: `${(publishedCount + draftCount).toLocaleString()} active posts`,
-      icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        </svg>
-    },
-    {
-      label: "Published",
-      value: publishedCount.toLocaleString(),
-      subValue: "Live on the website",
-      icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-        </svg>
-    },
-    {
-      label: "Draft",
-      value: draftCount.toLocaleString(),
-      subValue: "Unpublished drafts",
-      icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-        </svg>
-    },
-    {
-      label: "Scheduled",
-      value: scheduledCount.toLocaleString(),
-      subValue: "Queued for publishing",
-      icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" />
-          <line x1="16" y1="2" x2="16" y2="6" />
-          <line x1="8" y1="2" x2="8" y2="6" />
-          <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-    }
-  ];
   if (isediting && selectedblog) {
     return <EditBlogs blog={selectedblog} onClose={closeeditmodal} onSave={loadblogs} />;
   }
+  const dark = isdarkmode;
+  const subtleBg = dark ? "rgba(255,255,255,0.03)" : "#f9fafb";
+  const borderColor = dark ? "rgba(255,255,255,0.08)" : "#e5e7eb";
+  const textPrimary = dark ? "#f0f0f0" : "#1f2937";
+  const textSecondary = dark ? "#9ca3af" : "#374151";
+  const textMuted = "#6b7280";
+  const card = { background: "var(--admin-surface)", border: `1px solid ${borderColor}`, borderRadius: 16, boxShadow: dark ? "0 1px 6px rgba(0,0,0,.4)" : "0 1px 6px rgba(0,0,0,.06)" };
+  const inp = (o = {}) => ({ width: "100%", padding: "8px 11px", borderRadius: 8, border: `1px solid ${borderColor}`, background: dark ? "#161616" : "#fff", color: textPrimary, fontSize: 11, outline: "none", boxSizing: "border-box", ...o });
+  const pill = (sel) => ({ padding: "3px 11px", borderRadius: 20, fontSize: 10, fontWeight: 500, cursor: "pointer", transition: "all .15s", border: sel ? "1px solid color-mix(in srgb, var(--admin-accent) 30%, transparent)" : `1px solid ${borderColor}`, background: sel ? "color-mix(in srgb, var(--admin-accent) 9%, transparent)" : subtleBg, color: sel ? "var(--admin-accent)" : textMuted });
+  const ghostBtn = { padding: "4px 9px", borderRadius: 7, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 10, fontWeight: 500, cursor: "pointer" };
+  const dangerBtn = { padding: "4px 8px", borderRadius: 7, border: "1px solid rgba(202,138,4,0.3)", background: "rgba(202,138,4,0.08)", color: "#ca8a04", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center" };
+  const tagStyle = { fontSize: 8, fontWeight: 500, padding: "2px 7px", borderRadius: 4, background: subtleBg, border: `1px solid ${borderColor}`, color: textMuted };
+  const archiveIcon = <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>;
+  const statusStyle = (s) => {
+    switch (s?.toLowerCase()) {
+      case "published": return { bg: "color-mix(in srgb, var(--admin-accent) 10%, transparent)", color: "var(--admin-accent)", border: "1px solid color-mix(in srgb, var(--admin-accent) 25%, transparent)" };
+      case "scheduled": return { bg: "rgba(124,58,237,0.09)", color: "#7c3aed", border: "1px solid rgba(124,58,237,0.22)" };
+      case "draft": return { bg: "rgba(100,100,100,0.09)", color: "#6b7280", border: "1px solid rgba(100,100,100,0.22)" };
+      default: return { bg: "#f3f4f6", color: "#6b7280", border: "1px solid #e5e7eb" };
+    }
+  };
+  const hideBrokenImg = (e) => {
+    const el = e.currentTarget;
+    el.style.display = "none";
+    if (el.parentElement) el.parentElement.style.background = "linear-gradient(135deg,color-mix(in srgb, var(--admin-accent) 18%, transparent),color-mix(in srgb, var(--admin-accent) 4%, transparent))";
+  };
+  const localDate = (d) => d ? new Date(d).toLocaleDateString("en-CA") : "";
+  const events = blogs.map((b) => ({ _id: b._id, blog: b, title: b.title, description: b.shortDescription, author: b.author || "TelexPH Admin", status: b.status, date: localDate(b.scheduledDate && b.status?.toLowerCase() === "scheduled" ? b.scheduledDate : b.createdAt) }));
+  const dateEvents = events.filter((e) => e.date === selecteddate);
+  const monthChange = (status) => {
+    const now = new Date();
+    const inMonth = (b, offset) => {
+      const d = new Date(b.createdAt), ref = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+      return (!status || b.status?.toLowerCase() === status) && d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth();
+    };
+    const cur = blogs.filter((b) => inMonth(b, 0)).length, prev = blogs.filter((b) => inMonth(b, -1)).length;
+    const pct = prev === 0 ? (cur > 0 ? 100 : 0) : Math.round((cur - prev) / prev * 100);
+    return { change: `${pct >= 0 ? "+" : ""}${pct}% from Last Month`, changeUp: pct >= 0 };
+  };
+  const statTileConfigs = [
+    { label: "Total", count: blogs.length, gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)", gradientLight: "linear-gradient(150deg, #c8dcff 0%, #dbeafe 50%, #bdd3ff 100%)", accentColor: "#60a5fa", accentColorLight: "#1d4ed8", iconPath: "M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z", ...monthChange() },
+    { label: "Published", count: publishedCount, gradient: "linear-gradient(135deg, #1a1a2e 0%, #1e1b4b 60%, #312e81 100%)", gradientLight: "linear-gradient(150deg, #d8ccff 0%, #e9d5ff 50%, #d4bfff 100%)", accentColor: "#a78bfa", accentColorLight: "#6d28d9", iconPath: "M5 13l4 4L19 7", ...monthChange("published") },
+    { label: "Draft", count: draftCount, gradient: "linear-gradient(135deg, #1a1a2e 0%, #1c1917 60%, #292524 100%)", gradientLight: "linear-gradient(150deg, #ffd8a8 0%, #ffedd5 50%, #fecb8a 100%)", accentColor: "#fb923c", accentColorLight: "#c2410c", iconPath: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z", ...monthChange("draft") },
+    { label: "Schedule", count: scheduledCount, gradient: "linear-gradient(135deg, #1a1a2e 0%, #14532d 60%, #166534 100%)", gradientLight: "linear-gradient(150deg, #a8f0cc 0%, #dcfce7 50%, #90eabc 100%)", accentColor: "#4ade80", accentColorLight: "#15803d", iconPath: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", ...monthChange("scheduled") }
+  ];
   return <>
       <style dangerouslySetInnerHTML={{ __html: `
         *, *::before, *::after { font-family: var(--font-body) !important; -webkit-font-smoothing: antialiased; }
@@ -286,22 +279,6 @@ function ListBlogs() {
         }
         @media (min-width: 640px) { .sic-dot { width: 5px; height: 5px; } }
 
-        /* \u2500\u2500 Table: hide columns on small screens \u2500\u2500 */
-        @media (max-width: 767px) {
-          .tbl-col-category { display: none; }
-          .tbl-col-date     { display: none; }
-          .tbl-col-read     { display: none; }
-        }
-        @media (max-width: 1023px) {
-          .tbl-col-read { display: none; }
-        }
-
-        /* \u2500\u2500 Table cell padding \u2500\u2500 */
-        .tbl-th { padding: 12px 14px; font-size: 9px; }
-        .tbl-td { padding: 12px 14px; }
-        @media (min-width: 640px)  { .tbl-th { padding: 14px 20px; font-size: 10px; } .tbl-td { padding: 14px 20px; } }
-        @media (min-width: 1024px) { .tbl-th { padding: 18px 32px; }                  .tbl-td { padding: 18px 32px; } }
-
         /* \u2500\u2500 Filter row stack on mobile \u2500\u2500 */
         .filter-row {
           display: flex; flex-direction: column; gap: 12px; padding: 16px;
@@ -320,9 +297,19 @@ function ListBlogs() {
         @media (min-width: 640px) { .status-tabs-row { padding: 14px 24px; gap: 6px; } }
 
         /* \u2500\u2500 Grid: 1col \u2192 2col \u2192 3col \u2500\u2500 */
-        .blog-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        @media (min-width: 560px)  { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .blog-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+        .bl-card { transition: transform .18s, box-shadow .18s; }
+        .bl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.10); }
+        .bl-card-img { transition: transform .35s ease; }
+        .bl-card:hover .bl-card-img { transform: scale(1.04); }
+        .bl-row:hover { background: rgba(128,128,128,0.06); }
+        .pill-btn:hover { opacity: .78; }
+        @media (max-width: 768px) {
+          .bl-top-row { grid-template-columns: 1fr !important; }
+          .bl-search, .bl-search input { width: 100% !important; }
+          .bl-list-header { display: none !important; }
+          .bl-list-row { grid-template-columns: 40px 1fr auto !important; }
+          .bl-list-author, .bl-list-tags { display: none !important; }
+        }
 
         /* \u2500\u2500 Page wrapper padding \u2500\u2500 */
         .page-wrap { padding: 16px; display: flex; flex-direction: column; gap: 20px; min-height: 100vh; }
@@ -330,14 +317,6 @@ function ListBlogs() {
         @media (min-width: 640px)  { .page-wrap { padding: 24px; gap: 28px; } }
         @media (min-width: 1024px) { .page-wrap { padding: 32px; gap: 32px; } }
 
-        /* \u2500\u2500 List view blog image \u2500\u2500 */
-        .list-blog-img { width: 48px; height: 48px; border-radius: 10px; }
-        @media (min-width: 640px) { .list-blog-img { width: 56px; height: 56px; border-radius: 12px; } }
-
-        /* \u2500\u2500 Action buttons \u2500\u2500 */
-        .action-btn-sm { padding: 6px 10px; font-size: 10px; border-radius: 10px; }
-        @media (min-width: 640px)  { .action-btn-sm { padding: 8px 16px; font-size: 11px; border-radius: 14px; } }
-        @media (min-width: 1024px) { .action-btn-sm { padding: 10px 20px; border-radius: 16px; } }
       ` }} />
 
       <div className={`page-wrap transition-colors duration-500 bg-[var(--admin-bg)]`}>
@@ -353,398 +332,184 @@ function ListBlogs() {
         {
     /* â”€â”€ Header â”€â”€ */
   }
-        <div className="w-full max-w-7xl mx-auto">
-          <PageHeader title="Blog Management" subtitle="Manage and organize your blog posts" style={{ marginBottom: 0 }} />
+        <div className="w-full mx-auto" style={{ maxWidth: 1200 }}>
+          <PageHeader title="Blog list" subtitle="Manage your blog posts / Create, edit, and organize your articles with ease" style={{ marginBottom: 0 }} />
         </div>
 
-        {
-    /* â”€â”€ Stats Cards â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 lg:gap-3">
-          {blogStats.map((s, i) => {
-    const hex = STAT_CARD_COLORS[i];
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return <div key={i} className="stat-img-card">
-                {
-      /* Photo layer */
-    }
-                <div className="sic-photo" style={{ backgroundImage: `url(${STAT_CARD_IMAGES[i]})` }} />
-                {
-      /* Gradient: solid left → transparent right (shows photo on right side) */
-    }
-                <div className="sic-overlay" style={{
-      background: `linear-gradient(to right,
-                    rgb(${r},${g},${b}) 0%,
-                    rgb(${r},${g},${b}) 38%,
-                    rgba(${r},${g},${b},0.82) 55%,
-                    rgba(${r},${g},${b},0.45) 72%,
-                    rgba(${r},${g},${b},0.12) 100%
-                  )`
-    }} />
-                {
-      /* Bottom vignette for readability */
-    }
-                <div className="sic-overlay" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.28) 0%, transparent 55%)" }} />
-                {
-      /* Content */
-    }
-                <div className="sic-body">
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-                    <span className="sic-label">{s.label}</span>
-                    <div className="sic-icon">{s.icon}</div>
-                  </div>
-                  <div>
-                    <div className="sic-value">{s.value}</div>
-                    <div className="sic-hint">
-                      <span className="sic-dot" />
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {s.subValue}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>;
-  })}
-        </div>
-
-        {
-    /* â”€â”€ Filters â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto">
-          <div className={`rounded-2xl border transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-
-            {
-    /* Status tabs */
-  }
-            <div className={`status-tabs-row border-b border-[var(--admin-border)]`}>
-              <span style={{ fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginRight: 8, flexShrink: 0 }}>
-                Status
-              </span>
-              {statusTabs.map((tab) => {
-    const count = tab.value === "All" ? blogs.length : blogs.filter((b) => b.status?.toLowerCase() === tab.value.toLowerCase()).length;
-    const isActive = activetab === tab.value;
-    return <button
-      key={tab.value}
-      onClick={() => setactivetab(tab.value)}
-      style={{
-        fontSize: 11,
-        fontWeight: isActive ? 500 : 400,
-        padding: "5px 12px",
-        borderRadius: 8,
-        border: "none",
-        cursor: "pointer",
-        transition: "all 0.2s",
-        background: isActive ? "var(--admin-accent)" : "transparent",
-        color: isActive ? "#ffffff" : "var(--admin-text-faint)",
-        boxShadow: isActive ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none",
-        whiteSpace: "nowrap",
-        flexShrink: 0
-      }}
-    >
-                    {tab.label} ({count})
-                  </button>;
-  })}
+        {/* TOP ROW — same as the Case Study page */}
+        <div className="bl-top-row w-full mx-auto" style={{ maxWidth: 1200, display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 3fr)", gap: 16, alignItems: "stretch" }}>
+          <div style={{ ...card, padding: "22px 22px" }}>
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0 }}>Quick stats</p>
+              <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400 }}>Current system overview and counts</p>
             </div>
-
-            {
-    /* Category dropdowns + view toggle */
-  }
-            <div className="filter-row">
-              <div style={{ flex: 1, minWidth: 160 }}>
-                <label style={{ display: "block", fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginBottom: 6 }}>
-                  Main Category
-                </label>
-                <select
-    value={selectedmaincategory}
-    onChange={(e) => setselectedmaincategory(e.target.value)}
-    style={{
-      width: "100%",
-      fontSize: 11,
-      padding: "9px 14px",
-      borderRadius: 10,
-      border: "1.5px solid var(--admin-border)",
-      background: "var(--admin-bg-soft)",
-      color: "var(--admin-text-sub)",
-      outline: "none",
-      appearance: "auto",
-      cursor: "pointer"
-    }}
-  >
-                  <option value="All">All Categories</option>
-                  {mainCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
+            <div className="bl-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
+              {statTileConfigs.map((cfg, idx) => <div key={idx} className="stat-tile" style={{ transition: "transform .18s" }}>
+                <StatTile {...cfg} dark={dark} />
+              </div>)}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, marginTop: 14, borderTop: `1px solid ${borderColor}` }}>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: "0 0 2px" }}>Total blogs</p>
+                <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400 }}>All statuses combined</p>
               </div>
-
-              <div style={{ flex: 1, minWidth: 160 }}>
-                <label style={{ display: "block", fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginBottom: 6 }}>
-                  Subcategory
-                </label>
-                <select
-    value={selectedsubcategory}
-    onChange={(e) => setselectedsubcategory(e.target.value)}
-    disabled={selectedmaincategory === "All"}
-    style={{
-      width: "100%",
-      fontSize: 11,
-      padding: "9px 14px",
-      borderRadius: 10,
-      border: "1.5px solid var(--admin-border)",
-      background: "var(--admin-bg-soft)",
-      color: "var(--admin-text-sub)",
-      outline: "none",
-      appearance: "auto",
-      cursor: selectedmaincategory === "All" ? "not-allowed" : "pointer",
-      opacity: selectedmaincategory === "All" ? 0.45 : 1
-    }}
-  >
-                  <option value="All">All Subcategories</option>
-                  {getAvailableSubcategories().map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+                <span style={{ fontSize: 26, fontWeight: 700, color: textPrimary, lineHeight: 1 }}>{isloading ? "…" : blogs.length}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: dark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}>entries</span>
               </div>
-
-              <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
-                <span style={{ fontSize: 10, fontWeight: 500, color: "var(--admin-text-faint)", marginRight: 4 }}>View</span>
-                {[
-    { mode: "grid", icon: <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> },
-    { mode: "list", icon: <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg> }
-  ].map(({ mode, icon }) => <button
-    key={mode}
-    onClick={() => setviewmode(mode)}
-    style={{
-      padding: 7,
-      borderRadius: 8,
-      border: "none",
-      cursor: "pointer",
-      transition: "all 0.2s",
-      background: viewmode === mode ? "var(--admin-accent)" : "var(--admin-bg-hover)",
-      color: viewmode === mode ? "#fff" : "var(--admin-text-faint)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: viewmode === mode ? "0 2px 8px color-mix(in srgb, var(--admin-accent) 30%, transparent)" : "none"
-    }}
-  >
-                    {icon}
-                  </button>)}
+            </div>
+          </div>
+          <div style={{ ...card, padding: "22px 22px", display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0 }}>Timeline & events</p>
+                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400 }}>Scheduled and published blog posts</p>
               </div>
+              <button onClick={() => setshowcalendar(true)} className="icon-btn" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: subtleBg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: textMuted, flexShrink: 0 }}>
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
+              </button>
+            </div>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+              <MiniCalendar records={events} subtleBg={subtleBg} borderColor={borderColor} textSecondary={textSecondary} textMuted={textMuted} onDayClick={(ds) => setselecteddate(ds)} onOpenCalendar={() => setshowcalendar(true)} />
             </div>
           </div>
         </div>
 
-        {
-    /* â”€â”€ Blog Content â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto">
-          <DashboardLoader isVisible={initialLoading} message="Loading blogs…" />
-          {initialLoading ? null : currentblogs.length === 0 ? <div className={`rounded-[2rem] border p-14 sm:p-20 text-center transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-              <div className="text-5xl sm:text-6xl mb-4">📝</div>
-              <p className={`mb-2 transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 13, fontWeight: 500 }}>No blogs found</p>
-              <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Try adjusting your filters or create a new blog post</p>
-            </div> : viewmode === "grid" ? (
-    /* â”€â”€ GRID VIEW â”€â”€ */
-    <div className="blog-grid">
-              {currentblogs.map((blog) => <div
-      key={blog._id}
-      className={`rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full bg-[var(--admin-surface)] border-[var(--admin-border)]`}
-    >
-                  <div className="relative h-36 sm:h-44 overflow-hidden group flex-shrink-0">
-                    <img src={blog.picture || "/placeholder-blog.jpg"} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-                    <div className="absolute top-3 left-3">
-                      <span className={`px-2.5 py-1 rounded-full ${getstatusstyles(blog.status)}`} style={{ fontSize: 9, fontWeight: 500 }}>
-                        {blog.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 sm:p-5 lg:p-6 flex flex-col flex-grow">
-                    <div className="flex items-center gap-1.5 mb-2.5 flex-wrap">
-                      <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[var(--admin-accent)] text-white rounded-lg" style={{ fontSize: 9, fontWeight: 500 }}>
-                        {getCategoryIcon(blog.mainCategory)} {blog.mainCategory}
-                      </span>
-                      {blog.subcategory && <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[var(--admin-accent)]/70 text-white rounded-lg" style={{ fontSize: 9, fontWeight: 500 }}>
-                          {blog.subcategory}
-                        </span>}
-                    </div>
-
-                    <p className={`mb-1.5 line-clamp-2 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 12, fontWeight: 600 }}>
-                      {blog.title}
-                    </p>
-
-                    <p className={`mb-3 line-clamp-2 flex-grow transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400 }}>
-                      {blog.shortDescription}
-                    </p>
-
-                    <div className={`flex items-center gap-3 mb-3 pb-3 border-t pt-3 transition-colors text-[var(--admin-text-faint)] border-[var(--admin-border)]`} style={{ fontSize: 9 }}>
-                      <div className="flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span>{formatdate(blog.createdAt)}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>{calculatereadingtime(blog.mainContent)} min read</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-1.5 sm:gap-2">
-                      <button
-      onClick={() => handleview(blog)}
-      className={`flex-1 py-2 sm:py-2.5 rounded-[0.75rem] sm:rounded-[1rem] transition-all flex items-center justify-center gap-1.5 bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`}
-      style={{ fontSize: 10, fontWeight: 500 }}
-    >
-                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        View
-                      </button>
-                      <button
-      onClick={() => handleedit(blog)}
-      className="flex-1 py-2 sm:py-2.5 bg-[var(--admin-accent)] text-white rounded-[0.75rem] sm:rounded-[1rem] hover:bg-[var(--admin-accent-hover)] transition-all flex items-center justify-center gap-1.5"
-      style={{ fontSize: 10, fontWeight: 500 }}
-    >
-                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit
-                      </button>
-                      <button
-      onClick={() => confirmarchive(blog._id)}
-      className={`px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-[0.75rem] sm:rounded-[1rem] transition-all flex items-center justify-center ${isdarkmode ? "bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50" : "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"}`}
-      title="Archive"
-    >
-                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>)}
+        {/* LIBRARY — same layout as the Case Study library */}
+        <div className="w-full mx-auto" style={{ ...card, maxWidth: 1200, overflow: "hidden" }}>
+          <div className="bl-toolbar" style={{ padding: "13px 18px", borderBottom: `1px solid ${borderColor}`, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0 }}>Blog library</p>
+              <p style={{ fontSize: 10, color: textMuted, margin: "2px 0 0", fontWeight: 400 }}>All blog posts and articles</p>
             </div>
-  ) : (
-    /* â”€â”€ LIST VIEW â”€â”€ */
-    <div className={`rounded-[1.5rem] sm:rounded-[2rem] border overflow-hidden shadow-xl transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-              <div className="overflow-x-auto">
-                <table className="w-full" style={{ minWidth: 360 }}>
-                  <thead className={`border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
-                    <tr>
-                      {[
-      { label: "Blog", cls: "" },
-      { label: "Category", cls: "tbl-col-category" },
-      { label: "Status", cls: "" },
-      { label: "Date", cls: "tbl-col-date" },
-      { label: "Read Time", cls: "tbl-col-read" },
-      { label: "Actions", cls: "text-right" }
-    ].map((col) => <th
-      key={col.label}
-      className={`tbl-th text-left uppercase tracking-widest transition-colors ${col.cls} text-[var(--admin-text-faint)]`}
-      style={{ fontWeight: 500 }}
-    >
-                          {col.label}
-                        </th>)}
-                    </tr>
-                  </thead>
-                  <tbody className={`divide-y divide-[var(--admin-border)]`}>
-                    {currentblogs.map((blog) => <tr key={blog._id} className={`transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                        <td className="tbl-td">
-                          <div className="flex items-center gap-2 sm:gap-4">
-                            <div className="list-blog-img overflow-hidden flex-shrink-0">
-                              <img src={blog.picture || "/placeholder-blog.jpg"} alt={blog.title} className="w-full h-full object-cover" />
-                            </div>
-                            <div>
-                              <p className={`line-clamp-1 transition-colors text-[var(--admin-text)]`} style={{ fontSize: 12, fontWeight: 500, maxWidth: 160 }}>
-                                {blog.title}
-                              </p>
-                              <p className={`mt-0.5 line-clamp-1 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400, maxWidth: 160 }}>
-                                {blog.shortDescription}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="tbl-td tbl-col-category">
-                          <div className="flex flex-col gap-1">
-                            <span className="px-2.5 py-1 bg-[var(--admin-accent)] text-white rounded-full w-fit" style={{ fontSize: 9, fontWeight: 500 }}>{blog.mainCategory}</span>
-                            {blog.subcategory && <span className="px-2.5 py-1 bg-[var(--admin-accent)]/60 text-white rounded-full w-fit" style={{ fontSize: 9, fontWeight: 500 }}>{blog.subcategory}</span>}
-                          </div>
-                        </td>
-                        <td className="tbl-td">
-                          <span className={`px-3 py-1.5 rounded-full ${getstatusstyles(blog.status)}`} style={{ fontSize: 9, fontWeight: 500, whiteSpace: "nowrap" }}>
-                            {blog.status}
-                          </span>
-                        </td>
-                        <td className="tbl-td tbl-col-date">
-                          <p className={`transition-colors text-[var(--admin-text)] whitespace-nowrap`} style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
-                            {formatdate(blog.createdAt)}
-                          </p>
-                        </td>
-                        <td className="tbl-td tbl-col-read">
-                          <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                            {calculatereadingtime(blog.mainContent)} min
-                          </p>
-                        </td>
-                        <td className="tbl-td text-right">
-                          <div className="flex items-center justify-end gap-1.5 sm:gap-2">
-                            <button onClick={() => handleview(blog)} className={`action-btn-sm transition-all hover:shadow-lg bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontWeight: 500 }}>
-                              View
-                            </button>
-                            <button onClick={() => handleedit(blog)} className="action-btn-sm bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all hover:shadow-lg" style={{ fontWeight: 500 }}>
-                              Edit
-                            </button>
-                            <button
-      onClick={() => confirmarchive(blog._id)}
-      className={`action-btn-sm transition-all flex items-center gap-1 hover:shadow-lg ${isdarkmode ? "bg-yellow-900/30 text-yellow-400 hover:bg-yellow-900/50" : "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"}`}
-      style={{ fontWeight: 500 }}
-    >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                              </svg>
-                              <span className="hidden sm:inline">Archive</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>)}
-                  </tbody>
-                </table>
-              </div>
-
-              {totalPages > 1 && <div className={`px-4 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
-                  <p className={`transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 10, fontWeight: 400 }}>
-                    Showing <strong>{indexOfFirstCard + 1}</strong>–<strong>{Math.min(indexOfLastCard, filteredblogs.length)}</strong> of <strong>{filteredblogs.length}</strong>
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
-                      Prev
-                    </button>
-                    <span className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 10, fontWeight: 500 }}>
-                      {currentpage} / {totalPages}
-                    </span>
-                    <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === totalPages ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text)] hover:bg-[var(--admin-bg-hover)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
-                      Next
-                    </button>
-                  </div>
-                </div>}
+            <div style={{ flex: 1 }} />
+            <div className="bl-search" style={{ position: "relative" }}>
+              <svg style={{ position: "absolute", left: 9, top: "50%", transform: "translateY(-50%)", color: textMuted, pointerEvents: "none" }} width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input type="text" placeholder="Search by title or author..." value={search} onChange={(e) => setsearch(e.target.value)} style={inp({ width: 210, paddingLeft: 30 })} />
             </div>
-  )}
-
-          {
-    /* Grid pagination */
-  }
-          {viewmode === "grid" && totalPages > 1 && <div className="flex justify-center items-center gap-2 mt-6 sm:mt-8 flex-wrap">
-              <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === 1 ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
-                Previous
-              </button>
-              {[...Array(totalPages)].map((_, index) => <button key={index + 1} onClick={() => handlePageChange(index + 1)} className={`px-3 py-2 rounded-[0.875rem] transition-all ${currentpage === index + 1 ? "bg-[var(--admin-accent)] text-white shadow-md" : "bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]"}`} style={{ fontSize: 10, fontWeight: currentpage === index + 1 ? 500 : 400 }}>
-                  {index + 1}
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 10, color: textMuted, fontWeight: 400, whiteSpace: "nowrap" }}>Sort by</span>
+              <select value={sortby} onChange={(e) => setsortby(e.target.value)} style={inp({ width: "auto", padding: "7px 10px" })}>
+                <option value="date-newest">Newest first</option>
+                <option value="date-oldest">Oldest first</option>
+                <option value="alpha-asc">Name A → Z</option>
+                <option value="alpha-desc">Name Z → A</option>
+              </select>
+            </div>
+            <div style={{ width: 1, height: 20, background: borderColor }} />
+            <div style={{ display: "flex", border: `1px solid ${borderColor}`, borderRadius: 8, overflow: "hidden" }}>
+              {[
+                { mode: "grid", d: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" },
+                { mode: "list", d: "M4 6h16M4 12h16M4 18h16" }
+              ].map(({ mode, d }) => <button key={mode} onClick={() => setviewmode(mode)} style={{ padding: "6px 9px", border: "none", borderRight: mode === "grid" ? `1px solid ${borderColor}` : "none", background: viewmode === mode ? "var(--admin-accent)" : "transparent", color: viewmode === mode ? "#fff" : textMuted, cursor: "pointer", display: "flex", alignItems: "center", transition: "all .15s" }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={d} /></svg>
                 </button>)}
-              <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} className={`px-4 py-2 rounded-[0.875rem] transition-all ${currentpage === totalPages ? "opacity-40 cursor-not-allowed" : "bg-[var(--admin-surface)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)] border border-[var(--admin-border)]"}`} style={{ fontSize: 10, fontWeight: 500 }}>
-                Next
-              </button>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", padding: "0 18px", borderBottom: `1px solid ${borderColor}`, background: subtleBg, overflowX: "auto" }}>
+            {statusTabs.map((tab) => {
+              const isActive = activetab === tab.value;
+              const count = tab.value === "All" ? blogs.length : blogs.filter((b) => b.status?.toLowerCase() === tab.value.toLowerCase()).length;
+              return <button key={tab.value} onClick={() => setactivetab(tab.value)} style={{ padding: "9px 12px", border: "none", borderBottom: isActive ? "2px solid var(--admin-accent)" : "2px solid transparent", background: "transparent", color: isActive ? "var(--admin-accent)" : textMuted, fontSize: 11, fontWeight: isActive ? 600 : 400, cursor: "pointer", transition: "all .15s", whiteSpace: "nowrap" }}>
+                {tab.label}
+                <span style={{ marginLeft: 5, fontSize: 9, padding: "1px 5px", borderRadius: 10, background: isActive ? "color-mix(in srgb, var(--admin-accent) 10%, transparent)" : isdarkmode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)", color: isActive ? "var(--admin-accent)" : textMuted, fontWeight: 500 }}>{count}</span>
+              </button>;
+            })}
+            <div style={{ flex: 1 }} />
+            <span style={{ alignSelf: "center", fontSize: 10, color: textMuted, whiteSpace: "nowrap" }}>
+              Showing <strong style={{ color: textSecondary }}>{filteredblogs.length}</strong> of <strong style={{ color: textSecondary }}>{blogs.length}</strong>
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderBottom: `1px solid ${borderColor}`, flexWrap: "wrap", background: "var(--admin-surface)" }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: textMuted, marginRight: 2, whiteSpace: "nowrap" }}>Category:</span>
+            {["All", ...mainCategories].map((c) => <button key={c} className="pill-btn" onClick={() => setselectedmaincategory(c)} style={pill(selectedmaincategory === c)}>{c}</button>)}
+          </div>
+          {selectedmaincategory !== "All" && <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderBottom: `1px solid ${borderColor}`, flexWrap: "wrap", background: "var(--admin-surface)" }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: textMuted, marginRight: 2, whiteSpace: "nowrap" }}>Subcategory:</span>
+            {["All", ...getAvailableSubcategories()].map((c) => <button key={c} className="pill-btn" onClick={() => setselectedsubcategory(c)} style={pill(selectedsubcategory === c)}>{c}</button>)}
+          </div>}
+
+          <DashboardLoader isVisible={initialLoading} message="Loading blogs…" />
+
+          {!initialLoading && currentblogs.length === 0 && <div style={{ padding: "48px 20px", textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: textMuted, fontWeight: 500, margin: "0 0 4px" }}>No blogs found</p>
+            <p style={{ fontSize: 11, color: textMuted, fontWeight: 400, margin: 0 }}>{search ? "Try adjusting your search." : "Try adjusting your filters or create a new blog post."}</p>
+          </div>}
+
+          {!initialLoading && currentblogs.length > 0 && viewmode === "grid" && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14, padding: 16 }}>
+            {currentblogs.map((blog) => {
+              const st = statusStyle(blog.status);
+              return <div key={blog._id} className="bl-card" style={{ border: `1px solid ${borderColor}`, borderRadius: 14, overflow: "hidden", background: "var(--admin-surface)", display: "flex", flexDirection: "column" }}>
+                <div style={{ height: 140, position: "relative", overflow: "hidden", flexShrink: 0, background: "#e5e7eb" }}>
+                  <img src={blog.picture || "/placeholder-blog.jpg"} alt={blog.title} className="bl-card-img" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={hideBrokenImg} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.38) 100%)" }} />
+                  <div style={{ position: "absolute", bottom: 8, left: 8 }}>
+                    <span style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "3px 8px", borderRadius: 5, background: "color-mix(in srgb, var(--admin-accent) 88%, transparent)", color: "#fff" }}>Blog</span>
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{blog.title}</p>
+                  {blog.shortDescription && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 400 }}>{blog.shortDescription}</p>}
+                  <p style={{ fontSize: 10, color: textMuted, margin: 0, fontWeight: 400 }}>By <span style={{ color: textSecondary, fontWeight: 500 }}>{blog.author || "TelexPH Admin"}</span> · {formatdate(blog.createdAt)}</p>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {[blog.mainCategory, blog.subcategory].filter(Boolean).map((t) => <span key={t} style={tagStyle}>{t}</span>)}
+                  </div>
+                  <div style={{ flex: 1 }} />
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 9, borderTop: `1px solid ${borderColor}`, marginTop: 4 }}>
+                    <span style={{ fontSize: 9, fontWeight: 500, padding: "3px 9px", borderRadius: 20, background: st.bg, color: st.color, border: st.border, textTransform: "capitalize" }}>{blog.status}</span>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      <button onClick={() => handleview(blog)} style={ghostBtn}>View</button>
+                      <button onClick={() => handleedit(blog)} style={ghostBtn}>Edit</button>
+                      <button onClick={() => confirmarchive(blog._id)} title="Archive" style={dangerBtn}>{archiveIcon}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>;
+            })}
+          </div>}
+
+          {!initialLoading && currentblogs.length > 0 && viewmode === "list" && <div>
+            <div className="bl-list-header" style={{ display: "grid", gridTemplateColumns: "48px 2fr 1fr 2fr 110px 130px", gap: 14, padding: "9px 18px", background: subtleBg, fontSize: 9, fontWeight: 600, color: textMuted, textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: `1px solid ${borderColor}` }}>
+              <span>Cover</span><span>Title</span><span>Author</span><span>Category</span><span>Status</span><span style={{ textAlign: "right" }}>Actions</span>
+            </div>
+            {currentblogs.map((blog, i) => {
+              const st = statusStyle(blog.status);
+              return <div key={blog._id} className="bl-row bl-list-row" style={{ display: "grid", gridTemplateColumns: "48px 2fr 1fr 2fr 110px 130px", gap: 14, alignItems: "center", padding: "10px 18px", borderBottom: i < currentblogs.length - 1 ? `1px solid ${borderColor}` : "none", transition: "background .15s" }}>
+                <div style={{ width: 40, height: 40, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: "#e5e7eb" }}>
+                  <img src={blog.picture || "/placeholder-blog.jpg"} alt={blog.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={hideBrokenImg} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{blog.title}</p>
+                  {blog.shortDescription && <p style={{ fontSize: 10, color: textMuted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 400 }}>{blog.shortDescription}</p>}
+                </div>
+                <p className="bl-list-author" style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{blog.author || "TelexPH Admin"}</p>
+                <div className="bl-list-tags" style={{ display: "flex", gap: 4, flexWrap: "wrap", minWidth: 0 }}>
+                  {[blog.mainCategory, blog.subcategory].filter(Boolean).map((t) => <span key={t} style={tagStyle}>{t}</span>)}
+                </div>
+                <span style={{ fontSize: 9, fontWeight: 500, padding: "3px 9px", borderRadius: 20, background: st.bg, color: st.color, border: st.border, display: "inline-block", whiteSpace: "nowrap", textTransform: "capitalize", justifySelf: "start" }}>{blog.status}</span>
+                <div style={{ display: "flex", gap: 4, justifyContent: "flex-end" }}>
+                  <button onClick={() => handleview(blog)} style={ghostBtn}>View</button>
+                  <button onClick={() => handleedit(blog)} style={{ ...ghostBtn, border: "none", background: "var(--admin-accent)", color: "#fff" }}>Edit</button>
+                  <button onClick={() => confirmarchive(blog._id)} title="Archive" style={dangerBtn}>{archiveIcon}</button>
+                </div>
+              </div>;
+            })}
+          </div>}
+
+          {!initialLoading && filteredblogs.length > 0 && <div style={{ padding: "9px 18px", background: subtleBg, borderTop: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", fontSize: 10, color: textMuted, fontWeight: 400 }}>
+            <span>
+              Showing <strong style={{ color: textSecondary }}>{indexOfFirstCard + 1}</strong>–<strong style={{ color: textSecondary }}>{Math.min(indexOfLastCard, filteredblogs.length)}</strong> of <strong style={{ color: textSecondary }}>{filteredblogs.length}</strong>
+              {activetab !== "All" ? ` · filtered by "${activetab}"` : ""}
+              {search ? ` · matching "${search}"` : ""}
+            </span>
+            {totalPages > 1 && <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button onClick={() => handlePageChange(currentpage - 1)} disabled={currentpage === 1} style={{ ...ghostBtn, opacity: currentpage === 1 ? 0.4 : 1, cursor: currentpage === 1 ? "not-allowed" : "pointer" }}>Prev</button>
+              <span style={{ color: textSecondary, fontWeight: 500 }}>{currentpage} / {totalPages}</span>
+              <button onClick={() => handlePageChange(currentpage + 1)} disabled={currentpage === totalPages} style={{ ...ghostBtn, opacity: currentpage === totalPages ? 0.4 : 1, cursor: currentpage === totalPages ? "not-allowed" : "pointer" }}>Next</button>
             </div>}
+          </div>}
         </div>
       </div>
 
@@ -770,9 +535,9 @@ function ListBlogs() {
       {
     /* â”€â”€ Blog View Modal â”€â”€ */
   }
-      {viewingblog && <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-8 overflow-y-auto">
-          <div className={`rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-3xl shadow-2xl my-4 sm:my-8 transition-all duration-500 bg-[var(--admin-surface)]`}>
-            <div className={`sticky top-0 px-5 sm:px-10 py-4 sm:py-5 rounded-t-[1.5rem] sm:rounded-t-[2.5rem] flex items-center justify-between z-10 border-b transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
+      {viewingblog && <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-8">
+          <div className={`rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-3xl max-h-full flex flex-col overflow-hidden shadow-2xl bg-[var(--admin-surface)]`}>
+            <div className={`shrink-0 px-5 sm:px-10 py-4 sm:py-5 flex items-center justify-between border-b transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`px-2.5 py-1 rounded-full ${getstatusstyles(viewingblog.status)}`} style={{ fontSize: 9, fontWeight: 500 }}>{viewingblog.status}</span>
                 <span className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 400 }}>{viewingblog.mainCategory}</span>
@@ -785,7 +550,7 @@ function ListBlogs() {
               </button>
             </div>
 
-            <div className="px-5 sm:px-10 py-5 sm:py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <div className="px-5 sm:px-10 py-5 sm:py-6 flex-1 min-h-0 overflow-y-auto">
               {viewingblog.picture && <div className="mb-4 sm:mb-5 rounded-[1rem] sm:rounded-[1.5rem] overflow-hidden">
                   <img src={viewingblog.picture} alt={viewingblog.title} className="w-full h-40 sm:h-52 object-cover" />
                 </div>}
@@ -815,7 +580,7 @@ function ListBlogs() {
               </div>
             </div>
 
-            <div className={`sticky bottom-0 px-5 sm:px-10 py-4 sm:py-5 rounded-b-[1.5rem] sm:rounded-b-[2.5rem] border-t flex justify-end gap-3 transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+            <div className={`shrink-0 px-5 sm:px-10 py-4 sm:py-5 border-t flex justify-end gap-3 transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
               <button onClick={closeviewmodal} className={`px-5 sm:px-8 py-2.5 sm:py-3 rounded-[1.25rem] border-2 transition-all bg-transparent border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontSize: 11, fontWeight: 500 }}>
                 Close
               </button>
@@ -828,6 +593,8 @@ function ListBlogs() {
             </div>
           </div>
         </div>}
+      <CalendarModal isOpen={showcalendar} records={events} selectedMonthIndex={calmonth} onClose={() => setshowcalendar(false)} onMonthChange={setcalmonth} onDateClick={(ds) => setselecteddate(ds)} cardBg="var(--admin-surface)" borderColor={borderColor} textPrimary={textPrimary} textMuted={textMuted} subtleBg={subtleBg} />
+      <DateModal isOpen={!!selecteddate} dateStr={selecteddate} studies={dateEvents} onClose={() => setselecteddate("")} onSelectPost={(e) => handleview(e.blog)} cardBg="var(--admin-surface)" borderColor={borderColor} textPrimary={textPrimary} textMuted={textMuted} subtleBg={subtleBg} />
     </>;
 }
 export {

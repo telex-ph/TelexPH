@@ -21,9 +21,8 @@ const SUBCATEGORIES = {
   "Company Culture & Updates": ["TelexPH Life", "News & Press Releases"]
 };
 const HEADLINE_MIN = 5;
-const HEADLINE_MAX = 40;
+const HEADLINE_MAX = 125;
 const SHORT_DESC_MIN = 5;
-const SHORT_DESC_MAX = 55;
 const MAIN_CONTENT_MIN = 25;
 const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 function EditBlogs({ blog, onClose, onSave }) {
@@ -77,7 +76,7 @@ function EditBlogs({ blog, onClose, onSave }) {
   const isFormValid = () => {
     const t = title.trim(), a = authorName.trim(), d = shortDescription.trim();
     const mt = mainContentTitle.trim(), mb = htmlToText(mainContentText);
-    return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && d.length <= SHORT_DESC_MAX && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
+    return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
       const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
@@ -469,8 +468,8 @@ function EditBlogs({ blog, onClose, onSave }) {
                       </p>
                     </div>
                     <div className="flex-1">
-                      <input value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} maxLength={SHORT_DESC_MAX} placeholder="Brief summary for listing card..." className={inputBase} />
-                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
+                      <input value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} placeholder="Brief summary for listing card..." className={inputBase} />
+                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} />
                     </div>
                   </div>
 
