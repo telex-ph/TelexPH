@@ -1,7 +1,9 @@
 
 import { Link } from "react-router-dom";
-import { HiOutlineArrowRight, HiOutlineArrowUpRight } from "react-icons/hi2";
+import { HiOutlineArrowRight } from "react-icons/hi2";
+import FeaturedHighlight from "@/components/FeaturedHighlight";
 import { FONTS, FONT_WEIGHTS } from "@/constant/styles";
+import useRotatingIndex from "@/lib/useRotatingIndex";
 
 // Real <a href> so crawlers can follow from the list to each post.
 const postUrl = (post) => `/resources/blogs/${post.slug}`;
@@ -53,9 +55,13 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
       year: "numeric"
     });
   };
-  const featuredPost = blogs.length > 0 ? blogs[0] : null;
-  const latestUpdates = blogs.slice(1, 6);
-  const gridBlogs = blogs.slice(6, 12);
+  // The highlight rotates through the top 6 posts; the rest of them fill "Latest Updates".
+  const top = blogs.slice(0, 6);
+  const { index: highlightIdx, setIndex: setHighlight, pause } = useRotatingIndex(top.length);
+  const latestUpdates = top.filter((_, k) => k !== highlightIdx);
+  const highlightItems = top.map((p) => ({ id: p._id, image: p.picture, title: p.title, date: formatDate(p.createdAt), href: postUrl(p) }));
+  // List view shows every post; grid view shows the posts after the highlighted six.
+  const listCards = viewMode === "list" || searchQuery ? blogs : blogs.slice(6, 12);
   if (!blogs || blogs.length === 0) {
     return <div className="text-center py-20">
         <p className="text-gray-500">No blog posts available.</p>
@@ -90,37 +96,8 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
       {
     /* Featured & Latest Updates Section */
   }
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-24">
-        
-        {
-    /* LEFT: Featured Post (Dynamic) */
-  }
-        <div className="lg:col-span-8 relative group mb-20 lg:mb-0">
-          {featuredPost && <>
-              <div className="relative h-[220px] sm:h-[300px] md:h-[380px] lg:h-[450px] w-full overflow-hidden rounded-lg shadow-[0_35px_70px_-15px_rgba(0,0,0,0.3)]">
-                <img
-    src={featuredPost.picture}
-    className="w-full h-full object-cover object-top"
-    alt={featuredPost.title}
-  />
-              </div>
-              <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:bottom-6 sm:left-6 md:bottom-8 md:left-8 bg-white px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5 rounded-lg shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] sm:w-[85%] max-w-[600px] border border-gray-50 flex items-center justify-between gap-3 sm:gap-6">
-                <div className="flex-grow min-w-0">
-                  <span className="text-[#800000] font-normal text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mb-1 sm:mb-2 block">featured blog</span>
-                  <h1 className="text-sm sm:text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2"><Link to={postUrl(featuredPost)}>{featuredPost.title}</Link></h1>
-                </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <p className="text-[11px] text-gray-400 font-normal whitespace-nowrap hidden sm:block">{formatDate(featuredPost.createdAt)}</p>
-                  <div
-    onClick={() => onArticleClick(featuredPost)}
-    className="w-8 h-8 sm:w-10 sm:h-10 bg-[#800000] rounded-full flex items-center justify-center text-white cursor-pointer hover:rotate-45 transition-all shadow-lg flex-shrink-0"
-  >
-                      <HiOutlineArrowUpRight className="text-sm sm:text-base" />
-                  </div>
-                </div>
-              </div>
-            </>}
-        </div>
+      {viewMode !== "list" && <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-24">
+        <FeaturedHighlight items={highlightItems} index={highlightIdx} onSelect={setHighlight} onHover={pause} label="featured blog" imagePosition="50% 42%" />
 
         {
     /* RIGHT: Latest Updates (Dynamic) */
@@ -146,20 +123,20 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
               </Link>)}
           </div>
         </div>
-      </div>
+      </div>}
 
       {
     /* Grid Section Label + Title — only when there's actually more to show */
   }
-      {(searchQuery ? blogs : gridBlogs).length > 0 && <div className="mb-6">
+      {listCards.length > 0 && <div className="mb-6">
           <span
     className="uppercase tracking-[0.2em] mb-1 block"
     style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "12px", color: "#800000" }}
   >
-            keep exploring
+            {viewMode === "list" ? "browse all" : "keep exploring"}
           </span>
           <h3 className="text-xl font-bold text-gray-900 tracking-tight border-b border-gray-100 pb-2">
-            More from the Journal
+            {viewMode === "list" ? "All Blogs" : "More from the Journal"}
           </h3>
         </div>}
 
@@ -169,14 +146,14 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
       {viewMode === "list" ? (
     /* LIST VIEW */
     <div className="flex flex-col gap-6">
-          {(searchQuery ? blogs : gridBlogs).map((blog) => <div
+          {listCards.map((blog) => <div
       key={blog._id}
       className="group bg-white rounded-xl overflow-hidden shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-gray-100 flex flex-col md:flex-row transition-all duration-500 hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] hover:translate-y-[-3px]"
     >
-              <div className="relative md:w-[320px] aspect-[2.6/1] md:aspect-auto md:h-auto overflow-hidden bg-gray-50 flex-shrink-0">
+              <div className="relative md:w-[320px] aspect-[2.6/1] md:aspect-auto md:h-auto md:min-h-[220px] overflow-hidden bg-gray-50 flex-shrink-0">
                 <img
       src={blog.picture}
-      className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110"
+      className="w-full h-full md:absolute md:inset-0 object-cover transition-transform duration-[1.2s] group-hover:scale-110"
       alt="Blog"
     />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
@@ -223,7 +200,7 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
   ) : (
     /* GRID VIEW */
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {(searchQuery ? blogs : gridBlogs).map((blog) => <div
+          {listCards.map((blog) => <div
       key={blog._id}
       className="group bg-white rounded-xl overflow-hidden shadow-[0_35px_70px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col transition-all duration-500 hover:translate-y-[-5px] w-full"
     >

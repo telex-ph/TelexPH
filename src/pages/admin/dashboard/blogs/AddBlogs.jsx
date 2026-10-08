@@ -21,9 +21,8 @@ const SUBCATEGORIES = {
   "Company Culture & Updates": ["TelexPH Life", "News & Press Releases"]
 };
 const HEADLINE_MIN = 5;
-const HEADLINE_MAX = 40;
+const HEADLINE_MAX = 125;
 const SHORT_DESC_MIN = 5;
-const SHORT_DESC_MAX = 55;
 const MAIN_CONTENT_MIN = 25;
 const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const SparkleIcon = ({ className = "w-4 h-4" }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,6 +57,62 @@ const PaperclipIcon = ({ className = "w-3.5 h-3.5" }) => <svg className={classNa
   d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
 />
   </svg>;
+async function generateWithGemini(mode, prompt, modelId) {
+  const response = await fetch(`${API_BASE}/ai/generate-blog`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mode, prompt, modelId })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || "Gemini API error");
+  }
+  return response.json();
+}
+async function generatePollinationsImage(prompt, modelId) {
+  const response = await fetch(`${API_BASE}/ai/generate-image`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, modelId })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || "Image generation failed");
+  }
+  const { dataUrl: sourceDataUrl } = await response.json();
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxW = 800;
+      let w = img.width, h = img.height;
+      if (w > maxW) {
+        h = maxW / w * h;
+        w = maxW;
+      }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return reject(new Error("Canvas error"));
+      }
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+      canvas.toBlob((b) => {
+        if (!b) return reject(new Error("Blob error"));
+        resolve({ dataUrl, file: new File([b], "ai-generated.jpg", { type: "image/jpeg" }) });
+      }, "image/jpeg", 0.7);
+    };
+    img.onerror = () => {
+      reject(new Error("Image load error"));
+    };
+    img.src = sourceDataUrl;
+  });
+}
 const MODAL_CONFIGS = {
   image: { title: "Generate AI Image", hint: "Enter a topic or description to generate a professional cover image.", placeholder: "e.g., Customer support team in a modern office...", withImageAttach: false, steps: ["Analyzing prompt", "Creating cover image"] },
   title: { title: "Generate Title", hint: "Enter a topic (or attach an image) to generate a catchy title.", placeholder: "e.g., Best outsourcing practices for e-commerce...", withImageAttach: true, steps: ["Analyzing topic", "Writing title"] },
@@ -216,7 +271,7 @@ function AddBlogs() {
   const isFormValid = () => {
     const t = title.trim(), a = authorName.trim(), d = shortDescription.trim();
     const mt = mainContentTitle.trim(), mb = htmlToText(mainContentText);
-    return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && d.length <= SHORT_DESC_MAX && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
+    return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
       const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
@@ -327,7 +382,7 @@ function AddBlogs() {
           })()
         ]);
         if (parsed.title) setTitle(parsed.title.slice(0, HEADLINE_MAX));
-        if (parsed.shortDescription) setShortDescription(parsed.shortDescription.slice(0, SHORT_DESC_MAX));
+        if (parsed.shortDescription) setShortDescription(parsed.shortDescription);
         if (parsed.mainContentTitle) setMainContentTitle(parsed.mainContentTitle.slice(0, HEADLINE_MAX));
         if (parsed.mainContentText) setMainContentText(parsed.mainContentText);
         if (Array.isArray(parsed.additionalSections) && parsed.additionalSections.length > 0) {
@@ -550,8 +605,8 @@ function AddBlogs() {
                   </div>
                   <div>
                     <span style={lbl}>Description <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
-                    <input className="ab-input" style={inp()} value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} maxLength={SHORT_DESC_MAX} placeholder="Brief summary for listing card..." />
-                    <CharCount value={shortDescription} min={SHORT_DESC_MIN} max={SHORT_DESC_MAX} />
+                    <input className="ab-input" style={inp()} value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} placeholder="Brief summary for listing card..." />
+                    <CharCount value={shortDescription} min={SHORT_DESC_MIN} />
                   </div>
                   <div>
                     <span style={lbl}>Status <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>

@@ -38,7 +38,7 @@ const transformBackendRecord = (item) => ({
   })) : [{ topic: "", content: "" }]
 });
 const STATUS_OPTIONS = ["Active", "Draft", "Completed", "Scheduled"];
-const CATEGORY_OPTIONS = ["Technology", "Healthcare", "Finance", "Marketing", "Operations", "Research", "Design", "Analytics"];
+const CATEGORY_OPTIONS = ["Technology", "Logistics", "Analytics", "Infrastructure"]; // = backend tags enum + public tabs
 const STATUS_ICON_PATHS = {
   Active: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
   Draft: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
@@ -47,13 +47,9 @@ const STATUS_ICON_PATHS = {
 };
 const CATEGORY_ICON_PATHS = {
   Technology: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
-  Healthcare: "M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z",
-  Finance: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 10v2m9-8a9 9 0 11-18 0 9 9 0 0118 0z",
-  Marketing: "M3 11l18-5v12L3 14v-3zm0 0v7a2 2 0 002 2h1M8 11v9",
-  Operations: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z",
-  Research: "M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z",
-  Design: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h11a2 2 0 012 2v4M7 21h11a2 2 0 002-2v-4M7 21c1.5-4.5 4-4 4-4m9-9L11 17l-4 1 1-4L17 3z",
-  Analytics: "M9 19V6l7 7-7 7zM3 3v18h18"
+  Logistics: "M9 17a2 2 0 11-4 0 2 2 0 014 0zm10 0a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m10 0H9m4 0h2m4 0h1a1 1 0 001-1v-4l-3-4h-4v9z",
+  Analytics: "M9 19V6l7 7-7 7zM3 3v18h18",
+  Infrastructure: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
 };
 const LIB_CATEGORIES = ["All", "Technology", "Logistics", "Analytics", "Infrastructure"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -274,7 +270,7 @@ const PreviewModal = ({ isOpen, data, allRecords, onClose, onEdit, closeLabel, c
   const st = getStatusStyle(data.status);
   const coverSrc = getCardCover(data, allRecords);
   return <Backdrop>
-      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 560, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.28)", overflow: "hidden", maxHeight: "90vh", overflowY: "auto", fontFamily: "'Poppins', sans-serif" }}>
+      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, maxWidth: 560, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.28)", overflow: "hidden", maxHeight: "100%", overflowY: "auto", fontFamily: "'Poppins', sans-serif" }}>
         <div style={{ height: 200, background: `url(${coverSrc}) center/cover`, position: "relative" }}>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.55))" }} />
           <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 34, height: 34, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.35)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1 }}>
@@ -733,7 +729,8 @@ function CaseStudies({ mode = "list" }) {
         if (a.imageFile) formDataToSend.append("authorImages", a.imageFile);
       });
       formDataToSend.append("status", form.status.toLowerCase());
-      if (form.tags.length > 0) formDataToSend.append("tags", form.tags.map((t) => t.toLowerCase()).join(","));
+      const validTags = form.tags.filter((t) => CATEGORY_OPTIONS.includes(t));
+      if (validTags.length > 0) formDataToSend.append("tags", validTags.map((t) => t.toLowerCase()).join(","));
       if (form.startDate) formDataToSend.append("startDate", form.startDate);
       if (form.endDate) formDataToSend.append("endDate", form.endDate);
       if (form.status === "Scheduled") {
@@ -958,6 +955,7 @@ function CaseStudies({ mode = "list" }) {
   })()}
 
       <DashboardLoader isVisible={isFetchingFull} message="Loading case study…" />
+      <ConfirmModal isOpen={showConfirm} isEdit={isEditMode} isLoading={isLoading} onClose={() => setShowConfirm(false)} onConfirm={handleSubmit} {...modalTheme} />
       <DeleteModal isOpen={showDelete} isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
       <AiImageModal
         isOpen={showAiImageModal}
@@ -1031,12 +1029,12 @@ function CaseStudies({ mode = "list" }) {
                 <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Timeline & events</p>
                 <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Scheduled activities and research milestones</p>
               </div>
-              <button onClick={() => setShowCalendarPage(true)} className="icon-btn" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: subtleBg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: textMuted, flexShrink: 0 }}>
+              <button onClick={() => setShowCalendar(true)} className="icon-btn" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${borderColor}`, background: subtleBg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: textMuted, flexShrink: 0 }}>
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
               </button>
             </div>
             <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-              <MiniCalendar records={records} subtleBg={subtleBg} borderColor={borderColor} textSecondary={textSecondary} textMuted={textMuted} onDayClick={handleDayClick} onOpenCalendar={() => setShowCalendarPage(true)} />
+              <MiniCalendar records={records} subtleBg={subtleBg} borderColor={borderColor} textSecondary={textSecondary} textMuted={textMuted} onDayClick={handleDayClick} onOpenCalendar={() => setShowCalendar(true)} />
             </div>
           </div>
         </div>}
@@ -1086,7 +1084,7 @@ function CaseStudies({ mode = "list" }) {
                 <div className="cs-form-title-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                   <div>
                     <span style={lbl}>Title <span style={{ color: "var(--admin-accent)" }}>*</span></span>
-                    <input style={inp()} placeholder="Enter case study title..." value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
+                    <input style={inp()} placeholder="Enter case study title..." maxLength={125} value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
                   </div>
                   <div>
                     <span style={lbl}>Subtitle</span>
@@ -1237,7 +1235,7 @@ function CaseStudies({ mode = "list" }) {
               {form.sections.map((s, i) => <div key={i} className="cs-section-row" style={{ display: "grid", gridTemplateColumns: "200px 1fr auto", gap: 12, padding: "14px 16px", borderRadius: 14, background: subtleBg, border: `1px solid ${borderColor}`, alignItems: "start" }}>
                   <div>
                     <span style={{ ...lbl, marginBottom: 6 }}>Topic {i + 1}</span>
-                    <input style={inp()} placeholder="Topic title..." value={s.topic} onChange={(e) => updateSection(i, "topic", e.target.value)} />
+                    <input style={inp()} placeholder="Topic title..." maxLength={125} value={s.topic} onChange={(e) => updateSection(i, "topic", e.target.value)} />
                   </div>
                   <div>
                     <span style={{ ...lbl, marginBottom: 6 }}>Content</span>

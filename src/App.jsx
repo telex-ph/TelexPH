@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/shared/ScrollToTop";
 import ProtectedRoute from "@/shared/ProtectedRoute";
 import RouteFallback from "@/shared/RouteFallback";
-import DashboardLoader from "@/components/DashboardLoader";
+import DashboardLoader, { DashboardLoaderHost } from "@/components/DashboardLoader";
 import { registerPrefetch } from "@/shared/prefetch";
 import SitePageViewTracker from "@/components/SitePageViewTracker/SitePageViewTracker";
 import BugReportWidget from "@/shared/BugReportWidget";
@@ -151,6 +151,7 @@ const App = () => {
       <RouteSeo />
       <SitePageViewTracker />
       <BugReportWidget />
+      <DashboardLoaderHost />
 
       <Suspense fallback={<RouteFallback />}>
       <Routes>
