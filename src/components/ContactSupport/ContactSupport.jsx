@@ -5,7 +5,7 @@ import { FONT_CLASSES } from "@/constant/styles";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
 const CONTACT_ITEMS = [
   { Icon: Phone, label: "Call Us Directly?", value: "0443252836", href: "tel:+63443252836" },
-  { Icon: Mail, label: "For Support?", value: "careers@telexph.com", href: "mailto:careers@telexph.com" },
+  { Icon: Mail, label: "For Support?", value: "business@telexph.com", href: "mailto:business@telexph.com" },
   { Icon: MapPin, label: "Our Location", value: "Guimba, Nueva Ecija, Philippines", wide: true }
 ];
 const ContactSupport = () => {

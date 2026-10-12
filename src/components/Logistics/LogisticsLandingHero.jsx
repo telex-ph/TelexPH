@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { COLORS } from "@/constant/styles";
-import { DISCOVERY_CALL_URL } from "@/constant/links";
+import { LOGISTICS_CTA_URL } from "@/constant/links";
 
 /* Telex palette only: brand red, charcoal and white. */
 const RED = COLORS.primary; // #a10000
@@ -268,7 +268,7 @@ const LogisticsLandingHero = () => {
           </motion.p>
           <motion.div className="mt-9" {...fade(1.4)}>
             <motion.a
-              href={DISCOVERY_CALL_URL}
+              href={LOGISTICS_CTA_URL}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ y: -3, boxShadow: "0 12px 30px rgba(161,0,0,.55)" }}

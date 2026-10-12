@@ -3,6 +3,7 @@ import LogisticsNav from "@/components/Logistics/LogisticsNav";
 import LogisticsLandingHero from "@/components/Logistics/LogisticsLandingHero";
 import LogisticsScope from "@/components/Logistics/LogisticsScope";
 import LogisticsManagement from "@/components/Logistics/LogisticsManagement";
+import LogisticsTestimonials from "@/components/Logistics/LogisticsTestimonialVariants";
 import LogisticsFaqs from "@/components/Logistics/LogisticsFaqs";
 import LogisticsCta from "@/components/Logistics/LogisticsCta";
 import LogisticsFooter from "@/components/Logistics/LogisticsFooter";
@@ -19,6 +20,7 @@ function LogisticsLandingPage() {
         <LogisticsLandingHero />
         <LogisticsScope />
         <LogisticsManagement />
+        <LogisticsTestimonials />
         <LogisticsFaqs />
         <LogisticsCta />
       </main>

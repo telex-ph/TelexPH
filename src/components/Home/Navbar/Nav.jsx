@@ -24,8 +24,6 @@ const Nav = ({ openNav }) => {
   const [navBg, setNavBg] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [activeServicesTab, setActiveServicesTab] = useState("offer");
-  // While the pointer is on the Logistics link, no category should look selected.
-  const [logisticsHover, setLogisticsHover] = useState(false);
   const [activeAboutTab, setActiveAboutTab] = useState("company");
   const [activeResourcesTab, setActiveResourcesTab] = useState("learning");
   const [activeCareersTab, setActiveCareersTab] = useState("va-overview");
@@ -77,6 +75,19 @@ const Nav = ({ openNav }) => {
       id: "specialized",
       label: "Specialized Services",
       items: SERVICE_PAGES.map((p) => ({ label: p.h1, url: p.path }))
+    },
+    {
+      id: "logistics",
+      label: "Logistics",
+      url: "/logistics",
+      items: [
+        { label: "Logistics Overview", url: "/logistics" },
+        { label: "Support Scope", url: "/logistics#support" },
+        { label: "Management", url: "/logistics#management" },
+        { label: "Testimonials", url: "/logistics#testimonials" },
+        { label: "FAQs", url: "/logistics#faqs" },
+        { label: "Get Started", url: "/logistics#start" }
+      ]
     }
   ];
   const aboutMegaData = [
@@ -198,14 +209,10 @@ const Nav = ({ openNav }) => {
                             Explore {link.label === "Careers" ? "VA" : link.label}
                           </h3>
                           <div className="flex flex-col space-y-2">
-                            {megaConfig.data.map((cat) => <div key={cat.id} onMouseEnter={() => { setLogisticsHover(false); megaConfig.setter(cat.id); }} className={`cursor-pointer transition-all duration-200 text-[13px] flex items-center justify-between py-1.5 px-2 rounded ${megaConfig.active === cat.id && !logisticsHover ? "text-[#a10000] bg-white shadow-sm font-medium" : "text-gray-500 hover:text-[#a10000]"}`}>
+                            {megaConfig.data.map((cat) => <div key={cat.id} onMouseEnter={() => megaConfig.setter(cat.id)} onClick={cat.url ? () => window.open(cat.url, "_blank", "noopener,noreferrer") : undefined} className={`cursor-pointer transition-all duration-200 text-[13px] flex items-center justify-between py-1.5 px-2 rounded ${megaConfig.active === cat.id ? "text-[#a10000] bg-white shadow-sm font-medium" : "text-gray-500 hover:text-[#a10000]"}`}>
                                 <span>{cat.label}</span>
-                                <HiChevronRight className={`w-3.5 h-3.5 transition-transform ${megaConfig.active === cat.id && !logisticsHover ? "translate-x-1" : "opacity-0"}`} />
+                                <HiChevronRight className={`w-3.5 h-3.5 transition-transform ${megaConfig.active === cat.id ? "translate-x-1" : "opacity-0"}`} />
                               </div>)}
-                            {link.label === "Services" && <a href="/logistics" target="_blank" rel="noopener noreferrer" onMouseEnter={() => setLogisticsHover(true)} onMouseLeave={() => setLogisticsHover(false)} className="group text-[13px] flex items-center justify-between py-1.5 px-2 rounded text-gray-500 hover:text-[#a10000] hover:bg-white hover:shadow-sm hover:font-medium transition-all duration-200">
-                                <span>Logistics</span>
-                                <HiChevronRight className="w-3.5 h-3.5 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
-                              </a>}
                           </div>
                         </div>
                         <div className="w-[60%] px-8 py-6 bg-white flex flex-col font-poppins">
@@ -216,7 +223,8 @@ const Nav = ({ openNav }) => {
                             {megaConfig.data.find((c) => c.id === megaConfig.active)?.items.map((item, i) => {
       const label = typeof item === "string" ? item : item.label;
       const url = typeof item === "string" ? megaConfig.path : item.url;
-      return <Link key={i} href={url} onClick={(e) => handleScrollClick(e, url)} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
+      const external = url.startsWith("/logistics");
+      return <Link key={i} href={url} {...external ? { target: "_blank", rel: "noopener noreferrer" } : {}} onClick={(e) => handleScrollClick(e, url)} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
                                   {label}
                                 </Link>;
     })}

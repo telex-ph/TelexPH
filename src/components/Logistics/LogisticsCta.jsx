@@ -2,7 +2,7 @@ import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } fro
 import { CheckCircle2, Headset, Mail, TriangleAlert, Users } from "lucide-react";
 import { COLORS } from "@/constant/styles";
 import LogisticsEyebrow from "./LogisticsEyebrow";
-import { DISCOVERY_CALL_URL } from "@/constant/links";
+import { LOGISTICS_CTA_URL } from "@/constant/links";
 
 // DRAFT section title (matches the "Get Started" tab): edit freely.
 const INTRO_TITLE = "Get Started";
@@ -164,7 +164,7 @@ const LogisticsCta = () => {
                     animate={{ scale: [1, 1.14], opacity: [0.7, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }} />
                 )}
                 <motion.a
-                  href={DISCOVERY_CALL_URL}
+                  href={LOGISTICS_CTA_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ y: -3, boxShadow: "0 14px 34px rgba(0,0,0,.35)" }}

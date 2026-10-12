@@ -44,7 +44,7 @@ const MemberCard = ({
     style={{ backgroundImage: "url('images/bgteam.webp')" }}
   />
         <div
-    className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat [clip-path:circle(0%_at_50%_42%)] transition-[clip-path] duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:[clip-path:circle(100%_at_50%_42%)]"
+    className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-[700ms] ease-in-out will-change-[opacity] group-hover:opacity-100"
     style={{ backgroundImage: "url('images/bgteam_red2.webp')" }}
   />
         <img
@@ -57,7 +57,7 @@ const MemberCard = ({
     src={hoverImg}
     alt=""
     aria-hidden
-    className={`absolute inset-0 w-full h-full object-contain ${imagePositionClass} [clip-path:circle(0%_at_50%_42%)] transition-[clip-path] duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:[clip-path:circle(100%_at_50%_42%)]`}
+    className={`absolute inset-0 w-full h-full object-contain ${imagePositionClass} opacity-0 transition-opacity duration-[700ms] ease-in-out will-change-[opacity] group-hover:opacity-100`}
     loading="lazy"
   />}
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_42%,transparent_55%,rgba(161,0,0,0.18)_100%)]" />
