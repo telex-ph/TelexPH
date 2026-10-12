@@ -72,7 +72,8 @@ Modeled on HostOps' FetchingOverlay: full-screen blurred overlay, random animate
 - **Page open only.** `const initialLoading = useInitialLoad(loading);` then `<DashboardLoader isVisible={initialLoading} message="Loading blogs…" />`. `useInitialLoad` is true only for the first load, so refetches caused by filters, tabs, sorting, pagination or toggles never bring it back.
 - **Filters/toggles show no loading state at all.** Keep the previous data on screen while the new request is in flight (see `dashboard/EngagementMetricsCard.jsx`: no loading flag after the first fetch, stale responses ignored). Never gate content on the raw `loading` flag (`!loading && <Content/>` unmounts it on every filter click) — gate on `initialLoading`.
 - **Busy buttons** (save, approve, restore, generate…) use `<Spinner />` from the same file. No hand-rolled `border-t-transparent` spinners, `animate-spin` svgs, `@keyframes spin`, pulse skeletons or "Loading…" text.
-- Auth check → user fetch → route chunk → page data are chained loaders; later ones reuse the previous one's icon/hint and skip the fade-in, so don't add another loading screen between them.
+- `<DashboardLoader>` only registers a request; one `<DashboardLoaderHost />` (mounted in `App.jsx`) draws a single overlay while any request is open. Auth check → user fetch → route chunk → page data therefore read as ONE continuous animation. Don't render your own overlay; login/logout use the same loader (`LoginSuccessOverlay`, `LogoutOverlay`).
+- Public site: `src/components/PageLoader.jsx` (hourglass + %) is the loading screen for Blogs, Case Studies and case-study details.
 - Dev note: dashboard pages can be driven in Playwright by mocking `**/api/**` (`/users/me` must return `{ firstName, lastName, role: 1, department, theme }`).
 
 ### New page checklist

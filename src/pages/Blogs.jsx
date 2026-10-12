@@ -6,6 +6,8 @@ import { SITE_URL } from "@/data/seo-pages";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import Footer from "@/components/Footer/Footer";
+import PrintWatermark from "@/shared/PrintWatermark";
+import PageLoader from "@/components/PageLoader";
 import BlogsHero from "./Blogs/BlogsHero";
 import BlogsFilter from "./Blogs/BlogsFilter";
 import BlogsList from "./Blogs/BlogsList";
@@ -58,8 +60,11 @@ function BlogsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return <div className="min-h-screen bg-white font-['Poppins',_sans-serif]">
-      <Nav openNav={openNavHandler} />
-      <MobileNav showNav={showNav} closeNav={closeNavHandler} />
+      <PrintWatermark />
+      <div className="print:hidden">
+        <Nav openNav={openNavHandler} />
+        <MobileNav showNav={showNav} closeNav={closeNavHandler} />
+      </div>
 
       {slug && !loading && <PostSeo post={selectedPost} />}
 
@@ -88,9 +93,7 @@ function BlogsPage() {
     setSearchQuery={setSearchQuery}
   />
               
-              {loading ? <div className="flex justify-center py-20">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#800000]" />
-                </div> : <BlogsList
+              {loading ? <PageLoader fullScreen={false} /> : <BlogsList
     blogs={filteredBlogs}
     onArticleClick={handleArticleClick}
     searchQuery={searchQuery}
@@ -102,7 +105,7 @@ function BlogsPage() {
           </>}
       </main>
 
-      <Footer />
+      <div className="print:hidden"><Footer /></div>
     </div>;
 }
 /** Head tags + BlogPosting schema for one post; an unknown or unpublished slug gets noindex. */

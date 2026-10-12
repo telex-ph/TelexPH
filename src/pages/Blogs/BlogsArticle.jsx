@@ -1,8 +1,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
+import { HiHeart, HiOutlineHeart, HiOutlineLink } from "react-icons/hi2";
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaChevronLeft, FaRegCalendarAlt, FaFilePdf } from "react-icons/fa";
 import DOMPurify from "dompurify";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
+import InsightWallet from "@/components/InsightWallet";
+
+const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const sanitizeHtml = (html) =>
   DOMPurify.sanitize(html || "", {
@@ -284,198 +288,129 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
   const MAX_MORE_ARTICLES = 5;
   const latestUpdates = allBlogs ? allBlogs.filter((b) => b._id !== post._id).slice(0, MAX_MORE_ARTICLES) : [];
   const mins = readingTime(post);
-  return <div style={{ background: T.white, fontFamily: FONTS.openSans }} className="min-h-screen">
+  const sections = post.mainContent || [];
+  const titleWords = (post.title || "").split(" ");
+  const splitIndex = Math.ceil(titleWords.length / 2);
+  const titleRow1 = titleWords.slice(0, splitIndex).join(" ");
+  const titleRow2Words = titleWords.slice(splitIndex);
+  const titleRow2Body = titleRow2Words.slice(0, -1).join(" ");
+  const titleRow2Last = titleRow2Words[titleRow2Words.length - 1] ?? "";
+  const fade = (delay = 0) => ({ opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(24px)", transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s` });
+  const RICH = "[&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-5 [&_ol]:space-y-2 [&_blockquote]:border-l-4 [&_blockquote]:border-[#a10000] [&_blockquote]:pl-4 [&_blockquote]:mb-5 [&_blockquote]:italic [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828]";
+  return <div className="min-h-screen bg-white relative" style={{ fontFamily: FONTS.openSans }}>
+      <style>{`
+        @media screen {
+          .drop-cap-p::first-letter { font-size: 4.5rem; font-weight: 900; float: left; line-height: 0.8; margin-right: 0.75rem; margin-top: 0.25rem; }
+        }
+      `}</style>
 
-      {
-    /* ── Reading progress bar ── */
-  }
-      <div className="w-full h-[3px] bg-zinc-100">
-        <div className="h-full w-1/3 transition-all duration-500" style={{ backgroundColor: T.primary }} />
-      </div>
-
-      {
-    /* ── Breadcrumb bar ── */
-  }
-      <div className="border-b border-zinc-100">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 md:px-16 min-h-12 py-2 flex flex-wrap items-center justify-between gap-2">
-          <nav className="flex items-center gap-1 text-sm flex-wrap" aria-label="Breadcrumb">
-            <button onClick={onBack} className="hover:opacity-60 transition-opacity" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.primary }}>Home</button>
-            <span style={{ color: T.textHint, margin: "0 2px" }}>›</span>
-            <button onClick={onBack} className="hover:opacity-60 transition-opacity" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.primary }}>Resources</button>
-            <span style={{ color: T.textHint, margin: "0 2px" }}>›</span>
-            <span className="hidden sm:inline" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>
-              {post.title.length > 48 ? post.title.slice(0, 48) + "\u2026" : post.title}
-            </span>
-            <span className="inline sm:hidden" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>Article</span>
-          </nav>
-          <span className="text-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>
-            {post.mainCategory} · {new Date(post.createdAt).getFullYear()}
-          </span>
-        </div>
-      </div>
-
-      {
-    /* ══ FULL-WIDTH HERO ══ */
-  }
-      <div
-    className="w-full relative overflow-hidden"
-    style={{
-      opacity: mounted ? 1 : 0,
-      transition: "opacity 0.7s ease",
-      background: T.textDark,
-      minHeight: "clamp(300px, 48vw, 540px)"
-    }}
-  >
-        {
-    /* Hero image */
-  }
-        <img
-    src={post.picture}
-    alt={post.title}
-    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.42 }}
-  />
-        {
-    /* Dark gradient */
-  }
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.72) 100%)" }} />
-
-        {
-    /* Hero text */
-  }
-        <div
-    className="relative max-w-screen-xl mx-auto px-4 sm:px-6 md:px-16 flex flex-col justify-end"
-    style={{ minHeight: "clamp(300px, 48vw, 540px)", paddingBottom: "clamp(28px, 5vw, 60px)" }}
-  >
-          {
-    /* ── Back button — sits directly above the pills ── */
-  }
-          <button
+      {/* ── Header (same as Case Study details) ── */}
+      <section className="w-full bg-white overflow-hidden pt-36 md:pt-44 pb-6 md:pb-8 print:pt-8 print:pb-2">
+        <div className="max-w-screen-xl mx-auto px-6 md:px-16">
+          <div className="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8 print:mb-4">
+            <nav className="flex flex-wrap items-center gap-1 print:hidden" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px", textTransform: "uppercase", color: "rgba(0,0,0,0.7)" }}>
+              <button onClick={onBack} className="transition-colors hover:text-[#a10000]" style={{ textTransform: "uppercase" }}>Home</button>
+              <span className="mx-1 opacity-50">&gt;&gt;</span>
+              <button onClick={onBack} className="transition-colors hover:text-[#a10000]" style={{ textTransform: "uppercase" }}>Resources</button>
+              <span className="mx-1 opacity-50">&gt;&gt;</span>
+              <span className="truncate max-w-[180px] md:max-w-none" style={{ color: T.primary }}>{post.title}</span>
+            </nav>
+            <button
     onClick={onBack}
-    className="group flex items-center gap-2 w-fit mb-5"
-    style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+    className="print:hidden flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-5 md:py-2 rounded-full text-white text-[11px] md:text-sm hover:opacity-90 active:scale-95 transition-all w-fit self-start md:self-auto"
+    style={{ backgroundColor: T.primary, fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, boxShadow: "0 2px 8px rgba(161,0,0,0.25)" }}
   >
-            <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    className="transition-transform duration-200 group-hover:-translate-x-0.5"
-  >
-              <path d="M10 3L5 8L10 13" stroke="rgba(255,255,255,0.75)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="text-[10px] md:text-[14px]" style={{
-    fontFamily: FONTS.openSans,
-    fontWeight: FONT_WEIGHTS.bold,
-    color: "rgba(255,255,255,0.75)",
-    textTransform: "uppercase",
-    letterSpacing: "0.06em"
-  }}>
-              Back to Industry-Specific Insights
-            </span>
-          </button>
-
-          {
-    /* Category + subcategory pills */
-  }
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="text-[9px] md:text-[11px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.white, background: T.primary, padding: "4px 14px", borderRadius: "100px", textTransform: "uppercase" }}>
-              {post.mainCategory || "General"}
-            </span>
-            {post.subcategory && <span className="text-[9px] md:text-[11px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: "rgba(255,255,255,0.8)", padding: "4px 14px", borderRadius: "100px", border: "1px solid rgba(255,255,255,0.3)" }}>
-                {post.subcategory}
-              </span>}
+              <FaChevronLeft size={10} />
+              Back
+            </button>
           </div>
 
-          {
-    /* Title */
-  }
-          <h1
-    className="tracking-tight mb-5 text-[22px] sm:text-[28px] md:text-[36px] lg:text-[48px]"
-    style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: T.white, lineHeight: 1.18, maxWidth: "800px" }}
-  >
-            {post.title}
-          </h1>
-
-          {
-    /* Author row */
-  }
-          <div className="flex flex-wrap items-center gap-3">
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: T.primary, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "2px solid rgba(255,255,255,0.25)" }}>
-              <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "13px", color: T.white }}>
-                {(post.author || "T").charAt(0).toUpperCase()}
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-4 h-[1px]" style={{ background: T.primary }} />
+              <span className="text-[10px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                {post.mainCategory || "Blogs"}{post.subcategory ? ` · ${post.subcategory}` : ""}
               </span>
             </div>
-            <div>
-              <p style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.white, fontWeight: FONT_WEIGHTS.bold, margin: 0 }}>
-                {post.author || "TelexPH Admin"}
-              </p>
-              <p style={{ fontFamily: FONTS.openSans, fontSize: "11px", fontWeight: FONT_WEIGHTS.medium, color: "rgba(255,255,255,0.55)", margin: 0 }}>
-                {formatDate(post.createdAt)} · {mins} min read
-              </p>
+            <h1 className="text-[28px] md:text-[48px] mb-3 tracking-tight print:text-[35px]" style={{ fontFamily: FONTS.poppins, fontWeight: 900, color: "#282828", lineHeight: 1.05 }}>
+              <span className="block">{titleRow1}</span>
+              <span className="block">
+                {titleRow2Body && <>{titleRow2Body} </>}
+                <span style={{ color: T.primary }}>{titleRow2Last}</span>
+              </span>
+            </h1>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8">
+            <div className="flex items-center gap-1.5 text-[11px] md:text-[13px] mb-4 md:mb-0" style={{ fontFamily: FONTS.openSans, color: "rgba(0,0,0,0.6)" }}>
+              <FaRegCalendarAlt size={11} />
+              <span>{formatDate(post.createdAt)} {"•"} {mins} min read</span>
+            </div>
+            <div className="flex items-center gap-2 print:hidden mt-2 md:mt-0">
+              {[
+    { icon: <FaFacebookF size={11} />, label: "Facebook" },
+    { icon: <FaTwitter size={11} />, label: "Twitter" },
+    { icon: <FaLinkedinIn size={11} />, label: "LinkedIn" },
+    { icon: <FaEnvelope size={11} />, label: "Email" },
+    { icon: <HiOutlineLink size={14} />, label: "Copy" }
+  ].map((social) => <button
+    key={social.label}
+    aria-label={social.label}
+    className="w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all hover:bg-[rgba(161,0,0,0.08)]"
+    style={{ background: "rgba(0,0,0,0.04)", color: T.primary, border: "0.5px solid rgba(161,0,0,0.2)" }}
+  >
+                  {social.icon}
+                </button>)}
+              <button
+    onClick={handleLikeToggle}
+    disabled={isLiking}
+    className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-all ml-1 md:ml-2"
+    style={{ background: hasLiked ? "rgba(161,0,0,0.1)" : "rgba(161,0,0,0.04)", border: "0.5px solid rgba(161,0,0,0.15)" }}
+  >
+                {hasLiked ? <HiHeart className="w-3 h-3" style={{ color: T.primary }} /> : <HiOutlineHeart className="w-3 h-3" style={{ color: T.primary }} />}
+                <span className="text-[11px] md:text-[13px]" style={{ fontFamily: FONTS.openSans, color: T.primary, letterSpacing: "0.02em" }}>
+                  {likeCount} {likeCount === 1 ? "like" : "likes"}
+                </span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {
-    /* ══ MAIN LAYOUT ══ */
-  }
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 md:px-16 py-10 md:py-14 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-20">
+      {/* ── Main grid ── */}
+      <div className="max-w-screen-xl mx-auto px-6 md:px-16 pt-6 md:pt-8 pb-16 md:pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
-          {
-    /* ══ ARTICLE BODY ══ */
-  }
           <main className="lg:col-span-8">
+            {post.picture && <div className="mb-10 md:mb-12 rounded-2xl overflow-hidden" style={fade()}>
+                <img src={post.picture} alt={post.title} className="w-full h-[240px] sm:h-[320px] md:h-[420px] object-cover" />
+              </div>}
 
-            {
-    /* Lead paragraph with pull-quote style */
-  }
-            <div
-    className="mb-10 pb-10 border-b border-zinc-100"
-    style={{ opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.6s ease, transform 0.6s ease" }}
-  >
-              <div style={{ borderLeft: `3px solid ${T.primary}`, paddingLeft: "20px" }}>
-                <p
-    className="text-[14px] sm:text-base md:text-lg leading-[1.85] text-justify first-letter:text-[2.5rem] md:first-letter:text-[4rem] first-letter:font-black first-letter:float-left first-letter:leading-[0.85] first-letter:mr-3 first-letter:mt-1"
-    style={{ fontFamily: FONTS.rubik, color: T.textBody }}
-  >
+            {/* Overview — short description, like the first block of a case study */}
+            {post.shortDescription && <div className="mb-8 pb-8 border-b border-zinc-100" style={fade()}>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary }}>Overview</span>
+                  <span className="flex-1 h-[1px] bg-zinc-100" />
+                  <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>01</span>
+                </div>
+                <p className="drop-cap-p leading-[1.85] text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
                   {post.shortDescription}
                 </p>
-              </div>
-            </div>
+              </div>}
 
-            {
-    /* Content sections */
-  }
-            <article className="space-y-12">
-              {post.mainContent && post.mainContent.map((section, index) => {
+            <article className="space-y-10">
+              {sections.map((section, index) => {
     if (isFaqSection(section.title)) {
       return <div key={index}><FaqSection content={section.content} sectionTitle={section.title} /></div>;
     }
-    return <div
-      key={index}
-      style={{ opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(20px)", transition: `opacity 0.6s ease ${0.1 + index * 0.08}s, transform 0.6s ease ${0.1 + index * 0.08}s` }}
-    >
-                    {section.title && <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "16px" }}>
-                        <div style={{ width: "4px", minHeight: "28px", backgroundColor: T.primary, borderRadius: "2px", flexShrink: 0, marginTop: "5px" }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-                            <h2
-      className="tracking-tight text-[19px] md:text-[30px]"
-      style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: "#282828", margin: 0 }}
-    >
-                              {section.title}
-                            </h2>
-                            <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "12px", color: T.textHint, flexShrink: 0 }}>
-                              0{index + 1}
-                            </span>
-                          </div>
-                          <div style={{ height: "1px", background: T.borderLight, marginTop: "10px" }} />
-                        </div>
+    return <div key={index} className="group" style={fade(0.1 + index * 0.1)}>
+                    {section.title && <div className="flex items-center gap-3 mb-3">
+                        <span className="text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, color: T.primary }}>{section.title}</span>
+                        <span className="flex-1 h-[1px] bg-zinc-100" />
+                        <span className="text-[12px] md:text-[14px]" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, color: T.textHint }}>0{index + 2}</span>
                       </div>}
                     <div
-      className="text-[14px] md:text-[16px] leading-[1.85] text-justify [&_p]:mb-5 [&_p]:leading-[1.85] [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-10 [&_h3]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-5 [&_ol]:space-y-2 [&_blockquote]:border-l-4 [&_blockquote]:border-[#a10000] [&_blockquote]:pl-4 [&_blockquote]:mb-5 [&_blockquote]:italic [&_li]:leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:opacity-70 [&_strong]:font-bold [&_strong]:text-[#282828]"
+      className={`leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px] ${RICH}`}
       style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content) }}
     />
@@ -483,124 +418,56 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
   })}
             </article>
 
-            {
-    /* Author bio card */
-  }
-            <div
-    className="mt-14"
-    style={{ opacity: mounted ? 1 : 0, transition: "opacity 0.6s ease 0.6s", background: T.surface, border: `1px solid ${T.borderLight}`, borderRadius: "16px", padding: "clamp(16px,4vw,24px)", display: "flex", gap: "16px", alignItems: "flex-start" }}
+            <div className="mt-20 pt-10 border-t border-zinc-100 flex items-center print:hidden" style={{ opacity: mounted ? 1 : 0, transition: "opacity 0.6s ease 0.5s" }}>
+              <button
+    onClick={() => window.print()}
+    className="flex items-center gap-2 px-6 py-3 text-white text-sm hover:opacity-85 active:scale-95 transition-all"
+    style={{ backgroundColor: T.primary, fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium }}
   >
-              <div style={{ width: 52, height: 52, borderRadius: "50%", background: T.primary, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "18px", color: T.white }}>
-                  {(post.author || "T").charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", textTransform: "uppercase", color: T.textMuted, margin: "0 0 4px" }}>Written by</p>
-                <p style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, fontSize: "16px", color: T.textDark, margin: "0 0 6px" }}>
-                  {post.author || "TelexPH Admin"}
-                </p>
-                <p style={{ fontFamily: FONTS.rubik, fontSize: "13px", color: T.textBody, margin: 0, lineHeight: 1.6 }}>
-                  Content contributor at TelexPH — sharing insights on customer service, industry intelligence, and business solutions.
-                </p>
-              </div>
+                <FaFilePdf size={13} />
+                Export PDF
+              </button>
             </div>
           </main>
 
-          {
-    /* ══ SIDEBAR ══ */
-  }
-          <aside className="lg:col-span-4 h-fit">
-            <div
-    className="lg:sticky lg:top-8 space-y-5"
-    style={{ opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(28px)", transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s" }}
-  >
-
-              {
-    /* Article Info card */
-  }
-              <div style={{ border: `1px solid ${T.borderLight}`, borderRadius: "16px", overflow: "hidden" }}>
-                <div style={{ background: T.primary, padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", fontWeight: FONT_WEIGHTS.medium, textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>Article Info</span>
-                  <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", fontWeight: FONT_WEIGHTS.medium, color: "rgba(255,255,255,0.5)" }}>{mins} min read</span>
-                </div>
-                <div style={{ padding: "20px" }}>
-                  <div className="space-y-3">
-                    {[
-    { label: "Published", value: formatDate(post.createdAt), highlight: false },
-    { label: "Category", value: post.mainCategory, highlight: true },
-    { label: "Author", value: post.author || "TelexPH Admin", highlight: false },
-    { label: "Likes", value: `${likeCount} ${likeCount === 1 ? "like" : "likes"}`, highlight: true }
-  ].map(({ label, value, highlight }) => <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", paddingBottom: "10px", borderBottom: `1px solid ${T.borderLight}` }}>
-                        <span style={{ fontFamily: FONTS.rubik, fontSize: "13px", color: T.textMuted, flexShrink: 0 }}>{label}</span>
-                        <span style={{ fontFamily: FONTS.openSans, fontSize: "13px", fontWeight: FONT_WEIGHTS.medium, color: highlight ? T.primary : T.textDark, textAlign: "right" }}>{value}</span>
-                      </div>)}
-                  </div>
-                  <button
-    onClick={handleLikeToggle}
-    disabled={isLiking}
-    className={`w-full mt-4 flex items-center justify-center gap-2 py-2.5 text-sm transition-all ${isLiking ? "opacity-50 cursor-not-allowed" : "hover:opacity-85 active:scale-95"}`}
-    style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, background: hasLiked ? T.primary : "transparent", color: hasLiked ? T.white : T.primary, border: `1px solid ${T.primary}`, borderRadius: "8px" }}
-  >
-                    {hasLiked ? <HiHeart className="w-4 h-4" /> : <HiOutlineHeart className="w-4 h-4" />}
-                    <span>{hasLiked ? "Liked!" : "Like this article"}</span>
-                  </button>
-                </div>
-              </div>
-
-              {
-    /* More Articles card */
-  }
-              {latestUpdates.length > 0 && <div style={{ border: `1px solid ${T.borderLight}`, borderRadius: "16px", overflow: "hidden" }}>
-                  <div style={{ padding: "14px 20px", borderBottom: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", fontWeight: FONT_WEIGHTS.medium, textTransform: "uppercase", color: T.textDark }}>More Articles</span>
-                    <div style={{ flex: 1, height: "1px", background: T.borderLight }} />
-                  </div>
-                  <div style={{ padding: "8px 0" }}>
-                    {latestUpdates.map((item, idx) => <div
+          {/* ── Sidebar — Article for you ── */}
+          <aside className="lg:col-span-4 h-fit print:hidden">
+              <InsightWallet
+    mounted={mounted}
+    pocketText={`${sections.length} Sections`}
+    a={{ label: "Overview", kicker: "The Summary", preview: `${(post.shortDescription || "").slice(0, 52)}…`, html: `<p>${esc(post.shortDescription)}</p>` }}
+    b={{ label: "Topics", kicker: "What's Inside", preview: `${sections.map((s) => s.title).filter(Boolean).join(", ").slice(0, 52)}…`, html: `<ul>${sections.filter((s) => s.title).map((s) => `<li>${esc(s.title)}</li>`).join("")}</ul>`, footer: `${sections.length} sections` }}
+  />
+            <div style={fade(0.25)}>
+              <div style={{ height: "1px", backgroundColor: T.primary, marginBottom: "20px" }} />
+              <h2 className="mb-6" style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.textDark }}>Article for you</h2>
+              <div className="flex flex-col gap-5">
+                {latestUpdates.length === 0 && <p className="text-sm" style={{ fontFamily: FONTS.rubik, color: T.textHint }}>No related articles yet.</p>}
+                {latestUpdates.map((item) => <div
     key={item._id}
-    className="group cursor-pointer"
     onClick={() => {
       onArticleClick(item);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }}
-    style={{ display: "flex", gap: "12px", alignItems: "center", padding: "10px 20px", borderBottom: idx < latestUpdates.length - 1 ? `1px solid ${T.borderLight}` : "none", transition: "background 0.2s" }}
-    onMouseEnter={(e) => e.currentTarget.style.background = T.surface}
-    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+    className="group block cursor-pointer rounded-2xl overflow-hidden border border-zinc-100 bg-white hover:shadow-lg transition-shadow"
   >
-                        <div style={{ width: 56, height: 56, borderRadius: "8px", background: T.borderLight, flexShrink: 0, overflow: "hidden" }}>
-                          <img src={item.picture} alt={item.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", fontWeight: FONT_WEIGHTS.medium, textTransform: "uppercase", color: T.primary, display: "block", marginBottom: "3px" }}>
-                            {item.mainCategory || "General"}
-                          </span>
-                          <h4 className="line-clamp-2" style={{ fontFamily: FONTS.openSans, fontSize: "13px", fontWeight: FONT_WEIGHTS.bold, lineHeight: 1.4, color: T.textDark }}>
-                            {item.title}
-                          </h4>
-                          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "6px" }}>
-                            <div style={{ width: 16, height: 16, borderRadius: "50%", background: T.primary, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                              <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "8px", color: T.white }}>
-                                {(item.author || "T").charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", color: T.textMuted }}>
-                              {item.author || "TelexPH Admin"}
-                            </span>
-                          </div>
-                        </div>
-                        <span style={{ color: T.textHint, fontSize: "18px", flexShrink: 0 }}>›</span>
-                      </div>)}
-                  </div>
-                </div>}
-
-              {
-    /* Footer stamp */
-  }
-              <p style={{ fontFamily: FONTS.openSans, fontSize: "10px", textTransform: "uppercase", color: T.textHint, textAlign: "center", padding: "4px 0" }}>
-                Industry Intelligence · {new Date(post.createdAt).getFullYear()}
-              </p>
-
+                    <div className="relative h-[150px] w-full overflow-hidden">
+                      <img src={item.picture} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span className="bg-white/90 px-2.5 py-1 rounded-full shadow-sm" style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.bold, fontSize: "10px", letterSpacing: "0.06em", textTransform: "uppercase", color: T.textDark }}>
+                          Blogs
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="mb-1.5 line-clamp-2" style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "15px", color: T.textDark, lineHeight: 1.3 }}>{item.title}</h3>
+                      <p className="mb-3 line-clamp-2" style={{ fontFamily: FONTS.rubik, fontWeight: 400, fontSize: "13px", color: T.textBody, lineHeight: 1.5 }}>{item.shortDescription}</p>
+                      <span style={{ fontFamily: FONTS.openSans, fontSize: "11px", color: T.textHint }}>
+                        {formatDate(item.createdAt)} {"·"} {readingTime(item)} min read
+                      </span>
+                    </div>
+                  </div>)}
+              </div>
             </div>
           </aside>
         </div>

@@ -16,20 +16,19 @@ import { COLORS, FONTS, FONT_WEIGHTS, getColorWithOpacity } from "@/constant/sty
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_ORIGIN ? `${import.meta.env.VITE_API_ORIGIN}/api` : "/api");
 const FALLBACK_DATA = {
   id: 1,
   type: "case studies",
-  title: "loading case study",
-  subtitle: "please wait while we load the content",
+  title: "",
+  subtitle: "",
   image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200",
   date: ""
 };
 async function toggleLikeCaseStudy(id, isLiked) {
   try {
     const method = isLiked ? "DELETE" : "POST";
-    const response = await fetch(`${API_BASE}/api/casestudies/${id}/like`, {
+    const response = await fetch(`${API_BASE}/casestudies/${id}/like`, {
       method,
       headers: { "Content-Type": "application/json" }
     });
@@ -42,7 +41,7 @@ async function toggleLikeCaseStudy(id, isLiked) {
 }
 async function checkLikeStatus(id) {
   try {
-    const response = await fetch(`${API_BASE}/api/casestudies/${id}/like-status`);
+    const response = await fetch(`${API_BASE}/casestudies/${id}/like-status`);
     return await response.json();
   } catch {
     return { hasLiked: false, likesCount: 0 };
@@ -66,9 +65,9 @@ function DetailsHeader() {
         setError(false);
         let response;
         if (slug) {
-          response = await fetch(`${API_BASE}/api/casestudies/fetch/${slug}`);
+          response = await fetch(`${API_BASE}/casestudies/fetch/${slug}`);
         } else if (id) {
-          response = await fetch(`${API_BASE}/api/casestudies/${id}`);
+          response = await fetch(`${API_BASE}/casestudies/${id}`);
         } else {
           setError(true);
           setLoading(false);
@@ -188,7 +187,7 @@ function DetailsHeader() {
             {
     /* Label */
   }
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-3 print:hidden">
               <span className="w-4 h-[1px]" style={{ background: "#A10000" }} />
               <span
     className="text-[10px] md:text-[14px]"
@@ -208,7 +207,7 @@ function DetailsHeader() {
     /* Title */
   }
             <h1
-    className="print-main-title text-[28px] md:text-[48px] mb-3 tracking-tight"
+    className={`print-main-title ${caseStudy ? "" : "hidden"} text-[28px] md:text-[48px] mb-3 tracking-tight`}
     style={{
       fontFamily: FONTS.poppins,
       fontWeight: 900,
@@ -227,7 +226,7 @@ function DetailsHeader() {
     /* Subtitle */
   }
             {displayData.subtitle && <p
-    className="print-subtitle mb-5 text-[14px] md:text-[16px]"
+    className={`print-subtitle ${caseStudy ? "" : "hidden"} mb-5 text-[14px] md:text-[16px]`}
     style={{
       fontFamily: FONTS.rubik,
       fontWeight: FONT_WEIGHTS.regular,
@@ -245,7 +244,7 @@ function DetailsHeader() {
           {
     /* Date & Socials */
   }
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 print:hidden">
             {
     /* Left: Date */
   }
