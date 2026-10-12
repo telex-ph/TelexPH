@@ -17,7 +17,7 @@ const FooterLinks = () => {
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
         For Support?<br />
         <a href="mailto:business@telexph.com" className="text-sm sm:text-base font-medium hover:text-white transition-colors">business@telexph.com</a><br />
-        <a href="mailto:careers@telexph.com" className="text-sm sm:text-base font-medium hover:text-white transition-colors">careers@telexph.com</a>
+        <a href="mailto:business@telexph.com" className="text-sm sm:text-base font-medium hover:text-white transition-colors">business@telexph.com</a>
       </p>
       <p className="text-xs sm:text-sm text-gray-300">
         Our Location<br /><span className="text-sm sm:text-base font-medium">Guimba, Nueva Ecija, Philippines</span>

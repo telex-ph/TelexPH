@@ -4,14 +4,13 @@ import Image from "next/image";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import { RiCloseFill } from "react-icons/ri";
 import TopBar from "./LogisticsTopBar";
-import { DISCOVERY_CALL_URL } from "@/constant/links";
+import { LOGISTICS_CTA_URL } from "@/constant/links";
 
 /* Each tab jumps to a section of the page. */
 const LANDING_PAGE_TABS = [
   { label: "Support Scope", href: "#support" },
   { label: "Management", href: "#management" },
   { label: "FAQs", href: "#faqs" },
-  { label: "Get Started", href: "#start" },
 ];
 export const getLogisticsTabs = () => LANDING_PAGE_TABS;
 const tabs = LANDING_PAGE_TABS;
@@ -92,7 +91,7 @@ const LogisticsNav = () => {
                     animate={{ scale: [1, 1.12], opacity: [0.6, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }} />
                 )}
                 <a
-                  href={DISCOVERY_CALL_URL}
+                  href={LOGISTICS_CTA_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative block overflow-hidden whitespace-nowrap bg-[#a10000] hover:bg-red-700 text-white px-6 py-2.5 text-sm font-open-sans-bold transition-all hover:-translate-y-0.5 hover:shadow-lg rounded"
@@ -128,7 +127,7 @@ const LogisticsNav = () => {
               </a>
             ))}
             <a
-              href={DISCOVERY_CALL_URL}
+              href={LOGISTICS_CTA_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 mb-2 text-center bg-[#a10000] text-white px-4 py-3 text-sm font-bold rounded"

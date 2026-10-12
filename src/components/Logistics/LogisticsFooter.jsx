@@ -5,7 +5,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import FooterLogo from "@/components/Footer/FooterLogo";
 import FooterBottom from "@/components/Footer/FooterBottom";
 import { getLogisticsTabs } from "./LogisticsNav";
-import { DISCOVERY_CALL_URL } from "@/constant/links";
+import { LOGISTICS_CTA_URL } from "@/constant/links";
 import { COLORS } from "@/constant/styles";
 
 const RED = COLORS.primary; // #a10000
@@ -96,7 +96,7 @@ const jumpTo = (e, href) => {
 
 const CONTACTS = [
   { Icon: Phone, label: "Call Us Directly?", value: "0443252836", href: "tel:0443252836" },
-  { Icon: Mail, label: "For Support?", value: "careers@telexph.com", href: "mailto:careers@telexph.com" },
+  { Icon: Mail, label: "For Support?", value: "business@telexph.com", href: "mailto:business@telexph.com" },
   { Icon: MapPin, label: "Our Location", value: "Guimba, Nueva Ecija, Philippines" },
 ];
 
@@ -155,7 +155,7 @@ const LogisticsFooter = () => {
                 animate={{ scale: [1, 1.12], opacity: [0.7, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }} />
             )}
             <a
-              href={DISCOVERY_CALL_URL}
+              href={LOGISTICS_CTA_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded px-5 py-3 text-xs sm:text-sm font-semibold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5"
