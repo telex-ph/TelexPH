@@ -2,7 +2,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Quote, Star } from "lucide-react";
 import { COLORS } from "@/constant/styles";
 import { Bento, PortraitSplit, ChatThread, CardStack } from "./LogisticsTestimonialLayouts";
-import LogisticsTestimonials, { TESTIMONIALS, Photo } from "./LogisticsTestimonials";
+import LogisticsTestimonialBento from "./LogisticsTestimonialBento";
+import LogisticsTestimonials,{ TESTIMONIALS, Photo } from "./LogisticsTestimonials";
 
 const RED = COLORS.primary;
 const CHARCOAL = COLORS.dark;
@@ -157,7 +158,7 @@ const LogisticsTestimonialVariants = () => {
   if (v === "6") return <PortraitSplit />;
   if (v === "7") return <ChatThread />;
   if (v === "8") return <CardStack />;
-  return <LogisticsTestimonials />;
+  return <LogisticsTestimonialBento />;
 };
 
 export default LogisticsTestimonialVariants;
