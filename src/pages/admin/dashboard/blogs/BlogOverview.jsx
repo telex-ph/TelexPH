@@ -56,18 +56,18 @@ export const MiniCalendar = ({ records, subtleBg, borderColor, textSecondary, te
   const m = now.getMonth(), y = now.getFullYear(), today = now.getDate();
   const cells = getCalendarDays(m);
   const dateStr = (d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-  return <div style={{ padding: 14, borderRadius: 16, background: subtleBg, border: `1px solid ${borderColor}`, flex: 1, fontFamily: "'Poppins', sans-serif" }}>
+  return <div style={{ padding: 14, borderRadius: 16, background: subtleBg, border: `1px solid ${borderColor}`, flex: 1, display: "flex", flexDirection: "column", fontFamily: "'Poppins', sans-serif" }}>
       <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, color: textSecondary, margin: "0 0 12px", fontFamily: "'Poppins', sans-serif" }}>{MONTHS[m]} {y}</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2, marginBottom: 6 }}>
         {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => <div key={i} style={{ textAlign: "center", fontSize: 9, fontWeight: 700, color: textMuted, fontFamily: "'Poppins', sans-serif" }}>{d}</div>)}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gridAutoRows: "minmax(34px, 1fr)", gap: 2, flex: 1 }}>
         {cells.map((d, i) => {
     if (!d) return <div key={i} />;
     const isToday = d === today;
     const ds = dateStr(d);
     const hasEv = records.some((r) => r.date === ds);
-    return <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ aspectRatio: "1", width: "100%", maxWidth: 40, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 10, borderRadius: 8, cursor: "pointer", fontWeight: isToday ? 700 : 400, background: isToday ? "var(--admin-accent)" : "transparent", color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
+    return <div key={i} onClick={() => hasEv ? onDayClick(ds) : onOpenCalendar()} style={{ width: "100%", maxWidth: 52, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 10, borderRadius: 8, cursor: "pointer", fontWeight: isToday ? 700 : 400, background: isToday ? "var(--admin-accent)" : "transparent", color: isToday ? "#fff" : textMuted, fontFamily: "'Poppins', sans-serif", gap: 2 }}>
               {d}
               {hasEv && <div style={{ width: 4, height: 4, borderRadius: "50%", background: isToday ? "rgba(255,255,255,0.8)" : "#3b82f6" }} />}
             </div>;

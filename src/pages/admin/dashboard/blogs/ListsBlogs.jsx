@@ -337,7 +337,7 @@ function ListBlogs() {
         </div>
 
         {/* TOP ROW — same as the Case Study page */}
-        <div className="bl-top-row w-full mx-auto" style={{ maxWidth: 1200, display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 3fr)", gap: 16, alignItems: "stretch" }}>
+        <div className="bl-top-row w-full mx-auto" style={{ maxWidth: 1200, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 16, alignItems: "stretch" }}>
           <div style={{ ...card, padding: "22px 22px" }}>
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: textPrimary, margin: 0 }}>Quick stats</p>

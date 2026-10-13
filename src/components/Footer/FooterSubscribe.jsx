@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { getApiBaseUrl } from "@/lib/api-base";
+import { trackConversion } from "@/lib/track-conversion";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const FooterSubscribe = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +25,7 @@ const FooterSubscribe = () => {
         body: JSON.stringify({ email: trimmed })
       });
       if (res.ok) {
+        trackConversion("Newsletter signup", trimmed);
         setStatus("success");
         setEmail("");
         setMessage("Thanks! You're subscribed.");

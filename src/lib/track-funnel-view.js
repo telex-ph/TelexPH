@@ -1,5 +1,5 @@
 import { getApiBaseUrl } from "@/lib/api-base";
-import { getOrCreateVisitorSessionId, getVisitorEmail } from "@/lib/page-view-session";
+import { getOrCreateVisitorSessionId, getVisitId, getVisitorEmail } from "@/lib/page-view-session";
 function trackOutboundFunnelView(funnelUrl, options) {
   if (typeof window === "undefined") return;
   const path = funnelUrl?.trim();
@@ -11,6 +11,7 @@ function trackOutboundFunnelView(funnelUrl, options) {
     path,
     referrer: typeof document !== "undefined" ? document.referrer || window.location.href || "" : "",
     sessionId,
+    visitId: getVisitId(),
     kind: "funnel"
   };
   if (email) payload.email = email;

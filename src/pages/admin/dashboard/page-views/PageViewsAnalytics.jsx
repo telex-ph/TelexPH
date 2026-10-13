@@ -14,7 +14,7 @@ const IconDownload = () => <svg width="12" height="12" fill="none" viewBox="0 0 
 function RangeToggle({ value, onChange }) {
   return <div style={{
     display: "inline-flex",
-    background: "#F1F5F9",
+    background: "var(--admin-bg-soft)",
     borderRadius: 12,
     padding: 3,
     gap: 2
@@ -23,8 +23,8 @@ function RangeToggle({ value, onChange }) {
     padding: "6px 14px",
     fontSize: 12,
     fontWeight: value === o ? 600 : 400,
-    background: value === o ? "#FFFFFF" : "transparent",
-    color: value === o ? "#0F172A" : "#64748B",
+    background: value === o ? "var(--admin-surface)" : "transparent",
+    color: value === o ? "var(--admin-text)" : "var(--admin-text-faint)",
     border: "none",
     borderRadius: 9,
     cursor: "pointer",
@@ -48,10 +48,10 @@ function DownloadBtn({ onClick, label = "Export CSV", disabled }) {
       padding: "8px 16px",
       fontSize: 12,
       fontWeight: 500,
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
+      background: "var(--admin-surface)",
+      border: "1px solid var(--admin-border)",
       borderRadius: 10,
-      color: disabled ? "#94A3B8" : "#475569",
+      color: disabled ? "var(--admin-text-faint)" : "var(--admin-text-sub)",
       cursor: disabled ? "not-allowed" : "pointer",
       fontFamily: F,
       whiteSpace: "nowrap",
@@ -61,14 +61,14 @@ function DownloadBtn({ onClick, label = "Export CSV", disabled }) {
     }}
     onMouseEnter={(e) => {
       if (!disabled) {
-        e.currentTarget.style.background = "#F8FAFC";
-        e.currentTarget.style.borderColor = "#CBD5E1";
+        e.currentTarget.style.background = "var(--admin-bg-soft)";
+        e.currentTarget.style.borderColor = "var(--admin-border-strong)";
       }
     }}
     onMouseLeave={(e) => {
       if (!disabled) {
-        e.currentTarget.style.background = "#FFFFFF";
-        e.currentTarget.style.borderColor = "#E2E8F0";
+        e.currentTarget.style.background = "var(--admin-surface)";
+        e.currentTarget.style.borderColor = "var(--admin-border)";
       }
     }}
   >
@@ -91,85 +91,30 @@ function downloadCSV(filename, headers, rows) {
   a.click();
   URL.revokeObjectURL(url);
 }
-const MOCK_OVERVIEW = {
-  range: "30d",
-  daily: Array.from({ length: 30 }, (_, i) => {
-    const d = /* @__PURE__ */ new Date();
-    d.setDate(d.getDate() - (29 - i));
-    return {
-      date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      dateKey: d.toISOString().split("T")[0],
-      views: Math.floor(1200 + Math.random() * 800),
-      unique: Math.floor(700 + Math.random() * 400),
-      sessions: Math.floor(900 + Math.random() * 500)
-    };
-  }),
-  totals: { views: 38420, uniqueVisitors: 18650, sessions: 25340, avgPagesPerVisit: 3.2, bounceRate: 41.5 },
-  changes: { views: 12.4, unique: 8.7, sessions: 10.2, bounceRate: -3.1 },
-  topPages: [
-    { page: "/", label: "Homepage", section: "Home", views: 12800, change: 15.2 },
-    { page: "/services", label: "Our Services", section: "Services", views: 7340, change: 8.1 },
-    { page: "/about", label: "About Us", section: "About", views: 4210, change: -2.4 },
-    { page: "/contact", label: "Contact", section: "Other", views: 3620, change: 22.7 },
-    { page: "/pricing", label: "Pricing Plans", section: "Services", views: 3100, change: 18.5 },
-    { page: "/blog", label: "Resources & Blog", section: "Resources", views: 2850, change: 6.3 },
-    { page: "/careers", label: "Join Our Team", section: "Careers", views: 1400, change: -5.8 },
-    { page: "/why-us", label: "Why Choose Us", section: "Why Us", views: 1100, change: 11 }
-  ],
-  trafficSources: [
-    { name: "Organic Search", value: 42, color: COLORS.chart1 },
-    { name: "Direct", value: 28, color: COLORS.chart2 },
-    { name: "Social Media", value: 18, color: COLORS.chart3 },
-    { name: "Referral", value: 12, color: COLORS.chart4 }
-  ],
-  devices: [
-    { device: "Desktop", views: 22e3 },
-    { device: "Mobile", views: 13500 },
-    { device: "Tablet", views: 2920 }
-  ],
-  funnels: [
-    { name: "AI Builder", url: "https://preview.ghl/ai-builder", views: 8400, unique: 6200, conversions: 642, convRate: 7.64, change: 21.4, color: COLORS.chart1 },
-    { name: "Automation", url: "https://preview.ghl/automation", views: 7100, unique: 5800, conversions: 548, convRate: 7.71, change: 12.2, color: COLORS.chart2 },
-    { name: "Booking & Appointment", url: "https://preview.ghl/booking", views: 6100, unique: 4800, conversions: 348, convRate: 5.71, change: -3.2, color: COLORS.chart3 },
-    { name: "Courses/Products", url: "https://preview.ghl/courses", views: 5250, unique: 4100, conversions: 490, convRate: 9.33, change: 14.6, color: COLORS.chart4 },
-    { name: "CRM", url: "https://preview.ghl/crm", views: 4700, unique: 3900, conversions: 281, convRate: 5.98, change: 6.8, color: COLORS.chart5 },
-    { name: "CSR", url: "https://preview.ghl/csr", views: 4200, unique: 3100, conversions: 224, convRate: 5.33, change: 11.2, color: COLORS.chart1 },
-    { name: "Document Signing", url: "https://preview.ghl/document-signing", views: 3800, unique: 2800, conversions: 190, convRate: 5, change: 4.5, color: COLORS.chart2 },
-    { name: "Email Marketing", url: "https://preview.ghl/email-marketing", views: 3500, unique: 2500, conversions: 175, convRate: 5, change: 8.1, color: COLORS.chart3 },
-    { name: "Gray-Label", url: "https://preview.ghl/gray-label", views: 3100, unique: 2100, conversions: 124, convRate: 4, change: 2.2, color: COLORS.chart4 },
-    { name: "Funnel Builder", url: "https://preview.ghl/funnel-builder", views: 2900, unique: 1900, conversions: 150, convRate: 5.17, change: 18.4, color: COLORS.chart5 },
-    { name: "SMS", url: "https://preview.ghl/sms", views: 2600, unique: 1600, conversions: 110, convRate: 4.23, change: 3.4, color: COLORS.chart1 },
-    { name: "Social Media Management", url: "https://preview.ghl/social-media", views: 2400, unique: 1500, conversions: 100, convRate: 4.16, change: 7.2, color: COLORS.chart2 },
-    { name: "Surveys & Forms", url: "https://preview.ghl/surveys", views: 2100, unique: 1200, conversions: 80, convRate: 3.81, change: -1.2, color: COLORS.chart3 },
-    { name: "Tech Support", url: "https://preview.ghl/tech-support", views: 1800, unique: 1e3, conversions: 65, convRate: 3.61, change: 5.5, color: COLORS.chart4 },
-    { name: "Video & Graphics Design", url: "https://preview.ghl/video-graphics", views: 1500, unique: 800, conversions: 45, convRate: 3, change: 2.1, color: COLORS.chart5 },
-    { name: "Web Development", url: "https://preview.ghl/web-development", views: 1200, unique: 600, conversions: 30, convRate: 2.5, change: 1.5, color: COLORS.chart1 },
-    { name: "Website Builder", url: "https://preview.ghl/website-builder", views: 900, unique: 400, conversions: 20, convRate: 2.22, change: -0.5, color: COLORS.chart2 },
-    { name: "White-Label", url: "https://preview.ghl/white-label", views: 600, unique: 200, conversions: 10, convRate: 1.66, change: 0, color: COLORS.chart3 }
-  ]
+const EMPTY_OVERVIEW = {
+  daily: [],
+  totals: { views: 0, uniqueVisitors: 0, sessions: 0, avgPagesPerVisit: 0, bounceRate: 0 },
+  changes: { views: 0, unique: 0, sessions: 0, bounceRate: 0 },
+  topPages: [],
+  trafficSources: [],
+  devices: [],
+  funnels: []
 };
 function normalizeOverview(data) {
-  const summary = data.overview ?? {};
   return {
-    range: data.range ?? MOCK_OVERVIEW.range,
     daily: data.daily ?? [],
-    totals: {
-      views: summary.totalViews ?? 0,
-      uniqueVisitors: summary.uniqueViews ?? 0,
-      sessions: summary.sessions ?? 0,
-      avgPagesPerVisit: summary.avgPagesPerVisit ?? 0,
-      bounceRate: summary.bounceRate ?? 0
-    },
-    changes: data.changes ?? { views: 0, unique: 0, sessions: 0, bounceRate: 0 },
+    totals: { ...EMPTY_OVERVIEW.totals, ...data.totals },
+    changes: { ...EMPTY_OVERVIEW.changes, ...data.changes },
     topPages: data.topPages ?? [],
     trafficSources: data.trafficSources ?? [],
-    devices: data.devices ?? []
+    devices: data.devices ?? [],
+    funnels: data.funnels ?? []
   };
 }
 function PageViewsAnalytics() {
   const [tab, setTab] = useState("visitors");
   const [range, setRange] = useState("30d");
-  const [overview, setOverview] = useState(MOCK_OVERVIEW);
+  const [overview, setOverview] = useState(EMPTY_OVERVIEW);
   const [loading, setLoading] = useState(true);
   const initialLoading = useInitialLoad(loading);
   const [loadError, setLoadError] = useState(null);
@@ -193,7 +138,7 @@ function PageViewsAnalytics() {
       cancelled = true;
     };
   }, [range]);
-  const funnels = overview.funnels?.length ? overview.funnels : MOCK_OVERVIEW.funnels ?? [];
+  const funnels = overview.funnels;
   const handleDownloadPageViews = () => {
     const rows = [
       ["=== Traffic Over Time ==="],
@@ -205,9 +150,9 @@ function PageViewsAnalytics() {
   const handleDownloadFunnels = () => {
     const sorted = [...funnels].sort((a, b) => b.views - a.views);
     downloadCSV(
-      "ghl-funnels.csv",
-      ["Funnel Name", "URL", "Views", "Unique Visitors", "Conversions", "Conv. Rate (%)", "Change (%)"],
-      sorted.map((f) => [f.name, f.url, f.views, f.unique, f.conversions, f.convRate, f.change])
+      `funnel-clicks-${range}.csv`,
+      ["Funnel Name", "URL", "Clicks", "Unique Visitors", "Change (%)"],
+      sorted.map((f) => [f.name, f.url, f.views, f.unique, f.change])
     );
   };
   const handleDownloadVisitors = async () => {
@@ -238,13 +183,13 @@ function PageViewsAnalytics() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #F1F5F9; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: var(--admin-bg-soft); }
+        ::-webkit-scrollbar-thumb { background: var(--admin-border-strong); border-radius: 3px; }
         input[type="search"]::-webkit-search-cancel-button { display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      <div style={{ fontFamily: F, color: "#0F172A", paddingTop: 32, display: "flex", flexDirection: "column", gap: "1.25rem", animation: "fadeIn 0.3s ease" }}>
+      <div style={{ fontFamily: F, color: "var(--admin-text)", paddingTop: 32, display: "flex", flexDirection: "column", gap: "1.25rem", animation: "fadeIn 0.3s ease" }}>
 
         {
     /* ── Header ── */
@@ -256,7 +201,7 @@ function PageViewsAnalytics() {
             <RangeToggle value={range} onChange={setRange} />
         </>} />
 
-        {loadError && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 12 }}>
+        {loadError && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "color-mix(in srgb, #DC2626 14%, transparent)", border: "1px solid color-mix(in srgb, #DC2626 35%, transparent)", borderRadius: 12 }}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#DC2626" strokeWidth="1.5" /><path d="M12 8v4M12 16h.01" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" /></svg>
             <p style={{ fontSize: 13, color: "#DC2626", fontFamily: F, margin: 0 }}>{loadError}</p>
           </div>}
@@ -264,7 +209,7 @@ function PageViewsAnalytics() {
         {
     /* ── Tabs ── */
   }
-        <div style={{ display: "flex", gap: 4, background: "#F1F5F9", borderRadius: 14, padding: 4, width: "fit-content" }}>
+        <div style={{ display: "flex", gap: 4, background: "var(--admin-bg-soft)", borderRadius: 14, padding: 4, width: "fit-content" }}>
           {TABS.map((t) => <button
     key={t.value}
     onClick={() => setTab(t.value)}
@@ -272,10 +217,10 @@ function PageViewsAnalytics() {
       padding: "8px 18px",
       fontSize: 13,
       fontWeight: tab === t.value ? 600 : 400,
-      background: tab === t.value ? "#FFFFFF" : "transparent",
+      background: tab === t.value ? "var(--admin-surface)" : "transparent",
       border: "none",
       borderRadius: 10,
-      color: tab === t.value ? "#0F172A" : "#64748B",
+      color: tab === t.value ? "var(--admin-text)" : "var(--admin-text-faint)",
       cursor: "pointer",
       fontFamily: F,
       display: "flex",
@@ -291,8 +236,8 @@ function PageViewsAnalytics() {
     fontWeight: 700,
     padding: "1px 7px",
     borderRadius: 99,
-    background: tab === t.value ? COLORS.primaryMuted : "#E2E8F0",
-    color: tab === t.value ? COLORS.primary : "#64748B",
+    background: tab === t.value ? COLORS.primaryMuted : "var(--admin-border)",
+    color: tab === t.value ? COLORS.primary : "var(--admin-text-faint)",
     fontFamily: F,
     lineHeight: 1.7
   }}>
@@ -314,7 +259,7 @@ function PageViewsAnalytics() {
         {
     /* ── Funnels Tab ── */
   }
-        {tab === "funnels" && !initialLoading && <FunnelsTab range={range} onRangeChange={setRange} />}
+        {tab === "funnels" && !initialLoading && <FunnelsTab range={range} onRangeChange={setRange} funnels={funnels} />}
 
         {
     /* ── Visitor Journey Tab ── */

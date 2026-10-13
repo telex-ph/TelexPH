@@ -273,6 +273,14 @@ function AdminPage() {
         @media (min-width: 640px)  { .card-inner { padding: 24px; } }
         @media (min-width: 1024px) { .card-inner { padding: 32px; } }
 
+        /* Recent transactions: size by the card's own width (it's half the row on lg), not the viewport */
+        .tx-card { container-type: inline-size; }
+        .tx-card .tbl-th, .tx-card .tbl-td { padding: 11px 12px; }
+        .tx-card .card-hdr { padding: 14px 16px; }
+        @container (min-width: 440px) { .tx-card .tbl-th, .tx-card .tbl-td { padding: 12px 18px; } .tx-card .card-hdr { padding: 16px 20px; } }
+        @container (min-width: 620px) { .tx-card .tbl-th, .tx-card .tbl-td { padding: 14px 28px; } .tx-card .card-hdr { padding: 20px 28px; } }
+        @container (max-width: 400px) { .tx-card .tx-date { display: none; } }
+
         .card-hdr { padding: 14px 16px; }
         @media (min-width: 480px)  { .card-hdr { padding: 16px 20px; } }
         @media (min-width: 640px)  { .card-hdr { padding: 18px 24px; } }
@@ -482,7 +490,7 @@ function AdminPage() {
     /* Recent Transactions */
   }
           <div
-    className={`rounded-xl border shadow-sm transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`}
+    className={`tx-card rounded-xl border shadow-sm transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`}
   >
             {
     /* Card Header */
@@ -521,7 +529,7 @@ function AdminPage() {
                   <tr className={`border-b transition-all duration-500 border-[var(--admin-border)]`}>
                     {["Customer", "Date", "Amount", "Status"].map((col) => <th
     key={col}
-    className={`tbl-th text-left uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`}
+    className={`tbl-th text-left uppercase tracking-widest transition-colors text-[var(--admin-text-faint)] ${col === "Date" ? "tx-date" : ""}`}
     style={{ fontWeight: 500 }}
   >
                         {col}
@@ -549,7 +557,7 @@ function AdminPage() {
                           </p>
                         </div>
                       </td>
-                      <td className="tbl-td">
+                      <td className="tbl-td tx-date">
                         <p
     className={`transition-colors text-[var(--admin-text-faint)] whitespace-nowrap`}
     style={{ fontSize: 11, fontWeight: 400, margin: 0 }}

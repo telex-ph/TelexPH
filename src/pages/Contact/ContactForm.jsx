@@ -3,8 +3,8 @@ import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { AtSign, MessageSquare, Send, ShieldCheck, User } from "lucide-react";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
-import { getApiBaseUrl } from "@/lib/api-base";
-import { getOrCreateVisitorSessionId, setVisitorEmail } from "@/lib/page-view-session";
+import { setVisitorEmail } from "@/lib/page-view-session";
+import { trackConversion } from "@/lib/track-conversion";
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -49,23 +49,7 @@ const ContactForm = () => {
       });
       if (response.ok) {
         setVisitorEmail(formData.email);
-        const sessionId = getOrCreateVisitorSessionId();
-        if (sessionId) {
-          fetch(`${getApiBaseUrl()}/page-views/track`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              path: typeof window !== "undefined" ? window.location.pathname : "/contact",
-              referrer: typeof document !== "undefined" ? document.referrer || "" : "",
-              sessionId,
-              kind: "page",
-              email: formData.email
-            }),
-            credentials: "omit",
-            keepalive: true
-          }).catch(() => {
-          });
-        }
+        trackConversion("Contact form", formData.email);
         setStatus(
           "\u2705 Your message has been sent successfully! We will contact you shortly."
         );
