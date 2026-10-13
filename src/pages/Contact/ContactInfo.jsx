@@ -1,165 +1,41 @@
-import {
-  COLORS,
-  FONTS,
-  FONT_WEIGHTS,
-  FONT_CLASSES,
-  SEMANTIC_COLORS
-} from "@/constant/styles";
-const ContactInfo = () => {
-  const secondaryTextColor = "#6b7280";
-  return <div className="mt-8 space-y-10">
-      <div className="mb-10 text-center md:text-left">
-        <div className="inline-block mb-4">
-          <span
-    className={`${FONT_CLASSES.openSansBold} text-sm uppercase tracking-[0.25em] px-6 py-2 rounded-full inline-block`}
-    style={{
-      color: COLORS.primary,
-      fontFamily: FONTS.openSans,
-      fontWeight: FONT_WEIGHTS.bold
-    }}
-  >
-            — CONTACT
-          </span>
-        </div>
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
 
-        <h2
-    className={`${FONT_CLASSES.openSansBold} text-3xl sm:text-4xl lg:text-5xl mt-3 mb-6 leading-tight`}
-    style={{ color: SEMANTIC_COLORS.text.primary }}
-  >
+const ITEMS = [
+  { Icon: MapPin, label: "Our Office", text: "Guimba, Nueva Ecija, Philippines" },
+  { Icon: Phone, label: "Call Us", text: "0443252836", href: "tel:+63443252836" },
+  { Icon: Mail, label: "Email Us", text: "careers@telexph.com", href: "mailto:careers@telexph.com" },
+  { Icon: Clock, label: "Business Hours", text: "Open 24 Hours" }
+];
+
+/* Centered heading + a single row of contact details. */
+const ContactInfo = () => {
+  return <div style={{ fontFamily: FONTS.rubik }}>
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: COLORS.primary }}>— Contact</p>
+        <h2 className="mt-3 text-3xl leading-tight sm:text-5xl" style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: COLORS.black }}>
           Get in <span style={{ color: COLORS.primary }}>Touch</span>
         </h2>
-
-        <p
-    className={`${FONT_CLASSES.rubikRegular} text-lg text-gray-600 mt-4 max-w-2xl mx-auto md:mx-0`}
-    style={{
-      fontFamily: FONTS.rubik
-    }}
-  >
-          We help you streamline operations, enhance productivity, and scale
-          your business with smart outsourcing solutions.
+        <div className="mx-auto mt-5 h-1 w-14 rounded-full" style={{ backgroundColor: COLORS.primary }} />
+        <p className="mt-5 text-base text-gray-600 sm:text-lg">
+          We help you streamline operations, enhance productivity, and scale your business with smart outsourcing solutions.
         </p>
       </div>
-      <div className="space-y-4 mt-8">
-        <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            </svg>
-          </div>
-          <div>
-            <h3
-    className={`${FONT_CLASSES.poppinsBlack} text-lg mb-1`}
-    style={{
-      fontFamily: FONTS.poppins,
-      fontWeight: FONT_WEIGHTS.semibold,
-      color: COLORS.black
-    }}
-  >
-              Our Office
-            </h3>
-            <p
-    className={`${FONT_CLASSES.rubikRegular}`}
-    style={{
-      fontFamily: FONTS.rubik,
-      color: secondaryTextColor
-    }}
-  >
-              Guimba, Nueva Ecija,
-              <br />
-              Philippines
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <div className="space-y-4 mt-8">
-        <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-            </svg>
+      <div className="mt-12 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-200 bg-white sm:grid-cols-2 lg:grid-cols-4">
+        {ITEMS.map(({ Icon, label, text, href }) => (
+          <div key={label} className="group flex flex-col items-center gap-3 border-b border-gray-200 p-7 text-center transition-colors last:border-b-0 hover:bg-red-50/50 sm:[&:nth-child(odd)]:border-r lg:border-b-0 lg:border-r lg:last:border-r-0">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 transition-colors group-hover:bg-[#a10000]">
+              <Icon className="h-5 w-5 transition-colors group-hover:text-white" style={{ color: COLORS.primary }} />
+            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{label}</span>
+            {href ? (
+              <a href={href} className="break-words text-sm font-semibold text-gray-800 transition-colors hover:text-[#a10000]">{text}</a>
+            ) : (
+              <span className="text-sm font-semibold text-gray-800">{text}</span>
+            )}
           </div>
-          <div>
-            <h3
-    className={`${FONT_CLASSES.poppinsBlack} text-lg mb-1`}
-    style={{
-      fontFamily: FONTS.poppins,
-      fontWeight: FONT_WEIGHTS.semibold,
-      color: COLORS.black
-    }}
-  >
-              Get in Touch
-            </h3>
-
-            <a
-    href="tel:+63443252836"
-    className={`${FONT_CLASSES.rubikRegular} block transition-colors`}
-    style={{
-      fontFamily: FONTS.rubik,
-      color: secondaryTextColor
-    }}
-    onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primary}
-    onMouseLeave={(e) => e.currentTarget.style.color = secondaryTextColor}
-  >
-              0443252836
-            </a>
-
-            <a
-    href="mailto:careers@telexph.com"
-    className={`${FONT_CLASSES.rubikRegular} block transition-colors`}
-    style={{
-      fontFamily: FONTS.rubik,
-      color: secondaryTextColor
-    }}
-    onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primary}
-    onMouseLeave={(e) => e.currentTarget.style.color = secondaryTextColor}
-  >
-              careers@telexph.com
-            </a>
-          </div>
-        </div>
-      </div>
-      <div className="pt-6 mt-8 border-t border-gray-200">
-        <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0" style={{ color: COLORS.primary }}>
-            <svg
-    className="w-6 h-6"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-              <circle cx="12" cy="12" r="9" />
-              <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M12 7v5l3 2"
-  />
-            </svg>
-          </div>
-          <div>
-            <h3
-    className={`${FONT_CLASSES.poppinsBlack} text-lg mb-3`}
-    style={{
-      fontFamily: FONTS.poppins,
-      fontWeight: FONT_WEIGHTS.semibold,
-      color: COLORS.black
-    }}
-  >
-              Business Hours
-            </h3>
-            <div
-    className={`${FONT_CLASSES.rubikRegular} space-y-2`}
-    style={{
-      fontFamily: FONTS.rubik,
-      color: secondaryTextColor
-    }}
-  >
-              <p>Open 24 Hours</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>;
 };

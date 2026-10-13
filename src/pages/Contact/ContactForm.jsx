@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import Image from "next/image";
 import ReCAPTCHA from "react-google-recaptcha";
+import { AtSign, MessageSquare, Send, ShieldCheck, User } from "lucide-react";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { getOrCreateVisitorSessionId, setVisitorEmail } from "@/lib/page-view-session";
@@ -82,52 +82,38 @@ const ContactForm = () => {
       setIsSubmitting(false);
     }
   };
-  const inputStyle = `w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#a10000] focus:border-[#a10000] focus:outline-none transition placeholder-gray-500`;
+  const inputStyle = `w-full pl-11 pr-4 py-3 text-sm border border-gray-300 bg-white rounded-lg focus:ring-2 focus:ring-[#a10000]/20 focus:border-[#a10000] focus:outline-none transition placeholder-gray-400`;
+  const iconStyle = "pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#a10000]";
   return <div
-    className="rounded-3xl shadow-2xl p-6 lg:p-10 transform hover:shadow-3xl transition duration-500"
+    className="h-full p-8 lg:p-12"
     style={{ backgroundColor: COLORS.white }}
   >
-      <div className="mb-8 border-b pb-4 border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="relative w-12 h-12 flex-shrink-0">
-            <Image
-    src="/images/Tlxlogo.webp"
-    alt="TELEX Philippines Logo"
-    fill
-    className="object-contain"
-    sizes="48px"
-    priority
-  />
-          </div>
-          <div>
-            <span
-    className="text-2xl block tracking-tight"
+      <div className="mb-8">
+        <h3
+    className="text-2xl tracking-tight"
     style={{
       fontFamily: FONTS.poppins,
       fontWeight: FONT_WEIGHTS.bold,
       color: COLORS.black
     }}
   >
-              TELEX PHILIPPINES
-            </span>
-            <p
-    className="text-sm text-gray-600"
-    style={{ fontFamily: FONTS.poppins }}
-  >
-              Send us a message
-            </p>
-          </div>
-        </div>
+          Send us a message
+        </h3>
+        <p className="mt-1 text-sm text-gray-500" style={{ fontFamily: FONTS.rubik }}>
+          Fill out the form and our team will get back to you.
+        </p>
       </div>
 
       <form
     action="https://services.leadconnectorhq.com/hooks/KlBL9XEG0eVNlAqE7m5V/webhook-trigger/c44f7f42-a284-4852-be0d-f263777767ef"
     method="POST"
     onSubmit={handleSubmit}
-    className="space-y-6"
+    className="space-y-5"
     encType="multipart/form-data"
   >
-        <input
+        <div className="group relative">
+          <User aria-hidden className={iconStyle} />
+          <input
     type="text"
     name="name"
     placeholder="Full Name"
@@ -136,7 +122,10 @@ const ContactForm = () => {
     required
     className={inputStyle}
   />
-        <input
+        </div>
+        <div className="group relative">
+          <AtSign aria-hidden className={iconStyle} />
+          <input
     type="email"
     name="email"
     placeholder="Email Address"
@@ -145,8 +134,11 @@ const ContactForm = () => {
     required
     className={inputStyle}
   />
+        </div>
 
-        <textarea
+        <div className="group relative">
+          <MessageSquare aria-hidden className={iconStyle} />
+          <textarea
     name="message"
     placeholder="Your Message or Inquiry"
     value={formData.message}
@@ -155,6 +147,7 @@ const ContactForm = () => {
     rows={5}
     className={`${inputStyle} resize-none`}
   />
+        </div>
 
         <div className="pt-2">
           {RECAPTCHA_SITE_KEY ? <ReCAPTCHA
@@ -168,11 +161,16 @@ const ContactForm = () => {
         <button
     type="submit"
     disabled={isSubmitting || !recaptchaToken || !RECAPTCHA_SITE_KEY}
-    className={`w-full text-white font-semibold py-3 px-6 rounded-xl shadow-md transition duration-300 transform ${isSubmitting || !recaptchaToken || !RECAPTCHA_SITE_KEY ? "bg-gray-400 cursor-not-allowed shadow-none" : "bg-[#a10000] hover:bg-[#8a0000] hover:scale-[1.01] active:scale-[0.99]"}`}
+    className={`w-full text-white font-semibold py-3.5 px-6 rounded-lg transition duration-300 ${isSubmitting || !recaptchaToken || !RECAPTCHA_SITE_KEY ? "bg-gray-400 cursor-not-allowed" : "bg-[#a10000] hover:bg-[#8a0000] active:scale-[0.99]"}`}
     style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold }}
   >
-          {isSubmitting ? "Sending..." : "Send Message"}
+          <span className="inline-flex items-center justify-center gap-2">
+            {isSubmitting ? "Sending..." : <>Send Message <Send className="h-4 w-4" /></>}
+          </span>
         </button>
+        <p className="flex items-center justify-center gap-1.5 text-xs text-gray-500" style={{ fontFamily: FONTS.rubik }}>
+          <ShieldCheck className="h-3.5 w-3.5" /> Your details are safe with us.
+        </p>
 
         {status && <p
     className={`text-center text-sm pt-2 ${status.startsWith("\u2705") ? "text-green-600" : "text-red-600"}`}
