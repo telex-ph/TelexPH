@@ -18,13 +18,13 @@ const F_MONO = "'JetBrains Mono', 'Fira Code', monospace";
 const COLORS = {
   primary: "#4F46E5",
   primaryLight: "#818CF8",
-  primaryMuted: "#EEF2FF",
+  primaryMuted: "color-mix(in srgb, #4F46E5 14%, transparent)",
   success: "#059669",
-  successBg: "#ECFDF5",
+  successBg: "color-mix(in srgb, #059669 14%, transparent)",
   warning: "#D97706",
-  warningBg: "#FFFBEB",
+  warningBg: "color-mix(in srgb, #D97706 14%, transparent)",
   danger: "#DC2626",
-  dangerBg: "#FEF2F2",
+  dangerBg: "color-mix(in srgb, #DC2626 14%, transparent)",
   teal: "#0D9488",
   violet: "#7C3AED",
   amber: "#F59E0B",
@@ -43,13 +43,6 @@ const TT = {
   padding: "10px 14px",
   fontFamily: F,
   boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
-};
-const PAGE_SECTIONS = ["All Pages", "Package Deals", "Booking", "Flights", "Services", "Tours"];
-const stageStyles = {
-  Awareness: { bg: "#F5F3FF", text: "#6D28D9", border: "#DDD6FE" },
-  Consideration: { bg: "#FFFBEB", text: "#92400E", border: "#FDE68A" },
-  Decision: { bg: "#EFF6FF", text: "#1D4ED8", border: "#BFDBFE" },
-  Converted: { bg: "#ECFDF5", text: "#065F46", border: "#A7F3D0" }
 };
 const IconRefresh = () => <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
     <path d="M23 4v6h-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -77,8 +70,8 @@ function MetricCard({ label, value, change, sub, icon }) {
   const up = change >= 0;
   return <div
     style={{
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
+      background: "var(--admin-surface)",
+      border: "1px solid var(--admin-border)",
       borderRadius: 16,
       padding: "20px 22px",
       display: "flex",
@@ -90,7 +83,7 @@ function MetricCard({ label, value, change, sub, icon }) {
       transition: "box-shadow 0.2s ease, transform 0.2s ease"
     }}
     onMouseEnter={(e) => {
-      e.currentTarget.style.boxShadow = "0 8px 25px rgba(79,70,229,0.08)";
+      e.currentTarget.style.boxShadow = "0 8px 25px var(--admin-accent-soft)";
       e.currentTarget.style.transform = "translateY(-1px)";
     }}
     onMouseLeave={(e) => {
@@ -98,15 +91,15 @@ function MetricCard({ label, value, change, sub, icon }) {
       e.currentTarget.style.transform = "translateY(0)";
     }}
   >
-      <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: 80, background: "radial-gradient(circle at 80% 20%, rgba(79,70,229,0.05) 0%, transparent 70%)", borderRadius: 16 }} />
+      <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: 80, background: "radial-gradient(circle at 80% 20%, var(--admin-accent-soft) 0%, transparent 70%)", borderRadius: 16 }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", fontFamily: F }}>{label}</span>
+        <span style={{ fontSize: 11, color: "var(--admin-text-faint)", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", fontFamily: F }}>{label}</span>
         {icon && <div style={{ width: 32, height: 32, borderRadius: 10, background: COLORS.primaryMuted, display: "flex", alignItems: "center", justifyContent: "center", color: COLORS.primary, flexShrink: 0 }}>
             {icon}
           </div>}
       </div>
       <div>
-        <span style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, fontFamily: F, letterSpacing: "-1px", color: "#0F172A" }}>{value}</span>
+        <span style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, fontFamily: F, letterSpacing: "-1px", color: "var(--admin-text)" }}>{value}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{
@@ -123,14 +116,14 @@ function MetricCard({ label, value, change, sub, icon }) {
   }}>
           {up ? "\u2191" : "\u2193"} {Math.abs(change)}%
         </span>
-        {sub && <span style={{ fontSize: 11, color: "#94A3B8", fontFamily: F }}>{sub}</span>}
+        {sub && <span style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F }}>{sub}</span>}
       </div>
     </div>;
 }
 function Card({ children, style }) {
   return <div style={{
-    background: "#FFFFFF",
-    border: "1px solid #E2E8F0",
+    background: "var(--admin-surface)",
+    border: "1px solid var(--admin-border)",
     borderRadius: 16,
     padding: "22px 24px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
@@ -139,49 +132,140 @@ function Card({ children, style }) {
       {children}
     </div>;
 }
-const MOCK_VISITORS = [
-  { id: "V-F0CE1E", lastSeen: "1h ago", visits: 37, pages: 4, stage: null, initials: "1E", color: "#6366F1", device: "Desktop", source: "Organic Search", duration: "12m 45s" },
-  { id: "V-E7A61E", lastSeen: "2h ago", visits: 2, pages: 2, stage: null, initials: "1E", color: "#6366F1", device: "Mobile", source: "Direct", duration: "3m 20s" },
-  { id: "V-78CD42", lastSeen: "2h ago", visits: 2, pages: 2, stage: "Consideration", initials: "42", color: "#F59E0B", device: "Desktop", source: "Social Media", duration: "5m 12s" },
-  { id: "V-E6AA5B", lastSeen: "2h ago", visits: 2, pages: 2, stage: "Consideration", initials: "5B", color: "#F59E0B", device: "Tablet", source: "Referral", duration: "8m 55s" },
-  { id: "V-24CDBB", lastSeen: "3h ago", visits: 2, pages: 2, stage: "Consideration", initials: "BB", color: "#F59E0B", device: "Mobile", source: "Organic Search", duration: "2m 10s" },
-  { id: "V-A91F3C", lastSeen: "4h ago", visits: 5, pages: 7, stage: "Decision", initials: "3C", color: "#10B981", device: "Desktop", source: "Direct", duration: "15m 30s" },
-  { id: "V-B3DE22", lastSeen: "5h ago", visits: 12, pages: 15, stage: "Converted", initials: "22", color: "#3B82F6", device: "Desktop", source: "Organic Search", duration: "24m 18s" },
-  { id: "V-CC0012", lastSeen: "6h ago", visits: 1, pages: 1, stage: "Awareness", initials: "12", color: "#8B5CF6", device: "Mobile", source: "Social Media", duration: "1m 45s" }
-];
+const clock = { hour: "numeric", minute: "2-digit" };
+function when(iso) {
+  const d = new Date(iso);
+  const days = Math.round((new Date((/* @__PURE__ */ new Date()).toDateString()) - new Date(d.toDateString())) / 864e5);
+  const date = days === 0 ? "Today" : days === 1 ? "Yesterday" : d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${date}, ${d.toLocaleTimeString("en-US", clock)}`;
+}
+function fmtSpan(sec) {
+  if (sec < 60) return `${sec}s`;
+  if (sec < 3600) return `${Math.floor(sec / 60)}m ${sec % 60}s`;
+  return `${Math.floor(sec / 3600)}h ${Math.floor(sec % 3600 / 60)}m`;
+}
+/** Steps (oldest first) -> visits (oldest first). Same page several times in a row becomes one line with a count. */
+function groupVisits(steps) {
+  const visits = [];
+  for (const s of steps) {
+    let v = visits[visits.length - 1];
+    if (!v || v.n !== s.visit) visits.push(v = { n: s.visit, pages: [], views: 0 });
+    const last = v.pages[v.pages.length - 1];
+    if (s.kind !== "conversion") v.views += 1;
+    if (last && last.label === s.label && last.kind === s.kind) {
+      last.count += 1;
+      last.endAt = s.at;
+    } else v.pages.push({ label: s.label, kind: s.kind, path: s.path, at: s.at, endAt: s.at, count: 1 });
+  }
+  for (const v of visits) {
+    v.start = v.pages[0].at;
+    v.secs = Math.round((new Date(v.pages[v.pages.length - 1].endAt) - new Date(v.start)) / 1e3);
+  }
+  return visits;
+}
+function pathPreview(visit) {
+  const names = visit.pages.map((p) => p.label);
+  return names.length <= 4 ? names.join(" → ") : `${names.slice(0, 3).join(" → ")} → … → ${names[names.length - 1]}`;
+}
+function Fact({ label, children }) {
+  return <div style={{ minWidth: 0 }}>
+      <div style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F }}>{label}</div>
+      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--admin-text)", fontFamily: F, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{children}</div>
+    </div>;
+}
+/** Expanded row: a few facts about the visitor, then each visit with the pages they viewed, in order. */
+function JourneyDetail({ visitor }) {
+  const { steps, ips } = visitor;
+  const visits = useMemo(() => groupVisits(steps ?? []).reverse(), [steps]);
+  const [open, setOpen] = useState(() => new Set(visits.slice(0, 1).map((v) => v.n)));
+  const [showAllVisits, setShowAllVisits] = useState(false);
+  const shown = showAllVisits ? visits : visits.slice(0, 3);
+  const toggle = (n) => setOpen((prev) => {
+    const next = new Set(prev);
+    if (!next.delete(n)) next.add(n);
+    return next;
+  });
+  // An older API deploy has no journey data; say so instead of crashing the page.
+  if (!steps || !ips) return <p style={{ padding: "14px 20px", margin: 0, fontSize: 12, color: "var(--admin-text-faint)", fontFamily: F, background: "var(--admin-bg-soft)" }}>
+      Journey details are unavailable: the API needs to be updated to the latest version.
+    </p>;
+  return <div style={{ background: "var(--admin-bg-soft)", borderTop: "1px solid var(--admin-border)", padding: "16px 20px 18px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 14, marginBottom: 18 }}>
+        <Fact label="IP address"><span title={ips.join(", ")} style={{ fontFamily: F_MONO }}>{ips[0] ?? "Unknown"}{ips.length > 1 && ` +${ips.length - 1}`}</span></Fact>
+        <Fact label="Device">{visitor.device}</Fact>
+        <Fact label="Came from">{visitor.source}</Fact>
+        <Fact label="Total time on site">{visitor.sessionDuration}</Fact>
+      </div>
+
+      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--admin-text)", fontFamily: F, marginBottom: 8 }}>
+        Pages viewed <span style={{ fontWeight: 400, color: "var(--admin-text-faint)" }}>· newest visit first</span>
+      </div>
+      {visitor.visitsEstimated && <div style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F, margin: "-4px 0 8px" }}>
+          Some visits are estimated: activity from before the site recorded visits is split wherever there was a 30-minute pause.
+        </div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {shown.map((v, vi) => {
+    const isOpen = open.has(v.n);
+    return <div key={v.n} style={{ background: "var(--admin-surface)", border: "1px solid var(--admin-border)", borderRadius: 10, overflow: "hidden" }}>
+              <button type="button" onClick={() => toggle(v.n)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", padding: "10px 14px", background: "transparent", border: "none", cursor: "pointer", fontFamily: F, textAlign: "left" }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: "var(--admin-text)", display: "flex", alignItems: "center", gap: 8 }}>
+                  Visit {v.n}
+                  {vi === 0 && <span style={{ fontSize: 10, fontWeight: 600, color: COLORS.success, background: COLORS.successBg, padding: "1px 7px", borderRadius: 99 }}>Latest</span>}
+                </span>
+                <span style={{ fontSize: 12, color: "var(--admin-text-faint)", display: "flex", alignItems: "center", gap: 8 }}>
+                  {when(v.start)} · {v.views} page{v.views === 1 ? "" : "s"}{v.secs > 0 && ` · ${fmtSpan(v.secs)}`}
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}>
+                    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </button>
+              {isOpen && <ol style={{ listStyle: "none", margin: 0, padding: 0, borderTop: "1px solid var(--admin-border)" }}>
+                  {v.pages.map((p, i) => <li key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 14px", borderTop: i ? "1px solid var(--admin-bg-soft)" : "none" }}>
+                      <span style={{ width: 20, height: 20, borderRadius: "50%", flexShrink: 0, background: p.kind === "funnel" ? COLORS.amber : p.kind === "conversion" ? COLORS.success : COLORS.primary, color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F }}>{i + 1}</span>
+                      <span title={p.path} style={{ flex: 1, minWidth: 0, fontSize: 13, color: "var(--admin-text)", fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {p.label}
+                        {p.count > 1 && <span title={`Viewed ${p.count} times in a row`} style={{ color: "var(--admin-text-faint)" }}> ×{p.count}</span>}
+                        {p.kind === "funnel" && <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, color: COLORS.warning, background: COLORS.warningBg, padding: "1px 7px", borderRadius: 99 }}>Funnel click</span>}
+                        {p.kind === "conversion" && <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, color: COLORS.success, background: COLORS.successBg, padding: "1px 7px", borderRadius: 99 }}>Form submitted</span>}
+                      </span>
+                      <span style={{ fontSize: 12, color: "var(--admin-text-faint)", fontFamily: F, flexShrink: 0 }}>{new Date(p.at).toLocaleTimeString("en-US", clock)}</span>
+                    </li>)}
+                </ol>}
+            </div>;
+  })}
+        {visits.length > 3 && <button type="button" onClick={() => setShowAllVisits((p) => !p)} style={{ alignSelf: "flex-start", padding: "6px 2px", background: "transparent", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "var(--admin-accent-text)", fontFamily: F }}>
+            {showAllVisits ? "Show fewer visits" : `Show ${visits.length - 3} earlier visits`}
+          </button>}
+      </div>
+      {visitor.truncated && <div style={{ marginTop: 10, fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F }}>
+          Showing only the latest {steps.length} events. Export CSV for the full list.
+        </div>}
+    </div>;
+}
 function VisitorJourneyTracker({ range }) {
   const [search, setSearch] = useState("");
-  const [pageFilter, setPageFilter] = useState("All Pages");
-  const [showDropdown, setShowDropdown] = useState(false);
   const [expanded, setExpanded] = useState(null);
   const [showAll, setShowAll] = useState(false);
-  const [visitors, setVisitors] = useState(MOCK_VISITORS);
+  const [visitors, setVisitors] = useState([]);
+  const [total, setTotal] = useState(0);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(/* @__PURE__ */ new Date());
   const fetchVisitors = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await api.get("/dashboard/page-views/visitors", { params: { range } });
-      setVisitors(res.data.visitors.length > 0 ? res.data.visitors : MOCK_VISITORS);
+      setVisitors(res.data.visitors);
+      setTotal(res.data.total);
+      setChartData(res.data.daily ?? []);
       setLastUpdated(/* @__PURE__ */ new Date());
     } catch {
+      setError("Could not load visitor journeys. Check that you are signed in and the API is reachable.");
     } finally {
       setLoading(false);
     }
-  }, [range]);
-  useEffect(() => {
-    const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
-    const data = Array.from({ length: days }, (_, i) => {
-      const d = /* @__PURE__ */ new Date();
-      d.setDate(d.getDate() - (days - 1 - i));
-      return {
-        date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-        activeVisitors: Math.floor(Math.random() * 50 + 20)
-        // mock active visitors
-      };
-    });
-    setChartData(data);
   }, [range]);
   useEffect(() => {
     fetchVisitors();
@@ -217,13 +301,13 @@ function VisitorJourneyTracker({ range }) {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: F, color: "#0F172A", letterSpacing: "-0.3px" }}>Visitor Journey Tracker</p>
-            <p style={{ fontSize: 12, color: "#94A3B8", margin: "3px 0 0", fontFamily: F }}>
+            <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: F, color: "var(--admin-text)", letterSpacing: "-0.3px" }}>Visitor Journey Tracker</p>
+            <p style={{ fontSize: 12, color: "var(--admin-text-faint)", margin: "3px 0 0", fontFamily: F }}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", display: "inline-block", boxShadow: "0 0 0 2px rgba(16,185,129,0.2)" }} />
-                {filtered.length} unique visitors tracked
+                {total} unique visitors tracked{visitors.length < total && ` (showing latest ${visitors.length})`}
               </span>
-              <span style={{ color: "#CBD5E1", margin: "0 6px" }}>·</span>
+              <span style={{ color: "var(--admin-border-strong)", margin: "0 6px" }}>·</span>
               Updated {timeStr}
             </p>
           </div>
@@ -238,10 +322,10 @@ function VisitorJourneyTracker({ range }) {
       padding: "8px 14px",
       fontSize: 12,
       fontWeight: 500,
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
+      background: "var(--admin-surface)",
+      border: "1px solid var(--admin-border)",
       borderRadius: 10,
-      color: loading ? "#94A3B8" : "#475569",
+      color: loading ? "var(--admin-text-faint)" : "var(--admin-text-sub)",
       cursor: loading ? "not-allowed" : "pointer",
       fontFamily: F,
       boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
@@ -256,8 +340,8 @@ function VisitorJourneyTracker({ range }) {
     }}
     onMouseLeave={(e) => {
       if (!loading) {
-        e.currentTarget.style.borderColor = "#E2E8F0";
-        e.currentTarget.style.color = "#475569";
+        e.currentTarget.style.borderColor = "var(--admin-border)";
+        e.currentTarget.style.color = "var(--admin-text-sub)";
       }
     }}
   >
@@ -273,8 +357,8 @@ function VisitorJourneyTracker({ range }) {
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
             <div>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: "#0F172A", margin: 0, fontFamily: F }}>Active Visitors</h3>
-              <p style={{ fontSize: 12, color: "#64748B", margin: "4px 0 0", fontFamily: F }}>Daily unique visitors tracked across your funnels and pages</p>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: "var(--admin-text)", margin: 0, fontFamily: F }}>Active Visitors</h3>
+              <p style={{ fontSize: 12, color: "var(--admin-text-faint)", margin: "4px 0 0", fontFamily: F }}>Daily unique visitors tracked across your funnels and pages</p>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={160}>
@@ -285,9 +369,9 @@ function VisitorJourneyTracker({ range }) {
                   <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} stroke="#F1F5F9" />
-              <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: F }} axisLine={false} tickLine={false} dy={5} />
-              <YAxis tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: F }} axisLine={false} tickLine={false} />
+              <CartesianGrid vertical={false} stroke="var(--admin-bg-soft)" />
+              <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} dy={5} />
+              <YAxis tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} labelStyle={{ fontWeight: 600, marginBottom: 4, color: "#F8FAFC" }} formatter={(val) => [val, "Visitors"]} />
               <Area type="monotone" dataKey="activeVisitors" stroke={COLORS.primary} strokeWidth={2} fillOpacity={1} fill="url(#vGrad)" />
             </AreaChart>
@@ -295,10 +379,10 @@ function VisitorJourneyTracker({ range }) {
         </div>
 
         <div>
-          <h3 style={{ fontSize: 14, fontWeight: 600, color: "#0F172A", marginBottom: 12, fontFamily: F }}>Device Breakdown</h3>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: "var(--admin-text)", marginBottom: 12, fontFamily: F }}>Device Breakdown</h3>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <PieChart width={120} height={120}>
-              <Pie data={deviceData} cx={56} cy={56} innerRadius={35} outerRadius={55} dataKey="value" strokeWidth={2} stroke="#FFFFFF">
+              <Pie data={deviceData} cx={56} cy={56} innerRadius={35} outerRadius={55} dataKey="value" strokeWidth={2} stroke="var(--admin-surface)">
                 <Cell fill={COLORS.chart1} />
                 <Cell fill={COLORS.chart3} />
                 <Cell fill={COLORS.chart2} />
@@ -307,7 +391,7 @@ function VisitorJourneyTracker({ range }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {deviceData.map((d, i) => <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: [COLORS.chart1, COLORS.chart3, COLORS.chart2][i % 3] }} />
-                  <span style={{ fontSize: 11, color: "#64748B", fontFamily: F }}>{d.name}</span>
+                  <span style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F }}>{d.name} · {d.value}</span>
                 </div>)}
             </div>
           </div>
@@ -319,7 +403,7 @@ function VisitorJourneyTracker({ range }) {
   }
       <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
         <div style={{ position: "relative", flex: 1 }}>
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#94A3B8", pointerEvents: "none" }}>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--admin-text-faint)", pointerEvents: "none" }}>
             <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5" />
             <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
@@ -336,111 +420,39 @@ function VisitorJourneyTracker({ range }) {
       paddingBottom: 10,
       fontSize: 13,
       fontFamily: F,
-      border: "1px solid #E2E8F0",
+      border: "1px solid var(--admin-border)",
       borderRadius: 10,
-      background: "#F8FAFC",
-      color: "#0F172A",
+      background: "var(--admin-bg-soft)",
+      color: "var(--admin-text)",
       outline: "none",
       boxSizing: "border-box",
       transition: "border-color 0.15s"
     }}
     onFocus={(e) => {
       e.target.style.borderColor = "#4F46E5";
-      e.target.style.background = "#FFFFFF";
+      e.target.style.background = "var(--admin-surface)";
     }}
     onBlur={(e) => {
-      e.target.style.borderColor = "#E2E8F0";
-      e.target.style.background = "#F8FAFC";
+      e.target.style.borderColor = "var(--admin-border)";
+      e.target.style.background = "var(--admin-bg-soft)";
     }}
   />
         </div>
 
-        {
-    /* Dropdown */
-  }
-        <div style={{ position: "relative" }}>
-          <button
-    onClick={() => setShowDropdown((p) => !p)}
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 8,
-      padding: "10px 14px",
-      fontSize: 13,
-      fontWeight: 500,
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
-      borderRadius: 10,
-      color: "#0F172A",
-      cursor: "pointer",
-      fontFamily: F,
-      minWidth: 140,
-      justifyContent: "space-between",
-      boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-      borderColor: showDropdown ? "#4F46E5" : "#E2E8F0",
-      transition: "border-color 0.15s"
-    }}
-  >
-            <span>{pageFilter}</span>
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" style={{ color: "#94A3B8", transform: showDropdown ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}>
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          {showDropdown && <div style={{
-    position: "absolute",
-    top: "calc(100% + 6px)",
-    right: 0,
-    background: "#FFFFFF",
-    border: "1px solid #E2E8F0",
-    borderRadius: 12,
-    boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
-    zIndex: 100,
-    overflow: "hidden",
-    minWidth: 160,
-    padding: 6
-  }}>
-              {PAGE_SECTIONS.map((sec) => <button
-    key={sec}
-    onClick={() => {
-      setPageFilter(sec);
-      setShowDropdown(false);
-    }}
-    style={{
-      display: "block",
-      width: "100%",
-      textAlign: "left",
-      padding: "9px 14px",
-      fontSize: 13,
-      fontFamily: F,
-      background: pageFilter === sec ? COLORS.primaryMuted : "transparent",
-      color: pageFilter === sec ? COLORS.primary : "#374151",
-      border: "none",
-      borderRadius: 8,
-      cursor: "pointer",
-      fontWeight: pageFilter === sec ? 600 : 400,
-      transition: "background 0.1s"
-    }}
-    onMouseEnter={(e) => {
-      if (pageFilter !== sec) e.currentTarget.style.background = "#F8FAFC";
-    }}
-    onMouseLeave={(e) => {
-      if (pageFilter !== sec) e.currentTarget.style.background = "transparent";
-    }}
-  >
-                  {sec}
-                </button>)}
-            </div>}
-        </div>
       </div>
 
       {
     /* Visitor List */
   }
-      <div style={{ display: "flex", flexDirection: "column", gap: 0, border: "1px solid #E2E8F0", borderRadius: 12, overflow: "hidden" }}>
+      {error && <p style={{ fontSize: 13, color: COLORS.danger, fontFamily: F, margin: "0 0 12px" }}>{error}</p>}
+      {!error && !loading && filtered.length === 0 && <p style={{ fontSize: 13, color: "var(--admin-text-faint)", fontFamily: F, textAlign: "center", padding: "28px 0", margin: 0 }}>
+          {search.trim() ? "No visitors match your search." : "No visitors recorded in this range yet."}
+        </p>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 0, border: filtered.length ? "1px solid var(--admin-border)" : "none", borderRadius: 12, overflow: "hidden" }}>
         {displayed.map((visitor, i) => {
     const isExpanded = expanded === visitor.id;
-    const stageStyle = visitor.stage ? stageStyles[visitor.stage] : null;
+    const conversionTypes = [...new Set((visitor.conversions ?? []).map((c) => c.type))];
+    const latest = visitor.steps ? groupVisits(visitor.steps).pop() : null;
     return <div key={visitor.id}>
               <div
       style={{
@@ -448,17 +460,17 @@ function VisitorJourneyTracker({ range }) {
         alignItems: "center",
         gap: 14,
         padding: "14px 16px",
-        background: isExpanded ? "#FAFBFF" : "#FFFFFF",
-        borderBottom: i < displayed.length - 1 ? "1px solid #F1F5F9" : "none",
+        background: isExpanded ? "var(--admin-bg-soft)" : "var(--admin-surface)",
+        borderBottom: i < displayed.length - 1 ? "1px solid var(--admin-bg-soft)" : "none",
         cursor: "pointer",
         transition: "background 0.1s"
       }}
       onClick={() => setExpanded(isExpanded ? null : visitor.id)}
       onMouseEnter={(e) => {
-        if (!isExpanded) e.currentTarget.style.background = "#F8FAFC";
+        if (!isExpanded) e.currentTarget.style.background = "var(--admin-bg-soft)";
       }}
       onMouseLeave={(e) => {
-        if (!isExpanded) e.currentTarget.style.background = "#FFFFFF";
+        if (!isExpanded) e.currentTarget.style.background = "var(--admin-surface)";
       }}
     >
                 {
@@ -482,67 +494,36 @@ function VisitorJourneyTracker({ range }) {
                   {visitor.initials}
                 </div>
 
-                {
-      /* Info */
-    }
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", fontFamily: F }}>{visitor.id}</div>
-                    {visitor.device && <span style={{ fontSize: 10, color: "#94A3B8", background: "#F1F5F9", padding: "1px 6px", borderRadius: 4, fontFamily: F_MONO }}>
-                        {visitor.device}
-                      </span>}
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--admin-text)", fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {visitor.email || `Visitor #${visitor.id.slice(-4).toUpperCase()}`}
                   </div>
-                  <div style={{ fontSize: 12, color: "#64748B", fontFamily: F, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {visitor.email || "Unknown email"}
-                    {visitor.source && <span style={{ color: "#CBD5E1", margin: "0 6px" }}>·</span>}
-                    {visitor.source && <span style={{ color: "#4F46E5", fontWeight: 500 }}>{visitor.source}</span>}
-                  </div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontFamily: F, marginTop: 2 }}>
-                    <svg width="11" height="11" fill="none" viewBox="0 0 24 24" style={{ display: "inline", verticalAlign: "middle", marginRight: 4 }}>
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    Last seen {visitor.lastSeen}
-                    <span style={{ margin: "0 6px", color: "#E2E8F0" }}>·</span>
-                    {visitor.visits} visits
-                    <span style={{ margin: "0 6px", color: "#E2E8F0" }}>·</span>
-                    {visitor.pages} pages
+                  {latest && <div style={{ fontSize: 12, color: "var(--admin-text-sub)", fontFamily: F, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span style={{ color: "var(--admin-text-faint)" }}>Latest visit: </span>{pathPreview(latest)}
+                    </div>}
+                  <div style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F, marginTop: 3 }}>
+                    Last seen {visitor.lastSeen} · {visitor.visitCount} visit{visitor.visitCount === 1 ? "" : "s"} · {visitor.visits} page views
                   </div>
                 </div>
 
-                {
-      /* Stage */
-    }
-                {stageStyle && <span style={{
+                {visitor.converted && <span title={visitor.conversions.map((c) => `${c.type} · ${when(c.at)}`).join(", ")} style={{
       fontSize: 11,
       fontWeight: 600,
       padding: "4px 11px",
       borderRadius: 99,
-      background: stageStyle.bg,
-      color: stageStyle.text,
-      border: `1px solid ${stageStyle.border}`,
+      background: COLORS.successBg,
+      color: COLORS.success,
+      border: "1px solid color-mix(in srgb, currentColor 30%, transparent)",
       fontFamily: F,
       whiteSpace: "nowrap"
     }}>
-                    {visitor.stage}
+                    Converted · {conversionTypes.join(", ")}
                   </span>}
-
-                {
-      /* Progress bar indicator */
-    }
-                <div style={{ width: 60, height: 3, background: "#F1F5F9", borderRadius: 2, flexShrink: 0, overflow: "hidden" }}>
-                  <div style={{
-      height: "100%",
-      width: visitor.stage === "Converted" ? "100%" : visitor.stage === "Decision" ? "75%" : visitor.stage === "Consideration" ? "50%" : visitor.stage === "Awareness" ? "25%" : `${Math.min(visitor.visits / 40 * 100, 90)}%`,
-      background: visitor.stage ? stageStyles[visitor.stage].text : "#4F46E5",
-      borderRadius: 2
-    }} />
-                </div>
 
                 {
       /* Chevron */
     }
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" style={{ color: "#CBD5E1", transform: isExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" style={{ color: "var(--admin-border-strong)", transform: isExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>
                   <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
@@ -550,37 +531,7 @@ function VisitorJourneyTracker({ range }) {
               {
       /* Expanded Detail */
     }
-              {isExpanded && <div style={{
-      background: "#FAFBFF",
-      borderTop: "1px solid #EEF2FF",
-      padding: "14px 16px 16px 70px",
-      borderBottom: i < displayed.length - 1 ? "1px solid #F1F5F9" : "none"
-    }}>
-                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                    {(visitor.pageList ?? ["Homepage", "Pricing", "Features", "Contact"].slice(0, visitor.pages)).map((page, pi) => <div key={pi} style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 7,
-      padding: "6px 12px",
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
-      borderRadius: 8,
-      fontSize: 12,
-      color: "#374151",
-      fontFamily: F,
-      boxShadow: "0 1px 2px rgba(0,0,0,0.04)"
-    }}>
-                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: COLORS.primary, opacity: 0.5 }} />
-                        {page}
-                        {pi < visitor.pages - 1 && <svg width="10" height="10" fill="none" viewBox="0 0 24 24" style={{ color: "#CBD5E1" }}>
-                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>}
-                      </div>)}
-                  </div>
-                  <div style={{ marginTop: 10, fontSize: 11, color: "#94A3B8", fontFamily: F_MONO }}>
-                    Visitor ID: {visitor.id} · Session duration: {visitor.duration || "4m 12s"}
-                  </div>
-                </div>}
+              {isExpanded && <JourneyDetail visitor={visitor} />}
             </div>;
   })}
       </div>
@@ -600,10 +551,10 @@ function VisitorJourneyTracker({ range }) {
       padding: "12px 0",
       fontSize: 13,
       fontWeight: 500,
-      background: "#F8FAFC",
-      border: "1px dashed #CBD5E1",
+      background: "var(--admin-bg-soft)",
+      border: "1px dashed var(--admin-border-strong)",
       borderRadius: 10,
-      color: "#475569",
+      color: "var(--admin-text-sub)",
       cursor: "pointer",
       fontFamily: F,
       transition: "all 0.15s"
@@ -614,9 +565,9 @@ function VisitorJourneyTracker({ range }) {
       e.currentTarget.style.borderColor = COLORS.primaryLight;
     }}
     onMouseLeave={(e) => {
-      e.currentTarget.style.background = "#F8FAFC";
-      e.currentTarget.style.color = "#475569";
-      e.currentTarget.style.borderColor = "#CBD5E1";
+      e.currentTarget.style.background = "var(--admin-bg-soft)";
+      e.currentTarget.style.color = "var(--admin-text-sub)";
+      e.currentTarget.style.borderColor = "var(--admin-border-strong)";
     }}
   >
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
@@ -630,7 +581,6 @@ export {
   COLORS,
   F,
   F_MONO,
-  MOCK_VISITORS,
   TT,
   VisitorJourneyTracker
 };

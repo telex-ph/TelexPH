@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { getApiBaseUrl } from "@/lib/api-base";
-import { getOrCreateVisitorSessionId, getVisitorEmail } from "@/lib/page-view-session";
+import { getOrCreateVisitorSessionId, getVisitId, getVisitorEmail } from "@/lib/page-view-session";
 const EXCLUDED_PREFIXES = [
   "/admin",
   "/client",
@@ -28,6 +28,7 @@ function SitePageViewTracker() {
       path: pathname,
       referrer: typeof document !== "undefined" ? document.referrer || "" : "",
       sessionId,
+      visitId: getVisitId(),
       kind: "page"
     };
     if (email) payload.email = email;

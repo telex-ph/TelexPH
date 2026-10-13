@@ -18,13 +18,13 @@ const F_MONO = "'JetBrains Mono', 'Fira Code', monospace";
 const COLORS = {
   primary: "#4F46E5",
   primaryLight: "#818CF8",
-  primaryMuted: "#EEF2FF",
+  primaryMuted: "color-mix(in srgb, #4F46E5 14%, transparent)",
   success: "#059669",
-  successBg: "#ECFDF5",
+  successBg: "color-mix(in srgb, #059669 14%, transparent)",
   warning: "#D97706",
-  warningBg: "#FFFBEB",
+  warningBg: "color-mix(in srgb, #D97706 14%, transparent)",
   danger: "#DC2626",
-  dangerBg: "#FEF2F2",
+  dangerBg: "color-mix(in srgb, #DC2626 14%, transparent)",
   teal: "#0D9488",
   violet: "#7C3AED",
   amber: "#F59E0B",
@@ -45,13 +45,13 @@ const TT = {
   boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
 };
 const sectionColors = {
-  Home: { bg: "#EEF2FF", text: "#4338CA", dot: "#4F46E5" },
-  About: { bg: "#F5F3FF", text: "#6D28D9", dot: "#7C3AED" },
-  Services: { bg: "#ECFDF5", text: "#065F46", dot: "#059669" },
-  "Why Us": { bg: "#FFFBEB", text: "#92400E", dot: "#D97706" },
-  Resources: { bg: "#FFF1F2", text: "#9F1239", dot: "#E11D48" },
-  Careers: { bg: "#F0FDF4", text: "#14532D", dot: "#16A34A" },
-  Other: { bg: "#F8FAFC", text: "#475569", dot: "#94A3B8" }
+  Home: { bg: "color-mix(in srgb, #4F46E5 14%, transparent)", text: "#6366F1", dot: "#4F46E5" },
+  About: { bg: "color-mix(in srgb, #7C3AED 14%, transparent)", text: "#8B5CF6", dot: "#7C3AED" },
+  Services: { bg: "color-mix(in srgb, #059669 14%, transparent)", text: "#10B981", dot: "#059669" },
+  "Why Us": { bg: "color-mix(in srgb, #D97706 14%, transparent)", text: "#F59E0B", dot: "#D97706" },
+  Resources: { bg: "color-mix(in srgb, #E11D48 14%, transparent)", text: "#F43F5E", dot: "#E11D48" },
+  Careers: { bg: "color-mix(in srgb, #16A34A 14%, transparent)", text: "#22C55E", dot: "#16A34A" },
+  Other: { bg: "var(--admin-bg-soft)", text: "var(--admin-text-sub)", dot: "var(--admin-text-faint)" }
 };
 function rowSectionColors(section) {
   return sectionColors[section] ?? sectionColors.Other;
@@ -82,8 +82,8 @@ function MetricCard({ label, value, change, sub, icon }) {
   const up = change >= 0;
   return <div
     style={{
-      background: "#FFFFFF",
-      border: "1px solid #E2E8F0",
+      background: "var(--admin-surface)",
+      border: "1px solid var(--admin-border)",
       borderRadius: 16,
       padding: "20px 22px",
       display: "flex",
@@ -95,7 +95,7 @@ function MetricCard({ label, value, change, sub, icon }) {
       transition: "box-shadow 0.2s ease, transform 0.2s ease"
     }}
     onMouseEnter={(e) => {
-      e.currentTarget.style.boxShadow = "0 8px 25px rgba(79,70,229,0.08)";
+      e.currentTarget.style.boxShadow = "0 8px 25px var(--admin-accent-soft)";
       e.currentTarget.style.transform = "translateY(-1px)";
     }}
     onMouseLeave={(e) => {
@@ -103,15 +103,15 @@ function MetricCard({ label, value, change, sub, icon }) {
       e.currentTarget.style.transform = "translateY(0)";
     }}
   >
-      <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: 80, background: "radial-gradient(circle at 80% 20%, rgba(79,70,229,0.05) 0%, transparent 70%)", borderRadius: 16 }} />
+      <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: 80, background: "radial-gradient(circle at 80% 20%, var(--admin-accent-soft) 0%, transparent 70%)", borderRadius: 16 }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <span style={{ fontSize: 11, color: "#64748B", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", fontFamily: F }}>{label}</span>
+        <span style={{ fontSize: 11, color: "var(--admin-text-faint)", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", fontFamily: F }}>{label}</span>
         {icon && <div style={{ width: 32, height: 32, borderRadius: 10, background: COLORS.primaryMuted, display: "flex", alignItems: "center", justifyContent: "center", color: COLORS.primary, flexShrink: 0 }}>
             {icon}
           </div>}
       </div>
       <div>
-        <span style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, fontFamily: F, letterSpacing: "-1px", color: "#0F172A" }}>{value}</span>
+        <span style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, fontFamily: F, letterSpacing: "-1px", color: "var(--admin-text)" }}>{value}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{
@@ -128,14 +128,14 @@ function MetricCard({ label, value, change, sub, icon }) {
   }}>
           {up ? "\u2191" : "\u2193"} {Math.abs(change)}%
         </span>
-        {sub && <span style={{ fontSize: 11, color: "#94A3B8", fontFamily: F }}>{sub}</span>}
+        {sub && <span style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F }}>{sub}</span>}
       </div>
     </div>;
 }
 function Card({ children, style }) {
   return <div style={{
-    background: "#FFFFFF",
-    border: "1px solid #E2E8F0",
+    background: "var(--admin-surface)",
+    border: "1px solid var(--admin-border)",
     borderRadius: 16,
     padding: "22px 24px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
@@ -147,27 +147,27 @@ function Card({ children, style }) {
 function CardHeader({ title, subtitle, action }) {
   return <div style={{ marginBottom: 18, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
       <div>
-        <p style={{ fontSize: 14, fontWeight: 700, margin: 0, fontFamily: F, letterSpacing: "-0.3px", color: "#0F172A" }}>{title}</p>
-        {subtitle && <p style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0", fontFamily: F, color: "#94A3B8", lineHeight: 1.5 }}>{subtitle}</p>}
+        <p style={{ fontSize: 14, fontWeight: 700, margin: 0, fontFamily: F, letterSpacing: "-0.3px", color: "var(--admin-text)" }}>{title}</p>
+        {subtitle && <p style={{ fontSize: 12, fontWeight: 400, margin: "4px 0 0", fontFamily: F, color: "var(--admin-text-faint)", lineHeight: 1.5 }}>{subtitle}</p>}
       </div>
       {action && <div>{action}</div>}
     </div>;
 }
 function TblHead({ cols }) {
   return <thead>
-      <tr style={{ background: "#F8FAFC" }}>
+      <tr style={{ background: "var(--admin-bg-soft)" }}>
         {cols.map((c, i) => <th key={i} style={{
     textAlign: c.align ?? "left",
     fontSize: 11,
     fontWeight: 600,
-    color: "#94A3B8",
+    color: "var(--admin-text-faint)",
     padding: "10px 12px",
     letterSpacing: "0.06em",
     textTransform: "uppercase",
     fontFamily: F,
     width: c.w,
     whiteSpace: "nowrap",
-    borderBottom: "1px solid #E2E8F0",
+    borderBottom: "1px solid var(--admin-border)",
     ...i === 0 ? { borderRadius: "8px 0 0 0" } : {}
   }}>
             {c.label}
@@ -178,7 +178,7 @@ function TblHead({ cols }) {
 function SortToggle({ options, value, onChange }) {
   return <div style={{
     display: "inline-flex",
-    background: "#F1F5F9",
+    background: "var(--admin-bg-soft)",
     borderRadius: 10,
     padding: 3,
     gap: 2
@@ -187,8 +187,8 @@ function SortToggle({ options, value, onChange }) {
     padding: "4px 11px",
     fontSize: 11,
     fontWeight: value === o.value ? 600 : 400,
-    background: value === o.value ? "#FFFFFF" : "transparent",
-    color: value === o.value ? "#0F172A" : "#64748B",
+    background: value === o.value ? "var(--admin-surface)" : "transparent",
+    color: value === o.value ? "var(--admin-text)" : "var(--admin-text-faint)",
     border: "none",
     borderRadius: 7,
     cursor: "pointer",
@@ -205,13 +205,13 @@ function EmptyRow({ colSpan, message }) {
   return <tr>
       <td colSpan={colSpan} style={{ padding: "40px 0", textAlign: "center" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--admin-bg-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="18" height="18" rx="4" stroke="#CBD5E1" strokeWidth="1.5" />
-              <path d="M8 12h8M8 16h5" stroke="#CBD5E1" strokeWidth="1.5" strokeLinecap="round" />
+              <rect x="3" y="3" width="18" height="18" rx="4" stroke="var(--admin-border-strong)" strokeWidth="1.5" />
+              <path d="M8 12h8M8 16h5" stroke="var(--admin-border-strong)" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
-          <span style={{ fontSize: 13, color: "#94A3B8", fontFamily: F }}>{message}</span>
+          <span style={{ fontSize: 13, color: "var(--admin-text-faint)", fontFamily: F }}>{message}</span>
         </div>
       </td>
     </tr>;
@@ -228,7 +228,7 @@ function TopPagesCard({ topPages }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10, marginBottom: 16 }}>
         <CardHeader title="Top pages" subtitle="Most visited pages across your site" />
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 11, color: "#94A3B8", fontFamily: F }}>Sort by</span>
+          <span style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F }}>Sort by</span>
           <SortToggle
     options={[{ label: "Views", value: "views" }, { label: "Change", value: "change" }]}
     value={sortBy}
@@ -252,15 +252,15 @@ function TopPagesCard({ topPages }) {
         fontSize: 12,
         fontWeight: active ? 600 : 400,
         borderRadius: 99,
-        border: `1px solid ${active && col ? col.dot + "50" : "#E2E8F0"}`,
-        background: active && col ? col.bg : active ? "#F1F5F9" : "transparent",
-        color: active && col ? col.text : active ? "#0F172A" : "#64748B",
+        border: `1px solid ${active && col ? col.dot + "50" : "var(--admin-border)"}`,
+        background: active && col ? col.bg : active ? "var(--admin-bg-soft)" : "transparent",
+        color: active && col ? col.text : active ? "var(--admin-text)" : "var(--admin-text-faint)",
         cursor: "pointer",
         fontFamily: F,
         transition: "all 0.12s ease"
       }}
     >
-              {col && <div style={{ width: 6, height: 6, borderRadius: "50%", background: active ? col.dot : "#CBD5E1", flexShrink: 0 }} />}
+              {col && <div style={{ width: 6, height: 6, borderRadius: "50%", background: active ? col.dot : "var(--admin-border-strong)", flexShrink: 0 }} />}
               {sec}
             </button>;
   })}
@@ -281,13 +281,13 @@ function TopPagesCard({ topPages }) {
     const barPct = Math.round(row.views / maxViews * 100);
     return <tr
       key={i}
-      style={{ borderBottom: "1px solid #F1F5F9", transition: "background 0.1s" }}
-      onMouseEnter={(e) => e.currentTarget.style.background = "#FAFBFF"}
+      style={{ borderBottom: "1px solid var(--admin-bg-soft)", transition: "background 0.1s" }}
+      onMouseEnter={(e) => e.currentTarget.style.background = "var(--admin-bg-soft)"}
       onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
     >
                 <td style={{ padding: "13px 12px" }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, fontFamily: F, lineHeight: 1.4, color: "#0F172A" }}>{row.label}</div>
-                  <div style={{ fontSize: 11, color: "#94A3B8", fontFamily: F_MONO, marginTop: 2 }}>{row.page}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, fontFamily: F, lineHeight: 1.4, color: "var(--admin-text)" }}>{row.label}</div>
+                  <div style={{ fontSize: 11, color: "var(--admin-text-faint)", fontFamily: F_MONO, marginTop: 2 }}>{row.page}</div>
                 </td>
                 <td style={{ padding: "13px 12px" }}>
                   <span style={{
@@ -307,11 +307,11 @@ function TopPagesCard({ topPages }) {
                     {row.section}
                   </span>
                 </td>
-                <td style={{ textAlign: "right", padding: "13px 12px", fontSize: 14, fontWeight: 700, fontFamily: F, whiteSpace: "nowrap", color: "#0F172A" }}>
+                <td style={{ textAlign: "right", padding: "13px 12px", fontSize: 14, fontWeight: 700, fontFamily: F, whiteSpace: "nowrap", color: "var(--admin-text)" }}>
                   {row.views.toLocaleString()}
                 </td>
                 <td style={{ padding: "13px 12px", verticalAlign: "middle" }}>
-                  <div style={{ height: 5, borderRadius: 3, background: "#F1F5F9", overflow: "hidden" }}>
+                  <div style={{ height: 5, borderRadius: 3, background: "var(--admin-bg-soft)", overflow: "hidden" }}>
                     <div style={{ height: "100%", width: `${barPct}%`, borderRadius: 3, background: `linear-gradient(90deg, ${col.dot}99, ${col.dot})`, transition: "width 0.3s ease" }} />
                   </div>
                 </td>
@@ -348,8 +348,8 @@ function WebsitePageViews({ overview }) {
         <MetricCard label="Total views" value={fmt(totals.views)} change={changes.views} sub="vs prev period" icon={<IconEye />} />
         <MetricCard label="Unique visitors" value={fmt(totals.uniqueVisitors)} change={changes.unique} sub="vs prev period" icon={<IconUsers />} />
         <MetricCard label="Sessions" value={fmt(totals.sessions)} change={changes.sessions} sub="vs prev period" icon={<IconActivity />} />
-        <MetricCard label="Pages / visit" value={String(totals.avgPagesPerVisit)} change={0} sub="this period" icon={<IconTrending />} />
-        <MetricCard label="Bounce rate" value={`${totals.bounceRate}%`} change={changes.bounceRate} sub="vs prev period" icon={<IconPercent />} />
+        <MetricCard label="Pages / visitor" value={String(totals.avgPagesPerVisit)} change={0} sub="this period" icon={<IconTrending />} />
+        <MetricCard label="Single-page visitors" value={`${totals.bounceRate}%`} change={changes.bounceRate} sub="vs prev period" icon={<IconPercent />} />
       </div>
 
       <Card>
@@ -361,9 +361,9 @@ function WebsitePageViews({ overview }) {
     fontSize: 11,
     fontWeight: activeMetric === m ? 600 : 400,
     borderRadius: 8,
-    border: `1px solid ${activeMetric === m ? metricColor[m] + "60" : "#E2E8F0"}`,
+    border: `1px solid ${activeMetric === m ? metricColor[m] + "60" : "var(--admin-border)"}`,
     background: activeMetric === m ? metricColor[m] + "15" : "transparent",
-    color: activeMetric === m ? metricColor[m] : "#64748B",
+    color: activeMetric === m ? metricColor[m] : "var(--admin-text-faint)",
     cursor: "pointer",
     fontFamily: F,
     transition: "all 0.12s"
@@ -380,9 +380,9 @@ function WebsitePageViews({ overview }) {
                 <stop offset="95%" stopColor={metricColor[activeMetric]} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="0" stroke="#F1F5F9" />
-            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: F }} axisLine={false} tickLine={false} interval={Math.max(Math.floor(data.length / 8) - 1, 0)} dy={8} />
-            <YAxis tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: F }} axisLine={false} tickLine={false} tickFormatter={(v) => fmt(v)} width={38} />
+            <CartesianGrid vertical={false} strokeDasharray="0" stroke="var(--admin-bg-soft)" />
+            <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} interval={Math.max(Math.floor(data.length / 8) - 1, 0)} dy={8} />
+            <YAxis tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} tickFormatter={(v) => fmt(v)} width={38} />
             <Tooltip contentStyle={TT} formatter={(v) => [Number(v ?? 0).toLocaleString(), activeMetric]} labelStyle={{ marginBottom: 4, fontWeight: 600, fontSize: 12 }} />
             <Area type="monotone" dataKey={activeMetric} stroke={metricColor[activeMetric]} strokeWidth={2.5} fillOpacity={1} fill="url(#cGrad)" dot={false} activeDot={{ r: 4, strokeWidth: 0, fill: metricColor[activeMetric] }} />
           </AreaChart>
@@ -394,9 +394,9 @@ function WebsitePageViews({ overview }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
         <Card>
           <CardHeader title="Traffic sources" subtitle="Where visitors are coming from" />
-          {trafficSources.length === 0 ? <p style={{ fontSize: 12, color: "#94A3B8", fontFamily: F, margin: 0 }}>No traffic data yet.</p> : <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          {trafficSources.length === 0 ? <p style={{ fontSize: 12, color: "var(--admin-text-faint)", fontFamily: F, margin: 0 }}>No traffic data yet.</p> : <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               <PieChart width={120} height={120}>
-                <Pie data={trafficSources} cx={56} cy={56} innerRadius={36} outerRadius={55} dataKey="value" strokeWidth={3} stroke="#FFFFFF">
+                <Pie data={trafficSources} cx={56} cy={56} innerRadius={36} outerRadius={55} dataKey="value" strokeWidth={3} stroke="var(--admin-surface)">
                   {trafficSources.map((entry, index) => <Cell key={index} fill={entry.color} />)}
                 </Pie>
               </PieChart>
@@ -404,9 +404,9 @@ function WebsitePageViews({ overview }) {
                 {trafficSources.map((s, i) => <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <div style={{ width: 9, height: 9, borderRadius: 3, background: s.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 12, color: "#475569", fontFamily: F }}>{s.name}</span>
+                      <span style={{ fontSize: 12, color: "var(--admin-text-sub)", fontFamily: F }}>{s.name}</span>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, fontFamily: F, color: "#0F172A" }}>{s.value}%</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, fontFamily: F, color: "var(--admin-text)" }}>{s.value}%</span>
                   </div>)}
               </div>
             </div>}
@@ -416,10 +416,10 @@ function WebsitePageViews({ overview }) {
           <CardHeader title="Devices" subtitle="Views split by device type" />
           <ResponsiveContainer width="100%" height={110}>
             <BarChart data={deviceData} margin={{ top: 0, right: 0, left: -18, bottom: 0 }} barSize={22}>
-              <CartesianGrid vertical={false} stroke="#F1F5F9" />
-              <XAxis dataKey="device" tick={{ fontSize: 11, fill: "#64748B", fontFamily: F }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: F }} axisLine={false} tickLine={false} tickFormatter={(v) => fmt(Number(v))} />
-              <Tooltip contentStyle={TT} formatter={(v) => [Number(v).toLocaleString(), "views"]} cursor={{ fill: "rgba(79,70,229,0.04)" }} />
+              <CartesianGrid vertical={false} stroke="var(--admin-bg-soft)" />
+              <XAxis dataKey="device" tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} tickFormatter={(v) => fmt(Number(v))} />
+              <Tooltip contentStyle={TT} formatter={(v) => [Number(v).toLocaleString(), "views"]} cursor={{ fill: "var(--admin-accent-soft)" }} />
               <Bar dataKey="views" radius={[6, 6, 0, 0]}>
                 {deviceData.map((_, i) => <Cell key={i} fill={[COLORS.chart1, COLORS.chart3, COLORS.chart2][i]} opacity={0.9} />)}
               </Bar>

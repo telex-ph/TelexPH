@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useCallback
 } from "react";
+import { trackConversion } from "@/lib/track-conversion";
 const COUNTRIES = [
   "Philippines",
   "United States",
@@ -1500,6 +1501,7 @@ const VAJobApplicationForm = () => {
         throw new Error(err.message || "Submission failed. Please try again.");
       }
       const data = await res.json();
+      trackConversion("Job application", formData.personal.email);
       setConfirmCode(data.confirmCode || randCode());
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
