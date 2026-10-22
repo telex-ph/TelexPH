@@ -2,9 +2,9 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ShieldCheck, Loader2, XCircle } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api-base";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = getApiBaseUrl();
 function ActivateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,7 +34,7 @@ function ActivateContent() {
       setPageState("invalid");
       return;
     }
-    fetch(`${API_BASE}/api/va-users/activate?token=${token}`).then((r) => r.json()).then((data) => {
+    fetch(`${API_BASE}/va-users/activate?token=${token}`).then((r) => r.json()).then((data) => {
       if (data.valid) {
         setVaName(`${data.firstName} ${data.lastName}`);
         setVaEmail(data.email);
@@ -61,7 +61,7 @@ function ActivateContent() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE}/api/va-users/activate`, {
+      const res = await fetch(`${API_BASE}/va-users/activate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password })

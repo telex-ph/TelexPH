@@ -37,7 +37,9 @@ function BlogsFilter({
         "E-commerce Support",
         "Real Estate Outsourcing",
         "Healthcare BPO",
-        "Tech & SaaS Scaling"
+        "Tech & SaaS Scaling",
+        "Logistics",
+        "Food & Fresh Produce"
       ]
     },
     {

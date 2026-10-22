@@ -5,6 +5,7 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaEnvelope, FaChevronLeft, FaRegC
 import DOMPurify from "dompurify";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
 import InsightWallet from "@/components/InsightWallet";
+import { getApiBaseUrl } from "@/lib/api-base";
 
 const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -14,8 +15,7 @@ const sanitizeHtml = (html) =>
     ALLOWED_ATTR: ["href", "target", "rel"]
   });
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = getApiBaseUrl();
 const T = {
   primary: "#a10000",
   primaryDark: "#7a0000",

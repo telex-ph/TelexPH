@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getApiBaseUrl } from "@/lib/api-base";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = getApiBaseUrl();
 function ClientRegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,7 +31,7 @@ function ClientRegisterPage() {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/auth/client/register`, {
+      const response = await fetch(`${API_BASE}/auth/client/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

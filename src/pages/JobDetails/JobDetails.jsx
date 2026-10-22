@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Check, Plus, MapPin, Calendar, Clock, Banknote } from "lucide-react";
 const JOB_KEYS = [
@@ -411,19 +411,14 @@ function JobDetailPanel({ jobKey }) {
     </div>;
 }
 function JobDetails() {
+  // Each role has its own URL (/careers/job-details/<key>) so it gets its own title and static page.
+  // ?job=<key> is still read for old links (vercel.json also 301s those to the path).
+  const { job } = useParams();
   const searchParams = useSearchParams();
-  const getInitialJob = () => {
-    const param = searchParams.get("job");
-    if (param && JOB_KEYS.includes(param)) return param;
-    return "virtual-executive-assistant";
-  };
-  const [selectedJob, setSelectedJob] = useState(getInitialJob);
-  useEffect(() => {
-    const param = searchParams.get("job");
-    if (param && JOB_KEYS.includes(param)) {
-      setSelectedJob(param);
-    }
-  }, [searchParams]);
+  const navigate = useNavigate();
+  const param = job || searchParams.get("job");
+  const selectedJob = JOB_KEYS.includes(param) ? param : "virtual-executive-assistant";
+  const setSelectedJob = (key) => navigate(`/careers/job-details/${key}`, { replace: true, state: { keepScroll: true } });
   return <div className="w-full flex flex-col gap-5">
       {
     /* Job selector tabs */

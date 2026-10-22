@@ -30,7 +30,7 @@ function ListBlogs() {
   const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
   const categories = {
     "Main Service Categories": ["Customer Experience (CX)", "Back Office Solutions", "Virtual Assistance", "Sales & Lead Generation"],
-    "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling"],
+    "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling", "Logistics", "Food & Fresh Produce"],
     "Business Growth & Strategy": ["Scale Smarter", "Outsourcing 101", "Cost Optimization"],
     "Company Culture & Updates": ["TelexPH Life", "News & Press Releases"]
   };

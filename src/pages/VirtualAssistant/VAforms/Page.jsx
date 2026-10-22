@@ -1,6 +1,6 @@
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+import { getApiBaseUrl } from "@/lib/api-base";
+const API_BASE = getApiBaseUrl();
 
 import React, {
   useState,
@@ -1493,7 +1493,7 @@ const VAJobApplicationForm = () => {
       payload.append("coverLetter", formData.resume.coverLetter);
       if (formData.resume.resume?.file) payload.append("resume", formData.resume.resume.file);
       const res = await fetch(
-        `${API_BASE}/api/applicants`,
+        `${API_BASE}/applicants`,
         { method: "POST", body: payload, credentials: "include" }
       );
       if (!res.ok) {

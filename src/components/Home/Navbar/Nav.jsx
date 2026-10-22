@@ -131,7 +131,7 @@ const Nav = ({ openNav }) => {
       id: "operations",
       label: "Operations",
       items: [
-        { label: "Seating & Headcount", url: "/about/operations#seating-headcount" },
+        { label: "Our Workforce", url: "/about/operations#seating-headcount" },
         { label: "Operations & Service Capability", url: "/about/operations#operations-service-capability" },
         { label: "Performance & Quality Excellence", url: "/about/operations#performance-quality" },
         { label: "Workplace Environment", url: "/about/operations#workplace-environment" }
