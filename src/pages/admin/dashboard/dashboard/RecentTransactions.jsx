@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useDashboardTheme } from "./useDashboardTheme";
+import { getApiBaseUrl } from "@/lib/api-base";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = getApiBaseUrl();
 function formatAppointmentDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -31,7 +31,7 @@ function RecentTransactions() {
     const fetchUpcoming = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/api/appointments/upcoming`, {
+        const res = await fetch(`${API_BASE}/appointments/upcoming`, {
           headers: { "Content-Type": "application/json" },
           credentials: "include"
         });

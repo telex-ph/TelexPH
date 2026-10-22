@@ -5,9 +5,9 @@ import { Spinner } from "@/components/DashboardLoader";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import RichTextArea from "@/components/RichTextArea";
 import { htmlToText, toHtml } from "@/lib/rich-text";
+import { getApiBaseUrl } from "@/lib/api-base";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = getApiBaseUrl();
 const MAIN_CATEGORIES = {
   MAIN_SERVICE: "Main Service Categories",
   INDUSTRY_INSIGHTS: "Industry-Specific Insights",
@@ -16,12 +16,14 @@ const MAIN_CATEGORIES = {
 };
 const SUBCATEGORIES = {
   "Main Service Categories": ["Customer Experience (CX)", "Back Office Solutions", "Virtual Assistance", "Sales & Lead Generation"],
-  "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling"],
+  "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling", "Logistics", "Food & Fresh Produce"],
   "Business Growth & Strategy": ["Scale Smarter", "Outsourcing 101", "Cost Optimization"],
   "Company Culture & Updates": ["TelexPH Life", "News & Press Releases"]
 };
 const HEADLINE_MIN = 5;
 const HEADLINE_MAX = 125;
+// Post headline only (becomes the <title>); author and section titles keep HEADLINE_MAX.
+const TITLE_MAX = 40;
 const SHORT_DESC_MIN = 5;
 const MAIN_CONTENT_MIN = 25;
 const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
@@ -271,7 +273,7 @@ function AddBlogs() {
   const isFormValid = () => {
     const t = title.trim(), a = authorName.trim(), d = shortDescription.trim();
     const mt = mainContentTitle.trim(), mb = htmlToText(mainContentText);
-    return !!(t.length >= HEADLINE_MIN && t.length <= HEADLINE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
+    return !!(t.length >= HEADLINE_MIN && t.length <= TITLE_MAX && a.length >= HEADLINE_MIN && a.length <= HEADLINE_MAX && mainCategory && subcategory && d.length >= SHORT_DESC_MIN && (mt.length === 0 || mt.length >= HEADLINE_MIN && mt.length <= HEADLINE_MAX) && mb.length >= MAIN_CONTENT_MIN && (mt.length > 0 || mb.length > 0) && selectedImage && !imageError && contentSections.every((s) => {
       const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
@@ -351,7 +353,7 @@ function AddBlogs() {
       } else if (activeModal === "title") {
         setGenerationStepIndex(1);
         const { text } = await generateWithGemini("title", modalPrompt, selectedModelId);
-        setTitle((text || "").trim().slice(0, HEADLINE_MAX));
+        setTitle((text || "").trim().slice(0, TITLE_MAX));
         closeModal();
       } else if (activeModal === "content") {
         setGenerationStepIndex(1);
@@ -381,7 +383,7 @@ function AddBlogs() {
             return result;
           })()
         ]);
-        if (parsed.title) setTitle(parsed.title.slice(0, HEADLINE_MAX));
+        if (parsed.title) setTitle(parsed.title.slice(0, TITLE_MAX));
         if (parsed.shortDescription) setShortDescription(parsed.shortDescription);
         if (parsed.mainContentTitle) setMainContentTitle(parsed.mainContentTitle.slice(0, HEADLINE_MAX));
         if (parsed.mainContentText) setMainContentText(parsed.mainContentText);
@@ -594,8 +596,8 @@ function AddBlogs() {
                           AI Title
                         </button>
                       </div>
-                      <input className="ab-input" style={inp()} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={HEADLINE_MAX} placeholder="e.g., Top 10 Hidden Gems in Palawan" />
-                      <CharCount value={title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                      <input className="ab-input" style={inp()} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={TITLE_MAX} placeholder="e.g., Top 10 Hidden Gems in Palawan" />
+                      <CharCount value={title} min={HEADLINE_MIN} max={TITLE_MAX} />
                     </div>
                     <div>
                       <span style={lbl}>Author <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>

@@ -231,7 +231,7 @@ function CareerPage() {
 
                   <div className={`mt-auto w-full flex items-center ${isGridView ? "justify-between px-2" : "justify-between"}`}>
                     <Link
-      href={`/careers/job-details?job=${job.jobKey}`}
+      href={`/careers/job-details/${job.jobKey}`}
       className="text-[#a10000] text-[12px] sm:text-[13px] uppercase hover:underline underline-offset-4 decoration-2 font-semibold"
     >
                       view details

@@ -1042,9 +1042,9 @@ function TabPlatforms({ onTabSwitch }) {
                 </h1>
               </div>
               <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] leading-[1.75] text-[#282828]/55">
-                Over a decade of managed listings, catalog operations, and marketplace expertise across{" "}
+                Over 5 years of managed listings, catalog operations, and marketplace expertise across{" "}
                 <strong className="text-[#282828] font-semibold">the world's leading e-commerce ecosystems.</strong>{" "}
-                Operating across 24 countries with over a decade of marketplace expertise.
+                Operating across 24 countries with 5+ years of marketplace expertise.
               </p>
               <div className="anim-up-3 text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">
                 Home&nbsp;&gt;&gt;&nbsp;About&nbsp;&gt;&gt;&nbsp;<span className="text-[#a10000]">Platform Overview</span>
@@ -1134,10 +1134,10 @@ function TabPlatforms({ onTabSwitch }) {
           <div className="order-1 md:order-2">
             <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">OUR GLOBAL EXPERIENCE</p>
             <h2 className="scroll-anim font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-[1.05] mb-6" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3.5vw,44px)" }}>
-              A Decade of<br />Marketplace Excellence
+              5+ Years of<br />Marketplace Excellence
             </h2>
             <p className="scroll-anim-2 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#555] leading-[1.8] mb-5">
-              For over 4 years, Telex Philippines has partnered with leading global marketplaces — from industry giants like{" "}
+              For over 5 years, Telex Philippines has partnered with leading global marketplaces — from industry giants like{" "}
               <strong className="text-[#282828]">Amazon, eBay, and Walmart</strong> to high-performing regional platforms across Europe, the Middle East, and Asia.
             </p>
             <p className="scroll-anim-3 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#555] leading-[1.8] mb-8">

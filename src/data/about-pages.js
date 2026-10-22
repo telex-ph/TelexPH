@@ -130,15 +130,14 @@ export const ABOUT_PAGES = [
     },
     seating: {
       id: "seating-headcount",
-      heading: "Seating & Headcount",
+      heading: "Our Workforce",
       subheading: "Company Capacity & Workforce",
       paragraphs: [
-        "TelexPH Business Support Services Inc. currently operates with a seating capacity of approximately **327 seats** and a workforce of nearly **400 employees.** The company continues to expand its operations to support growing global client demands while maintaining high-quality customer experience and outsourcing services.",
+        "TelexPH Business Support Services Inc. currently has a workforce of **300+ employees.** The company continues to expand its operations to support growing global client demands while maintaining high-quality customer experience and outsourcing services.",
         "With its scalable workforce structure and operational capabilities, TelexPH is equipped to provide reliable offshore support solutions for businesses across multiple industries.",
       ],
       figures: [
-        { qualifier: "approximately", value: "327", label: "Seats" },
-        { qualifier: "nearly", value: "400", label: "Employees" },
+        { qualifier: "currently", value: "300+", label: "Employees" },
       ],
     },
     sections: [

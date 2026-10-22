@@ -10,7 +10,15 @@
       "has": [{ "type": "host", "value": "telexph.com" }],
       "destination": "https://www.telexph.com/$1",
       "permanent": true
-    }
+    },
+    {
+      "source": "/careers/job-details",
+      "has": [{ "type": "query", "key": "job", "value": "(?<job>[a-z-]+)" }],
+      "destination": "/careers/job-details/:job",
+      "permanent": true
+    },
+    { "source": "/resources/Blogs", "destination": "/resources/blogs", "permanent": true },
+    { "source": "/call-center-in-the-philippines", "destination": "/customer-service-outsourcing-philippines", "permanent": true }
   ],
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/app.html" }

@@ -24,10 +24,10 @@ const TAB_CONTENT = [
   },
   {
     value: "Industry-Specific Insights",
-    subcategories: ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling"],
+    subcategories: ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling", "Logistics", "Food & Fresh Produce"],
     label: "industry insights",
     headline: "Industry Intelligence",
-    description: "Sector-specific playbooks on E-commerce, Real Estate, Healthcare, and Tech & SaaS \u2014 built from real client outcomes."
+    description: "Sector-specific playbooks on E-commerce, Real Estate, Healthcare, Tech & SaaS, Logistics, and Food & Fresh Produce \u2014 built from real client outcomes."
   },
   {
     value: "Business Growth & Strategy",

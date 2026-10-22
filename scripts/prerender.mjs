@@ -18,10 +18,10 @@ import { SEO_PAGES, SITE_URL } from "../src/data/seo-pages.js";
 const PORT = 4173;
 const log = (...a) => console.log("[prerender]", ...a);
 
-// 0. Published blog posts each get a page (/resources/blogs/<slug>). Needs VITE_API_ORIGIN
-//    (the backend's /api URL); without it, or if the backend is down, posts are skipped.
-//    Slugs are limited to [a-z0-9-] because they become folder names under dist/.
-const posts = await fetch(`${process.env.VITE_API_ORIGIN}/blogs`, { signal: AbortSignal.timeout(60000) })
+// 0. Published blog posts each get a page (/resources/blogs/<slug>). Needs VITE_API_URL
+//    (the backend's /api URL, same one the app uses); without it, or if the backend is down,
+//    posts are skipped. Slugs are limited to [a-z0-9-] because they become folder names under dist/.
+const posts = await fetch(`${process.env.VITE_API_URL}/blogs`, { signal: AbortSignal.timeout(60000) })
   .then((r) => r.json())
   .then((all) => all.filter((b) => b.status === "published" && /^[a-z0-9-]+$/.test(b.slug)))
   .catch((err) => (log("blog posts skipped:", err.message), []));
@@ -30,10 +30,10 @@ log(`${postTitles.size} blog posts`);
 
 // 1. Sitemap + SPA shell first: both must exist even if prerendering fails.
 const sitemapUrls = [
-  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => p.path),
-  ...postTitles.keys(),
+  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => [p.path]),
+  ...posts.map((b) => [`/resources/blogs/${b.slug}`, b.updatedAt?.slice(0, 10)]),
 ]
-  .map((path) => `  <url><loc>${SITE_URL}${path}</loc></url>`)
+  .map(([path, lastmod]) => `  <url><loc>${SITE_URL}${path}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ""}</url>`)
   .join("\n");
 await fs.writeFile(
   "dist/sitemap.xml",
@@ -49,11 +49,15 @@ try {
   const { default: puppeteer } = await import("puppeteer");
   // Vercel's build image lacks the system libraries puppeteer's Chrome needs;
   // @sparticuz/chromium ships a self-contained headless Chromium for it.
+  // --disable-web-security: the preview runs on localhost:4173, which the backend's CORS list
+  // doesn't allow, so without it every API call (blog posts, case studies) is blocked and the
+  // pages snapshot empty. Build-time only; this headless Chrome only visits our own preview.
+  const NO_CORS = "--disable-web-security";
   const launch = async () => {
-    if (!process.env.VERCEL) return puppeteer.launch({ args: ["--no-sandbox"] });
+    if (!process.env.VERCEL) return puppeteer.launch({ args: ["--no-sandbox", NO_CORS] });
     const { default: chromium } = await import("@sparticuz/chromium");
     return puppeteer.launch({
-      args: await puppeteer.defaultArgs({ args: chromium.args, headless: "shell" }),
+      args: await puppeteer.defaultArgs({ args: [...chromium.args, NO_CORS], headless: "shell" }),
       executablePath: await chromium.executablePath(),
       headless: "shell",
     });
@@ -84,11 +88,12 @@ for (const route of routes) {
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: "networkidle0", timeout: 60000 })
       .catch((err) => log(`slow network on ${route}, snapshotting anyway:`, err.message));
     // A post shows a short loading animation before its <h1>; wait for the real article.
+    // Whitespace is ignored: the <h1> splits the title into styled spans and drops some spaces.
     if (postTitles.has(route)) {
       await page.waitForFunction(
-        (t) => [...document.querySelectorAll("h1")].some((h) => h.textContent.trim() === t),
+        (t) => [...document.querySelectorAll("h1")].some((h) => h.textContent.replace(/\s+/g, "") === t),
         { timeout: 15000 },
-        postTitles.get(route).trim()
+        postTitles.get(route).replace(/\s+/g, "")
       );
     }
     const html = await page.evaluate(() => {

@@ -3,12 +3,14 @@ import { useLocation } from "react-router-dom";
 
 /**
  * Restores Next's default behaviour of starting each navigation at the top,
- * while still honouring in-page #hash links.
+ * while still honouring in-page #hash links. Tab-style navigations
+ * (e.g. job tabs) pass `state: { keepScroll: true }` to stay in place.
  */
 const ScrollToTop = () => {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, state } = useLocation();
 
   useEffect(() => {
+    if (state?.keepScroll) return;
     if (hash) {
       const el = document.querySelector(hash);
       if (el) {

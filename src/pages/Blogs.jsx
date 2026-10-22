@@ -12,9 +12,9 @@ import BlogsHero from "./Blogs/BlogsHero";
 import BlogsFilter from "./Blogs/BlogsFilter";
 import BlogsList from "./Blogs/BlogsList";
 import BlogsArticle from "./Blogs/BlogsArticle";
+import { getApiBaseUrl } from "@/lib/api-base";
 
-const API_BASE =
-  import.meta.env.VITE_API_ORIGIN || "/api";
+const API_BASE = getApiBaseUrl();
 function BlogsPage() {
   const [showNav, setShowNav] = useState(false);
   const [viewMode, setViewMode] = useState("grid");

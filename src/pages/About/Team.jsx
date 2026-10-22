@@ -251,7 +251,7 @@ function Team() {
     className={`${rubik.className} max-w-3xl mx-auto`}
     style={{ color: "rgba(40, 40, 40, 0.7)" }}
   >
-            Behind Telix Philippines is a team of dedicated professionals
+            Behind Telex Philippines is a team of dedicated professionals
             passionate about delivering world-class support services. Our people
             are the backbone of our success—highly skilled, diverse, and
             committed to your business growth.

@@ -39,7 +39,7 @@ export default function FeaturedHighlight({ items, index, onSelect, onHover, lab
       <div key={current.id} className="animate-fade-in-up absolute bottom-3 left-3 right-3 sm:right-auto sm:bottom-6 sm:left-6 md:bottom-8 md:left-8 bg-white px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5 rounded-lg shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] sm:w-[85%] max-w-[600px] border border-gray-50 flex items-center justify-between gap-3 sm:gap-6">
         <div className="flex-grow min-w-0">
           <span className="text-[#800000] font-normal text-[9px] sm:text-[10px] uppercase tracking-[0.2em] mb-1 sm:mb-2 block">{label}</span>
-          <h1 className="text-sm sm:text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2"><Link to={current.href}>{current.title}</Link></h1>
+          <h2 className="text-sm sm:text-base lg:text-lg font-bold leading-tight text-gray-900 line-clamp-2"><Link to={current.href}>{current.title}</Link></h2>
         </div>
         <div className="flex items-center gap-4 flex-shrink-0">
           <p className="text-[11px] text-gray-400 font-normal whitespace-nowrap hidden sm:block">{current.date}</p>

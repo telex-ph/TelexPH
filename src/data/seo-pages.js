@@ -63,12 +63,20 @@ export const SEO_PAGES = [
   },
   {
     path: "/careers/job-details",
-    title: "Job Details | TelexPH Careers",
+    title: "Remote Virtual Assistant Job Openings",
     description:
       "Details on TelexPH virtual assistant roles for applicants and for businesses looking to hire a VA from the Philippines.",
-    keepQuery: true,
     sitemap: false,
   },
+  // One page per role; keys match JOB_KEYS in pages/JobDetails/JobDetails.jsx.
+  ...[
+    ["virtual-executive-assistant", "Remote Virtual Executive Assistant Job", "Virtual Executive Assistant role at TelexPH: manage executive calendars, email, travel and reports for global clients, fully remote from the Philippines."],
+    ["social-media-manager", "Remote Social Media Manager Job", "Social Media Manager role at TelexPH: plan, create and schedule content, grow engagement and report on results for global brands, fully remote."],
+    ["customer-support-specialist", "Remote Customer Support Specialist Job", "Customer Support Specialist role at TelexPH: resolve customer inquiries by email, chat and tickets for global clients, fully remote from the Philippines."],
+    ["digital-marketing-specialist", "Remote Digital Marketing Specialist Job", "Digital Marketing Specialist role at TelexPH: run SEO, paid ads, email and campaign reporting for global clients, fully remote from the Philippines."],
+    ["bookkeeping-specialist", "Remote Bookkeeping Specialist Job", "Bookkeeping Specialist role at TelexPH: record transactions, reconcile accounts and prepare financial reports for global clients, fully remote."],
+    ["content-writer", "Remote Content Writer Job", "Content Writer role at TelexPH: write SEO-friendly blogs, web copy and marketing content for clients across industries, fully remote from the Philippines."],
+  ].map(([key, title, description]) => ({ path: `/careers/job-details/${key}`, title, description })),
   {
     path: "/apply",
     title: "Apply to TelexPH: Job Application Form",

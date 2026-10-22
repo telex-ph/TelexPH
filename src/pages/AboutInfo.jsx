@@ -154,7 +154,7 @@ function AboutInfoPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className={`grid gap-4 ${page.seating.figures.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
                   {page.seating.figures.map((f, i) => (
                     <motion.div key={f.label} {...rise(0.1 + i * 0.1)} className="relative overflow-hidden rounded-2xl px-4 py-8 text-center text-white shadow-xl" style={{ background: "linear-gradient(135deg,#1c1c1c,#282828 55%,#5a0a0a)" }}>
                       <div aria-hidden className="absolute -bottom-10 -right-10 h-28 w-28 rounded-full opacity-40 blur-2xl" style={{ background: RED }} />

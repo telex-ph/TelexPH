@@ -51,7 +51,7 @@ const UseCaseWhy = () => {
               </div>
               <h3 className={`font-poppins font-bold text-base md:text-lg mb-2 uppercase tracking-tight`} style={{ color: "#282828" }}>Industry Mastery</h3>
               <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>Specialized in BPO friction points and workflow optimization.</p>
-              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>10+ Years Experience</span>
+              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>5+ Years Experience</span>
             </div>
 
             <div className="p-10 rounded-[2.5rem] bg-white border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col justify-center min-h-[260px] group cursor-default">
