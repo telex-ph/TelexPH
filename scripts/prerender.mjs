@@ -39,8 +39,16 @@ await fs.writeFile(
   "dist/sitemap.xml",
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls}\n</urlset>\n`
 );
+// Same post list → "## Blog Posts" in llms.txt, so AI crawlers find every published article.
+if (posts.length) {
+  const blogList = posts
+    .map((b) => `- [${b.title}](${SITE_URL}/resources/blogs/${b.slug}): ${(b.shortDescription ?? "").replace(/\s+/g, " ").trim()}`)
+    .join("\n");
+  const llms = await fs.readFile("dist/llms.txt", "utf8");
+  await fs.writeFile("dist/llms.txt", llms.replace("## Technical Information", `## Blog Posts\n\n${blogList}\n\n## Technical Information`));
+}
 await fs.copyFile("dist/index.html", "dist/app.html");
-log("wrote sitemap.xml and app.html");
+log("wrote sitemap.xml, llms.txt and app.html");
 
 // 2. Launch Chrome (download it once if npm skipped puppeteer's install script).
 //    Imported here, after app.html exists, so a missing puppeteer can't break the SPA fallback.
