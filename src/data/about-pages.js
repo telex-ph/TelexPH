@@ -133,7 +133,7 @@ export const ABOUT_PAGES = [
       heading: "Our Workforce",
       subheading: "Company Capacity & Workforce",
       paragraphs: [
-        "TelexPH Business Support Services Inc. currently has a workforce of **300+ employees.** The company continues to expand its operations to support growing global client demands while maintaining high-quality customer experience and outsourcing services.",
+        "Telex Business Support Services Inc. currently has a workforce of **300+ employees.** The company continues to expand its operations to support growing global client demands while maintaining high-quality customer experience and outsourcing services.",
         "With its scalable workforce structure and operational capabilities, TelexPH is equipped to provide reliable offshore support solutions for businesses across multiple industries.",
       ],
       figures: [

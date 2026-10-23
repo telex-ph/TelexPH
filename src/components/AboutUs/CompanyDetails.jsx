@@ -110,7 +110,7 @@ const CompanyDetails = () => {
                 <span className="mt-2 block h-1 w-10 rounded-full" style={{ background: COLORS.primary }} />
               </h3>
               <p className={`text-gray-600 leading-relaxed ${FONT_CLASSES.rubikRegular}`}>
-                <strong className="font-semibold text-gray-900">TelexPH Business Support Services Inc.</strong> is a
+                <strong className="font-semibold text-gray-900">Telex Business Support Services Inc.</strong> is a
                 Philippine-based BPO company established on April 8, 2021, located in Cawayan Bugtong, Guimba, Nueva
                 Ecija, providing customer support and outsourcing solutions worldwide.
               </p>

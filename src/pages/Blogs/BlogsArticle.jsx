@@ -217,7 +217,19 @@ function FaqSection({ content, sectionTitle }) {
     }
     return [];
   }, [content]);
+  // FAQPage structured data for Google rich results; the prerender snapshot keeps it in the static HTML.
+  const faqLd = React.useMemo(() => {
+    const answered = faqs.filter((f) => f.answer);
+    if (!answered.length) return null;
+    const toText = (html) => new DOMParser().parseFromString(html, "text/html").body.textContent.trim();
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: answered.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: toText(f.answer) } }))
+    };
+  }, [faqs]);
   return <div className="my-10">
+      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />}
       <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "20px" }}>
         <div style={{ width: "4px", height: "28px", backgroundColor: T.primary, borderRadius: "2px", flexShrink: 0, marginTop: "4px" }} />
         <h2 className="text-xl sm:text-2xl tracking-tight" style={{ fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: T.textDark, margin: 0 }}>
