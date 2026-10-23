@@ -1042,9 +1042,9 @@ function TabPlatforms({ onTabSwitch }) {
                 </h1>
               </div>
               <p className="anim-up-2 max-w-[560px] mb-7 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] leading-[1.75] text-[#282828]/55">
-                Over 5 years of managed listings, catalog operations, and marketplace expertise across{" "}
+                Managed listings, catalog operations, and marketplace expertise across{" "}
                 <strong className="text-[#282828] font-semibold">the world's leading e-commerce ecosystems.</strong>{" "}
-                Operating across 24 countries with 5+ years of marketplace expertise.
+                Operating across 24 countries since 2018.
               </p>
               <div className="anim-up-3 text-[12px] tracking-[0.04em] text-[#aaa] font-[family-name:var(--font-open-sans)]">
                 Home&nbsp;&gt;&gt;&nbsp;About&nbsp;&gt;&gt;&nbsp;<span className="text-[#a10000]">Platform Overview</span>
@@ -1134,7 +1134,7 @@ function TabPlatforms({ onTabSwitch }) {
           <div className="order-1 md:order-2">
             <p className="text-[12px] md:text-[16px] tracking-[4px] uppercase font-bold mb-4 text-[#a10000] font-[family-name:var(--font-open-sans)]">OUR GLOBAL EXPERIENCE</p>
             <h2 className="scroll-anim font-[family-name:var(--font-poppins)] font-bold uppercase text-[#282828] leading-[1.05] mb-6" style={{ letterSpacing: "-0.02em", fontSize: "clamp(20px,3.5vw,44px)" }}>
-              5+ Years of<br />Marketplace Excellence
+              Marketplace Excellence<br />Since 2018
             </h2>
             <p className="scroll-anim-2 font-[family-name:var(--font-rubik)] text-[14px] md:text-[16px] text-[#555] leading-[1.8] mb-5">
               For over 5 years, Telex Philippines has partnered with leading global marketplaces — from industry giants like{" "}
@@ -1499,7 +1499,7 @@ function TabTools({ onTabSwitch }) {
               {[
     { num: "115+", label: "E-Commerce Platforms", desc: "Active operations across 115+ marketplace backends globally, each with dedicated team members and established SOPs." },
     { num: "24", label: "Countries Served", desc: "Region-specific strategies tailored to local marketplaces, languages, and consumer behavior \u2014 from Europe to Southeast Asia." },
-    { num: "10+", label: "Years of Experience", desc: "Over a decade of hands-on marketplace operations refined into a repeatable, scalable system used by 22+ global brands." }
+    { num: "2018", label: "Founded", desc: "Hands-on marketplace operations since 2018, refined into a repeatable, scalable system." }
   ].map((card, i) => <div key={i} className={`bg-white border border-[#ebebeb] rounded-2xl px-8 py-7 transition-all duration-200 hover:border-[#a10000]/25 hover:shadow-lg`} style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
                   <div className="font-[family-name:var(--font-barlow-condensed)] font-black text-[40px] md:text-[52px] leading-none tracking-[-0.03em] text-[#a10000]">{card.num}</div>
                   <div className="font-[family-name:var(--font-poppins)] font-bold text-[12px] md:text-[14px] tracking-[2px] uppercase text-[#282828] mt-1.5">{card.label}</div>

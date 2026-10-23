@@ -94,7 +94,7 @@ function LoadingProvider({ children }) {
       /* company name */
     }
             <p className="text-xs uppercase tracking-[0.3em] text-white/80">
-              Business Support Services Inc.
+              Telex Business Support Services Inc.
             </p>
 
             {
@@ -134,7 +134,7 @@ function LoadingProvider({ children }) {
     />
             </div>
             <p className="text-xs uppercase tracking-[0.3em] text-white/80">
-              Business Support Services Inc.
+              Telex Business Support Services Inc.
             </p>
             <div className="w-72 h-2 bg-white/10 rounded-full overflow-hidden relative mt-4">
               <div
