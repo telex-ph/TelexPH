@@ -31,7 +31,6 @@ export default defineConfig(({ command, mode }) => {
             react: ["react", "react-dom", "react-router-dom"],
             charts: ["recharts", "chart.js", "react-chartjs-2"],
             pdf: ["jspdf", "html2canvas"],
-            carousel: ["swiper", "react-slick", "react-multi-carousel"],
           },
         },
       },
