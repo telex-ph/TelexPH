@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "npm run images && vite",
     "build": "npm run images && vite build && node scripts/prerender.mjs",
@@ -26,12 +29,8 @@
     "react-dom": "^19.2.1",
     "react-google-recaptcha": "^3.1.0",
     "react-icons": "^5.5.0",
-    "react-multi-carousel": "^2.8.6",
     "react-router-dom": "^7.1.1",
-    "react-slick": "^0.31.0",
-    "recharts": "^3.7.0",
-    "slick-carousel": "^1.8.1",
-    "swiper": "^12.0.2"
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
     "@sparticuz/chromium": "^153.0.0",
