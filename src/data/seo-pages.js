@@ -13,7 +13,7 @@ export const SITE_URL = "https://www.telexph.com";
 
 export const BRAND = "TelexPH";
 
-export const fullTitle = (title) => (title.startsWith(BRAND) ? title : `${title} | TelexPH`);
+export const fullTitle = (title) => (title.startsWith("Telex") ? title : `${title} | TelexPH`);
 
 /** One blog post: /resources/blogs/<slug>. Head tags come from the post, not from SEO_PAGES. */
 export const BLOG_POST_PATH = /^\/resources\/blogs\/[^/]+\/?$/i;
@@ -29,7 +29,7 @@ export const SEO_PAGES = [
     path: "/about",
     title: "About TelexPH",
     description:
-      "TelexPH is a Philippine BPO founded in 2021 in Guimba, Nueva Ecija. Meet the team behind our offshore staffing, GoHighLevel and support services.",
+      "TelexPH is a Philippine BPO founded in 2018 and based in Guimba, Nueva Ecija. Meet the team behind our offshore staffing, GoHighLevel and support services.",
   },
   {
     path: "/services",
@@ -113,7 +113,7 @@ export const SEO_PAGES = [
     path: "/logistics",
     title: "Logistics Customer Support Philippines",
     description:
-      "Managed customer support team in the Philippines for logistics businesses: shipment enquiries, customer follow-ups and delivery exceptions within your processes.",
+      "Managed customer support in the Philippines for logistics businesses: shipment enquiries, customer follow-ups and delivery exceptions within your processes.",
   },
   {
     path: "/logistics/privacy-policy",

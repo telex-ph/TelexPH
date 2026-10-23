@@ -55,7 +55,7 @@ export const ABOUT_PAGES = [
     title: "Compliance & Security",
     seoTitle: "Compliance and Security at TelexPH",
     description:
-      "TELEX Philippines maintains a strong security and compliance framework: GDPR-aligned privacy practices, role-based access control, enforced NDAs, secure monitoring and Fortinet security controls.",
+      "Security and compliance at TELEX Philippines: GDPR-aligned privacy, role-based access control, enforced NDAs, secure monitoring and Fortinet security controls.",
     eyebrow: "About TelexPH",
     scene: "compliance",
     ghost: "COMPLIANCE",
@@ -113,7 +113,7 @@ export const ABOUT_PAGES = [
     title: "Operations",
     seoTitle: "How TelexPH Operations Work",
     description:
-      "A structured, multi-channel operation for voice, email and chat, managed by agents, team leaders, QA and trainers, with strong SLA and quality management and a secure workplace.",
+      "Multi-channel operations for voice, email and chat, run by agents, team leaders, QA and trainers, with SLA and quality management in a secure workplace.",
     eyebrow: "About TelexPH",
     scene: "operations",
     ghost: "OPERATIONS",

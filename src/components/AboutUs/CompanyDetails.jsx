@@ -84,10 +84,10 @@ const CompanyDetails = () => {
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fce5e5]" style={{ color: COLORS.primary }}>
                 <CalendarDays className="h-5 w-5" strokeWidth={1.8} />
               </span>
-              <span className={`${FONT_CLASSES.openSansBold} text-xs uppercase tracking-[0.18em] text-gray-500`}>Established</span>
+              <span className={`${FONT_CLASSES.openSansBold} text-xs uppercase tracking-[0.18em] text-gray-500`}>Founded</span>
             </div>
             <p className={`text-3xl ${FONT_CLASSES.poppinsBlack} leading-tight`} style={{ color: COLORS.primary }}>
-              April 8,<br />2021
+              2018
             </p>
             <div className="mt-4 flex items-start gap-2 text-sm text-gray-600">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0" style={{ color: COLORS.primary }} />
@@ -111,7 +111,7 @@ const CompanyDetails = () => {
               </h3>
               <p className={`text-gray-600 leading-relaxed ${FONT_CLASSES.rubikRegular}`}>
                 <strong className="font-semibold text-gray-900">Telex Business Support Services Inc.</strong> is a
-                Philippine-based BPO company established on April 8, 2021, located in Cawayan Bugtong, Guimba, Nueva
+                Philippine-based BPO company founded in 2018 and SEC-registered on April 8, 2021, located in Cawayan Bugtong, Guimba, Nueva
                 Ecija, providing customer support and outsourcing solutions worldwide.
               </p>
             </div>
