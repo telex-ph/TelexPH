@@ -7,6 +7,10 @@ import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 function ListAdmin() {
   const [admins, setAdmins] = useState([]);
   const [adminToArchive, setAdminToArchive] = useState(null);
+  const [adminToReset, setAdminToReset] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [viewingAdmin, setViewingAdmin] = useState(null);
@@ -103,7 +107,14 @@ function ListAdmin() {
         headers: { "Content-Type": "application/json" }
       });
       if (!response.ok) throw new Error(`Failed to fetch admins: ${response.status}`);
-      setAdmins(await response.json());
+      const active = await response.json();
+      // GET /users hides disabled accounts; /users/archived has them (main admin only).
+      const archivedRes = await fetch(`${API_BASE_URL}/users/archived`, {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      }).catch(() => null);
+      const archived = archivedRes?.ok ? await archivedRes.json() : [];
+      setAdmins([...active, ...archived]);
     } catch (err) {
       setError(err.message || "Failed to load admins.");
       setAdmins([]);
@@ -173,6 +184,45 @@ function ListAdmin() {
     } catch (e) {
       console.error(e);
       alert("Failed to archive admin");
+    }
+  };
+  const handleRestore = async (id) => {
+    try {
+      const r = await fetch(`${API_BASE_URL}/users/${id}/restore`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!r.ok) throw new Error("Failed to restore admin");
+      loadAdmins();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to restore admin");
+    }
+  };
+  const closeReset = () => {
+    setAdminToReset(null);
+    setNewPassword("");
+    setResetError("");
+  };
+  const handleResetPassword = async () => {
+    if (newPassword.length < 8) return setResetError("Password must be at least 8 characters");
+    try {
+      setIsResetting(true);
+      setResetError("");
+      const r = await fetch(`${API_BASE_URL}/users/${adminToReset._id}/reset-password`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword })
+      });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message || "Failed to reset password");
+      closeReset();
+      alert("Password reset successfully");
+    } catch (e) {
+      setResetError(e.message);
+    } finally {
+      setIsResetting(false);
     }
   };
   if (isEditing && selectedAdmin) {
@@ -554,7 +604,7 @@ function ListAdmin() {
     /* â•â• LIST VIEW â•â• */
   }
             {!initialLoading && filteredAdmins.length > 0 && viewMode === "list" && <>
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr 1fr 1.4fr 140px", gap: 16, padding: "11px 24px", background: subtleBg, borderBottom: `1px solid ${borderColor}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr 1fr 1.4fr 230px", gap: 16, padding: "11px 24px", background: subtleBg, borderBottom: `1px solid ${borderColor}` }}>
                   {["Administrator", "Department", "Role", "Contact", "Actions"].map((col, i) => <span key={col} style={{ fontSize: 10, fontWeight: 500, color: textMuted, textAlign: i === 4 ? "right" : "left", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{col}</span>)}
                 </div>
 
@@ -562,7 +612,7 @@ function ListAdmin() {
     key={admin._id}
     className="la-row"
     onClick={() => handleView(admin)}
-    style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr 1fr 1.4fr 140px", gap: 16, alignItems: "center", padding: "14px 24px", borderBottom: i < currentCards.length - 1 ? `1px solid ${borderColor}` : "none", transition: "background .15s", cursor: "pointer" }}
+    style={{ display: "grid", gridTemplateColumns: "2fr 1.2fr 1fr 1.4fr 230px", gap: 16, alignItems: "center", padding: "14px 24px", borderBottom: i < currentCards.length - 1 ? `1px solid ${borderColor}` : "none", transition: "background .15s", cursor: "pointer" }}
   >
                     <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
                       <div style={{ width: 38, height: 38, borderRadius: 10, background: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 600, flexShrink: 0, overflow: "hidden", fontFamily: "'Poppins', sans-serif" }}>
@@ -583,8 +633,12 @@ function ListAdmin() {
   }} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Edit</button>
                       <button onClick={(e) => {
     e.stopPropagation();
-    setAdminToArchive(admin._id);
-  }} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(220,38,38,0.2)", background: isdarkmode ? "rgba(220,38,38,0.08)" : "rgba(220,38,38,0.05)", color: "#dc2626", fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Disable</button>
+    setAdminToReset(admin);
+  }} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "var(--admin-bg-soft)", color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Reset</button>
+                      <button onClick={(e) => {
+    e.stopPropagation();
+    admin.isArchived ? handleRestore(admin._id) : setAdminToArchive(admin._id);
+  }} style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${admin.isArchived ? "rgba(5,150,105,0.25)" : "rgba(220,38,38,0.2)"}`, background: isdarkmode ? "rgba(220,38,38,0.08)" : "rgba(220,38,38,0.05)", color: admin.isArchived ? "#059669" : "#dc2626", fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{admin.isArchived ? "Restore" : "Disable"}</button>
                     </div>
                   </div>)}
               </>}
@@ -621,8 +675,12 @@ function ListAdmin() {
   }} style={{ flex: 1, padding: "7px", borderRadius: 8, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : cardBg, color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Edit</button>
                       <button onClick={(e) => {
     e.stopPropagation();
-    setAdminToArchive(admin._id);
-  }} style={{ flex: 1, padding: "7px", borderRadius: 8, border: "1px solid rgba(220,38,38,0.2)", background: isdarkmode ? "rgba(220,38,38,0.08)" : "rgba(220,38,38,0.05)", color: "#dc2626", fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Disable</button>
+    setAdminToReset(admin);
+  }} style={{ flex: 1, padding: "7px", borderRadius: 8, border: `1px solid ${borderColor}`, background: isdarkmode ? "rgba(255,255,255,0.06)" : cardBg, color: textMuted, fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>Reset</button>
+                      <button onClick={(e) => {
+    e.stopPropagation();
+    admin.isArchived ? handleRestore(admin._id) : setAdminToArchive(admin._id);
+  }} style={{ flex: 1, padding: "7px", borderRadius: 8, border: `1px solid ${admin.isArchived ? "rgba(5,150,105,0.25)" : "rgba(220,38,38,0.2)"}`, background: isdarkmode ? "rgba(220,38,38,0.08)" : "rgba(220,38,38,0.05)", color: admin.isArchived ? "#059669" : "#dc2626", fontSize: 11, fontWeight: 500, cursor: "pointer", transition: "all .15s", fontFamily: "'Poppins', sans-serif", letterSpacing: 0 }}>{admin.isArchived ? "Restore" : "Disable"}</button>
                     </div>
                   </div>)}
               </div>}
@@ -679,6 +737,32 @@ function ListAdmin() {
       {
     /* â•â• View Admin Modal â•â• */
   }
+      {adminToReset && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: 20 }}>
+          <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 32, width: "100%", maxWidth: 460, boxShadow: "0 32px 80px rgba(0,0,0,0.32)", fontFamily: "'Poppins', sans-serif", overflow: "hidden" }}>
+            <div style={{ padding: "32px 36px" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 600, color: textPrimary, margin: 0 }}>Reset Password</h3>
+              <p style={{ fontSize: 12, color: textMuted, margin: "4px 0 20px", fontWeight: 400 }}>
+                Set a new password for {adminToReset.firstName} {adminToReset.lastName} ({adminToReset.email}). They will need to log in again with OTP.
+              </p>
+              <input
+    type="password"
+    autoFocus
+    autoComplete="new-password"
+    placeholder="New password (min. 8 characters)"
+    value={newPassword}
+    onChange={(e) => setNewPassword(e.target.value)}
+    onKeyDown={(e) => e.key === "Enter" && !isResetting && handleResetPassword()}
+    style={inp({ width: "100%", marginBottom: 8 })}
+  />
+              {resetError && <p style={{ fontSize: 11, color: "#dc2626", margin: "0 0 8px" }}>{resetError}</p>}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 16 }}>
+                <button onClick={closeReset} disabled={isResetting} style={{ padding: "11px 28px", borderRadius: 14, border: `1px solid ${borderColor}`, background: subtleBg, color: textMuted, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
+                <button onClick={handleResetPassword} disabled={isResetting || newPassword.length < 8} style={{ padding: "11px 32px", borderRadius: 14, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: isResetting || newPassword.length < 8 ? "not-allowed" : "pointer", opacity: isResetting || newPassword.length < 8 ? 0.6 : 1 }}>{isResetting ? "Resetting..." : "Reset Password"}</button>
+              </div>
+            </div>
+          </div>
+        </div>}
+
       {viewingAdmin && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: 20, overflowY: "auto" }}>
           <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 32, width: "100%", maxWidth: 600, boxShadow: "0 32px 80px rgba(0,0,0,0.32)", fontFamily: "'Poppins', sans-serif" }}>
             <div style={{ padding: "32px 36px" }}>
