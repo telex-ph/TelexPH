@@ -8,7 +8,7 @@ const FooterBottom = ({ privacyHref = "#", termsHref = "#" }) => {
     /* Left side */
   }
             <div>
-                © Copyright 2025 by 
+                © Copyright {new Date().getFullYear()} by
                 <span className={`text-white ${FONT_CLASSES.openSansBold}`}> TelexPH</span>
             </div>
 
