@@ -200,6 +200,22 @@ function FaqSection({ content, sectionTitle }) {
         if (items.length > 0) return items;
       }
     }
+    // Editor format: question line ending in "?", answer <p>s, <p><br></p> between pairs,
+    // optional trailing "Sources" block kept visible below the accordion.
+    // ponytail: an answer line ending in "?" starts a new question; use <h3> questions if that bites.
+    const nodes = Array.from(doc.body.childNodes);
+    const html = (n) => n.outerHTML ?? Object.assign(doc.createElement("p"), { textContent: n.textContent }).outerHTML;
+    const srcAt = nodes.findIndex((n) => /^sources:?$/i.test(n.textContent.trim()));
+    for (const n of srcAt < 0 ? nodes : nodes.slice(0, srcAt)) {
+      const t = n.textContent.trim();
+      if (!t) continue;
+      if (t.endsWith("?")) items.push({ question: t, answer: "" });
+      else if (items.length) items[items.length - 1].answer += html(n);
+    }
+    if (items.length) {
+      items.rest = srcAt < 0 ? "" : nodes.slice(srcAt).map(html).join("");
+      return items;
+    }
     const lis = doc.querySelectorAll("li");
     if (lis.length > 0) {
       lis.forEach((li) => {
@@ -238,6 +254,11 @@ function FaqSection({ content, sectionTitle }) {
       </div>
       {faqs.length > 0 ? <div className="space-y-2">
           {faqs.map((faq, i) => <FaqItem key={i} index={i} question={faq.question} answer={faq.answer} isOpen={openIndex === i} onToggle={() => setOpenIndex(openIndex === i ? null : i)} />)}
+          {faqs.rest && <div
+    style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.textBody, lineHeight: "1.85" }}
+    className="pt-4 [&_p]:mb-2 [&_strong]:font-bold"
+    dangerouslySetInnerHTML={{ __html: sanitizeHtml(faqs.rest) }}
+  />}
         </div> : <div
     style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.textBody, lineHeight: "1.85" }}
     className="[&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_strong]:font-bold"

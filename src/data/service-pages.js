@@ -192,7 +192,7 @@ export const SERVICE_PAGES = [
       "Companies in the US, UK, Australia, Canada and New Zealand",
     ],
     why: [
-      "TelexPH has provided offshore staffing since 2018 and employs more than 50 professionals in the Philippines.",
+      "TelexPH has provided offshore staffing since 2018 and employs 300+ professionals in the Philippines.",
       "Our VAs are trained in GoHighLevel, Slack, Notion, Asana, HubSpot and other common tools.",
     ],
     faqs: [
