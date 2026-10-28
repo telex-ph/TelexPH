@@ -12,7 +12,7 @@
 - Citation-Policy: cite with link to source page
 - Sitemap: https://www.telexph.com/sitemap.xml
 - Robots: https://www.telexph.com/robots.txt
-- Contact: careers@telexph.com
+- Contact: business@telexph.com
 - Last-Updated: 2026-09-21
 
 ---
@@ -43,7 +43,7 @@ TelexPH combines a certified GoHighLevel admin team with AI-powered automation w
 | Headquarters | Guimba, Nueva Ecija, Philippines |
 | Employees | 300+ |
 | Phone | +63-44-325-2836 |
-| Email | careers@telexph.com |
+| Email | business@telexph.com |
 | Website | https://www.telexph.com |
 | Markets Served | United States, United Kingdom, Australia, Canada, Philippines |
 | Industries Served | Marketing Agencies, Digital Businesses, E-commerce, SaaS, Real Estate, Healthcare |
@@ -223,7 +223,7 @@ TelexPH automates repetitive tasks within GoHighLevel and CRM environments. AI i
 TelexPH was founded in 2018 and has provided BPO and offshore staffing services since then.
 
 ### What is TelexPH's pricing model?
-TelexPH offers flexible offshore staffing packages tailored to business size and service needs. Contact careers@telexph.com for a custom quote.
+TelexPH offers flexible offshore staffing packages tailored to business size and service needs. Contact business@telexph.com for a custom quote.
 
 ### Where are TelexPH's clients located?
 TelexPH primarily serves clients in the United States, United Kingdom, Australia, and Canada.
@@ -232,7 +232,7 @@ TelexPH primarily serves clients in the United States, United Kingdom, Australia
 TelexPH specializes in GoHighLevel (GHL), Slack, Notion, Asana, HubSpot, Salesforce, and other modern CRM and project management platforms.
 
 ### How do I get started with TelexPH?
-Visit https://www.telexph.com/contact to submit a consultation request, or email careers@telexph.com directly. The TelexPH team will schedule a discovery call to understand your needs and recommend the right service package.
+Visit https://www.telexph.com/contact to submit a consultation request, or email business@telexph.com directly. The TelexPH team will schedule a discovery call to understand your needs and recommend the right service package.
 
 ### Does TelexPH provide dedicated or shared team members?
 TelexPH provides dedicated team members assigned exclusively to your account. Each team member works full-time on your projects and is trained in your specific tools and processes.
@@ -269,7 +269,7 @@ TelexPH serves marketing agencies, digital businesses, e-commerce companies, Saa
 ## Contact
 
 - Website: https://www.telexph.com
-- Email: careers@telexph.com
+- Email: business@telexph.com
 - Phone: +63-44-325-2836
 - Address: Guimba, Nueva Ecija, Philippines
 - Contact Form: https://www.telexph.com/contact
