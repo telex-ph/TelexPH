@@ -18,7 +18,8 @@
       "permanent": true
     },
     { "source": "/resources/Blogs", "destination": "/resources/blogs", "permanent": true },
-    { "source": "/call-center-in-the-philippines", "destination": "/customer-service-outsourcing-philippines", "permanent": true }
+    { "source": "/call-center-in-the-philippines", "destination": "/customer-service-outsourcing-philippines", "permanent": true },
+    { "source": "/telex-business-support-services-inc{/}?", "destination": "/about", "permanent": true }
   ],
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/app.html" }

@@ -26,6 +26,7 @@ function BlogsPage() {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const openNavHandler = () => setShowNav(true);
   const closeNavHandler = () => setShowNav(false);
   useEffect(() => {
@@ -33,11 +34,13 @@ function BlogsPage() {
       try {
         setLoading(true);
         const response = await fetch(`${API_BASE}/blogs`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         const publishedOnly = data.filter((b) => b.status === "published");
         setBlogs(publishedOnly);
       } catch (error) {
         console.error("Error fetching blogs:", error);
+        setLoadFailed(true);
       } finally {
         setLoading(false);
       }
@@ -66,7 +69,8 @@ function BlogsPage() {
         <MobileNav showNav={showNav} closeNav={closeNavHandler} />
       </div>
 
-      {slug && !loading && <PostSeo post={selectedPost} />}
+      {/* A failed load is not "post not found": keep the prerendered tags instead of noindex (Google saw that on 2026-10-22). */}
+      {slug && !loading && !loadFailed && <PostSeo post={selectedPost} />}
 
       <main className="pb-20">
         {isArticleView ? <div className="animate-in fade-in duration-500">
