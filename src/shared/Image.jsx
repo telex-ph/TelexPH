@@ -10,15 +10,10 @@
  * which serves most of this site's uploads — can do the same work at the URL
  * level, so we re-add those transformations here.
  */
+import { VARIANT_WIDTHS as LOCAL_WIDTHS, variantName } from "./image-variants";
 
 /** Widths we request from Cloudinary; also drives the srcSet. */
 const WIDTHS = [640, 828, 1080, 1200, 1920];
-
-/**
- * Widths that `scripts/generate-image-variants.mjs` produces for local files
- * under public/images/. Keep the two lists in sync.
- */
-const LOCAL_WIDTHS = [640, 1280, 1920];
 
 /**
  * Which local variants actually exist on disk, so we never point at a missing
@@ -36,11 +31,9 @@ const isCloudinary = (url) =>
 const isLocalImage = (url) =>
   typeof url === "string" && url.startsWith("/images/");
 
-/** "/images/a/post4.webp" + 640 -> "/images-opt/a/post4-640.webp" */
-const localVariant = (url, width) => {
-  const base = url.replace(/^\/images\//, "").replace(/\.(webp|png|jpe?g)$/i, "");
-  return `/images-opt/${base}-${width}.webp`;
-};
+/** "/images/a/post4.webp" + 640 -> "/images-opt/a/post4-webp-640.webp" */
+const localVariant = (url, width) =>
+  `/images-opt/${variantName(url.replace(/^\/images\//, ""), width)}`;
 
 /**
  * Injects Cloudinary delivery transforms after `/upload/`:
