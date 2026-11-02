@@ -3,7 +3,8 @@ import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
 import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import api from "@/lib/api/axios";
-import { WebsitePageViews, COLORS, F } from "./WebsitePageViews";
+import { SiteSummaryCard, WebsitePageViews, COLORS, F } from "./WebsitePageViews";
+import { BookingsTab } from "./BookingsTab";
 import { FunnelsTab } from "./FunnelsTab";
 import { VisitorJourneyTracker } from "./VisitorJourneyTracker";
 const IconDownload = () => <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
@@ -105,7 +106,7 @@ function downloadCSV(filename, headers, rows) {
 }
 const EMPTY_OVERVIEW = {
   daily: [],
-  totals: { views: 0, uniqueVisitors: 0, sessions: 0, avgPagesPerVisit: 0, bounceRate: 0 },
+  totals: { views: 0, pageViews: 0, socialVisits: 0, bookings: { total: 0, itsjena: 0, intl: 0 }, uniqueVisitors: 0, sessions: 0, avgPagesPerVisit: 0, bounceRate: 0 },
   changes: { views: 0, unique: 0, sessions: 0, bounceRate: 0 },
   topPages: [],
   trafficSources: [],
@@ -188,7 +189,8 @@ function PageViewsAnalytics() {
   const TABS = [
     { label: "Visitor Journey", value: "visitors", badge: overview.totals.uniqueVisitors },
     { label: "Website Page Views", value: "pageviews", badge: overview.totals.views },
-    { label: "Funnels", value: "funnels", badge: funnels.length }
+    { label: "Funnels", value: "funnels", badge: funnels.length },
+    { label: "Bookings", value: "bookings", badge: overview.totals.bookings.total }
   ];
   return <>
       <style>{`
@@ -218,10 +220,12 @@ function PageViewsAnalytics() {
             <p style={{ fontSize: 13, color: "#DC2626", fontFamily: F, margin: 0 }}>{loadError}</p>
           </div>}
 
+        {!initialLoading && <SiteSummaryCard totals={overview.totals} range={range} />}
+
         {
     /* ── Tabs ── */
   }
-        <div style={{ display: "flex", gap: 4, background: "var(--admin-bg-soft)", borderRadius: 14, padding: 4, width: "fit-content" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, background: "var(--admin-bg-soft)", borderRadius: 14, padding: 4, width: "fit-content", maxWidth: "100%" }}>
           {TABS.map((t) => <button
     key={t.value}
     onClick={() => setTab(t.value)}
@@ -277,6 +281,11 @@ function PageViewsAnalytics() {
     /* ── Visitor Journey Tab ── */
   }
         {tab === "visitors" && !initialLoading && <VisitorJourneyTracker range={range} />}
+
+        {
+    /* ── Bookings Tab ── */
+  }
+        {tab === "bookings" && !initialLoading && <BookingsTab range={range} />}
       </div>
     </>;
 }

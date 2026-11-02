@@ -333,6 +333,34 @@ function TopPagesCard({ topPages }) {
       </table>
     </Card>;
 }
+function periodLabel(range) {
+  if (!range.includes("_")) return `Last ${parseInt(range, 10)} days`;
+  const day = (s) => new Date(`${s}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const [from, to] = range.split("_");
+  return from === to ? day(from) : `${day(from)} – ${day(to)}`;
+}
+function SummaryTile({ value, label, sub }) {
+  return <div style={{ background: "var(--admin-accent-soft)", borderRadius: 12, padding: "18px 12px", textAlign: "center" }}>
+      <div style={{ fontSize: 26, fontWeight: 700, lineHeight: 1.1, color: "var(--admin-accent-text)" }}>{value.toLocaleString()}</div>
+      <div style={{ fontSize: 12, fontWeight: 600, marginTop: 6, color: "var(--admin-text)" }}>{label}</div>
+      {sub && <div style={{ fontSize: 11, marginTop: 3, color: "var(--admin-text-sub)" }}>{sub}</div>}
+    </div>;
+}
+function SiteSummaryCard({ totals, range }) {
+  const { uniqueVisitors, pageViews, bookings, socialVisits } = totals;
+  return <Card>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+        <h2 style={{ fontSize: 18, margin: 0, color: "var(--admin-accent-text)" }}>Website: telexph.com</h2>
+        <span style={{ fontSize: 12, color: "var(--admin-text-sub)" }}>{periodLabel(range)}</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12 }}>
+        <SummaryTile value={uniqueVisitors} label="Visitors" />
+        <SummaryTile value={pageViews} label="Page views" />
+        <SummaryTile value={bookings.total} label="Form submissions" sub={`itsjena ${bookings.itsjena} · intl ${bookings.intl}`} />
+        <SummaryTile value={socialVisits} label="Visits from social" />
+      </div>
+    </Card>;
+}
 function WebsitePageViews({ overview }) {
   const [activeMetric, setActiveMetric] = useState("views");
   const data = overview.daily;
@@ -431,8 +459,13 @@ function WebsitePageViews({ overview }) {
 }
 export {
   COLORS,
+  Card,
+  CardHeader,
+  EmptyRow,
   F,
   F_MONO,
+  SiteSummaryCard,
+  TblHead,
   TT,
   WebsitePageViews
 };
