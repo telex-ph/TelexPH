@@ -11,29 +11,41 @@ const IconDownload = () => <svg width="12" height="12" fill="none" viewBox="0 0 
     <polyline points="7 10 12 15 17 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>;
+const isoDay = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const dateStyle = { fontSize: 12, fontFamily: F, padding: "4px 8px", border: "1px solid var(--admin-border, #E2E8F0)", borderRadius: 8, color: "var(--admin-text)", background: "var(--admin-surface)" };
 function RangeToggle({ value, onChange }) {
-  return <div style={{
-    display: "inline-flex",
-    background: "var(--admin-bg-soft)",
-    borderRadius: 12,
-    padding: 3,
-    gap: 2
-  }}>
-      {["7d", "30d", "90d"].map((o) => <button key={o} onClick={() => onChange(o)} style={{
-    padding: "6px 14px",
-    fontSize: 12,
-    fontWeight: value === o ? 600 : 400,
-    background: value === o ? "var(--admin-surface)" : "transparent",
-    color: value === o ? "var(--admin-text)" : "var(--admin-text-faint)",
-    border: "none",
-    borderRadius: 9,
-    cursor: "pointer",
-    fontFamily: F,
-    transition: "all 0.15s ease",
-    boxShadow: value === o ? "0 1px 3px rgba(0,0,0,0.1)" : "none"
-  }}>
-          {o}
-        </button>)}
+  const isCustom = value.includes("_");
+  const today = isoDay(new Date());
+  const [open, setOpen] = useState(isCustom);
+  const [from, setFrom] = useState(isCustom ? value.split("_")[0] : isoDay(new Date(Date.now() - 29 * 864e5)));
+  const [to, setTo] = useState(isCustom ? value.split("_")[1] : today);
+  const apply = (f, t) => { if (f && t && f <= t) onChange(`${f}_${t}`); };
+  return <div style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      {open && <>
+        <input type="date" aria-label="From date" value={from} max={to || today} style={dateStyle}
+          onChange={(e) => { setFrom(e.target.value); apply(e.target.value, to); }} />
+        <span style={{ fontSize: 12, color: "var(--admin-text-faint)", fontFamily: F }}>to</span>
+        <input type="date" aria-label="To date" value={to} min={from} max={today} style={dateStyle}
+          onChange={(e) => { setTo(e.target.value); apply(from, e.target.value); }} />
+      </>}
+      <div style={{ display: "inline-flex", background: "var(--admin-bg-soft)", borderRadius: 12, padding: 3, gap: 2 }}>
+        {["7d", "30d", "90d", "custom"].map((o) => {
+          const active = o === "custom" ? isCustom : value === o;
+          return <button key={o} onClick={() => { if (o === "custom") { setOpen(true); apply(from, to); } else { setOpen(false); onChange(o); } }} style={{
+            padding: "6px 14px",
+            fontSize: 12,
+            fontWeight: active ? 600 : 400,
+            background: active ? "var(--admin-surface)" : "transparent",
+            color: active ? "var(--admin-text)" : "var(--admin-text-faint)",
+            border: "none",
+            borderRadius: 9,
+            cursor: "pointer",
+            fontFamily: F,
+            transition: "all 0.15s ease",
+            boxShadow: active ? "0 1px 3px rgba(0,0,0,0.1)" : "none"
+          }}>{o === "custom" ? "Custom" : o}</button>;
+        })}
+      </div>
     </div>;
 }
 function DownloadBtn({ onClick, label = "Export CSV", disabled }) {

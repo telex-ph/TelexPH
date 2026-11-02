@@ -284,7 +284,8 @@ function FunnelDetailView({
   }, [funnel.url, range, fetchSeries]);
   const mc = { views: funnel.color, unique: COLORS.teal };
   const metricLabel = { views: "Clicks", unique: "Unique visitors" };
-  const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
+  const [rf, rt] = range.split("_");
+  const days = rt ? Math.round((Date.parse(rt) - Date.parse(rf)) / 864e5) + 1 : range === "7d" ? 7 : range === "30d" ? 30 : 90;
   return <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       {
     /* Header */
