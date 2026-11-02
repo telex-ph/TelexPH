@@ -3,6 +3,7 @@ import PageHeader from "@/components/PageHeader";
 import { useState, useEffect } from "react";
 import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import api from "@/lib/api/axios";
+import { keepIfSame, onSilentRefresh } from "@/lib/silent-refresh";
 import { SiteSummaryCard, WebsitePageViews, COLORS, F } from "./WebsitePageViews";
 import { BookingsTab } from "./BookingsTab";
 import { FunnelsTab } from "./FunnelsTab";
@@ -147,8 +148,15 @@ function PageViewsAnalytics() {
         setLoading(false);
       }
     });
+    const stopRefresh = onSilentRefresh(() => {
+      api.get("/dashboard/page-views", { params: { range } }).then((res) => {
+        if (!cancelled) setOverview((prev) => keepIfSame(prev, normalizeOverview(res.data)));
+      }).catch(() => {
+      });
+    });
     return () => {
       cancelled = true;
+      stopRefresh();
     };
   }, [range]);
   const funnels = overview.funnels;

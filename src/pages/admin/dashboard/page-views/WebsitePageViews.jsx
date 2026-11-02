@@ -339,25 +339,80 @@ function periodLabel(range) {
   const [from, to] = range.split("_");
   return from === to ? day(from) : `${day(from)} – ${day(to)}`;
 }
-function SummaryTile({ value, label, sub }) {
-  return <div style={{ background: "var(--admin-accent-soft)", borderRadius: 12, padding: "18px 12px", textAlign: "center" }}>
-      <div style={{ fontSize: 26, fontWeight: 700, lineHeight: 1.1, color: "var(--admin-accent-text)" }}>{value.toLocaleString()}</div>
-      <div style={{ fontSize: 12, fontWeight: 600, marginTop: 6, color: "var(--admin-text)" }}>{label}</div>
-      {sub && <div style={{ fontSize: 11, marginTop: 3, color: "var(--admin-text-sub)" }}>{sub}</div>}
+const ON_ACCENT_GLASS = "color-mix(in srgb, var(--admin-text-on-accent) 16%, transparent)";
+const IconCalendar = () => <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>;
+const IconShare = () => <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+    <circle cx="18" cy="5" r="3" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="6" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="18" cy="19" r="3" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4" stroke="currentColor" strokeWidth="1.5" />
+  </svg>;
+const IconGlobe = () => <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" stroke="currentColor" strokeWidth="1.5" />
+  </svg>;
+function SummaryTile({ value, label, icon, splits }) {
+  return <div
+    style={{
+      position: "relative",
+      overflow: "hidden",
+      minHeight: 118,
+      padding: "14px 16px",
+      borderRadius: 16,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      gap: 12,
+      background: "linear-gradient(135deg, var(--admin-accent), var(--admin-accent-hover))",
+      color: "var(--admin-text-on-accent)",
+      boxShadow: "var(--admin-shadow-md)",
+      transition: "transform 0.25s ease, box-shadow 0.25s ease"
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = "translateY(-4px)";
+      e.currentTarget.style.boxShadow = "var(--admin-shadow-lg)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = "translateY(0)";
+      e.currentTarget.style.boxShadow = "var(--admin-shadow-md)";
+    }}
+  >
+      <div style={{ position: "absolute", top: -36, right: -36, width: 120, height: 120, borderRadius: "50%", background: ON_ACCENT_GLASS, opacity: 0.6 }} />
+      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1.4 }}>{label}</span>
+        <div style={{ width: 30, height: 30, flexShrink: 0, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: ON_ACCENT_GLASS }}>{icon}</div>
+      </div>
+      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 6 }}>
+        <span className="font-heading" style={{ fontSize: 30, lineHeight: 1, letterSpacing: "-0.5px" }}>{value.toLocaleString()}</span>
+        {splits && <div style={{ display: "flex", gap: 4 }}>
+            {splits.map((s) => <span key={s} style={{ padding: "2px 7px", borderRadius: 99, fontSize: 10, fontWeight: 600, whiteSpace: "nowrap", background: ON_ACCENT_GLASS }}>{s}</span>)}
+          </div>}
+      </div>
     </div>;
 }
 function SiteSummaryCard({ totals, range }) {
   const { uniqueVisitors, pageViews, bookings, socialVisits } = totals;
   return <Card>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
-        <h2 style={{ fontSize: 18, margin: 0, color: "var(--admin-accent-text)" }}>Website: telexph.com</h2>
-        <span style={{ fontSize: 12, color: "var(--admin-text-sub)" }}>{periodLabel(range)}</span>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flex: "1 1 240px" }}>
+          <div style={{ width: 38, height: 38, flexShrink: 0, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--admin-accent-soft)", color: "var(--admin-accent-text)" }}>
+            <IconGlobe />
+          </div>
+          <div>
+            <h2 style={{ fontSize: 18, lineHeight: 1.2, margin: 0, color: "var(--admin-text)" }}>Website: telexph.com</h2>
+            <p style={{ fontSize: 12, margin: "4px 0 0", color: "var(--admin-text-sub)" }}>Traffic is telexph.com only. Form submissions come from the itsjena and intl booking forms.</p>
+          </div>
+        </div>
+        <span style={{ padding: "4px 12px", borderRadius: 99, fontSize: 12, fontWeight: 600, whiteSpace: "nowrap", background: "var(--admin-bg-soft)", color: "var(--admin-text-sub)" }}>{periodLabel(range)}</span>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12 }}>
-        <SummaryTile value={uniqueVisitors} label="Visitors" />
-        <SummaryTile value={pageViews} label="Page views" />
-        <SummaryTile value={bookings.total} label="Form submissions" sub={`itsjena ${bookings.itsjena} · intl ${bookings.intl}`} />
-        <SummaryTile value={socialVisits} label="Visits from social" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
+        <SummaryTile value={uniqueVisitors} label="Visitors" icon={<IconUsers />} />
+        <SummaryTile value={pageViews} label="Page views" icon={<IconEye />} />
+        <SummaryTile value={bookings.total} label="Form submissions" icon={<IconCalendar />} splits={[`itsjena ${bookings.itsjena}`, `intl ${bookings.intl}`]} />
+        <SummaryTile value={socialVisits} label="Visits from social" icon={<IconShare />} />
       </div>
     </Card>;
 }
@@ -461,11 +516,9 @@ export {
   COLORS,
   Card,
   CardHeader,
-  EmptyRow,
   F,
   F_MONO,
   SiteSummaryCard,
-  TblHead,
   TT,
   WebsitePageViews
 };
