@@ -32,6 +32,10 @@ function SitePageViewTracker() {
       kind: "page"
     };
     if (email) payload.email = email;
+    // Social apps often strip the referrer, so the landing URL is the only hint (same ?ref= links as intl and itsjena).
+    const q = new URLSearchParams(window.location.search);
+    const utmSource = q.get("ref") || q.get("utm_source") || (q.has("fbclid") ? "facebook" : "");
+    if (utmSource) payload.utmSource = utmSource;
     const body = JSON.stringify(payload);
     const url = `${getApiBaseUrl()}/page-views/track`;
     fetch(url, {

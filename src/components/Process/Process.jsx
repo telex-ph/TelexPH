@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { MessageSquareText, ClipboardList, Rocket, TrendingUp, ArrowRight } from "lucide-react";
 import { Poppins, Open_Sans, Rubik } from "next/font/google";
+import { LOGISTICS_CTA_URL } from "@/constant/links";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
 const SECTION_HEIGHT = "min-h-[90vh]";
 const poppins = Poppins({
@@ -248,7 +249,7 @@ const Process = () => {
     className="relative mt-4 flex justify-center"
   >
           <a
-    href="https://intl.telexph.com"
+    href={LOGISTICS_CTA_URL}
     target="_blank"
     rel="noopener noreferrer"
     className={`${openSans.className} group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#c40000] to-[#8a0000] px-8 py-3.5 text-sm sm:text-base text-white shadow-[0_14px_30px_-10px_rgba(161,0,0,0.65)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-10px_rgba(161,0,0,0.75)]`}
