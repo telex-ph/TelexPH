@@ -20,7 +20,7 @@ const channelLabel = (c) => CHANNEL_LABELS[channelOf(c)] ?? c;
 const initials = (name) => name.trim().split(/\s+/).slice(0, 2).map((n) => n[0]?.toUpperCase() ?? "").join("") || "?";
 const when = (date, timeZone) => new Date(date).toLocaleString("en-US", { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const bookedDay = (date) => new Date(date).toLocaleDateString("en-US", { timeZone: "Asia/Manila", month: "short", day: "numeric", year: "numeric" });
-const label = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--admin-text-sub)", margin: "0 0 6px" };
+const label = { fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--admin-text)", margin: "0 0 8px" };
 const sub = { fontSize: 11, color: "var(--admin-text-sub)", marginTop: 2, overflowWrap: "anywhere" };
 function Pill({ children, soft }) {
   return <span style={{
@@ -36,7 +36,7 @@ function Pill({ children, soft }) {
 }
 function TimeRow({ zone, date, timeZone }) {
   return <div style={{ display: "grid", gridTemplateColumns: "50px 1fr", alignItems: "baseline", gap: 6, fontSize: 12, color: "var(--admin-text)", marginTop: 3 }}>
-      <span style={{ ...label, margin: 0 }}>{zone}</span>
+      <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>{zone}</span>
       <span style={{ whiteSpace: "nowrap" }}>{when(date, timeZone)}</span>
     </div>;
 }
@@ -117,7 +117,9 @@ function BookingsTab({ range }) {
     });
     const stopRefresh = onSilentRefresh(() => {
       api.get("/dashboard/bookings", { params: { range } }).then((res) => {
-        if (!cancelled) setBookings((prev) => keepIfSame(prev, res.data.bookings));
+        if (cancelled) return;
+        setBookings((prev) => keepIfSame(prev, res.data.bookings));
+        setError(null);
       }).catch(() => {
       });
     });

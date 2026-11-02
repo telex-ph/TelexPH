@@ -394,6 +394,7 @@ function FunnelDetailView({
     labelStyle={{ marginBottom: 4, fontWeight: 600, fontSize: 12 }}
   />
               <Area
+    isAnimationActive={false}
     type="monotone"
     dataKey={activeMetric}
     stroke={mc[activeMetric]}
@@ -510,7 +511,7 @@ function FunnelsTab({
     formatter={(v) => [Number(v).toLocaleString(), "Clicks"]}
     cursor={{ fill: "var(--admin-accent-soft)" }}
   />
-                  <Bar dataKey="views" radius={[6, 6, 0, 0]}>
+                  <Bar isAnimationActive={false} dataKey="views" radius={[6, 6, 0, 0]}>
                     {barData.map((_, i) => <Cell key={i} fill={PALETTE[i % 8]} opacity={0.9} />)}
                   </Bar>
                 </BarChart>
