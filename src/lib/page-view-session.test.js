@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getVisitId } from "./page-view-session.js";
+import { getOrCreateVisitorSessionId, getVisitId } from "./page-view-session.js";
 
 function fakeBrowser() {
   const store = new Map();
@@ -17,6 +17,18 @@ test("getVisitId: same visit while active, new visit after 30 minutes of inactiv
   assert.equal(getVisitId(49 * min), first); // activity keeps extending it (29 min since the last event)
   const next = getVisitId(49 * min + 31 * min); // 31 min of silence
   assert.notEqual(next, first);
+});
+
+test("tracking only runs on telexph.com: no visitor id anywhere else, so nothing is recorded", () => {
+  fakeBrowser();
+  for (const hostname of ["telexph.com", "www.telexph.com"]) {
+    globalThis.window = { location: { hostname } };
+    assert.ok(getOrCreateVisitorSessionId(), hostname);
+  }
+  for (const hostname of ["localhost", "127.0.0.1", "intl.telexph.com", "itsjena.telexph.com", "telexph-client.vercel.app"]) {
+    globalThis.window = { location: { hostname } };
+    assert.equal(getOrCreateVisitorSessionId(), "", hostname);
+  }
 });
 
 test("getVisitId: returns an empty string when storage is unavailable", () => {

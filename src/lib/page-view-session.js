@@ -6,8 +6,10 @@ const VISIT_IDLE_MS = 30 * 60 * 1e3;
 function newId() {
   return typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `v_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
 }
+// Every tracker needs this id, so no id means nothing is recorded: localhost and preview builds stay out of the telexph.com numbers.
+const TRACKED_HOST = /^(www\.)?telexph\.com$/;
 function getOrCreateVisitorSessionId() {
-  if (typeof window === "undefined") return "";
+  if (typeof window === "undefined" || !TRACKED_HOST.test(window.location?.hostname)) return "";
   try {
     let id = localStorage.getItem(STORAGE_KEY);
     if (!id) {
