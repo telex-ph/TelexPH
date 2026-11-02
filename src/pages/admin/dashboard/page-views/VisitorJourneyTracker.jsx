@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Spinner } from "@/components/DashboardLoader";
 import api from "@/lib/api/axios";
+import { keepIfSame, onSilentRefresh } from "@/lib/silent-refresh";
 import {
   AreaChart,
   Area,
@@ -268,8 +269,24 @@ function VisitorJourneyTracker({ range }) {
     }
   }, [range]);
   useEffect(() => {
+    let cancelled = false;
     fetchVisitors();
-  }, [fetchVisitors]);
+    const stopRefresh = onSilentRefresh(() => {
+      api.get("/dashboard/page-views/visitors", { params: { range } }).then((res) => {
+        if (cancelled) return;
+        setVisitors((prev) => keepIfSame(prev, res.data.visitors));
+        setTotal(res.data.total);
+        setChartData((prev) => keepIfSame(prev, res.data.daily ?? []));
+        setLastUpdated(/* @__PURE__ */ new Date());
+        setError(null);
+      }).catch(() => {
+      });
+    });
+    return () => {
+      cancelled = true;
+      stopRefresh();
+    };
+  }, [fetchVisitors, range]);
   const filtered = useMemo(() => {
     let list = visitors;
     if (search.trim()) {
@@ -373,7 +390,7 @@ function VisitorJourneyTracker({ range }) {
               <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} dy={5} />
               <YAxis tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TT} labelStyle={{ fontWeight: 600, marginBottom: 4, color: "#F8FAFC" }} formatter={(val) => [val, "Visitors"]} />
-              <Area type="monotone" dataKey="activeVisitors" stroke={COLORS.primary} strokeWidth={2} fillOpacity={1} fill="url(#vGrad)" />
+              <Area isAnimationActive={false} type="monotone" dataKey="activeVisitors" stroke={COLORS.primary} strokeWidth={2} fillOpacity={1} fill="url(#vGrad)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -382,7 +399,7 @@ function VisitorJourneyTracker({ range }) {
           <h3 style={{ fontSize: 14, fontWeight: 600, color: "var(--admin-text)", marginBottom: 12, fontFamily: F }}>Device Breakdown</h3>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <PieChart width={120} height={120}>
-              <Pie data={deviceData} cx={56} cy={56} innerRadius={35} outerRadius={55} dataKey="value" strokeWidth={2} stroke="var(--admin-surface)">
+              <Pie isAnimationActive={false} data={deviceData} cx={56} cy={56} innerRadius={35} outerRadius={55} dataKey="value" strokeWidth={2} stroke="var(--admin-surface)">
                 <Cell fill={COLORS.chart1} />
                 <Cell fill={COLORS.chart3} />
                 <Cell fill={COLORS.chart2} />

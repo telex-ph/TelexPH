@@ -150,7 +150,9 @@ function PageViewsAnalytics() {
     });
     const stopRefresh = onSilentRefresh(() => {
       api.get("/dashboard/page-views", { params: { range } }).then((res) => {
-        if (!cancelled) setOverview((prev) => keepIfSame(prev, normalizeOverview(res.data)));
+        if (cancelled) return;
+        setOverview((prev) => keepIfSame(prev, normalizeOverview(res.data)));
+        setLoadError(null);
       }).catch(() => {
       });
     });

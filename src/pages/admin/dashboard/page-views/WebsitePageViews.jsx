@@ -387,8 +387,8 @@ function SummaryTile({ value, label, icon, splits }) {
       </div>
       <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 6 }}>
         <span className="font-heading" style={{ fontSize: 30, lineHeight: 1, letterSpacing: "-0.5px" }}>{value.toLocaleString()}</span>
-        {splits && <div style={{ display: "flex", gap: 4 }}>
-            {splits.map((s) => <span key={s} style={{ padding: "2px 7px", borderRadius: 99, fontSize: 10, fontWeight: 600, whiteSpace: "nowrap", background: ON_ACCENT_GLASS }}>{s}</span>)}
+        {splits && <div style={{ fontSize: 11, lineHeight: 1.4, textAlign: "right", whiteSpace: "nowrap" }}>
+            {splits.map(([name, count]) => <div key={name}>{name}<strong style={{ marginLeft: 6 }}>{count}</strong></div>)}
           </div>}
       </div>
     </div>;
@@ -411,7 +411,7 @@ function SiteSummaryCard({ totals, range }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
         <SummaryTile value={uniqueVisitors} label="Visitors" icon={<IconUsers />} />
         <SummaryTile value={pageViews} label="Page views" icon={<IconEye />} />
-        <SummaryTile value={bookings.total} label="Form submissions" icon={<IconCalendar />} splits={[`itsjena ${bookings.itsjena}`, `intl ${bookings.intl}`]} />
+        <SummaryTile value={bookings.total} label="Form submissions" icon={<IconCalendar />} splits={[["itsjena", bookings.itsjena], ["intl", bookings.intl]]} />
         <SummaryTile value={socialVisits} label="Visits from social" icon={<IconShare />} />
       </div>
     </Card>;
@@ -467,7 +467,7 @@ function WebsitePageViews({ overview }) {
             <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} interval={Math.max(Math.floor(data.length / 8) - 1, 0)} dy={8} />
             <YAxis tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} tickFormatter={(v) => fmt(v)} width={38} />
             <Tooltip contentStyle={TT} formatter={(v) => [Number(v ?? 0).toLocaleString(), activeMetric]} labelStyle={{ marginBottom: 4, fontWeight: 600, fontSize: 12 }} />
-            <Area type="monotone" dataKey={activeMetric} stroke={metricColor[activeMetric]} strokeWidth={2.5} fillOpacity={1} fill="url(#cGrad)" dot={false} activeDot={{ r: 4, strokeWidth: 0, fill: metricColor[activeMetric] }} />
+            <Area isAnimationActive={false} type="monotone" dataKey={activeMetric} stroke={metricColor[activeMetric]} strokeWidth={2.5} fillOpacity={1} fill="url(#cGrad)" dot={false} activeDot={{ r: 4, strokeWidth: 0, fill: metricColor[activeMetric] }} />
           </AreaChart>
         </ResponsiveContainer>
       </Card>
@@ -479,7 +479,7 @@ function WebsitePageViews({ overview }) {
           <CardHeader title="Traffic sources" subtitle="Where visitors are coming from" />
           {trafficSources.length === 0 ? <p style={{ fontSize: 12, color: "var(--admin-text-faint)", fontFamily: F, margin: 0 }}>No traffic data yet.</p> : <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               <PieChart width={120} height={120}>
-                <Pie data={trafficSources} cx={56} cy={56} innerRadius={36} outerRadius={55} dataKey="value" strokeWidth={3} stroke="var(--admin-surface)">
+                <Pie isAnimationActive={false} data={trafficSources} cx={56} cy={56} innerRadius={36} outerRadius={55} dataKey="value" strokeWidth={3} stroke="var(--admin-surface)">
                   {trafficSources.map((entry, index) => <Cell key={index} fill={entry.color} />)}
                 </Pie>
               </PieChart>
@@ -503,7 +503,7 @@ function WebsitePageViews({ overview }) {
               <XAxis dataKey="device" tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "var(--admin-text-faint)", fontFamily: F }} axisLine={false} tickLine={false} tickFormatter={(v) => fmt(Number(v))} />
               <Tooltip contentStyle={TT} formatter={(v) => [Number(v).toLocaleString(), "views"]} cursor={{ fill: "var(--admin-accent-soft)" }} />
-              <Bar dataKey="views" radius={[6, 6, 0, 0]}>
+              <Bar isAnimationActive={false} dataKey="views" radius={[6, 6, 0, 0]}>
                 {deviceData.map((_, i) => <Cell key={i} fill={[COLORS.chart1, COLORS.chart3, COLORS.chart2][i]} opacity={0.9} />)}
               </Bar>
             </BarChart>
