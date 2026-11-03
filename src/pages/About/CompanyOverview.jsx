@@ -19,8 +19,8 @@ function CompanyOverview() {
   }
           <div className="relative h-[450px] md:h-[600px] lg:h-[700px] flex items-center justify-center">
             <Image
-    src="/images/about2.webp"
-    alt="Business professionals collaborating"
+    src="/images/logo.png"
+    alt="TelexPH logo"
     fill
     priority
     style={{
