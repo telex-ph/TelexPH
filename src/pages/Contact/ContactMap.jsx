@@ -1,9 +1,9 @@
 import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import { COLORS, FONTS } from "@/constant/styles";
+import { GOOGLE_MAPS_URL } from "@/constant/links";
 
 const ADDRESS = "Pangasinan - Nueva Ecija Rd, Guimba, Nueva Ecija, Philippines";
 const MAPS_QUERY = encodeURIComponent(`7Q72MQ4C+5MX ${ADDRESS}`);
-const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`;
 const DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${MAPS_QUERY}`;
 
 const ContactMap = () => {
@@ -60,7 +60,7 @@ const ContactMap = () => {
           <Navigation className="h-4 w-4" /> Get Directions
         </a>
         <a
-          href={MAPS_URL}
+          href={GOOGLE_MAPS_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-1 items-center justify-center gap-2 rounded-full border border-gray-300 px-5 py-3 text-sm font-bold text-gray-700 transition-colors hover:border-[#a10000] hover:text-[#a10000]"

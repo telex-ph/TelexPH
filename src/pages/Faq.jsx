@@ -30,7 +30,8 @@ const withBookingLink = (text) => text.split(/(book a discovery call)/i).map((pa
   ? <a key={i} href={LOGISTICS_CTA_URL} target="_blank" rel="noopener noreferrer" className="font-semibold underline" style={{ color: RED }}>{part}</a>
   : part));
 
-/** Native <details> accordion: answers stay in the prerendered HTML even when closed, and work without JS. */
+/** Native <details> accordion: answers stay in the prerendered HTML even when closed, and work without JS.
+    The shared name="faq" lets only one answer be open at a time (older browsers just allow several). */
 function Faq() {
   const [showNav, setShowNav] = useState(false);
 
@@ -83,7 +84,7 @@ function Faq() {
                     <div className="mt-4 h-1 w-14" style={{ background: RED }} />
 
                     <div className="relative mt-8 space-y-4">
-                      {group.items.map(({ q, a }, i) => <details key={q} open={i === 0} className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow open:border-[#a10000] open:shadow-[0_12px_32px_rgba(161,0,0,.14)]">
+                      {group.items.map(({ q, a }, i) => <details key={q} name="faq" className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow open:border-[#a10000] open:shadow-[0_12px_32px_rgba(161,0,0,.14)]">
                           <span aria-hidden className="absolute inset-y-0 left-0 w-1.5 origin-top scale-y-0 transition-transform duration-300 group-open:scale-y-100" style={{ background: RED }} />
                           <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-5 md:px-6 [&::-webkit-details-marker]:hidden">
                             <span className="w-8 shrink-0 text-2xl font-bold leading-none text-gray-300 tabular-nums transition-colors group-open:text-[#a10000]" style={display}>{pad(i + 1)}</span>
