@@ -5,6 +5,7 @@ import {
   getColorWithOpacity
 } from "@/constant/styles";
 import { DEFAULT_MAX_WIDTH_CLASS, SECTION_HEIGHT } from "@/constant/layout";
+import { GOOGLE_MAPS_URL } from "@/constant/links";
 const LocationMap = () => {
   return <section
     className={`relative w-screen left-1/2 right-1/2 -mx-[50vw] py-16 md:py-20 ${SECTION_HEIGHT.standard}`}
@@ -77,7 +78,7 @@ const LocationMap = () => {
           </a>
 
           <a
-    href="https://www.google.com/maps/place/MQ4C+5MX,+Pangasinan+-+Nueva+Ecija+Rd,+Guimba,+Nueva+Ecija"
+    href={GOOGLE_MAPS_URL}
     target="_blank"
     rel="noopener noreferrer"
     className="px-8 py-3 rounded-lg border-2 text-center transition-all duration-300"
