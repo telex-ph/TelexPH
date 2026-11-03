@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import Nav from "@/components/Home/Navbar/Nav";
 import MobileNav from "@/components/Home/Navbar/MobileNav";
 import LocationHero from "./Location/LocationHero";
@@ -11,6 +11,11 @@ import { COLORS, FONTS, TYPOGRAPHY, getColorWithOpacity } from "@/constant/style
 const headingStyle = { fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight, color: COLORS.dark };
 const bodyStyle = { fontFamily: FONTS.rubik, color: getColorWithOpacity("dark", 0.75) };
 const linkStyle = { color: COLORS.primary };
+const OFFICE_PHOTOS = [
+  { src: "/images/office-outside.jpg", caption: "Our office building", alt: "TelexPH Philippines office building in Guimba, Nueva Ecija" },
+  { src: "/images/office-frontDesk.jpg", caption: "Front desk", alt: "TelexPH front desk with the Telex logo wall, workstations and staff lockers" },
+  { src: "/images/office-production.jpg", caption: "Production floor", alt: "TelexPH support agents at their workstations on the Guimba production floor" }
+];
 const LocationPage = () => {
   const [showNav, setShowNav] = useState(false);
   return <div
@@ -42,7 +47,7 @@ const LocationPage = () => {
             If your business is based here or you're visiting, you're welcome to see our office and meet the team. Our office runs 24/7, and visits are available Monday to Friday by appointment.
           </p>
           <p className="mb-8" style={bodyStyle}>
-            <Link href="/contact" className="underline" style={linkStyle}>Schedule an office visit</Link>
+            <a href="mailto:business@telexph.com?subject=Office%20visit%20request" className="underline" style={linkStyle}>Schedule an office visit</a>
             <span className="mx-2">·</span>
             <a href={LOGISTICS_CTA_URL} target="_blank" rel="noopener noreferrer" className="underline" style={linkStyle}>Book a discovery call</a>
           </p>
@@ -52,6 +57,13 @@ const LocationPage = () => {
             <p><strong>Phone:</strong> <a href="tel:+63443252836" className="underline" style={linkStyle}>+63-44-325-2836</a></p>
             <p><strong>Email:</strong> <a href="mailto:business@telexph.com" className="underline" style={linkStyle}>business@telexph.com</a></p>
           </address>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-12 grid gap-6 sm:grid-cols-3">
+          {OFFICE_PHOTOS.map((photo) => <figure key={photo.src}>
+              <Image src={photo.src} alt={photo.alt} width={1280} height={853} sizes="(min-width: 640px) 33vw, 100vw" className="w-full h-auto aspect-[3/2] object-cover rounded-2xl" />
+              <figcaption className="mt-2 text-sm text-center" style={bodyStyle}>{photo.caption}</figcaption>
+            </figure>)}
         </div>
       </section>
 
