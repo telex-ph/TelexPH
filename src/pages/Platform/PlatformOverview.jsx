@@ -1037,7 +1037,7 @@ function TabPlatforms({ onTabSwitch }) {
     className="anim-up font-[family-name:var(--font-poppins)] font-black uppercase text-[#282828] mb-5 relative z-[1]"
     style={{ letterSpacing: "-0.02em", lineHeight: ".95", fontSize: "clamp(26px,6vw,48px)" }}
   >
-                  Powering Growth Across 115+<br />
+                  Powering Growth Across 115+{" "}<br />
                   <em className="text-[#a10000] not-italic">Global E-Commerce Platforms</em>
                 </h1>
               </div>

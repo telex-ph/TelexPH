@@ -38,14 +38,14 @@ function WhatWeOfferHero() {
     /* Main Title - Changed to SERVICES WE OFFER */
   }
           <h1
-    className="text-5xl md:text-6xl mb-6 tracking-tight"
+    className="text-3xl md:text-5xl mb-6 tracking-tight uppercase"
     style={{
       fontFamily: TYPOGRAPHY.heading.fontFamily,
       fontWeight: TYPOGRAPHY.heading.fontWeight,
       color: "#282828"
     }}
   >
-            OUR ABOUT
+            About TelexPH: Offshore Support Teams Since 2018
           </h1>
 
           {

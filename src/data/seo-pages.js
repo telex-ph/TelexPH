@@ -3,7 +3,7 @@
  * entries and the list of routes scripts/prerender.mjs renders to static HTML.
  * Plain JS (no JSX, no aliases) so Node can import it at build time.
  *
- * Titles get " | TelexPH" appended; keep them under 50 characters.
+ * Titles get " | TelexPH" appended; keep them under 60 characters.
  * A title that already starts with the brand people search ("Telex Philippines") is used as is.
  */
 import { SERVICE_PAGES } from "./service-pages.js";
@@ -21,9 +21,9 @@ export const BLOG_POST_PATH = /^\/resources\/blogs\/[^/]+\/?$/i;
 export const SEO_PAGES = [
   {
     path: "/",
-    title: "TelexPH",
+    title: "Managed Offshore Customer Support Teams in the Philippines",
     description:
-      "To become a globally trusted operations and automation partner powered by Filipino talents.",
+      "Managed offshore customer support teams for growing businesses, run from 2 delivery centers in the Philippines. Team leads, QA and monthly reporting included.",
   },
   {
     path: "/about",
@@ -45,9 +45,15 @@ export const SEO_PAGES = [
   },
   {
     path: "/location",
-    title: "Our Office in the Philippines",
+    title: "Our Office in Guimba, Nueva Ecija, Philippines",
     description:
-      "Visit or contact the TelexPH office in Guimba, Nueva Ecija, Philippines, home of our offshore staffing and customer support teams.",
+      "Visit the TelexPH office in Guimba, Nueva Ecija, about an hour from Clark. Managed customer support teams for growing businesses. Office visits by appointment.",
+  },
+  {
+    path: "/faq",
+    title: "FAQ: Managed Offshore Support Teams",
+    description:
+      "Answers on getting started, coverage, training, team management and data security for TelexPH managed customer support teams.",
   },
   {
     path: "/platform",

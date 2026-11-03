@@ -28,6 +28,7 @@ const Blogs = lazy(() => import("@/pages/Blogs"));
 const IndustryUseCase = lazy(() => import("@/pages/IndustryUseCase"));
 const CaseStudyDetails = lazy(() => import("@/pages/CaseStudyDetails"));
 const Location = lazy(() => import("@/pages/Location"));
+const Faq = lazy(() => import("@/pages/Faq"));
 const Platform = lazy(() => import("@/pages/Platform"));
 const LogisticsLanding = lazy(() => import("@/pages/LogisticsLanding"));
 const LogisticsPrivacy = lazy(() => import("@/pages/LogisticsPrivacy"));
@@ -113,6 +114,7 @@ registerPrefetch([
   ["/services", () => import("@/pages/Services")],
   ["/contact", () => import("@/pages/Contact")],
   ["/location", () => import("@/pages/Location")],
+  ["/faq", () => import("@/pages/Faq")],
   ["/platform", () => import("@/pages/Platform")],
   ["/Apply", () => import("@/pages/Apply")],
   ["/careers", () => import("@/pages/Careers")],
@@ -161,6 +163,7 @@ const App = () => {
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/location" element={<Location />} />
+        <Route path="/faq" element={<Faq />} />
         <Route path="/platform" element={<Platform />} />
         <Route path="/logistics" element={<LogisticsLanding />} />
         <Route path="/logistics/privacy-policy" element={<LogisticsPrivacy />} />

@@ -29,14 +29,14 @@ function WhatWeOfferHero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1
-    className="text-[48px] md:text-6xl mb-6 tracking-tight"
+    className="text-3xl md:text-5xl mb-6 tracking-tight uppercase"
     style={{
       fontFamily: TYPOGRAPHY.heading.fontFamily,
       fontWeight: TYPOGRAPHY.heading.fontWeight,
       color: COLORS.dark
     }}
   >
-            OUR SERVICES
+            Customer Support and Back-Office Services
           </h1>
 
           <p

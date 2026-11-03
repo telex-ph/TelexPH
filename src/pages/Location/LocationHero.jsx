@@ -35,14 +35,14 @@ function LocationHero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1
-    className="text-5xl md:text-6xl mb-6 tracking-tight"
+    className="text-3xl md:text-5xl mb-6 tracking-tight uppercase"
     style={{
       fontFamily: TYPOGRAPHY.heading.fontFamily,
       fontWeight: TYPOGRAPHY.heading.fontWeight,
       color: COLORS.black
     }}
   >
-            OUR LOCATION
+            Our Office in Guimba, Nueva Ecija, Philippines
           </h1>
 
           <p
