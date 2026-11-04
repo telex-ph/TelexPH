@@ -19,10 +19,26 @@
     },
     { "source": "/resources/Blogs", "destination": "/resources/blogs", "permanent": true },
     { "source": "/call-center-in-the-philippines", "destination": "/customer-service-outsourcing-philippines", "permanent": true },
-    { "source": "/telex-business-support-services-inc{/}?", "destination": "/about", "permanent": true }
+    { "source": "/telex-business-support-services-inc{/}?", "destination": "/about", "permanent": true },
+    { "source": "/contact-us{/}?", "destination": "/contact", "permanent": true },
+    { "source": "/about-us{/}?", "destination": "/about", "permanent": true },
+    { "source": "/blog{/}?", "destination": "/resources/blogs", "permanent": true },
+    { "source": "/service{/}?", "destination": "/services", "permanent": true },
+    { "source": "/social-media-management{/}?", "destination": "/services", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/app.html" }
+    { "source": "/admin/:path*", "destination": "/app.html" },
+    { "source": "/client/:path*", "destination": "/app.html" },
+    { "source": "/VirtualAssistant/:path*", "destination": "/app.html" },
+    { "source": "/VAdash/:path*", "destination": "/app.html" },
+    { "source": "/funnels/:path*", "destination": "/app.html" },
+    { "source": "/careers/job-details/:job", "destination": "/app.html" },
+    { "source": "/resources/blogs/:slug", "destination": "/app.html" },
+    { "source": "/resources/IndustryUseCase", "destination": "/app.html" },
+    { "source": "/resources/CaseStudiesCardDetails", "destination": "/app.html" },
+    { "source": "/resources/casestudiescarddetails", "destination": "/app.html" },
+    { "source": "/Apply", "destination": "/app.html" },
+    { "source": "/logistics/:page(privacy|terms|landing)", "destination": "/app.html" }
   ],
   "headers": [
     {

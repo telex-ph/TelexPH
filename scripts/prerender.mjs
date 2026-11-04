@@ -3,8 +3,9 @@
  * (GPTBot, ClaudeBot, PerplexityBot, SEO checkers) can read without running JS,
  * and writes dist/sitemap.xml from the same page list (src/data/seo-pages.js).
  *
- * dist/app.html keeps the untouched SPA shell; vercel.json rewrites every
- * non-prerendered route (dashboards, portals, 404s) to it.
+ * dist/app.html keeps the untouched SPA shell; vercel.json rewrites the app
+ * routes that are not prerendered (dashboards, portals, funnels, new blog posts) to it.
+ * Any other URL gets dist/404.html (same shell, shows NotFound) with a real 404 status.
  *
  * If Chrome can't start (e.g. missing system libraries on the build machine)
  * the build still succeeds and the site behaves exactly like the plain SPA.
@@ -48,7 +49,15 @@ if (posts.length) {
   await fs.writeFile("dist/llms.txt", llms.replace("## Technical Information", `## Blog Posts\n\n${blogList}\n\n## Technical Information`));
 }
 await fs.copyFile("dist/index.html", "dist/app.html");
-log("wrote sitemap.xml, llms.txt and app.html");
+await fs.copyFile("dist/index.html", "dist/404.html");
+// Every public page starts as the SPA shell, so a page that fails to prerender (or a skipped
+// prerender) still returns 200 like before, instead of falling through to 404.html.
+const routes = [...SEO_PAGES.filter((p) => p.prerender !== false).map((p) => p.path), ...postTitles.keys()];
+for (const route of routes.filter((r) => r !== "/")) {
+  await fs.mkdir(`dist${route}`, { recursive: true });
+  await fs.copyFile("dist/app.html", `dist${route}/index.html`);
+}
+log("wrote sitemap.xml, llms.txt, app.html, 404.html and page shells");
 
 // 2. Launch Chrome (download it once if npm skipped puppeteer's install script).
 //    Imported here, after app.html exists, so a missing puppeteer can't break the SPA fallback.
@@ -84,7 +93,6 @@ try {
 
 // 3. Render each page. "/" goes last because it overwrites dist/index.html,
 //    which the preview server also uses as its SPA fallback.
-const routes = [...SEO_PAGES.filter((p) => p.prerender !== false).map((p) => p.path), ...postTitles.keys()];
 routes.sort((a, b) => (a === "/") - (b === "/"));
 
 const server = await preview({ preview: { port: PORT, strictPort: true }, logLevel: "error" });
