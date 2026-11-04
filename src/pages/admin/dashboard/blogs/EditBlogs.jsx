@@ -2,33 +2,18 @@
 import PageHeader from "@/components/PageHeader";
 import { useState, useRef } from "react";
 import { Spinner } from "@/components/DashboardLoader";
-import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import RichTextArea from "@/components/RichTextArea";
 import { htmlToText, toHtml } from "@/lib/rich-text";
 import { getApiBaseUrl } from "@/lib/api-base";
+import { useBlogAi, blogContext, SparkleIcon, LayersIcon, HEADLINE_MAX, TITLE_MAX } from "@/components/BlogAiAssist";
+import {
+  MAIN_CATEGORIES, SUBCATEGORIES, HEADLINE_MIN, SHORT_DESC_MIN, MAIN_CONTENT_MIN, ALLOWED_IMAGE_TYPES,
+  card, lbl, inp, pillStyle, headerBtnGhost, headerBtnPrimary, ghostAccentBtn, STATUS_OPTIONS, StepHead
+} from "./AddBlogs";
 
 const API_BASE = getApiBaseUrl();
-const MAIN_CATEGORIES = {
-  MAIN_SERVICE: "Main Service Categories",
-  INDUSTRY_INSIGHTS: "Industry-Specific Insights",
-  BUSINESS_GROWTH: "Business Growth & Strategy",
-  COMPANY_CULTURE: "Company Culture & Updates"
-};
-const SUBCATEGORIES = {
-  "Main Service Categories": ["Customer Experience (CX)", "Back Office Solutions", "Virtual Assistance", "Sales & Lead Generation"],
-  "Industry-Specific Insights": ["E-commerce Support", "Real Estate Outsourcing", "Healthcare BPO", "Tech & SaaS Scaling", "Logistics", "Food & Fresh Produce"],
-  "Business Growth & Strategy": ["Scale Smarter", "Outsourcing 101", "Cost Optimization"],
-  "Company Culture & Updates": ["TelexPH Life", "News & Press Releases"]
-};
-const HEADLINE_MIN = 5;
-const HEADLINE_MAX = 125;
-// Post headline only (becomes the <title>); author and section titles keep HEADLINE_MAX.
-const TITLE_MAX = 40;
-const SHORT_DESC_MIN = 5;
-const MAIN_CONTENT_MIN = 25;
-const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
+
 function EditBlogs({ blog, onClose, onSave }) {
-  const { isdarkmode } = useDarkMode();
   const fileRef = useRef(null);
   const actualFileRef = useRef(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -38,10 +23,6 @@ function EditBlogs({ blog, onClose, onSave }) {
   const [isCompressing, setIsCompressing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageError, setImageError] = useState("");
-  const [openSection, setOpenSection] = useState("details");
-  const toggleSection = (key) => {
-    setOpenSection((prev) => prev === key ? null : key);
-  };
   const parseExistingContent = () => {
     if (!blog.mainContent || !Array.isArray(blog.mainContent) || blog.mainContent.length === 0) {
       return { mainTitle: "", mainText: "", additionalSections: [{ title: "", content: "" }] };
@@ -68,6 +49,20 @@ function EditBlogs({ blog, onClose, onSave }) {
   );
   const [selectedImage, setSelectedImage] = useState(blog.picture || null);
   const [imageChanged, setImageChanged] = useState(false);
+  const ai = useBlogAi({
+    setTitle, setShortDescription, setMainContentTitle, setMainContentText, setContentSections,
+    getContext: () => blogContext({ title, shortDescription, mainContentTitle, mainContentText, contentSections }),
+    setCover: (dataUrl, file) => {
+      setSelectedImage(dataUrl);
+      actualFileRef.current = file;
+      setImageChanged(true);
+      setImageError("");
+    },
+    onError: (msg) => {
+      setErrorMessage(msg);
+      setShowErrorModal(true);
+    }
+  });
   const getTotalWordCount = () => {
     let n = (mainContentTitle + " " + htmlToText(mainContentText)).split(/\s+/).filter(Boolean).length;
     contentSections.forEach((s) => {
@@ -187,71 +182,20 @@ function EditBlogs({ blog, onClose, onSave }) {
     setSubcategory("");
   };
   const getAvailableSubcategories = () => mainCategory ? SUBCATEGORIES[mainCategory] || [] : [];
-  const inputBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
-  const selectBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] cursor-pointer bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] focus:border-[var(--admin-border-strong)]`;
-  const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
-  const sectionCard = `rounded-xl border transition-all duration-500 overflow-hidden bg-[var(--admin-surface)] border-[var(--admin-border)]`;
-  const labelCls = `uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`;
-  const AccordionHeader = ({
-    sectionKey,
-    title: headerTitle,
-    subtitle,
-    rightSlot,
-    labelStyle = false
-  }) => {
-    const isOpen = openSection === sectionKey;
-    return <div
-      onClick={() => toggleSection(sectionKey)}
-      className={`flex items-center justify-between px-6 py-4 border-b cursor-pointer select-none transition-all duration-300 border-[var(--admin-border)] ${isOpen ? "bg-[var(--admin-bg-soft)]" : "bg-[var(--admin-surface)] hover:bg-[var(--admin-bg-hover)]"}`}
-    >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="flex-1 min-w-0">
-            {labelStyle ? <>
-                <p className={`uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 10, fontWeight: 500 }}>
-                  {headerTitle}
-                </p>
-                <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                  {subtitle}
-                </p>
-              </> : <>
-                <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>
-                  {headerTitle}
-                </p>
-                <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                  {subtitle}
-                </p>
-              </>}
-          </div>
-          {rightSlot && <div onClick={(e) => e.stopPropagation()}>
-              {rightSlot}
-            </div>}
-        </div>
-        {
-      /* Chevron */
-    }
-        <svg
-      className={`w-4 h-4 ml-4 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"} text-[var(--admin-text-faint)]`}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>;
-  };
   const CharCount = ({ value, max, min }) => {
     const trimmed = htmlToText(value);
     const tooShort = trimmed.length > 0 && trimmed.length < min;
     const tooLong = max !== void 0 && trimmed.length > max;
     return <div className="flex justify-between items-center mt-1 px-1">
-        <span className={`text-[9px] ${tooShort || tooLong ? "text-red-500" : "text-transparent select-none"}`}>
+        <span className={`text-[11px] ${tooShort || tooLong ? "text-red-500" : "text-transparent select-none"}`}>
           {tooShort ? `Min ${min} chars required.` : tooLong ? `Max ${max} chars allowed.` : "."}
         </span>
-        <span className={`text-[9px] ${tooLong ? "text-red-500" : "text-[var(--admin-text-faint)]"}`}>
+        <span className={`text-[11px] ${tooLong ? "text-red-500" : "text-[var(--admin-text-sub)]"}`}>
           {max !== void 0 ? `${trimmed.length}/${max}` : `${trimmed.length} chars`}
         </span>
       </div>;
   };
+  const canSave = isFormValid() && !isSubmitting;
   return <>
       <style dangerouslySetInnerHTML={{ __html: `
         * { font-family: var(--font-body) !important; }
@@ -259,399 +203,261 @@ function EditBlogs({ blog, onClose, onSave }) {
         * { scrollbar-width: none; -ms-overflow-style: none; }
       ` }} />
 
-      <div className={`flex flex-col items-start justify-start p-8 space-y-8 min-h-screen transition-colors duration-500 bg-[var(--admin-bg)]`}>
+      <div style={{ padding: "32px 24px", minHeight: "100vh", background: "var(--admin-bg)" }}>
+        <style>{`
+          .ab-pill:hover { opacity: .78; }
+          .ab-cover-row { display: grid; grid-template-columns: clamp(300px, 36%, 520px) 1fr; gap: 22px; }
+          .ab-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+          .ab-input:focus { border-color: var(--admin-accent) !important; }
+          .ab-input::placeholder { color: var(--admin-text-sub); opacity: .6; }
+          @media (max-width: 760px) {
+            .ab-cover-row, .ab-two { grid-template-columns: 1fr; }
+            .ab-header { flex-direction: column; align-items: flex-start !important; }
+            .ab-actions { flex-direction: column; }
+          }
+        `}</style>
 
-        {
-    /* â”€â”€ Page Header â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto">
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+          {/* PAGE HEADER */}
           <PageHeader
-    title="Edit Blog Post"
-    subtitle="Update your blog post details below"
-    style={{ marginBottom: 0 }}
-    before={<button
-    onClick={onClose}
-    aria-label="Back to blog list"
-    className={`w-9 h-9 rounded-lg flex items-center justify-center border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-  >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>}
-  />
-        </div>
+            title="Edit Blog Post"
+            subtitle="Update your blog post details below"
+            before={<button
+              onClick={onClose}
+              aria-label="Back to blog list"
+              style={{ width: 36, height: 36, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--admin-border)", background: "transparent", color: "var(--admin-text-sub)", cursor: "pointer" }}
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            </button>}
+            actions={<>
+              {ai.usage && <div
+                style={{ display: "flex", flexDirection: "column", gap: 4, padding: "6px 12px", borderRadius: 8, border: "1px solid var(--admin-border)", background: "var(--admin-surface)" }}
+                title={ai.usage.models.map((m) => `${m.label}: ${m.used}/${m.limit}${m.active ? " (active)" : ""}`).join("\n")}
+              >
+                {ai.usage.models.map((m) => <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${m.active ? "bg-green-500" : "bg-[var(--admin-border-strong)]"}`} />
+                  <span style={{ fontSize: 11, fontWeight: m.active ? 600 : 400, color: m.active ? "var(--admin-text)" : "var(--admin-text-sub)" }}>{m.label}</span>
+                  <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>{m.used}/{m.limit}</span>
+                </div>)}
+              </div>}
+              <button onClick={() => ai.open("expand")} style={headerBtnGhost}>
+                <SparkleIcon className="w-3.5 h-3.5" />
+                Generate Prompt
+              </button>
+              <button onClick={() => ai.open("full")} style={headerBtnPrimary}>
+                <LayersIcon className="w-3.5 h-3.5" />
+                Generate Full Blog
+              </button>
+            </>}
+          />
 
-        {
-    /* â”€â”€ Main Grid â”€â”€ */
-  }
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-          {
-    /* â”€â”€ Left Column â”€â”€ */
-  }
-          <div className="lg:col-span-4 space-y-4">
-
-            {
-    /* Cover Image */
-  }
-            <div className={sectionCard}>
-              <div className={`flex items-center justify-between px-6 py-4 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
+            {/* STEP 1 — Cover & Basic Information */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead n={1} title="Cover & Basic Information" subtitle="Update the cover and essential details" />
+              <div className="ab-cover-row">
                 <div>
-                  <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Featured Image</p>
-                  <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                    Upload a new cover or keep existing
-                  </p>
+                  <input ref={fileRef} type="file" accept=".png,.jpg,.jpeg,.webp" onChange={handleFileChange} className="hidden" />
+                  <div
+                    onClick={() => fileRef.current?.click()}
+                    style={{ position: "relative", border: `1.5px dashed ${imageError ? "var(--admin-danger)" : "var(--admin-border)"}`, borderRadius: 14, cursor: "pointer", overflow: "hidden", aspectRatio: "16/9", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
+                  >
+                    {isCompressing ? <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--admin-accent-text)" }}>
+                      <Spinner size={20} />
+                      <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>Compressing...</span>
+                    </div> : selectedImage ? <>
+                      <img src={selectedImage} alt="Cover preview" style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-white" style={{ fontSize: 11, fontWeight: 500 }}>Click to change</span>
+                      </div>
+                    </> : <>
+                      <div style={{ width: 40, height: 40, borderRadius: "50%", background: "color-mix(in srgb, var(--admin-accent) 8%, transparent)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+                        <svg width="18" height="18" fill="none" stroke="var(--admin-accent-text)" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      </div>
+                      <p style={{ fontSize: 12, color: "var(--admin-text)", margin: 0, fontWeight: 600 }}>Upload cover image</p>
+                      <p style={{ fontSize: 11, color: "var(--admin-text-sub)", margin: "5px 0 0" }}>PNG, JPG, WebP</p>
+                      <p style={{ fontSize: 11, color: "var(--admin-text-sub)", margin: "2px 0 0" }}>Recommended: 16:9 ratio</p>
+                    </>}
+                  </div>
+                  {imageError && <p style={{ fontSize: 10, color: "var(--admin-danger)", margin: "6px 0 0" }}>{imageError}</p>}
+                  <button type="button" onClick={() => ai.open("image")} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "var(--admin-text-on-accent)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                    <SparkleIcon className="w-3.5 h-3.5" />
+                    Generate with AI
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div className="ab-two">
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                        <span style={{ ...lbl, marginBottom: 0 }}>Title <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                        <button type="button" onClick={() => ai.open("title")} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--admin-accent-text)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                          <SparkleIcon className="w-3 h-3" />
+                          AI Title
+                        </button>
+                      </div>
+                      <input className="ab-input" style={inp()} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={TITLE_MAX} placeholder="e.g., Top 10 Hidden Gems in Palawan" />
+                      <CharCount value={title} min={HEADLINE_MIN} max={TITLE_MAX} />
+                    </div>
+                    <div>
+                      <span style={lbl}>Author <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                      <input className="ab-input" style={inp()} value={authorName} onChange={(e) => setAuthorName(e.target.value)} maxLength={HEADLINE_MAX} placeholder="e.g., Admin Team" />
+                      <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                    </div>
+                  </div>
+                  <div>
+                    <span style={lbl}>Description <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <input className="ab-input" style={inp()} value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} placeholder="Brief summary for listing card..." />
+                    <CharCount value={shortDescription} min={SHORT_DESC_MIN} />
+                  </div>
+                  <div>
+                    <span style={lbl}>Status <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {STATUS_OPTIONS.map((s) => <button key={s.value} type="button" className="ab-pill" onClick={() => setStatus(s.value)} style={pillStyle(status === s.value)}>
+                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={s.icon} /></svg>
+                        {s.label}
+                        {status === s.value && <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
+                      </button>)}
+                    </div>
+                  </div>
+                  {status === "scheduled" && <div style={{ maxWidth: 320 }}>
+                    <span style={lbl}>Schedule date <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <input className="ab-input" type="datetime-local" style={inp()} value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} />
+                  </div>}
                 </div>
               </div>
+            </div>
 
-              <div className="p-6 space-y-4">
-                <input ref={fileRef} type="file" accept=".png,.jpg,.jpeg,.webp" onChange={handleFileChange} className="hidden" />
-
-                <div
-    onClick={() => fileRef.current?.click()}
-    className={`relative border-2 border-dashed rounded-xl overflow-hidden cursor-pointer transition-all ${imageError ? "border-red-400 bg-red-50/5" : selectedImage ? "border-[var(--admin-accent)]/40" : "border-[var(--admin-border)] hover:border-[var(--admin-border-strong)] bg-[var(--admin-bg-soft)]"}`}
-    style={{ aspectRatio: "16/9" }}
-  >
-                  {isCompressing ? <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <span className="text-[var(--admin-accent)]"><Spinner size={20} /></span>
-                      <span className={`text-[10px] text-[var(--admin-text-faint)]`}>Compressing...</span>
-                    </div> : selectedImage ? <>
-                      <img src={selectedImage} alt="Cover preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-[11px] font-medium">Click to change</span>
-                      </div>
-                    </> : <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <div className={`w-11 h-11 rounded-full flex items-center justify-center bg-[var(--admin-bg-hover)]`}>
-                        <svg className={`w-5 h-5 text-[var(--admin-text-faint)]`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                      </div>
-                      <div className="text-center">
-                        <p className={`text-[11px] font-medium text-[var(--admin-text-sub)]`}>Drop or click to upload</p>
-                        <p className={`text-[10px] mt-0.5 text-[var(--admin-text-faint)]`}>JPG, PNG, WEBP</p>
-                      </div>
-                    </div>}
+            {/* STEP 2 — Categories */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead n={2} title="Categories" subtitle="Assign a topic and subcategory" />
+              <div style={{ marginBottom: mainCategory ? 18 : 0 }}>
+                <span style={{ ...lbl, marginBottom: 8 }}>Main category <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {Object.values(MAIN_CATEGORIES).map((c) => <button key={c} type="button" className="ab-pill" onClick={() => handleMainCategoryChange(c)} style={pillStyle(mainCategory === c)}>{c}</button>)}
                 </div>
-                {imageError && <p className="text-red-500 text-[10px]">{imageError}</p>}
+              </div>
+              {mainCategory && <div>
+                <span style={{ ...lbl, marginBottom: 8 }}>Subcategory <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {getAvailableSubcategories().map((s) => <button key={s} type="button" className="ab-pill" onClick={() => setSubcategory(s)} style={pillStyle(subcategory === s)}>{s}</button>)}
+                </div>
+              </div>}
+            </div>
 
-                <button
-    onClick={() => fileRef.current?.click()}
-    className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                  </svg>
-                  Browse File
+            {/* STEP 3 — Content Body */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead
+                n={3}
+                title="Content Body"
+                subtitle="Write the main section of your post"
+                action={<button type="button" onClick={() => ai.open("content")} style={ghostAccentBtn}>
+                  <SparkleIcon className="w-3 h-3" />
+                  Write with AI
+                </button>}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div>
+                  <span style={lbl}>Main title <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                  <input className="ab-input" style={inp()} value={mainContentTitle} onChange={(e) => setMainContentTitle(e.target.value)} maxLength={HEADLINE_MAX} placeholder="Main section title..." />
+                  <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                </div>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                    <span style={{ ...lbl, marginBottom: 0 }}>Main body <span style={{ color: "var(--admin-accent-text)" }}>*</span></span>
+                    <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read</span>
+                  </div>
+                  <RichTextArea value={mainContentText} onChange={setMainContentText} placeholder="Write your main content here..." minHeight={140} />
+                  <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 4 — Extra Sections */}
+            <div style={{ ...card, padding: "22px 22px" }}>
+              <StepHead
+                n={4}
+                title="Extra Sections"
+                subtitle="Organize the rest of your post into sections"
+                action={<button type="button" onClick={addContentSection} style={ghostAccentBtn}>
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                  Add section
+                </button>}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {contentSections.map((section, i) => <div key={i} style={{ padding: "14px 16px", borderRadius: 14, background: "var(--admin-bg-soft)", border: "1px solid var(--admin-border)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                    <span style={{ ...lbl, marginBottom: 0 }}>Section {i + 1}</span>
+                    {contentSections.length > 1 && <button type="button" onClick={() => removeContentSection(i)} aria-label={`Remove section ${i + 1}`} style={{ width: 34, height: 34, borderRadius: 9, border: "1px solid var(--admin-border)", background: "transparent", color: "var(--admin-text-faint)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div>
+                      <span style={lbl}>Title</span>
+                      <input className="ab-input" style={inp()} value={section.title} onChange={(e) => updateContentSection(i, "title", e.target.value)} maxLength={HEADLINE_MAX} placeholder="Section title..." />
+                      <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
+                    </div>
+                    <div>
+                      <span style={lbl}>Content</span>
+                      <RichTextArea value={section.content} onChange={(html) => updateContentSection(i, "content", html)} placeholder="Section content..." minHeight={96} />
+                      <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
+                    </div>
+                  </div>
+                </div>)}
+                <button type="button" onClick={addContentSection} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 0", borderRadius: 12, border: "1.5px dashed var(--admin-border)", background: "transparent", color: "var(--admin-text-sub)", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                  Add another section
                 </button>
               </div>
             </div>
 
-            {
-    /* Publishing Options — Accordion */
-  }
-            <div className={sectionCard}>
-              <AccordionHeader
-    sectionKey="publishing"
-    title="Publishing Options"
-    subtitle="Set status and schedule"
-    labelStyle
-  />
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "publishing" ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}>
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Status</p>
-                    <select value={status} onChange={(e) => setStatus(e.target.value)} className={selectBase}>
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
-                      <option value="scheduled">Scheduled</option>
-                    </select>
-                  </div>
-                  {status === "scheduled" && <div>
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Schedule Date</p>
-                      <input type="datetime-local" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} className={inputBase} />
-                    </div>}
-                </div>
-              </div>
-            </div>
-
-            {
-    /* Categories — Accordion */
-  }
-            <div className={sectionCard}>
-              <AccordionHeader
-    sectionKey="categories"
-    title="Categories"
-    subtitle="Assign topic and subcategory"
-    labelStyle
-  />
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "categories" ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}`}>
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Main Category</p>
-                    <select value={mainCategory} onChange={(e) => handleMainCategoryChange(e.target.value)} className={selectBase}>
-                      <option value="">Select Category</option>
-                      {Object.values(MAIN_CATEGORIES).map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  {mainCategory && <div>
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500, marginBottom: 8 }}>Subcategory</p>
-                      <select value={subcategory} onChange={(e) => setSubcategory(e.target.value)} className={selectBase}>
-                        <option value="">Select Subcategory</option>
-                        {getAvailableSubcategories().map((s) => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                    </div>}
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {
-    /* â”€â”€ Right Column â”€â”€ */
-  }
-          <div className="lg:col-span-8 space-y-4">
-
-            {
-    /* â”€â”€ Blog Details (Accordion) â”€â”€ */
-  }
-            <div className={sectionCard}>
-              <AccordionHeader
-    sectionKey="details"
-    title="Blog Details"
-    subtitle="Title, author, and description"
-  />
-
-              {
-    /* Collapsible body */
-  }
-              <div
-    className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "details" ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}
-  >
-                <div className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
-
-                  {
-    /* Title row */
-  }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Title <span className="text-[var(--admin-accent)]">•</span>
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={TITLE_MAX} placeholder="Enter blog headline..." className={inputBase} />
-                      <CharCount value={title} min={HEADLINE_MIN} max={TITLE_MAX} />
-                    </div>
-                  </div>
-
-                  {
-    /* Author row */
-  }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Author <span className="text-[var(--admin-accent)]">•</span>
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <input value={authorName} onChange={(e) => setAuthorName(e.target.value)} maxLength={HEADLINE_MAX} placeholder="Enter author name..." className={inputBase} />
-                      <CharCount value={authorName} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                    </div>
-                  </div>
-
-                  {
-    /* Short Description row */
-  }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>
-                        Description <span className="text-[var(--admin-accent)]">•</span>
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <input value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} placeholder="Brief summary for listing card..." className={inputBase} />
-                      <CharCount value={shortDescription} min={SHORT_DESC_MIN} />
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-            {
-    /* â”€â”€ Content Body (Accordion) â”€â”€ */
-  }
-            <div className={sectionCard}>
-              <AccordionHeader
-    sectionKey="content"
-    title="Content Body"
-    subtitle="Main article content and sections"
-  />
-
-              <div
-    className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "content" ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
-  >
-                <div className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
-
-                  {
-    /* Main Title row */
-  }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Title</p>
-                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>Required</p>
-                    </div>
-                    <div className="flex-1">
-                      <input value={mainContentTitle} onChange={(e) => setMainContentTitle(e.target.value)} maxLength={HEADLINE_MAX} placeholder="Main Section Title..." className={inputBase} />
-                      <CharCount value={mainContentTitle} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                    </div>
-                  </div>
-
-                  {
-    /* Main Body row */
-  }
-                  <div className={`flex items-start gap-4 px-6 py-4 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                    <div className="w-32 flex-shrink-0 pt-3">
-                      <p className={labelCls} style={{ fontSize: 10, fontWeight: 500 }}>Main Body</p>
-                      <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 9, fontWeight: 400 }}>
-                        Est. {Math.ceil(getTotalWordCount() / 200) || 1} min read
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <RichTextArea value={mainContentText} onChange={setMainContentText} placeholder="Write your main content here..." minHeight={160} />
-                      <CharCount value={mainContentText} min={MAIN_CONTENT_MIN} />
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-            {
-    /* â”€â”€ Additional Sections (Accordion) â”€â”€ */
-  }
-            <div className={sectionCard}>
-              <AccordionHeader
-    sectionKey="additional"
-    title="Additional Sections"
-    subtitle="Optional extra content blocks"
-    rightSlot={<button
-      onClick={addContentSection}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-      style={{ fontSize: 11, fontWeight: 500 }}
-    >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Section
-                  </button>}
-  />
-
-              <div
-    className={`transition-all duration-300 ease-in-out overflow-hidden ${openSection === "additional" ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"}`}
-  >
-                <div className={`divide-y transition-all duration-500 divide-[var(--admin-border)]`}>
-                  {contentSections.map((section, i) => <div key={i} className={`px-6 py-5 transition-all duration-300 hover:bg-[var(--admin-bg-hover)]`}>
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-[var(--admin-accent)] flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-[9px] font-bold">{i + 1}</span>
-                          </div>
-                          <p className={`transition-colors text-[var(--admin-text-sub)]`} style={{ fontSize: 11, fontWeight: 500 }}>
-                            Section {i + 1}
-                          </p>
-                        </div>
-                        {contentSections.length > 1 && <button
-    onClick={() => removeContentSection(i)}
-    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-all"
-    style={{ fontSize: 10, fontWeight: 500 }}
-  >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            Remove
-                          </button>}
-                      </div>
-                      <div className="space-y-3">
-                        <div>
-                          <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Title</p>
-                          <input
-    value={section.title}
-    onChange={(e) => updateContentSection(i, "title", e.target.value)}
-    maxLength={HEADLINE_MAX}
-    placeholder="Section Title..."
-    className={inputBase}
-  />
-                          <CharCount value={section.title} min={HEADLINE_MIN} max={HEADLINE_MAX} />
-                        </div>
-                        <div>
-                          <p className={`mb-2 ${labelCls}`} style={{ fontSize: 10, fontWeight: 500 }}>Section Content</p>
-                          <RichTextArea value={section.content} onChange={(html) => updateContentSection(i, "content", html)} placeholder="Section content..." minHeight={100} />
-                          <CharCount value={section.content} min={MAIN_CONTENT_MIN} />
-                        </div>
-                      </div>
-                    </div>)}
-                </div>
-              </div>
-            </div>
-
-            {
-    /* Footer */
-  }
-            <div className={`rounded-xl border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-              <div className={`flex items-center justify-between px-6 py-4 rounded-xl transition-all duration-500 bg-[var(--admin-bg-soft)]`}>
-                <p className={`transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>
-                  Review your entry before saving.
-                </p>
-                <div className="flex items-center gap-3">
-                  <button
-    onClick={onClose}
-    className={`px-5 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                    Cancel
-                  </button>
-                  <button
-    onClick={() => setShowConfirmModal(true)}
-    disabled={!isFormValid() || isSubmitting}
-    className={`px-8 py-2.5 rounded-lg transition-all ${isFormValid() && !isSubmitting ? "bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] shadow-md" : "bg-[var(--admin-bg-soft)] text-[var(--admin-text-faint)] cursor-not-allowed"}`}
-    style={{ fontSize: 11, fontWeight: 500 }}
-  >
-                    {isSubmitting ? "Saving..." : "Save Changes"}
-                  </button>
-                </div>
-              </div>
+            {/* Actions */}
+            <div className="ab-actions" style={{ display: "flex", gap: 10 }}>
+              <button type="button" onClick={onClose} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 1, padding: "13px 0", borderRadius: 12, border: "1px solid var(--admin-border)", background: "var(--admin-surface)", color: "var(--admin-text-sub)", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(true)}
+                disabled={!canSave}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flex: 2, padding: "13px 0", borderRadius: 12, border: "none", background: canSave ? "var(--admin-accent)" : "var(--admin-bg-soft)", color: canSave ? "var(--admin-text-on-accent)" : "var(--admin-text-faint)", fontSize: 14, fontWeight: 700, cursor: canSave ? "pointer" : "not-allowed", boxShadow: canSave ? "var(--admin-shadow-sm)" : "none" }}
+              >
+                {isSubmitting ? <><Spinner size={14} /> Saving...</> : <>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Save changes
+                </>}
+              </button>
             </div>
 
           </div>
         </div>
       </div>
 
-      {
-    /* â•â•â•â•â•â•â•â• Confirm Modal â•â•â•â•â•â•â•â• */
-  }
+      {ai.modal}
+
+      {/* Confirm Modal */}
       {showConfirmModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
-              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>Confirm Changes</p>
-              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Are you sure you want to save changes to this blog post?</p>
+          <div className="rounded-xl shadow-2xl w-full max-w-md overflow-hidden border bg-[var(--admin-surface)] border-[var(--admin-border)]">
+            <div className="px-6 py-5 border-b bg-[var(--admin-bg-soft)] border-[var(--admin-border)]">
+              <p className="text-[var(--admin-text)]" style={{ fontSize: 13, fontWeight: 600 }}>Confirm Changes</p>
+              <p className="mt-0.5 text-[var(--admin-text-faint)]" style={{ fontSize: 11, fontWeight: 400 }}>Are you sure you want to save changes to this blog post?</p>
             </div>
             <div className="flex gap-3 p-6">
-              <button onClick={() => setShowConfirmModal(false)} disabled={isSubmitting} className={`flex-1 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]`} style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
+              <button onClick={() => setShowConfirmModal(false)} disabled={isSubmitting} className="flex-1 py-2.5 rounded-lg border-2 transition-all border-[var(--admin-border)] text-[var(--admin-text-sub)] hover:bg-[var(--admin-bg-hover)]" style={{ fontSize: 11, fontWeight: 500 }}>Cancel</button>
               <button onClick={handleFinalConfirm} disabled={isSubmitting} className="flex-1 py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500 }}>{isSubmitting ? "Saving..." : "Confirm"}</button>
             </div>
           </div>
         </div>}
 
-      {
-    /* â•â•â•â•â•â•â•â• Success Modal â•â•â•â•â•â•â•â• */
-  }
+      {/* Success Modal */}
       {showSuccessModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
-              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>Success!</p>
-              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>Your blog post has been updated successfully.</p>
+          <div className="rounded-xl shadow-2xl w-full max-w-md overflow-hidden border bg-[var(--admin-surface)] border-[var(--admin-border)]">
+            <div className="px-6 py-5 border-b bg-[var(--admin-bg-soft)] border-[var(--admin-border)]">
+              <p className="text-[var(--admin-text)]" style={{ fontSize: 13, fontWeight: 600 }}>Success!</p>
+              <p className="mt-0.5 text-[var(--admin-text-faint)]" style={{ fontSize: 11, fontWeight: 400 }}>Your blog post has been updated successfully.</p>
             </div>
             <div className="p-6">
               <button onClick={handleSuccessClose} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Back to Blog List</button>
@@ -659,14 +465,12 @@ function EditBlogs({ blog, onClose, onSave }) {
           </div>
         </div>}
 
-      {
-    /* â•â•â•â•â•â•â•â• Error Modal â•â•â•â•â•â•â•â• */
-  }
+      {/* Error Modal */}
       {showErrorModal && <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden border transition-all duration-500 bg-[var(--admin-surface)] border-[var(--admin-border)]`}>
-            <div className={`px-6 py-5 border-b transition-all duration-500 bg-[var(--admin-bg-soft)] border-[var(--admin-border)]`}>
-              <p className={`transition-colors text-[var(--admin-text)]`} style={{ fontSize: 13, fontWeight: 600 }}>Error</p>
-              <p className={`mt-0.5 transition-colors text-[var(--admin-text-faint)]`} style={{ fontSize: 11, fontWeight: 400 }}>{errorMessage || "Something went wrong. Please try again."}</p>
+          <div className="rounded-xl shadow-2xl w-full max-w-md overflow-hidden border bg-[var(--admin-surface)] border-[var(--admin-border)]">
+            <div className="px-6 py-5 border-b bg-[var(--admin-bg-soft)] border-[var(--admin-border)]">
+              <p className="text-[var(--admin-text)]" style={{ fontSize: 13, fontWeight: 600 }}>Error</p>
+              <p className="mt-0.5 text-[var(--admin-text-faint)]" style={{ fontSize: 11, fontWeight: 400 }}>{errorMessage || "Something went wrong. Please try again."}</p>
             </div>
             <div className="p-6">
               <button onClick={() => setShowErrorModal(false)} className="w-full py-2.5 rounded-lg bg-[var(--admin-accent)] text-white hover:bg-[var(--admin-accent-hover)] transition-all" style={{ fontSize: 11, fontWeight: 500 }}>Close</button>

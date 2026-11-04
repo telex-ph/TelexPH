@@ -9,11 +9,40 @@ import { getApiBaseUrl } from "@/lib/api-base";
 
 const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const sanitizeHtml = (html) =>
-  DOMPurify.sanitize(html || "", {
+const URL_RE = /https?:\/\/[^\s<]+/g;
+// Sanitize, turn bare URLs into links, and open every link in a new tab.
+const sanitizeHtml = (html) => {
+  const clean = DOMPurify.sanitize(html || "", {
     ALLOWED_TAGS: ["p", "br", "ul", "ol", "li", "strong", "em", "b", "i", "u", "a", "h1", "h2", "h3", "h4", "blockquote", "code", "pre", "span"],
     ALLOWED_ATTR: ["href", "target", "rel"]
   });
+  if (typeof document === "undefined") return clean;
+  const tpl = document.createElement("template");
+  tpl.innerHTML = clean;
+  const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_TEXT);
+  const texts = [];
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) if (!n.parentElement?.closest("a") && /https?:\/\//.test(n.data)) texts.push(n);
+  for (const node of texts) {
+    const frag = document.createDocumentFragment();
+    let last = 0;
+    for (const m of node.data.matchAll(URL_RE)) {
+      const url = m[0].replace(/[.,;:!?)]+$/, "");
+      frag.append(node.data.slice(last, m.index));
+      const a = document.createElement("a");
+      a.href = url;
+      a.textContent = url;
+      frag.append(a);
+      last = m.index + url.length;
+    }
+    frag.append(node.data.slice(last));
+    node.replaceWith(frag);
+  }
+  tpl.content.querySelectorAll("a[href]").forEach((a) => {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+  });
+  return tpl.innerHTML;
+};
 
 const API_BASE = getApiBaseUrl();
 const T = {
@@ -256,12 +285,12 @@ function FaqSection({ content, sectionTitle }) {
           {faqs.map((faq, i) => <FaqItem key={i} index={i} question={faq.question} answer={faq.answer} isOpen={openIndex === i} onToggle={() => setOpenIndex(openIndex === i ? null : i)} />)}
           {faqs.rest && <div
     style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.textBody, lineHeight: "1.85" }}
-    className="pt-4 [&_p]:mb-2 [&_strong]:font-bold"
+    className="pt-4 [&_p]:mb-2 [&_strong]:font-bold [&_a]:underline [&_a]:underline-offset-2 [&_a]:break-all [&_a:hover]:opacity-70"
     dangerouslySetInnerHTML={{ __html: sanitizeHtml(faqs.rest) }}
   />}
         </div> : <div
     style={{ fontFamily: FONTS.rubik, fontSize: "13.5px", color: T.textBody, lineHeight: "1.85" }}
-    className="[&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_strong]:font-bold"
+    className="[&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_strong]:font-bold [&_a]:underline [&_a]:underline-offset-2 [&_a]:break-all"
     dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
   />}
     </div>;
