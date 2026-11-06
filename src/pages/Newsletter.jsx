@@ -70,18 +70,13 @@ function IssueBrowser({ issues }) {
 
 const Heart = ({ filled }) => <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.8 5 6.2 5c2 0 3.4 1.1 4.3 2.4h3C14.4 6.1 15.8 5 17.8 5c3.4 0 5.3 3.4 3.8 6.8C19.5 16.4 12 21 12 21z" /></svg>;
 
-// One like button, used at the top of the issue (so it is seen at once) and again at the end.
+// The only like button: sits at the right of the issue title.
 function LikeButton({ likes, liked, onToggle }) {
   return <button type="button" onClick={onToggle} aria-pressed={liked} aria-label={liked ? "Unlike this issue" : "Like this issue"}
       className={`inline-flex min-h-12 items-center gap-2 rounded-full border-2 px-6 text-sm font-bold transition-colors ${liked ? "border-[#a10000] bg-[#a10000] text-white" : "border-[#a10000] bg-white text-[#a10000] hover:bg-[#a10000]/10"}`}>
       <Heart filled={liked} />{liked ? "Liked" : "Like"}<span className="opacity-80">&middot; {likes}</span>
     </button>;
 }
-
-const LikeFooter = (props) => <div className="mx-auto mt-12 flex max-w-[820px] flex-col items-center gap-3 border-t border-gray-200 pt-8 text-center">
-    <p className="text-sm text-gray-500">Enjoyed this issue?</p>
-    <LikeButton {...props} />
-  </div>;
 
 function NewsletterPage() {
   const [showNav, setShowNav] = useState(false);
@@ -130,7 +125,7 @@ function NewsletterPage() {
           </header>}
 
         {loading ? <PageLoader fullScreen={false} /> : failed ? <p className="text-center text-gray-500">Couldn't load the newsletter. Please try again later.</p>
-          : slug ? (issue ? <><NewsletterIssueView issue={issue} /><div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-full shadow-xl"><LikeButton likes={track.likes} liked={track.liked} onToggle={track.toggleLike} /></div><LikeFooter likes={track.likes} liked={track.liked} onToggle={track.toggleLike} /></> : <p className="text-center text-gray-500">Issue not found.</p>)
+          : slug ? (issue ? <NewsletterIssueView issue={issue} headerAction={<LikeButton likes={track.likes} liked={track.liked} onToggle={track.toggleLike} />} /> : <p className="text-center text-gray-500">Issue not found.</p>)
           : <IssueBrowser issues={list || []} />}
       </main>
       <Footer />

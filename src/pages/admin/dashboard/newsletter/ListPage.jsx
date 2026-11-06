@@ -5,14 +5,10 @@ import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import { periodLabel } from "@/components/NewsletterView";
 import api from "@/lib/api/axios";
 import { NEWSLETTER_DEPARTMENTS } from "@/data/newsletter-departments";
+import NewsletterAnalytics from "./Analytics";
+import { BORDER, MUTED, TEXT, card, inp, pill, mmss, Tile } from "./ui";
 
 // Same look as the blog list: toolbar (search, sort, grid/list), status tabs with counts, department pills.
-const BORDER = "var(--admin-border)";
-const MUTED = "var(--admin-text-sub)";
-const TEXT = "var(--admin-text)";
-const card = { background: "var(--admin-surface)", border: `1px solid ${BORDER}`, borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,.06)" };
-const inp = { padding: "8px 11px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "var(--admin-surface)", color: TEXT, fontSize: 11, outline: "none", boxSizing: "border-box" };
-const pill = (sel) => ({ padding: "3px 11px", borderRadius: 20, fontSize: 10, fontWeight: 500, cursor: "pointer", border: sel ? "1px solid color-mix(in srgb, var(--admin-accent) 30%, transparent)" : `1px solid ${BORDER}`, background: sel ? "color-mix(in srgb, var(--admin-accent) 9%, transparent)" : "transparent", color: sel ? "var(--admin-accent)" : MUTED });
 const ghost = { padding: "4px 9px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: MUTED, fontSize: 10, fontWeight: 500, cursor: "pointer" };
 const danger = { ...ghost, color: "var(--admin-danger)", borderColor: "color-mix(in srgb, var(--admin-danger) 35%, transparent)" };
 const statusStyle = (published) => published
@@ -27,22 +23,7 @@ const SORTS = {
   za: (a, b) => b.title.localeCompare(a.title)
 };
 
-const mmss = (sec) => (sec >= 3600 ? `${Math.floor(sec / 3600)}h ${Math.floor((sec % 3600) / 60)}m` : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`);
 const EMPTY_STATS = { views: 0, unique: 0, likes: 0, returning: 0, avgSeconds: 0, readRate: 0, bounceRate: 0, avgScroll: 0, devices: {}, sources: {}, trend: [] };
-const top = (obj) => { const [k, v] = Object.entries(obj || {}).sort((a, b) => b[1] - a[1])[0] || []; return v ? k : "-"; };
-
-function Spark({ trend }) {
-  const max = Math.max(1, ...trend.map((t) => t.views));
-  return <svg width="84" height="24" viewBox={`0 0 ${trend.length * 6} 24`} role="img" aria-label="Views over the last 14 days" style={{ color: "var(--admin-accent)" }}>
-      {trend.map((t, i) => <rect key={t.day} x={i * 6} y={24 - Math.max(1, (t.views / max) * 22)} width="4" height={Math.max(1, (t.views / max) * 22)} rx="1" fill="currentColor" opacity={t.views ? 1 : 0.25}><title>{`${t.day}: ${t.views}`}</title></rect>)}
-    </svg>;
-}
-
-const Tile = ({ label, value, hint }) => <div style={{ ...card, padding: "14px 16px", minWidth: 0 }}>
-    <p style={{ margin: 0, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: MUTED }}>{label}</p>
-    <p style={{ margin: "6px 0 0", fontSize: 24, fontWeight: 700, color: TEXT, lineHeight: 1 }}>{value}</p>
-    {hint && <p style={{ margin: "6px 0 0", fontSize: 10, color: MUTED }}>{hint}</p>}
-  </div>;
 
 function Cover({ issue }) {
   const src = issue.coverUrl || issue.pages?.[0]?.imageUrl;
@@ -103,7 +84,7 @@ function NewsletterList() {
   const current = shown.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const byId = Object.fromEntries(stats.issues.map((x) => [x.issueId, x]));
   const statOf = (i) => byId[i._id] || EMPTY_STATS;
-  const isIssues = isIssues && tab !== "Analytics";
+  const isIssues = tab !== "Subscribers" && tab !== "Analytics";
   const count = (t) => (t === "All" ? issues.length : t === "Subscribers" ? subs.length : t === "Analytics" ? issues.filter((i) => i.status === "published").length : issues.filter((i) => i.status === t.toLowerCase()).length);
   const depts = [...new Set([...NEWSLETTER_DEPARTMENTS, ...issues.map((i) => i.department)])]; // legacy departments stay filterable
 
@@ -121,7 +102,7 @@ function NewsletterList() {
       </div>
       {error && <p role="alert" style={{ color: "var(--admin-danger)", fontSize: 12, margin: 0 }}>{error}</p>}
 
-      {stats.totals && <div className="w-full mx-auto" style={{ maxWidth: 1200, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
+      {stats.totals && tab !== "Analytics" && <div className="w-full mx-auto" style={{ maxWidth: 1200, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
         <Tile label="Total views" value={stats.totals.views.toLocaleString()} hint="Every time an issue was opened" />
         <Tile label="Unique readers" value={stats.totals.visitors.toLocaleString()} hint="Different people (one browser each)" />
         <Tile label="Likes" value={stats.totals.likes.toLocaleString()} />
@@ -168,25 +149,7 @@ function NewsletterList() {
 
         <DashboardLoader isVisible={initialLoading} message="Loading newsletters…" />
 
-        {!initialLoading && tab === "Analytics" && (() => {
-          const rows = issues.filter((i) => i.status === "published").map((i) => ({ i, m: statOf(i) })).sort((a, b) => b.m.views - a.m.views);
-          const th = { padding: "10px 12px", textAlign: "left", fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: MUTED, whiteSpace: "nowrap" };
-          const td = { padding: "10px 12px", fontSize: 12, color: TEXT, whiteSpace: "nowrap" };
-          return rows.length === 0
-            ? <p style={{ padding: "48px 20px", textAlign: "center", fontSize: 13, color: MUTED, margin: 0 }}>Publish a newsletter to start collecting readers.</p>
-            : <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead><tr style={{ borderBottom: `1px solid ${BORDER}` }}>
-                  {["Issue", "Views", "Unique", "Likes", "Avg time", "Read rate", "Avg scroll", "Bounce", "Returning", "Top source", "Top device", "Last 14 days"].map((h) => <th key={h} style={th} title={h === "Bounce" ? "Left in under 5 seconds" : h === "Returning" ? "Readers who opened it more than once" : h === "Read rate" ? "Stayed long enough and scrolled far enough to have read it" : undefined}>{h}</th>)}
-                </tr></thead>
-                <tbody>{rows.map(({ i, m }) => <tr key={i._id} style={{ borderTop: `1px solid ${BORDER}` }}>
-                  <td style={{ ...td, whiteSpace: "normal", minWidth: 200 }}><strong style={{ fontWeight: 600 }}>{i.title}</strong><br /><span style={{ fontSize: 10, color: MUTED }}>{i.department} · {periodLabel(i.period)}</span></td>
-                  <td style={td}>{m.views}</td><td style={td}>{m.unique}</td><td style={td}>{m.likes}</td>
-                  <td style={td}>{mmss(m.avgSeconds)}</td><td style={td}>{m.readRate}%</td><td style={td}>{m.avgScroll}%</td><td style={td}>{m.bounceRate}%</td><td style={td}>{m.returning}</td>
-                  <td style={td}>{top(m.sources)}</td><td style={td}>{top(m.devices)}</td>
-                  <td style={td}>{m.trend.length ? <Spark trend={m.trend} /> : "-"}</td>
-                </tr>)}</tbody>
-              </table></div>;
-        })()}
+        {!initialLoading && tab === "Analytics" && <NewsletterAnalytics issues={issues} />}
 
         {!initialLoading && tab === "Subscribers" && (subs.length === 0
           ? <p style={{ padding: "48px 20px", textAlign: "center", fontSize: 13, color: MUTED, margin: 0 }}>No subscribers yet.</p>
