@@ -139,7 +139,7 @@ const Nav = ({ openNav }) => {
     }
   ];
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies"] },
+    { id: "learning", label: "Resource Center", items: ["Case Studies", { label: "Innovation", url: "https://innovation.telexph.com" }] },
     {
       id: "news",
       label: "Industry Use Cases",
@@ -198,7 +198,7 @@ const Nav = ({ openNav }) => {
               {navLinks.map((link) => {
     const megaConfig = getMegaConfig(link.label);
     return <div key={link.id} className="relative h-full flex items-center" onMouseEnter={() => handleMouseEnter(link.id)} onMouseLeave={handleMouseLeave}>
-                    <Link href={link.url} onClick={(e) => handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
+                    <Link href={link.url} {...link.external ? { target: "_blank", rel: "noopener noreferrer" } : {}} onClick={(e) => handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
                       <span className="text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]">
                         {link.label === "Careers" ? "Virtual Assistant" : link.label}
                       </span>
@@ -223,7 +223,7 @@ const Nav = ({ openNav }) => {
                             {megaConfig.data.find((c) => c.id === megaConfig.active)?.items.map((item, i) => {
       const label = typeof item === "string" ? item : item.label;
       const url = typeof item === "string" ? megaConfig.path : item.url;
-      const external = url.startsWith("/logistics");
+      const external = url.startsWith("/logistics") || url.startsWith("http");
       return <Link key={i} href={url} {...external ? { target: "_blank", rel: "noopener noreferrer" } : {}} onClick={(e) => handleScrollClick(e, url)} className="text-[13px] transition-colors py-0.5 w-fit text-gray-500 hover:text-[#a10000] font-normal">
                                   {label}
                                 </Link>;

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Layout, Loader2, AlertCircle, Clock } from "lucide-react";
+import SectionTitle from "../common/SectionTitle";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
@@ -546,21 +547,7 @@ function ServicesGrid() {
       <div id="services" className="bg-white py-16">
         <div className={DEFAULT_MAX_WIDTH_CLASS}>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-14">
-            <div>
-              <p
-    className="mb-3 uppercase tracking-widest flex items-center gap-2"
-    style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: "12px", color: DARK_RED }}
-  >
-                <span className="w-8 h-[2px] inline-block" style={{ backgroundColor: DARK_RED }} />
-                OUR SERVICES
-              </p>
-              <h2
-    className="text-gray-900 leading-tight max-w-lg"
-    style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "clamp(1.8rem, 4vw, 2.6rem)" }}
-  >
-                Services Designed to Meet Every Need
-              </h2>
-            </div>
+            <SectionTitle eyebrow="OUR SERVICES" align="left" subtitle="Support services from our Philippines-based team, matched to what your business needs.">Services Designed to Meet Every Need</SectionTitle>
             <ViewAllServicesButton isLargeScreenHeader={true} />
           </div>
         </div>

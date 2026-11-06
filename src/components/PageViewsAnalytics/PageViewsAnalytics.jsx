@@ -54,19 +54,19 @@ function PageViewsAnalyticsSection() {
     className="lg:col-span-5 lg:sticky lg:top-28"
   >
           <p
-    className={`text-sm ${FONT_CLASSES.openSansBold} uppercase tracking-wide flex items-center gap-2 mb-3`}
-    style={{ color: COLORS.primary }}
+    className={`text-sm ${FONT_CLASSES.openSansBold} uppercase tracking-widest flex items-center gap-2 mb-3`}
+    style={{ color: "#a10000" }}
   >
             <span className="w-8 h-0.5 rounded-full" style={{ backgroundColor: COLORS.primary }} />
             How the team is managed
           </p>
           <h2
-    className={`text-[1.75rem] md:text-[2.5rem] lg:text-[2.75rem] ${FONT_CLASSES.openSansBold} text-gray-900 leading-tight`}
+    className="font-poppins-black text-4xl md:text-5xl text-gray-900 leading-tight tracking-tight"
   >
-            A Team with <span className="bg-gradient-to-r from-[#c40000] to-[#6f0000] bg-clip-text text-transparent">Day-to-Day Management</span>
+            A Team with <span className="text-[#a10000]"><span className="whitespace-nowrap">Day-to-Day</span> Management</span>
           </h2>
           <span className="mt-5 block h-1 w-16 rounded-full bg-gradient-to-r from-[#c40000] to-[#6f0000]" />
-          <p className="text-gray-500 text-sm md:text-base mt-4 leading-relaxed">
+          <p className="text-gray-500 text-xs md:text-sm mt-5 leading-relaxed">
             Your support model can include:
           </p>
 

@@ -5,6 +5,7 @@ import Partners from "../Partners/Partners";
 import AboutUs from "../AboutUs/AboutUs";
 import PartnerLogos from "../PartnerLogos/PartnerLogos";
 import ServicesGrid from "../Services/Services";
+import Industries from "../Industries/Industries";
 import ContactSupport from "../ContactSupport/ContactSupport";
 import Process from "../Process/Process";
 import PageViewsAnalyticsSection from "../PageViewsAnalytics/PageViewsAnalytics";
@@ -58,6 +59,8 @@ const Home = () => {
         <ServicesGrid />
       </div>
       
+      <Industries />
+
       {
     /* 8. ContactSupport Section - ID: contactsupport */
   }

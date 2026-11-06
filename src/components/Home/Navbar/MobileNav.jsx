@@ -91,7 +91,7 @@ const MobileNav = ({ showNav, closeNav }) => {
     }
   ];
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies"] },
+    { id: "learning", label: "Resource Center", items: ["Case Studies", { label: "Innovation", url: "https://innovation.telexph.com" }] },
     {
       id: "news",
       label: "Industry Use Cases",
@@ -146,6 +146,10 @@ const MobileNav = ({ showNav, closeNav }) => {
   const handleScrollClick = (e, url) => {
     if (e) e.preventDefault();
     closeNav();
+    if (/^https?:\/\//.test(url)) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (url.includes("#")) {
       const [path, hash] = url.split("#");
       if (pathname === path || path === "" && pathname === "/") {

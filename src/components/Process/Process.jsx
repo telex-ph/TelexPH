@@ -224,6 +224,9 @@ const Process = () => {
     transition={{ duration: 0.7, delay: 0.3 }}
     className="mx-auto mt-4 block h-1 w-20 origin-center rounded-full bg-gradient-to-r from-[#c40000] to-[#6f0000]"
   />
+          <p className="mx-auto mt-5 max-w-2xl text-xs md:text-sm leading-relaxed text-gray-500">
+            A simple path from first call to a team running your operations.
+          </p>
         </motion.div>
 
         <div className="lg:hidden pb-2 overflow-visible">
