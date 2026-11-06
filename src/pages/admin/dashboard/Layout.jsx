@@ -207,6 +207,16 @@ function DashboardLayoutInner() {
       ]
     },
     {
+      name: "Newsletter",
+      path: "/admin/dashboard/newsletter",
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>,
+      hasDropdown: true,
+      subItems: [
+        { name: "Add newsletter", path: "/admin/dashboard/newsletter" },
+        { name: "Newsletter list", path: "/admin/dashboard/newsletter/list" }
+      ]
+    },
+    {
       name: "Services",
       path: "/admin/dashboard/Services",
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
@@ -459,8 +469,11 @@ function DashboardLayoutInner() {
         <style dangerouslySetInnerHTML={{ __html: `
           /* Brand type (tokens in styles/admin-theme.css). !important is what lets
              this win over the many inline fontFamily styles in the pages. */
-          * { font-family: var(--font-body) !important; }
-          :is(h1,h2,h3,h4,h5,h6,.font-heading), :is(h1,h2,h3,h4,h5,h6,.font-heading) * { font-family: var(--font-heading) !important; font-weight: 900 !important; letter-spacing: 0 !important; }
+          /* The newsletter design (.nl2) is left out of both rules below: it carries its own fonts, weights and spacing (the admin can
+             pick a font per text box), and it has to look in the editor exactly as it does on the public page. :where() keeps the
+             specificity at zero, so nothing else changes. */
+          :where(*:not(.nl2, .nl2 *)) { font-family: var(--font-body) !important; }
+          :is(h1,h2,h3,h4,h5,h6,.font-heading):where(:not(.nl2 *)), :is(h1,h2,h3,h4,h5,h6,.font-heading) *:where(:not(.nl2 *)) { font-family: var(--font-heading) !important; font-weight: 900 !important; letter-spacing: 0 !important; }
           .font-accent { font-family: var(--font-accent) !important; }
           body { font-weight: 400; }
           /* Dashboard was authored at 9-12px; scale the whole UI so it reads at 100% browser zoom. */
