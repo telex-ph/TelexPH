@@ -25,6 +25,15 @@ export const blogContext = ({ title, shortDescription, mainContentTitle, mainCon
   htmlToText(mainContentText),
   ...contentSections.map((x) => `${x.title} ${htmlToText(x.content)}`)
 ].map((x) => (x || "").trim()).filter(Boolean).join("\n");
+// Same idea for the case study form: title, subtitle, challenge, solution and sections as plain text.
+export const caseStudyContext = ({ title, subtitle, challenge, solution, sections }) => [
+  title,
+  subtitle,
+  htmlToText(challenge),
+  htmlToText(solution),
+  ...sections.map((x) => `${x.topic} ${htmlToText(x.content)}`)
+].map((x) => (x || "").trim()).filter(Boolean).join("\n");
+export const CS_TITLE_MAX = 125; // the case study title field's maxLength
 const MIN_CONTEXT = 20;
 const IMAGE_SOURCE_STEPS = ["Reading your blog", "Writing image prompt", "Creating cover image"];
 
@@ -77,7 +86,14 @@ const MODAL_CONFIGS = {
   full: { title: "Generate Full Blog", hint: "Enter a content topic and a separate image description — AI will generate the title, description, all content sections, and a matching cover image.", placeholder: "e.g., How TelexPH helps startups reduce operational costs...", withImageAttach: false, steps: ["Analyzing prompts", "Writing content", "Structuring sections", "Creating cover image"] },
   expand: { title: "Generate Prompt", hint: "Enter a rough idea and AI will expand it into a detailed content prompt and image prompt, ready to use in Generate Full Blog.", placeholder: "e.g., BPO tips for small businesses...", withImageAttach: false, steps: ["Analyzing your idea", "Expanding into prompts"] }
 };
-const textareaBase = `w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
+const CS_MODAL_CONFIGS = {
+  image: { ...MODAL_CONFIGS.image },
+  title: { title: "Generate Title", hint: "Enter a topic (or attach an image) to generate a clear case study title.", placeholder: "e.g., How an online retailer cut response times during peak season...", withImageAttach: true, steps: MODAL_CONFIGS.title.steps },
+  content: { title: "Write Case Study with AI", hint: "Describe the client situation and what you did. AI drafts the challenge, solution, and content sections.", placeholder: "e.g., A mid-size online retailer struggled with ticket backlogs during the holiday rush...", withImageAttach: true, steps: ["Analyzing topic", "Writing challenge & solution", "Structuring sections"] },
+  full: { title: "Generate Full Case Study", hint: "Enter a case study topic and a separate image description. AI will generate the title, subtitle, challenge, solution, content sections, and a matching cover image.", placeholder: "e.g., Scaling customer support for a logistics company during peak season...", withImageAttach: false, steps: ["Analyzing prompts", "Writing case study", "Structuring sections", "Creating cover image"] },
+  expand: { title: "Generate Prompt", hint: "Enter a rough idea and AI will expand it into a detailed content prompt and image prompt, ready to use in Generate Full Case Study.", placeholder: "e.g., Peak season support for an online store...", withImageAttach: false, steps: MODAL_CONFIGS.expand.steps }
+};
+const textareaBase =`w-full px-4 py-3 rounded-lg border-2 transition-all duration-300 focus:outline-none text-[12px] font-normal resize-none leading-relaxed bg-[var(--admin-bg-soft)] border-[var(--admin-border)] text-[var(--admin-text)] placeholder-[var(--admin-text-faint)] focus:border-[var(--admin-border-strong)]`;
 const labelCls = `uppercase tracking-widest transition-colors text-[var(--admin-text-faint)]`;
 
 // Polls GET /ai/usage every 10s (and after each generation). kind "" = text models, "image" = image models.
@@ -155,8 +171,13 @@ function ModelPicker({ usage, onSelect, note }) {
 // Pass the form's setters; `setCover(dataUrl, file)` receives a generated cover.
 // getContext() returns blogContext(...) of the current form (cover image can be based on it).
 // Returns { open(type), modal, usage }: render {modal}, call open("image"|"title"|"content"|"full"|"expand").
-export function useBlogAi({ setTitle, setShortDescription, setMainContentTitle, setMainContentText, setContentSections, setCover, getContext, onError }) {
+// Case study form: pass `caseStudy: { setSubtitle, setChallenge, setSolution, setSections }` (and getContext = caseStudyContext(...)).
+// It then uses the cs-* prompts and fills challenge / solution / sections instead of the blog fields.
+export function useBlogAi({ setTitle, setShortDescription, setMainContentTitle, setMainContentText, setContentSections, setCover, getContext, onError, caseStudy }) {
   const { isdarkmode } = useDarkMode();
+  const cs = Boolean(caseStudy);
+  const mode = (name) => (cs ? `cs-${name}` : name);
+  const titleMax = cs ? CS_TITLE_MAX : TITLE_MAX;
   const modalImageRef = useRef(null);
   const [activeModal, setActiveModal] = useState(null);
   const [modalPrompt, setModalPrompt] = useState("");
@@ -189,7 +210,7 @@ export function useBlogAi({ setTitle, setShortDescription, setMainContentTitle, 
   const imagePromptFromBlog = async () => {
     const extra = modalPrompt.trim() ? `
 Image direction from admin: ${modalPrompt.trim()}` : "";
-    const { data } = await generateWithGemini("expand-prompt", `Create a cover image for this blog post:
+    const { data } = await generateWithGemini(mode("expand-prompt"), `Create a cover image for this ${cs ? "case study" : "blog post"}:
 ${getContext().slice(0, 2000)}${extra}`, modelId);
     if (!data?.imagePrompt) throw new Error("AI did not return an image prompt. Please try again.");
     return data.imagePrompt;
@@ -217,6 +238,14 @@ ${getContext().slice(0, 2000)}${extra}`, modelId);
     }
   };
   const applyContent = (parsed) => {
+    if (cs) {
+      if (parsed.challenge) caseStudy.setChallenge(parsed.challenge);
+      if (parsed.solution) caseStudy.setSolution(parsed.solution);
+      if (Array.isArray(parsed.sections) && parsed.sections.length > 0) {
+        caseStudy.setSections(parsed.sections.slice(0, 5).map((s) => ({ topic: (s.topic || "").slice(0, HEADLINE_MAX), content: s.content || "" }))); // the form allows 5 sections
+      }
+      return;
+    }
     if (parsed.mainContentTitle) setMainContentTitle(parsed.mainContentTitle.slice(0, HEADLINE_MAX));
     if (parsed.mainContentText) setMainContentText(parsed.mainContentText);
     if (Array.isArray(parsed.additionalSections) && parsed.additionalSections.length > 0) {
@@ -242,12 +271,12 @@ ${getContext().slice(0, 2000)}${extra}`, modelId);
         setPreview({ dataUrl, file, prompt });
       } else if (activeModal === "title") {
         setGenerationStepIndex(1);
-        const { text } = await generateWithGemini("title", modalPrompt, modelId);
-        setTitle((text || "").trim().slice(0, TITLE_MAX));
+        const { text } = await generateWithGemini(mode("title"), modalPrompt, modelId);
+        setTitle((text || "").trim().slice(0, titleMax));
         closeModal();
       } else if (activeModal === "content") {
         setGenerationStepIndex(1);
-        const { data: parsed } = await generateWithGemini("content", modalPrompt, modelId);
+        const { data: parsed } = await generateWithGemini(mode("content"), modalPrompt, modelId);
         setGenerationStepIndex(2);
         applyContent(parsed);
         closeModal();
@@ -255,7 +284,7 @@ ${getContext().slice(0, 2000)}${extra}`, modelId);
         let contentDone = false;
         setGenerationStepIndex(1);
         const [{ data: parsed }, imageResult] = await Promise.all([
-          generateWithGemini("full", modalPrompt, modelId).then((r) => {
+          generateWithGemini(mode("full"), modalPrompt, modelId).then((r) => {
             contentDone = true;
             setGenerationStepIndex(3);
             return r;
@@ -266,14 +295,16 @@ ${getContext().slice(0, 2000)}${extra}`, modelId);
             return result;
           })()
         ]);
-        if (parsed.title) setTitle(parsed.title.slice(0, TITLE_MAX));
-        if (parsed.shortDescription) setShortDescription(parsed.shortDescription);
+        if (parsed.title) setTitle(parsed.title.slice(0, titleMax));
+        if (cs) {
+          if (parsed.subtitle) caseStudy.setSubtitle(parsed.subtitle);
+        } else if (parsed.shortDescription) setShortDescription(parsed.shortDescription);
         applyContent(parsed);
         if (imageResult) setCover(imageResult.dataUrl, imageResult.file);
         closeModal();
       } else if (activeModal === "expand") {
         setGenerationStepIndex(1);
-        const { data: parsed } = await generateWithGemini("expand-prompt", modalPrompt, modelId);
+        const { data: parsed } = await generateWithGemini(mode("expand-prompt"), modalPrompt, modelId);
         setModalPrompt(parsed.contentPrompt || modalPrompt);
         setModalImagePrompt(parsed.imagePrompt || "");
         setActiveModal("full");
@@ -287,7 +318,7 @@ ${getContext().slice(0, 2000)}${extra}`, modelId);
     }
   };
 
-  const baseCfg = activeModal ? MODAL_CONFIGS[activeModal] : null;
+  const baseCfg = activeModal ? (cs ? CS_MODAL_CONFIGS : MODAL_CONFIGS)[activeModal] : null;
   const isImageFromBlog = activeModal === "image" && fromContent;
   const cfg = baseCfg && { ...baseCfg, steps: isImageFromBlog ? IMAGE_SOURCE_STEPS : baseCfg.steps };
   const modal = cfg && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -338,7 +369,7 @@ ${getContext().slice(0, 2000)}${extra}`, modelId);
           </div>
 
           {activeModal === "image" && <div className="grid grid-cols-2 gap-2">
-              {[["content", "Based on my blog", "AI reads your content"], ["own", "My own prompt", "You describe the image"]].map(([key, label, sub]) => <button
+              {[["content", cs ? "Based on my case study" : "Based on my blog", "AI reads your content"], ["own", "My own prompt", "You describe the image"]].map(([key, label, sub]) => <button
                   key={key}
                   type="button"
                   disabled={isGenerating}

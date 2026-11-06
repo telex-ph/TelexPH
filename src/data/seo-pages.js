@@ -102,6 +102,12 @@ export const SEO_PAGES = [
       "Guides and articles on GoHighLevel, virtual assistants, offshore staffing and business automation from the TelexPH team.",
   },
   {
+    path: "/resources/newsletter",
+    title: "Newsletter: TelexPH News and Updates",
+    description:
+      "Read the TelexPH newsletter and subscribe for news, tips and updates on offshore staffing, virtual assistants and automation.",
+  },
+  {
     path: "/resources/industryusecase",
     title: "Industry Use Cases for Offshore Teams",
     description:

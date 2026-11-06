@@ -91,7 +91,16 @@ const MobileNav = ({ showNav, closeNav }) => {
     }
   ];
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies", { label: "Innovation", url: "https://innovation.telexph.com" }] },
+    {
+      id: "learning",
+      label: "Resource Center",
+      items: [
+        { label: "Case Studies", url: "/resources" },
+        { label: "Blogs", url: "/resources/blogs" },
+        { label: "Newsletter", url: "/resources/newsletter" },
+        { label: "Innovation", url: "https://innovation.telexph.com" }
+      ]
+    },
     {
       id: "news",
       label: "Industry Use Cases",
@@ -104,11 +113,6 @@ const MobileNav = ({ showNav, closeNav }) => {
         { label: "Tools & Technology", url: "/resources/industryusecase#tools" },
         { label: "Why Telex", url: "/resources/industryusecase#why-telex" }
       ]
-    },
-    {
-      id: "blogs",
-      label: "Blogs",
-      items: [{ label: "Blogs Overview", url: "/resources/blogs" }]
     }
   ];
   const careersMegaData = [

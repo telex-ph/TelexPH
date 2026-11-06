@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { FONTS, getColorWithOpacity } from "@/constant/styles";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
+import { visibleServices } from "@/lib/visible-services";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 const GHL_SERVICE_URLS = {
   "ai-builder": "https://sites.leadconnectorhq.com/preview/raEir4at50loPjRFkige",
@@ -385,7 +386,6 @@ const ServiceCarouselPanel = ({ services, loading, error, onRetry, onSelectServi
     return true;
   });
   const activeCount = services.filter((s) => s.isActive).length;
-  const comingSoonCount = services.filter((s) => !s.isActive).length;
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollLeft = 0;
   }, [filterMode]);
@@ -474,7 +474,6 @@ const ServiceCarouselPanel = ({ services, loading, error, onRetry, onSelectServi
     onClick={() => setFilterMode("active")}
     accentColor="#16a34a"
   />
-          <FilterButton label="Coming Soon" icon={<Clock size={12} />} active={filterMode === "coming-soon"} count={comingSoonCount} onClick={() => setFilterMode("coming-soon")} accentColor="#64748b" />
         </div>
         {!loading && !error && filteredServices.length > 0 && <div className="hidden sm:flex" style={{ gap: "8px" }}>
             <NavBtn dir="left" />
@@ -701,8 +700,7 @@ function ServiceFeatures() {
         coverPhoto: item.coverPhoto,
         inactivePhoto: item.inactivePhoto
       }));
-      const sorted = [...mapped].sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
-      setServices(sorted);
+      setServices(visibleServices(mapped));
     } catch (err) {
       setError(err.message || "Could not load services at this time");
     } finally {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, Layout, Loader2, AlertCircle, Clock } from "lucide-react";
 import SectionTitle from "../common/SectionTitle";
 import { trackOutboundFunnelView } from "@/lib/track-funnel-view";
+import { visibleServices, CSR_FEATURES } from "@/lib/visible-services";
 const DARK_RED = "#a10000";
 const HOVER_DARK_RED = "#850000";
 const DEFAULT_MAX_WIDTH_CLASS = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
@@ -43,6 +44,7 @@ const ICON_MAP = {
   "courses-products": <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></>,
   "crm": <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
   "csr": <><path d="M20 7h-4a2 2 0 0 1-2-2V3M4 7h4a2 2 0 0 0 2-2V3" /><path d="M12 12h.01" /><path d="M12 8h.01" /><path d="M12 16h.01" /></>,
+  "csr-customer-service": <><path d="M20 7h-4a2 2 0 0 1-2-2V3M4 7h4a2 2 0 0 0 2-2V3" /><path d="M12 12h.01" /><path d="M12 8h.01" /><path d="M12 16h.01" /></>,
   "email-marketing": <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></>,
   "funnel-builder": <><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" /></>,
   "gray-label": <><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></>,
@@ -63,6 +65,7 @@ const IMAGE_MAP = {
   "courses-products": "/images/services4.webp",
   "crm": "/images/services5.webp",
   "csr": "/images/services6.webp",
+  "csr-customer-service": "/images/services6.webp",
   "email-marketing": "/images/services1.webp",
   "funnel-builder": "/images/services2.webp",
   "gray-label": "/images/services3.webp",
@@ -82,7 +85,8 @@ const SERVICE_META = {
   "booking-appointment": { tag: "Scheduling", detail1: "Scheduling", detail2: "Reminders", detail3: "Multi-Channel", blurb: "Let clients book appointments seamlessly with automated reminders and calendar sync." },
   "courses-products": { tag: "E-Learning", detail1: "E-Learning", detail2: "Payments", detail3: "Certificates", blurb: "Create and sell online courses or digital products with built-in payment processing." },
   "crm": { tag: "CRM", detail1: "Contacts", detail2: "Pipelines", detail3: "Analytics", blurb: "Manage leads, track deals, and grow relationships with a powerful CRM system." },
-  "csr": { tag: "Support", detail1: "Support", detail2: "Ticketing", detail3: "Live Chat", blurb: "Deliver exceptional customer service with ticketing, live chat, and support automation." },
+  "csr": { tag: "Support", detail1: CSR_FEATURES[0], detail2: CSR_FEATURES[1], detail3: CSR_FEATURES[2], blurb: "Deliver exceptional customer service with ticketing, live chat, and support automation." },
+  "csr-customer-service": { tag: "Support", detail1: CSR_FEATURES[0], detail2: CSR_FEATURES[1], detail3: CSR_FEATURES[2], blurb: "Deliver exceptional customer service with ticketing, live chat, and support automation." },
   "email-marketing": { tag: "Marketing", detail1: "Campaigns", detail2: "Automation", detail3: "A/B Testing", blurb: "Launch targeted email campaigns that convert, with smart automation and analytics." },
   "funnel-builder": { tag: "Funnels", detail1: "Landing Pages", detail2: "Lead Gen", detail3: "Conversions", blurb: "Design high-converting sales funnels and landing pages to grow your customer base." },
   "gray-label": { tag: "White Label", detail1: "White Label", detail2: "Branding", detail3: "Resell Ready", blurb: "Offer our platform under your own brand and expand your service portfolio effortlessly." },
@@ -517,7 +521,7 @@ function ServicesGrid() {
       const data = await response.json();
       if (!Array.isArray(data)) throw new Error("Invalid response format");
       setServices(
-        data.map((item) => ({
+        visibleServices(data.map((item) => ({
           _id: item._id,
           serviceId: item.serviceId,
           title: item.name,
@@ -527,7 +531,7 @@ function ServicesGrid() {
           isHighlight: item.serviceId === "tech-support",
           isActive: item.isActive ?? false,
           icon: ICON_MAP[item.serviceId] || <Layout className="w-full h-full" />
-        })).sort((a, b) => Number(b.isActive) - Number(a.isActive))
+        })))
       );
     } catch (err) {
       setError(err.message || "Could not load services at this time");

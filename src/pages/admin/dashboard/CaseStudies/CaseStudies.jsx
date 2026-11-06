@@ -1,10 +1,11 @@
 
 import PageHeader from "@/components/PageHeader";
 import React, { useState, useRef, useEffect } from "react";
-import DashboardLoader, { Spinner, useInitialLoad } from "@/components/DashboardLoader";
+import DashboardLoader, { useInitialLoad } from "@/components/DashboardLoader";
 import RichTextArea from "@/components/RichTextArea";
 import { toHtml } from "@/lib/rich-text";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
+import { useBlogAi, caseStudyContext, SparkleIcon, LayersIcon, CS_TITLE_MAX } from "@/components/BlogAiAssist";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 const PLACEHOLDER_COVERS = [
   "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80",
@@ -37,6 +38,12 @@ const transformBackendRecord = (item) => ({
     content: s.text || s.content || s.body || s.description || ""
   })) : [{ topic: "", content: "" }]
 });
+// AI buttons: same look as the blog forms (admin theme tokens).
+const aiBtnBase = { display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 };
+const aiBtnGhost = { ...aiBtnBase, border: "1px solid var(--admin-border)", background: "transparent", color: "var(--admin-text-sub)", fontWeight: 500 };
+const aiBtnPrimary = { ...aiBtnBase, border: "none", background: "var(--admin-accent)", color: "var(--admin-text-on-accent)", fontWeight: 600 };
+const aiLinkBtn = { display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--admin-accent-text)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 };
+const aiOutlineBtn = { display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--admin-accent-text)", background: "transparent", border: "1px solid var(--admin-border)", borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 600, flexShrink: 0 };
 const STATUS_OPTIONS = ["Active", "Draft", "Completed", "Scheduled"];
 const CATEGORY_OPTIONS = ["Technology", "Logistics", "Analytics", "Infrastructure"]; // = backend tags enum + public tabs
 const STATUS_ICON_PATHS = {
@@ -201,65 +208,6 @@ const DeleteModal = ({ isOpen, isDeleting, targetTitle, onClose, onConfirm, card
           <button onClick={onClose} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
           <button onClick={onConfirm} disabled={isDeleting} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "#dc2626", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: isDeleting ? 0.7 : 1, fontFamily: "'Poppins', sans-serif" }}>
             {isDeleting ? "Deleting\u2026" : "Delete"}
-          </button>
-        </div>
-      </div>
-    </Backdrop>;
-};
-const AI_IMAGE_STEPS = ["Analyzing prompt", "Creating cover image"];
-const AiImageModal = ({ isOpen, prompt, onPromptChange, isExpanding, isGenerating, onExpandPrompt, onGenerate, onClose, cardBg, borderColor, textPrimary, textMuted, inputBg, isdarkmode }) => {
-  if (!isOpen) return null;
-  const busy = isExpanding || isGenerating;
-  const stepIndex = isGenerating ? 1 : 0;
-  return <Backdrop>
-      <div style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 24, padding: "32px 28px", maxWidth: 460, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.28)", fontFamily: "'Poppins', sans-serif" }}>
-        <h3 style={{ fontSize: 17, fontWeight: 700, color: textPrimary, margin: "0 0 8px", fontFamily: "'Poppins', sans-serif" }}>Generate cover image</h3>
-        <p style={{ fontSize: 12, color: textMuted, margin: "0 0 18px", fontFamily: "'Poppins', sans-serif" }}>Describe the cover image you want, or type a rough idea and let AI expand it into a detailed prompt first.</p>
-        <textarea
-          value={prompt}
-          onChange={(e) => onPromptChange(e.target.value)}
-          placeholder="e.g., Customer support team collaborating in a modern office..."
-          rows={4}
-          disabled={busy}
-          autoFocus
-          style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: `1px solid ${borderColor}`, background: inputBg, color: textPrimary, fontSize: 12, outline: "none", resize: "none", fontFamily: "'Poppins', sans-serif", boxSizing: "border-box", marginBottom: 10 }}
-        />
-        <button onClick={onExpandPrompt} disabled={busy || !prompt.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 0", borderRadius: 10, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 12, fontWeight: 500, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.6 : 1, fontFamily: "'Poppins', sans-serif", marginBottom: busy ? 10 : 18 }}>
-          {isExpanding ? <Spinner size={13} /> : <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>}
-          {isExpanding ? "Generating prompt…" : "Generate Prompt"}
-        </button>
-
-        {busy && <div style={{ marginBottom: 18, padding: "22px 20px", borderRadius: 14, border: `1px solid ${borderColor}`, background: inputBg, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <div style={{ position: "relative", width: 52, height: 52, marginBottom: 6 }}>
-              <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--admin-accent)" }}><Spinner size={52} thickness={4} /></span>
-              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="18" height="18" fill="none" stroke={textMuted} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-              </div>
-            </div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>
-              {isExpanding ? "Expanding your prompt" : AI_IMAGE_STEPS[stepIndex] || "Generating…"}
-            </p>
-            <p style={{ fontSize: 11, color: textMuted, margin: "0 0 10px", fontFamily: "'Poppins', sans-serif" }}>
-              {isGenerating ? "This usually takes 30-60 seconds." : "This only takes a few seconds."}
-            </p>
-            {isGenerating && <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-                {AI_IMAGE_STEPS.map((step, i) => <React.Fragment key={step}>
-                    {i > 0 && <div style={{ flex: 1, height: 1, background: i <= stepIndex ? "var(--admin-accent)" : borderColor }} />}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: i < stepIndex ? "var(--admin-accent)" : i === stepIndex ? "transparent" : borderColor, border: i === stepIndex ? "2px solid var(--admin-accent)" : "none" }}>
-                        {i < stepIndex ? <svg width="10" height="10" fill="none" stroke="#fff" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg> : i === stepIndex ? <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--admin-accent)" }} /> : null}
-                      </div>
-                      <span style={{ fontSize: 9, textAlign: "center", maxWidth: 72, color: i <= stepIndex ? textPrimary : textMuted, fontWeight: i === stepIndex ? 600 : 400, fontFamily: "'Poppins', sans-serif" }}>{step}</span>
-                    </div>
-                  </React.Fragment>)}
-              </div>}
-          </div>}
-
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={onClose} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: busy ? "not-allowed" : "pointer", fontFamily: "'Poppins', sans-serif" }}>Cancel</button>
-          <button onClick={onGenerate} disabled={busy || !prompt.trim()} style={{ flex: 2, padding: "11px 0", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: busy || !prompt.trim() ? "not-allowed" : "pointer", opacity: busy || !prompt.trim() ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}>
-            {isGenerating ? <Spinner size={13} /> : null}
-            {isGenerating ? "Generating image…" : "Generate Image"}
           </button>
         </div>
       </div>
@@ -505,10 +453,6 @@ function CaseStudies({ mode = "list" }) {
   const [coverPreview, setCoverPreview] = useState("");
   const [coverFile, setCoverFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
-  const [showAiImageModal, setShowAiImageModal] = useState(false);
-  const [aiImagePrompt, setAiImagePrompt] = useState("");
-  const [isExpandingPrompt, setIsExpandingPrompt] = useState(false);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -569,6 +513,23 @@ function CaseStudies({ mode = "list" }) {
     setTimeout(() => setToast(null), 3e3);
   };
   const updateForm = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+  // AI tools shared with the blog forms (title, content, full case study, prompt, cover image). See BlogAiAssist.jsx.
+  const ai = useBlogAi({
+    setTitle: (v) => updateForm("title", v),
+    caseStudy: {
+      setSubtitle: (v) => updateForm("subtitle", v),
+      setChallenge: (v) => updateForm("challenge", v),
+      setSolution: (v) => updateForm("solution", v),
+      setSections: (v) => updateForm("sections", v)
+    },
+    getContext: () => caseStudyContext(form),
+    setCover: (dataUrl, file) => {
+      setCoverFile(file);
+      setCoverPreview(dataUrl);
+      if (fileRef.current) fileRef.current.value = ""; // a picked file would otherwise win over the AI cover on save
+    },
+    onError: (msg) => showToast(msg, "error")
+  });
   const toggleTag = (tag) => setForm((prev) => ({
     ...prev,
     tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag]
@@ -628,65 +589,6 @@ function CaseStudies({ mode = "list" }) {
     const reader = new FileReader();
     reader.onload = (e) => setCoverPreview(e.target?.result);
     reader.readAsDataURL(file);
-  };
-  const openAiImageModal = () => {
-    setAiImagePrompt("");
-    setShowAiImageModal(true);
-  };
-  const closeAiImageModal = () => {
-    if (isExpandingPrompt || isGeneratingImage) return;
-    setShowAiImageModal(false);
-    setAiImagePrompt("");
-  };
-  const handleExpandImagePrompt = async () => {
-    if (!aiImagePrompt.trim()) return;
-    setIsExpandingPrompt(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/ai/generate-blog`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "expand-prompt", prompt: aiImagePrompt.trim() })
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        throw new Error(err?.error || "Prompt generation failed");
-      }
-      const { data } = await res.json();
-      if (data?.imagePrompt) setAiImagePrompt(data.imagePrompt);
-    } catch (err) {
-      showToast(err.message || "Prompt generation failed", "error");
-    } finally {
-      setIsExpandingPrompt(false);
-    }
-  };
-  const handleGenerateAiImage = async () => {
-    if (!aiImagePrompt.trim()) return;
-    setIsGeneratingImage(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/ai/generate-image`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: aiImagePrompt.trim() })
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        throw new Error(err?.error || "Image generation failed");
-      }
-      const { dataUrl } = await res.json();
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], "ai-generated-cover.jpg", { type: blob.type || "image/jpeg" });
-      setCoverFile(file);
-      setCoverPreview(dataUrl);
-      setShowAiImageModal(false);
-      setAiImagePrompt("");
-      showToast("Cover image generated!", "success");
-    } catch (err) {
-      showToast(err.message || "Image generation failed", "error");
-    } finally {
-      setIsGeneratingImage(false);
-    }
   };
   const inp = (overrides = {}) => ({
     width: "100%",
@@ -862,6 +764,18 @@ function CaseStudies({ mode = "list" }) {
     fontFamily: "'Poppins', sans-serif"
   };
   const modalTheme = { cardBg, borderColor, textPrimary, textMuted, textSecondary, subtleBg };
+  // Daily AI quota + the two whole-form generators, shown in the header while the form is open (like Edit Blog).
+  const aiActions = (showFormOnly || isEditMode) && !showCalendarPage ? <>
+      {ai.usage && <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "6px 12px", borderRadius: 8, border: "1px solid var(--admin-border)", background: "var(--admin-surface)" }} title={ai.usage.models.map((m) => `${m.label}: ${m.used}/${m.limit}${m.active ? " (active)" : ""}`).join("\n")}>
+          {ai.usage.models.map((m) => <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0, background: m.active ? "var(--admin-success)" : "var(--admin-border-strong)" }} />
+              <span style={{ fontSize: 11, fontWeight: m.active ? 600 : 400, color: m.active ? "var(--admin-text)" : "var(--admin-text-sub)" }}>{m.label}</span>
+              <span style={{ fontSize: 11, color: "var(--admin-text-sub)" }}>{m.used}/{m.limit}</span>
+            </div>)}
+        </div>}
+      <button type="button" onClick={() => ai.open("expand")} style={aiBtnGhost}><SparkleIcon className="w-3.5 h-3.5" />Generate Prompt</button>
+      <button type="button" onClick={() => ai.open("full")} style={aiBtnPrimary}><LayersIcon className="w-3.5 h-3.5" />Generate Full Case Study</button>
+    </> : null;
   const statTileConfigs = [
     { label: "Active", count: counts.Active, gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)", gradientLight: "linear-gradient(150deg, #c8dcff 0%, #dbeafe 50%, #bdd3ff 100%)", accentColor: "#60a5fa", accentColorLight: "#1d4ed8", iconPath: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", change: "+12.5% from Last Month", changeUp: true },
     { label: "Done", count: counts.Completed, gradient: "linear-gradient(135deg, #1a1a2e 0%, #1e1b4b 60%, #312e81 100%)", gradientLight: "linear-gradient(150deg, #d8ccff 0%, #e9d5ff 50%, #d4bfff 100%)", accentColor: "#a78bfa", accentColorLight: "#6d28d9", iconPath: "M5 13l4 4L19 7", change: "+8.2% from Last Month", changeUp: true },
@@ -957,19 +871,7 @@ function CaseStudies({ mode = "list" }) {
       <DashboardLoader isVisible={isFetchingFull} message="Loading case study…" />
       <ConfirmModal isOpen={showConfirm} isEdit={isEditMode} isLoading={isLoading} onClose={() => setShowConfirm(false)} onConfirm={handleSubmit} {...modalTheme} />
       <DeleteModal isOpen={showDelete} isDeleting={isDeleting} targetTitle={deleteTarget?.title} onClose={() => setShowDelete(false)} onConfirm={handleDeleteConfirm} {...modalTheme} />
-      <AiImageModal
-        isOpen={showAiImageModal}
-        prompt={aiImagePrompt}
-        onPromptChange={setAiImagePrompt}
-        isExpanding={isExpandingPrompt}
-        isGenerating={isGeneratingImage}
-        onExpandPrompt={handleExpandImagePrompt}
-        onGenerate={handleGenerateAiImage}
-        onClose={closeAiImageModal}
-        {...modalTheme}
-        inputBg={inputBg}
-        isdarkmode={dark}
-      />
+      {ai.modal}
       <PreviewModal isOpen={showPreview} data={previewData} allRecords={records} onClose={() => {
     setShowPreview(false);
     if (selectedDate) setShowBottomSheet(true);
@@ -984,7 +886,7 @@ function CaseStudies({ mode = "list" }) {
         {
     /* PAGE HEADER */
   }
-        <PageHeader title={addMode ? "Add case study" : "Case study list"} subtitle="Manage your case studies / Create, edit, and organize your research projects with ease" actions={addMode ? null : showFormOnly || showCalendarPage ? <button onClick={() => {
+        <PageHeader title={addMode ? "Add case study" : "Case study list"} subtitle="Manage your case studies / Create, edit, and organize your research projects with ease" actions={<>{aiActions}{addMode ? null : showFormOnly || showCalendarPage ? <button onClick={() => {
     setShowFormOnly(false);
     setShowCalendarPage(false);
     setIsEditMode(false);
@@ -996,7 +898,7 @@ function CaseStudies({ mode = "list" }) {
   }} className="cs-header-btn" style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, border: `1px solid ${borderColor}`, background: "transparent", color: textMuted, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
               Back to Case Studies
-            </button> : null} />
+            </button> : null}</>} />
 
         {
     /* TOP ROW */
@@ -1075,7 +977,7 @@ function CaseStudies({ mode = "list" }) {
                     </>}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleFile(e.target.files?.[0])} />
-                <button type="button" onClick={openAiImageModal} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
+                <button type="button" onClick={() => ai.open("image")} style={{ width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", borderRadius: 10, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Poppins', sans-serif" }}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
                   Generate with AI
                 </button>
@@ -1083,8 +985,11 @@ function CaseStudies({ mode = "list" }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div className="cs-form-title-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                   <div>
-                    <span style={lbl}>Title <span style={{ color: "var(--admin-accent)" }}>*</span></span>
-                    <input style={inp()} placeholder="Enter case study title..." maxLength={125} value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                      <span style={{ ...lbl, marginBottom: 0 }}>Title <span style={{ color: "var(--admin-accent)" }}>*</span></span>
+                      <button type="button" onClick={() => ai.open("title")} style={aiLinkBtn}><SparkleIcon className="w-3 h-3" />AI Title</button>
+                    </div>
+                    <input style={inp()} placeholder="Enter case study title..." maxLength={CS_TITLE_MAX} value={form.title} onChange={(e) => updateForm("title", e.target.value)} />
                   </div>
                   <div>
                     <span style={lbl}>Subtitle</span>
@@ -1168,12 +1073,15 @@ function CaseStudies({ mode = "list" }) {
     /* STEP 3 — Details */
   }
           <div style={{ ...card, padding: "22px 22px" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 18 }}>
-              <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>3</div>
-              <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Details</p>
-                <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Categorize and provide key information</p>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, border: "1.5px solid color-mix(in srgb, var(--admin-accent) 35%, transparent)", color: "var(--admin-accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, fontFamily: "'Poppins', sans-serif" }}>3</div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: textPrimary, margin: 0, fontFamily: "'Poppins', sans-serif" }}>Details</p>
+                  <p style={{ fontSize: 11, color: textMuted, margin: "3px 0 0", fontWeight: 400, fontFamily: "'Poppins', sans-serif" }}>Categorize and provide key information</p>
+                </div>
               </div>
+              <button type="button" onClick={() => ai.open("content")} style={aiOutlineBtn} title="Drafts the challenge, solution and content sections"><SparkleIcon className="w-3 h-3" />Write with AI</button>
             </div>
 
             <div style={{ marginBottom: 18 }}>

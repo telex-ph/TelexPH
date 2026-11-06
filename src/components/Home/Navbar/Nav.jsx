@@ -139,7 +139,16 @@ const Nav = ({ openNav }) => {
     }
   ];
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies", { label: "Innovation", url: "https://innovation.telexph.com" }] },
+    {
+      id: "learning",
+      label: "Resource Center",
+      items: [
+        { label: "Case Studies", url: "/resources" },
+        { label: "Blogs", url: "/resources/blogs" },
+        { label: "Newsletter", url: "/resources/newsletter" },
+        { label: "Innovation", url: "https://innovation.telexph.com" }
+      ]
+    },
     {
       id: "news",
       label: "Industry Use Cases",
@@ -152,11 +161,6 @@ const Nav = ({ openNav }) => {
         { label: "Tools & Technology", url: "/resources/industryusecase#tools" },
         { label: "Why Telex", url: "/resources/industryusecase#why-telex" }
       ]
-    },
-    {
-      id: "blogs",
-      label: "Blogs",
-      items: [{ label: "Blogs Overview", url: "/resources/blogs" }]
     }
   ];
   const careersMegaData = [
@@ -198,7 +202,7 @@ const Nav = ({ openNav }) => {
               {navLinks.map((link) => {
     const megaConfig = getMegaConfig(link.label);
     return <div key={link.id} className="relative h-full flex items-center" onMouseEnter={() => handleMouseEnter(link.id)} onMouseLeave={handleMouseLeave}>
-                    <Link href={link.url} {...link.external ? { target: "_blank", rel: "noopener noreferrer" } : {}} onClick={(e) => handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
+                    <Link href={link.url} {...link.external ? { target: "_blank", rel: "noopener noreferrer" } : {}} onClick={(e) => link.label === "Resources" ? e.preventDefault() : handleScrollClick(e, link.url)} className="relative py-[30px] flex items-center group">
                       <span className="text-gray-700 font-open-sans-bold text-sm uppercase tracking-wide transition-colors hover:text-[#a10000]">
                         {link.label === "Careers" ? "Virtual Assistant" : link.label}
                       </span>
