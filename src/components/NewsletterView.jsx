@@ -61,13 +61,14 @@ function Page({ page, n, edit }) {
 // { sel: {page, path}, onSelect(page, path), onMove(page, from, toArr, at), toolbar(page, path, kind) } make sections
 // and blocks selectable and draggable.
 // `only` (a page index) shows just that page, keeping page indexes in `edit` callbacks unchanged.
-function NewsletterIssueView({ issue, showMeta = true, edit, only }) {
+function NewsletterIssueView({ issue, showMeta = true, edit, only, headerAction }) {
   const meta = [periodLabel(issue.period), issue.author && `By ${issue.author}`, issue.department && `${issue.department} Department`].filter(Boolean);
   const wide = (issue.pages || []).some((p) => p.layout?.sections); // multi-column designs need room
   return <article className={`mx-auto w-full ${wide ? "max-w-[1400px]" : "max-w-[820px]"}`}>
-      {showMeta && <header className="mb-6 text-center">
+      {showMeta && <header className="relative mb-6 text-center">
           <h2 className="text-2xl md:text-3xl font-black text-gray-900">{issue.title || "Untitled issue"}</h2>
           {meta.length > 0 && <p className="mt-2 text-sm text-gray-500">{meta.join(" · ")}</p>}
+          {headerAction && <div className="mt-4 md:absolute md:right-0 md:top-1/2 md:mt-0 md:-translate-y-1/2">{headerAction}</div>}
         </header>}
       <div className="flex flex-col gap-12">
         {(issue.pages || []).map((p, i) => {

@@ -4,7 +4,5 @@ export const NEWSLETTER_DEPARTMENTS = [
   "Operations",
   "Information Technology",
   "Marketing",
-  "Office of the President",
-  "Accounting",
   "Compliance",
 ];
