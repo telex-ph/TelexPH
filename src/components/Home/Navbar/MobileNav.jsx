@@ -97,7 +97,8 @@ const MobileNav = ({ showNav, closeNav }) => {
       items: [
         { label: "Case Studies", url: "/resources" },
         { label: "Blogs", url: "/resources/blogs" },
-        { label: "Newsletter", url: "/resources/newsletter" }
+        { label: "Newsletter", url: "/resources/newsletter" },
+        { label: "Innovation", url: "https://innovation.telexph.com" }
       ]
     },
     {
@@ -149,6 +150,10 @@ const MobileNav = ({ showNav, closeNav }) => {
   const handleScrollClick = (e, url) => {
     if (e) e.preventDefault();
     closeNav();
+    if (/^https?:\/\//.test(url)) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (url.includes("#")) {
       const [path, hash] = url.split("#");
       if (pathname === path || path === "" && pathname === "/") {

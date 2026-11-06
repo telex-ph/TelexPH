@@ -67,7 +67,7 @@ const ContactSupport = () => {
     onClick={() => window.open(LOGISTICS_CTA_URL, "_blank")}
     className="group inline-flex w-full md:w-auto items-center justify-center gap-2 rounded-lg bg-[#a10000] px-6 py-2.5 text-sm sm:text-base font-open-sans-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#8a0000] hover:shadow-lg cursor-pointer"
   >
-                Contact Us
+                Book a 15-minute call
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </div>

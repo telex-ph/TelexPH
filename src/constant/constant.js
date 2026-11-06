@@ -26,6 +26,12 @@ const navLinks = [
     id: 5,
     url: "/resources",
     label: "Resources"
+  },
+  {
+    id: 6,
+    url: "https://innovation.telexph.com",
+    label: "Innovation",
+    external: true
   }
 ];
 export {

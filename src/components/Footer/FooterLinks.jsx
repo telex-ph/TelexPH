@@ -10,15 +10,17 @@ const FooterLinks = () => {
         Call Us Directly?<br /><span className="text-sm sm:text-base font-medium">0443252836</span>
       </p>
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
-        PH Mobile Number<br /><a href="tel:+639563869812" className="text-sm sm:text-base font-medium hover:text-white transition-colors">+63 956 386 9812</a>
-      </p>
-      <p className="text-xs sm:text-sm text-gray-300 mb-2">
-        NZ Number<br /><a href="tel:+642902665485" className="text-sm sm:text-base font-medium hover:text-white transition-colors">+64 29 02665485</a>
-      </p>
-      <p className="text-xs sm:text-sm text-gray-300 mb-2">
         For Support?<br />
         <a href="mailto:business@telexph.com" className="text-sm sm:text-base font-medium hover:text-white transition-colors">business@telexph.com</a>
       </p>
+      <a
+        href="https://intl.telexph.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block mb-3 px-4 py-2 rounded-md bg-[#a10000] hover:bg-[#850000] text-white text-sm font-semibold transition-colors"
+      >
+        Book a 15-minute call
+      </a>
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
         Have Questions?<br /><Link href="/faq" className="text-sm sm:text-base font-medium hover:text-white transition-colors">Frequently Asked Questions</Link>
       </p>

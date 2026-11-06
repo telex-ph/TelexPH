@@ -11,6 +11,7 @@ import { ABOUT_SCENES } from "@/components/About/AboutScenes";
 import CompanyOverview from "./About/CompanyOverview";
 import MissionVision from "./About/MissionVision";
 import Team from "./About/Team";
+import InnovationShowcase from "@/components/About/InnovationShowcase";
 function AboutPage() {
   const [showNav, setShowNav] = useState(false);
   const openNavHandler = () => setShowNav(true);
@@ -46,6 +47,8 @@ function AboutPage() {
         </section>
 
         <PartnerLogos />
+
+        <InnovationShowcase />
 
         <section id="our-team">
           <Team />

@@ -40,14 +40,17 @@ const Partners = ({
     transition={{ duration: 0.7, ease: "easeOut" }}
     className="text-center mb-12 md:mb-14 px-4"
   >
-          <p className="font-open-sans-bold text-[#a10000] uppercase text-xs sm:text-sm tracking-[0.25em] relative inline-block mb-3 before:content-[''] before:absolute before:top-1/2 before:-left-10 before:w-7 before:h-px before:bg-[#a10000] after:content-[''] after:absolute after:top-1/2 after:-right-10 after:w-7 after:h-px after:bg-[#a10000]">
+          <p className="font-open-sans-bold text-[#a10000] uppercase text-sm tracking-widest relative inline-block mb-3 before:content-[''] before:absolute before:top-1/2 before:-left-10 before:w-7 before:h-px before:bg-[#a10000] after:content-[''] after:absolute after:top-1/2 after:-right-10 after:w-7 after:h-px after:bg-[#a10000]">
             What we help with
           </p>
-          <h2 className="font-poppins-black text-3xl md:text-5xl text-[#1a1a2e] leading-tight">
+          <h2 className="font-poppins-black text-4xl md:text-5xl text-gray-900 leading-tight tracking-tight">
             Keep Customers Supported.
             <br className="hidden sm:block" />{" "}
             <span className="text-[#a10000]">Keep Work Moving.</span>
           </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-xs md:text-sm leading-relaxed text-gray-500">
+            Dedicated remote teams that handle your customer support and day-to-day operations.
+          </p>
           <div className="mt-5 flex items-center justify-center gap-2" aria-hidden>
             <span className="h-1 w-12 rounded-full bg-[#a10000]" />
             <span className="h-1 w-3 rounded-full bg-[#a10000]/40" />

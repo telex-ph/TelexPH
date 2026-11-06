@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Bot, Filter, LayoutTemplate, Workflow, Boxes, Tag, ClipboardList, CalendarCheck, Code2, PenTool, Users, ShieldCheck, Cog, TrendingUp, UserCog } from "lucide-react";
-import { COLORS, FONTS, TYPOGRAPHY } from "@/constant/styles";
+import { COLORS, FONTS } from "@/constant/styles";
 import AssistantRobot from "./AssistantRobot";
 
 /* "What We Offer" section, content taken from the company presentation slide. */
 const RED = COLORS.primary;
-const headingStyle = { fontFamily: TYPOGRAPHY.heading.fontFamily, fontWeight: TYPOGRAPHY.heading.fontWeight };
 const display = { fontFamily: "var(--font-barlow-condensed), 'Barlow Condensed', sans-serif" };
 const GRID = "repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 56px),repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 56px)";
 
@@ -68,14 +67,14 @@ const WhatWeOffer = () => {
         {/* heading + assistant */}
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
           <motion.div {...rise()}>
-            <p className="mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: RED, fontFamily: FONTS.openSans }}>
-              <span aria-hidden className="h-0.5 w-8" style={{ background: RED }} />What We Offer
+            <p className="font-open-sans-bold flex items-center gap-3 uppercase text-sm tracking-widest text-[#a10000]">
+              <span aria-hidden className="h-px w-6 bg-[#a10000]" />What We Offer
             </p>
-            <h2 className="text-5xl uppercase leading-[0.98] text-[#282828] md:text-7xl" style={headingStyle}>
+            <h2 className="font-poppins-black mt-2 text-4xl leading-tight tracking-tight text-gray-900 md:text-5xl">
               We Are<br /><span style={{ color: RED }}>AI-Assisted.</span>
             </h2>
-            <div className="mt-5 h-1 w-16" style={{ background: RED }} />
-            <p className="mt-6 max-w-xl text-base text-gray-700 md:text-lg" style={{ fontFamily: FONTS.rubik }}>
+            <div className="mt-4 h-1 w-20 rounded-full bg-gradient-to-r from-[#c40000] to-[#6f0000]" />
+            <p className="mt-5 max-w-xl text-xs leading-relaxed text-gray-500 md:text-sm" style={{ fontFamily: FONTS.rubik }}>
               We combine human expertise with intelligent automation to build smart systems that drive your business forward.
             </p>
             <div {...hover("admin")} className="mt-6 inline-flex items-center gap-4 rounded-xl bg-[#1c1c1c] px-5 py-4 text-white shadow-xl shadow-black/20">
