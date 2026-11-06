@@ -25,6 +25,7 @@ const Careers = lazy(() => import("@/pages/Careers"));
 const JobDetails = lazy(() => import("@/pages/JobDetails"));
 const Resources = lazy(() => import("@/pages/Resources"));
 const Blogs = lazy(() => import("@/pages/Blogs"));
+const Newsletter = lazy(() => import("@/pages/Newsletter"));
 const IndustryUseCase = lazy(() => import("@/pages/IndustryUseCase"));
 const CaseStudyDetails = lazy(() => import("@/pages/CaseStudyDetails"));
 const Location = lazy(() => import("@/pages/Location"));
@@ -60,6 +61,8 @@ const AdminArchive = lazy(() => import("@/pages/admin/dashboard/Archive/Page"));
 const AdminMessages = lazy(() => import("@/pages/admin/dashboard/Messages/Page"));
 const AdminBlogs = lazy(() => import("@/pages/admin/dashboard/blogs/Page"));
 const AdminBlogsList = lazy(() => import("@/pages/admin/dashboard/blogs/list/Page"));
+const AdminNewsletter = lazy(() => import("@/pages/admin/dashboard/newsletter/Page"));
+const AdminNewsletterList = lazy(() => import("@/pages/admin/dashboard/newsletter/ListPage"));
 const AdminCareers = lazy(() => import("@/pages/admin/dashboard/careers/Page"));
 const AdminCaseStudies = lazy(() => import("@/pages/admin/dashboard/CaseStudies/Page"));
 const AdminCaseStudiesList = lazy(() => import("@/pages/admin/dashboard/CaseStudies/list/Page"));
@@ -121,6 +124,7 @@ registerPrefetch([
   ["/careers/job-details", () => import("@/pages/JobDetails")],
   ["/resources", () => import("@/pages/Resources")],
   ["/resources/Blogs", () => import("@/pages/Blogs")],
+  ["/resources/newsletter", () => import("@/pages/Newsletter")],
   ["/resources/IndustryUseCase", () => import("@/pages/IndustryUseCase")],
   ["/resources/CaseStudiesCardDetails", () => import("@/pages/CaseStudyDetails")],
   ["/admin/login", () => import("@/pages/admin/login/Page")],
@@ -180,6 +184,8 @@ const App = () => {
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/Blogs" element={<Blogs />} />
         <Route path="/resources/blogs/:slug" element={<Blogs />} />
+        <Route path="/resources/newsletter" element={<Newsletter />} />
+        <Route path="/resources/newsletter/:slug" element={<Newsletter />} />
         <Route path="/resources/IndustryUseCase" element={<IndustryUseCase />} />
         <Route
           path="/resources/CaseStudiesCardDetails"
@@ -225,6 +231,8 @@ const App = () => {
               <Route path="Messages" element={<AdminMessages />} />
               <Route path="blogs" element={<AdminBlogs />} />
               <Route path="blogs/list" element={<AdminBlogsList />} />
+              <Route path="newsletter" element={<AdminNewsletter />} />
+              <Route path="newsletter/list" element={<AdminNewsletterList />} />
               <Route path="careers" element={<AdminCareers />} />
               <Route path="CaseStudies" element={<AdminCaseStudies />} />
               <Route path="CaseStudies/list" element={<AdminCaseStudiesList />} />

@@ -139,7 +139,15 @@ const Nav = ({ openNav }) => {
     }
   ];
   const resourcesMegaData = [
-    { id: "learning", label: "Resource Center", items: ["Case Studies"] },
+    {
+      id: "learning",
+      label: "Resource Center",
+      items: [
+        { label: "Case Studies", url: "/resources" },
+        { label: "Blogs", url: "/resources/blogs" },
+        { label: "Newsletter", url: "/resources/newsletter" }
+      ]
+    },
     {
       id: "news",
       label: "Industry Use Cases",
@@ -152,11 +160,6 @@ const Nav = ({ openNav }) => {
         { label: "Tools & Technology", url: "/resources/industryusecase#tools" },
         { label: "Why Telex", url: "/resources/industryusecase#why-telex" }
       ]
-    },
-    {
-      id: "blogs",
-      label: "Blogs",
-      items: [{ label: "Blogs Overview", url: "/resources/blogs" }]
     }
   ];
   const careersMegaData = [
