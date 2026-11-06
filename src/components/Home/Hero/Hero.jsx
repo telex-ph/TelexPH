@@ -160,14 +160,6 @@ const Hero = () => {
   />
                     </div>)}
                 </div>
-                <div className="text-white">
-                  <div className="text-amber-400 text-xs sm:text-sm mb-0">
-                    ★★★★★
-                  </div>
-                  <p className="text-[10px] sm:text-xs font-open-sans-bold">
-                    5.5K Reviews
-                  </p>
-                </div>
               </motion.div>
             </div>
 
