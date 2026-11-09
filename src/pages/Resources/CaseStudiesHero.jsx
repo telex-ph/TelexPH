@@ -37,7 +37,7 @@ function CaseStudiesHero() {
       color: "#282828"
     }}
   >
-            Case Studies
+            Case Studies: Results From Our Support Teams
           </h1>
 
           <p

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { SITE_URL, BRAND, BLOG_POST_PATH, fullTitle, findSeoPage } from "@/data/seo-pages";
+import { SITE_URL, BRAND, BLOG_POST_PATH, CASE_STUDY_PATH, fullTitle, findSeoPage } from "@/data/seo-pages";
 
 const BASE_TITLE = BRAND;
 
@@ -87,7 +87,8 @@ const Seo = ({ title, description, image, url, noindex }) => {
  */
 export const RouteSeo = () => {
   const { pathname, search } = useLocation();
-  if (BLOG_POST_PATH.test(pathname)) return null; // pages/Blogs.jsx sets the post's own head tags
+  // pages/Blogs.jsx and pages/CaseStudyDetails.jsx set their own head tags
+  if (BLOG_POST_PATH.test(pathname) || CASE_STUDY_PATH.test(pathname)) return null;
   const page = findSeoPage(pathname);
   if (!page) return <Seo noindex />;
 

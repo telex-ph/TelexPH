@@ -43,6 +43,7 @@ const localVariant = (url, width) =>
  * Existing transforms are left alone so hand-tuned URLs keep working.
  */
 export const cloudinaryUrl = (url, width, quality) => {
+  if (typeof url !== "string") return url;
   // API records store some Cloudinary URLs as plain http://; on the HTTPS
   // site the browser blocks those as mixed content, so upgrade them here.
   url = url.replace(/^http:\/\//, "https://");
@@ -56,6 +57,12 @@ export const cloudinaryUrl = (url, width, quality) => {
   const parts = ["f_auto", `q_${quality || "auto"}`];
   if (width) parts.push(`w_${width}`, "c_limit");
   return `${head}/upload/${parts.join(",")}/${rest}`;
+};
+
+/** Optimized copy of a /images/ file for CSS backgrounds and plain <img>; the original if none was generated. */
+export const localImage = (url, width) => {
+  const variant = localVariant(url, width);
+  return LOCAL_VARIANTS.has(variant) ? variant : url;
 };
 
 const Image = ({

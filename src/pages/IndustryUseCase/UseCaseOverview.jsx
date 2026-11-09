@@ -39,9 +39,9 @@ const UseCaseOverview = () => {
       desc: "Strategic presence in over 140 countries with native localized support teams for cultural synergy."
     },
     {
-      label: "Operational Uptime",
-      val: "99.9%",
-      desc: "Redundant server clusters ensuring zero downtime for critical business operations and high-velocity workflows."
+      label: "Operational Continuity",
+      val: "24/7",
+      desc: "Round-the-clock operations with backup systems that keep critical business workflows running."
     }
   ];
   const handleNext = () => {

@@ -191,6 +191,7 @@ const App = () => {
           path="/resources/CaseStudiesCardDetails"
           element={<CaseStudyDetails />}
         />
+        <Route path="/resources/case-studies/:slug" element={<CaseStudyDetails />} />
 
         {/* ---------- Service landing pages (data/service-pages.js) ---------- */}
         {ABOUT_PAGES.map(({ path }) => (

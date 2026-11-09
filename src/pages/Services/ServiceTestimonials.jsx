@@ -8,11 +8,6 @@ import {
 } from "@/constant/styles";
 const testimonials = [
   {
-    quote: "TELEX didn't just help us outsource - they helped us scale! Their dedicated team integrated seamlessly with our operations and delivered beyond our expectations.",
-    name: "Aldus A.",
-    company: "CEO, RetailPro"
-  },
-  {
     quote: "From day one of our project, your dedication, teamwork, and positive spirit have made all the difference. The way you support applicants and keep things running smoothly shows just how much heart you put into your work \u2014 and we truly appreciate it. As we celebrate this milestone, we hope you feel proud of everything you\u2019ve accomplished. This partnership has been a game-changer.",
     name: "Cornella",
     company: "Services Manager"

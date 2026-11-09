@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { HiOutlineLink } from "react-icons/hi2";
 import {
   FaFacebookF,
@@ -56,7 +56,8 @@ function DetailsHeader() {
   const [hasLiked, setHasLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const searchParams = useSearchParams();
-  const slug = searchParams.get("slug");
+  const params = useParams();
+  const slug = params.slug || searchParams.get("slug");
   const id = searchParams.get("id");
   useEffect(() => {
     const fetchCaseStudy = async () => {

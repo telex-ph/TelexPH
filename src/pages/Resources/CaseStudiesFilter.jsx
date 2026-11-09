@@ -1,5 +1,6 @@
 
 import { useState, useMemo, useEffect } from "react";
+import { caseStudyPath } from "@/data/seo-pages";
 import Link from "next/link";
 import { COLORS, FONTS, FONT_WEIGHTS } from "@/constant/styles";
 import { htmlToText } from "@/lib/rich-text";
@@ -82,6 +83,7 @@ function CaseStudiesFilter() {
         const tags = Array.isArray(item.tags) ? item.tags.map((t) => tagMap[t]).filter(Boolean) : [];
         return {
           id: item._id,
+          slug: item.slug,
           type: "Case Studies",
           tags,
           title: item.title || "Untitled Case Study",
@@ -121,13 +123,13 @@ function CaseStudiesFilter() {
   const { index: highlightIdx, setIndex: setHighlight, pause } = useRotatingIndex(top.length);
   const featured = top[highlightIdx] ?? null;
   const latest = top.filter((_, k) => k !== highlightIdx);
-  const highlightItems = top.map((c) => ({ id: c.id, image: c.image, title: c.title, date: c.date, href: `/resources/casestudiescarddetails?id=${c.id}` }));
+  const highlightItems = top.map((c) => ({ id: c.id, image: c.image, title: c.title, date: c.date, href: caseStudyPath(c) }));
   // List view shows every case study; grid view shows the ones after the highlighted six.
   const rest = viewMode === "list" || searchQuery ? filteredCards : filteredCards.slice(6);
   const totalPages = Math.ceil(rest.length / ITEMS_PER_PAGE);
   const gridCards = rest.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
   const intro = TAB_INTRO[activeTab] || TAB_INTRO.All;
-  const detailsUrl = (card) => `/resources/casestudiescarddetails?id=${card.id}`;
+  const detailsUrl = caseStudyPath;
   const onImgError = (e) => {
     if (e.target.src !== FALLBACK_IMG) e.target.src = FALLBACK_IMG;
   };

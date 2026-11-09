@@ -117,7 +117,7 @@ function NewsletterPage() {
           </div>
         : <header className="relative mb-12 text-center">
             <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-6 select-none text-[clamp(3rem,12vw,8rem)] font-black uppercase leading-none text-transparent [-webkit-text-stroke:1px_#e5e7eb]">Newsletter</span>
-            <h1 className="relative text-4xl font-black uppercase tracking-tight text-gray-900 md:text-6xl">Newsletter</h1>
+            <h1 className="relative text-4xl font-black uppercase tracking-tight text-gray-900 md:text-6xl">TelexPH Newsletter: Company News &amp; Updates</h1>
             <p className="relative mx-auto mt-6 max-w-[640px] text-gray-600">Catch up on stories, updates and milestones from every department at Telex Philippines.</p>
             <p className="relative mt-6 text-[11px] uppercase tracking-widest text-gray-500">
               <Link to="/" className="hover:text-[#a10000]">Home</Link> &gt;&gt; Resources &gt;&gt; <span className="text-[#a10000]">Newsletter</span>
