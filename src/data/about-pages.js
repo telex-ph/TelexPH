@@ -156,7 +156,6 @@ export const ABOUT_PAGES = [
         heading: "Performance & Quality Excellence",
         text: "We consistently deliver high-performance results through structured quality management, real-time monitoring, and continuous process optimization, ensuring reliability, efficiency, and client satisfaction.",
         metrics: [
-          { value: "99%", label: "Accuracy Rate" },
           { value: "98%", label: "SLA Compliance" },
           { value: "+20%", label: "Productivity Improvement" },
         ],

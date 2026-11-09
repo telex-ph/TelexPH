@@ -39,6 +39,7 @@
     { "source": "/careers/job-details/:job", "destination": "/app.html" },
     { "source": "/resources/blogs/:slug", "destination": "/app.html" },
     { "source": "/resources/case-studies/:slug", "destination": "/app.html" },
+    { "source": "/resources/newsletter/:slug", "destination": "/app.html" },
     { "source": "/resources/IndustryUseCase", "destination": "/app.html" },
     { "source": "/resources/CaseStudiesCardDetails", "destination": "/app.html" },
     { "source": "/resources/casestudiescarddetails", "destination": "/app.html" },
