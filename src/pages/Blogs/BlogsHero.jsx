@@ -46,7 +46,7 @@ function BlogsHero() {
       color: COLORS.dark
     }}
   >
-            OUR BLOGS
+            Customer Support &amp; Offshore Operations Blog
           </h1>
 
           {

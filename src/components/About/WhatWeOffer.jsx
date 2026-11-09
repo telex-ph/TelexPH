@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Bot, Filter, LayoutTemplate, Workflow, Boxes, Tag, ClipboardList, CalendarCheck, Code2, PenTool, Users, ShieldCheck, Cog, TrendingUp, UserCog } from "lucide-react";
 import { COLORS, FONTS } from "@/constant/styles";
 import AssistantRobot from "./AssistantRobot";
+import { localImage } from "@/shared/Image";
 
 /* "What We Offer" section, content taken from the company presentation slide. */
 const RED = COLORS.primary;
@@ -58,7 +59,7 @@ const WhatWeOffer = () => {
   const hover = (d) => ({ onMouseEnter: () => setDemo(d), onMouseLeave: () => setDemo(null), onFocus: () => setDemo(d), onBlur: () => setDemo(null) });
   return (
     <div className="relative overflow-hidden pb-14 pt-14 lg:pb-24 lg:pt-24">
-      <div className="absolute inset-0 h-full w-full bg-cover bg-center" style={{ backgroundImage: "url('/images/choosebg.webp')" }} />
+      <div className="absolute inset-0 h-full w-full bg-cover bg-center" style={{ backgroundImage: `url('${localImage("/images/choosebg.webp", 1280)}')` }} />
       <div className="absolute inset-0 bg-white/90" />
       <motion.div aria-hidden className="absolute -left-32 top-24 h-[26rem] w-[26rem] rounded-full opacity-[0.12] blur-3xl" style={{ background: RED }}
         animate={reduce ? {} : { x: [0, 40, 0], y: [0, 30, 0] }} transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }} />

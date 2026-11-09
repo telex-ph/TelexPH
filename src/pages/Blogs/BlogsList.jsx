@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { HiOutlineArrowRight } from "react-icons/hi2";
 import FeaturedHighlight from "@/components/FeaturedHighlight";
+import { cloudinaryUrl } from "@/shared/Image";
 import { FONTS, FONT_WEIGHTS } from "@/constant/styles";
 import useRotatingIndex from "@/lib/useRotatingIndex";
 
@@ -112,7 +113,7 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
     className="group cursor-pointer flex gap-4 items-center bg-white p-3 rounded-[10px] border border-gray-50 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08)] hover:shadow-[0_15px_35px_-8px_rgba(0,0,0,0.15)] transition-all"
   >
                 <div className="w-16 h-16 rounded-[8px] overflow-hidden flex-shrink-0">
-                  <img src={post.picture} className="w-full h-full object-cover" alt="Thumb" />
+                  <img src={cloudinaryUrl(post.picture, 160)} className="w-full h-full object-cover" alt={post.title} loading="lazy" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[10px] font-normal text-[#800000] uppercase tracking-widest mb-0.5">{post.mainCategory}</span>
@@ -152,9 +153,10 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
     >
               <div className="relative md:w-[320px] aspect-[2.6/1] md:aspect-auto md:h-auto md:min-h-[220px] overflow-hidden bg-gray-50 flex-shrink-0">
                 <img
-      src={blog.picture}
+      src={cloudinaryUrl(blog.picture, 828)}
       className="w-full h-full md:absolute md:inset-0 object-cover transition-transform duration-[1.2s] group-hover:scale-110"
-      alt="Blog"
+      alt={blog.title}
+      loading="lazy"
     />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                   <span className="bg-white/95 backdrop-blur-sm text-[#800000] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-md">
@@ -205,7 +207,7 @@ function BlogsList({ blogs, onArticleClick, searchQuery, viewMode, activeTab, ca
       className="group bg-white rounded-xl overflow-hidden shadow-[0_35px_70px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col transition-all duration-500 hover:translate-y-[-5px] w-full"
     >
               <div className="relative aspect-[2.6/1] m-4 overflow-hidden rounded-lg bg-gray-50">
-                <img src={blog.picture} className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" alt="Blog" />
+                <img src={cloudinaryUrl(blog.picture, 828)} className="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-110" alt={blog.title} loading="lazy" />
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                   <span className="bg-white/95 backdrop-blur-sm text-[#800000] px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-md">
                     {blog.mainCategory}

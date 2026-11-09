@@ -85,7 +85,7 @@ function CompanyOverview() {
                 </h3>
                 <div className="grid grid-cols-1 gap-y-4">
                   {[
-    "Award-Winning Excellence",
+    "Secure, Monitored Workplace",
     "Scalable Solutions",
     "Smart Technologies",
     "Global Reach",

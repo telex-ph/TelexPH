@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { HiOutlineArrowUpRight } from "react-icons/hi2";
+import { cloudinaryUrl } from "@/shared/Image";
 
 /**
  * Big highlight card used by the Blogs and Case Studies pages. Every item's image is stacked and
@@ -13,8 +14,8 @@ export default function FeaturedHighlight({ items, index, onSelect, onHover, lab
       <div className="relative h-[220px] sm:h-[300px] md:h-[380px] lg:h-[450px] w-full overflow-hidden rounded-lg shadow-[0_35px_70px_-15px_rgba(0,0,0,0.3)] bg-gray-100">
         {items.map((item, k) => <img
     key={item.id}
-    src={item.image}
-    alt={k === index ? item.title : ""}
+    src={cloudinaryUrl(item.image, 1080)}
+    alt={item.title}
     aria-hidden={k !== index}
     onError={(e) => {
       if (fallbackImg && e.target.src !== fallbackImg) e.target.src = fallbackImg;

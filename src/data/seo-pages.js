@@ -4,7 +4,7 @@
  * Plain JS (no JSX, no aliases) so Node can import it at build time.
  *
  * Titles get " | TelexPH" appended; keep them under 60 characters.
- * A title that already starts with the brand people search ("Telex Philippines") is used as is.
+ * A title that already names the brand ("Telex Philippines", "About TelexPH | ...") is used as is.
  */
 import { SERVICE_PAGES } from "./service-pages.js";
 import { ABOUT_PAGES } from "./about-pages.js";
@@ -13,27 +13,33 @@ export const SITE_URL = "https://www.telexph.com";
 
 export const BRAND = "TelexPH";
 
-export const fullTitle = (title) => (title.startsWith("Telex") ? title : `${title} | TelexPH`);
+export const fullTitle = (title) => (title.startsWith("Telex") || title.includes(BRAND) ? title : `${title} | ${BRAND}`);
 
 /** One blog post: /resources/blogs/<slug>. Head tags come from the post, not from SEO_PAGES. */
 export const BLOG_POST_PATH = /^\/resources\/blogs\/[^/]+\/?$/i;
 
+/** One case study: /resources/case-studies/<slug>. Head tags come from the case study (pages/CaseStudyDetails.jsx). */
+export const CASE_STUDY_PATH = /^\/resources\/case-studies\/[^/]+\/?$/i;
+
+/** Public URL of a case study; the old ?id= URL only when a record has no slug. */
+export const caseStudyPath = (c) => (c.slug ? `/resources/case-studies/${c.slug}` : `/resources/casestudiescarddetails?id=${c.id ?? c._id}`);
+
 export const SEO_PAGES = [
   {
     path: "/",
-    title: "Managed Offshore Customer Support Teams in the Philippines",
+    title: "Managed Offshore Support Teams in the Philippines",
     description:
       "Managed offshore customer support teams for growing businesses, run from 2 delivery centers in the Philippines. Team leads, QA and monthly reporting included.",
   },
   {
     path: "/about",
-    title: "About TelexPH",
+    title: "About TelexPH | Offshore Support Teams Since 2018",
     description:
       "TelexPH is a Philippine BPO founded in 2018 and based in Guimba, Nueva Ecija. Meet the team behind our offshore staffing, GoHighLevel and support services.",
   },
   {
     path: "/services",
-    title: "TelexPH Services",
+    title: "Customer Support & Back-Office Services",
     description:
       "TelexPH delivers smart, secure and scalable outsourcing that integrates process and technology, with customizable workflows and advanced data security.",
   },
@@ -117,7 +123,7 @@ export const SEO_PAGES = [
     path: "/resources/casestudiescarddetails",
     title: "Case Study",
     description: "A TelexPH case study on offshore staffing, GoHighLevel support or business automation results.",
-    keepQuery: true, // one page per ?id= until detail pages get slug URLs
+    keepQuery: true, // old ?id= links; the page redirects to /resources/case-studies/<slug>
     sitemap: false,
     prerender: false,
   },

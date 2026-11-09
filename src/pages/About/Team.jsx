@@ -55,7 +55,7 @@ const MemberCard = ({
   />
         {hoverImg && <img
     src={hoverImg}
-    alt=""
+    alt={`${name}, ${title}`}
     aria-hidden
     className={`absolute inset-0 w-full h-full object-contain ${imagePositionClass} opacity-0 transition-opacity duration-[700ms] ease-in-out will-change-[opacity] group-hover:opacity-100`}
     loading="lazy"

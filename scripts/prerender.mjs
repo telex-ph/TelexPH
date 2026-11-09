@@ -26,13 +26,25 @@ const posts = await fetch(`${process.env.VITE_API_URL}/blogs`, { signal: AbortSi
   .then((r) => r.json())
   .then((all) => all.filter((b) => b.status === "published" && /^[a-z0-9-]+$/.test(b.slug)))
   .catch((err) => (log("blog posts skipped:", err.message), []));
-const postTitles = new Map(posts.map((b) => [`/resources/blogs/${b.slug}`, b.title]));
-log(`${postTitles.size} blog posts`);
+// Same for case studies (/resources/case-studies/<slug>): live ones only, never drafts or archived.
+const caseStudies = await fetch(`${process.env.VITE_API_URL}/casestudies`, { signal: AbortSignal.timeout(60000) })
+  .then((r) => r.json())
+  .then((all) => all.filter((c) => ["active", "completed"].includes(c.status) && !c.isArchived && /^[a-z0-9-]+$/.test(c.slug)))
+  .catch((err) => (log("case studies skipped:", err.message), []));
+// Detail page route -> its title (the page is snapshotted once that title is in an <h1>).
+const postTitles = new Map([
+  ...posts.map((b) => [`/resources/blogs/${b.slug}`, b.title]),
+  ...caseStudies.map((c) => [`/resources/case-studies/${c.slug}`, c.title]),
+]);
+log(`${posts.length} blog posts, ${caseStudies.length} case studies`);
 
 // 1. Sitemap + SPA shell first: both must exist even if prerendering fails.
+// Pages without their own `lastmod` get the build date (each deploy ships the current copy).
+const buildDate = new Date().toISOString().slice(0, 10);
 const sitemapUrls = [
-  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => [p.path]),
-  ...posts.map((b) => [`/resources/blogs/${b.slug}`, b.updatedAt?.slice(0, 10)]),
+  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => [p.path, p.lastmod ?? buildDate]),
+  ...posts.map((b) => [`/resources/blogs/${b.slug}`, b.updatedAt?.slice(0, 10) ?? buildDate]),
+  ...caseStudies.map((c) => [`/resources/case-studies/${c.slug}`, c.updatedAt?.slice(0, 10) ?? buildDate]),
 ]
   .map(([path, lastmod]) => `  <url><loc>${SITE_URL}${path}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ""}</url>`)
   .join("\n");
@@ -103,7 +115,7 @@ for (const route of routes) {
     // Backend (Render) may be cold; don't let one slow API call sink the page.
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: "networkidle0", timeout: 60000 })
       .catch((err) => log(`slow network on ${route}, snapshotting anyway:`, err.message));
-    // A post shows a short loading animation before its <h1>; wait for the real article.
+    // A post or case study shows a short loading animation before its <h1>; wait for the real page.
     // Whitespace is ignored: the <h1> splits the title into styled spans and drops some spaces.
     if (postTitles.has(route)) {
       await page.waitForFunction(

@@ -1,8 +1,9 @@
+import { localImage } from "@/shared/Image";
 const FooterLogo = () => {
   return <div>
       <div className="flex flex-col items-start">
         <img
-    src="/images/telexlogo.webp"
+    src={localImage("/images/telexlogo.webp", 640)}
     alt="Telex Logo"
     width={200}
     height={80}

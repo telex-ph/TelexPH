@@ -52,7 +52,7 @@ const UseCaseScenario = () => {
       details: ["Real-time CRM", "Audit-Ready Logs", "Auto-Recaps"],
       icon: ShieldCheck,
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-      metric: "99.9% Data Accuracy"
+      metric: "Audit-Ready Logs"
     },
     {
       id: 5,

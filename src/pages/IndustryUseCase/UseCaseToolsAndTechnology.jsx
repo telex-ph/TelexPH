@@ -44,7 +44,7 @@ const UseCaseToolsAndTechnology = () => {
       name: "Cloud Infrastructure",
       desc: "Global distributed edge computing architecture with auto-scaling capabilities and multi-region redundancy.",
       tag: "STEP FOUR",
-      metric: "99.99% Uptime",
+      metric: "Redundant Setup",
       specs: ["Multi-region Stack", "Auto-scaling"],
       icon: <Cloud size={40} />
     }

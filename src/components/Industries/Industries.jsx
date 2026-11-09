@@ -1,5 +1,6 @@
 import SectionTitle from "../common/SectionTitle";
 import { ShoppingCart, Truck, Landmark, ArrowUpRight } from "lucide-react";
+import { localImage } from "@/shared/Image";
 
 const RED = "#a10000";
 const MAROON = "#530607";
@@ -49,7 +50,7 @@ const IndustryRow = ({ Icon, title, description, image, imagePosition = "center"
       <div
     className="absolute inset-y-0 right-0 -z-10 hidden w-[26%] bg-cover opacity-0 transition-all duration-700 group-hover:opacity-80 md:block"
     style={{
-      backgroundImage: `url('${image}')`,
+      backgroundImage: `url('${localImage(image, 1280)}')`,
       backgroundPosition: imagePosition,
       WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 60%)",
       maskImage: "linear-gradient(90deg, transparent 0%, #000 60%)",
@@ -102,7 +103,7 @@ const Industries = ({ items = INDUSTRIES }) => {
       <div
     className="pointer-events-none absolute inset-0"
     style={{
-      backgroundImage: "url('/images/office-production.jpg')",
+      backgroundImage: `url('${localImage("/images/office-production.jpg", 1280)}')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       opacity: 0.06,

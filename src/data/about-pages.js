@@ -62,14 +62,14 @@ export const ABOUT_PAGES = [
     lines: ["Compliance &","Security"],
     statsTitle: "Philippines Delivery Center · Security Posture",
     stats: [
-      { value: "GDPR", label: "Compliant" },
-      { value: "ISO 27001", label: "Ready" },
+      { value: "GDPR", label: "Aligned" },
+      { value: "DPO", label: "Certified" },
       { value: "SECURED", label: "End-to-end" },
       { value: "RBAC", label: "Role-based" },
       { value: "NDA", label: "Enforced" },
     ],
     intro:
-      "TELEX Philippines maintains a strong security and compliance framework supported by enterprise-grade protection, continuous monitoring, and dedicated Compliance and Cybersecurity teams.",
+      "TELEX Philippines maintains a strong security and compliance framework supported by a certified Data Protection Officer, Fortinet firewall protection, access controls, CCTV monitoring, a clean desk policy, and dedicated Compliance and Cybersecurity teams.",
     sections: [
       {
         id: "compliance",
@@ -77,12 +77,15 @@ export const ABOUT_PAGES = [
         heading: "Compliance",
         text: "We implement GDPR-aligned data privacy practices, role-based access control (RBAC), secure system monitoring, and enforced NDAs for all employees. Regular compliance training is also conducted to ensure a secure and reliable environment for client operations.",
         points: [
-          "GDPR-compliant processes implemented",
+          "GDPR-aligned processes implemented",
+          "Certified Data Protection Officer (DPO)",
           "Data privacy policies enforced",
           "Role-based system access (RBAC)",
           "NDA signed by all employees",
           "Secure login & monitoring systems",
-          "Regular GDPR compliance training",
+          "CCTV-monitored workplace",
+          "Clean desk policy",
+          "Regular GDPR training",
         ],
         wide: true,
       },

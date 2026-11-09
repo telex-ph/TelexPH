@@ -1,6 +1,8 @@
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
+import Seo from "@/shared/Seo";
+import { SITE_URL, caseStudyPath } from "@/data/seo-pages";
 import Link from "next/link";
 import Footer from "@/components/Footer/Footer";
 import PrintWatermark from "@/shared/PrintWatermark";
@@ -41,6 +43,16 @@ async function getCaseStudyById(id) {
     return null;
   }
 }
+async function getCaseStudyBySlug(slug) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/casestudies/fetch/${encodeURIComponent(slug)}`);
+    if (!response.ok) throw new Error("Failed to fetch case study");
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching case study:", error);
+    return null;
+  }
+}
 async function getAllCaseStudies() {
   try {
     const response = await fetch(`${API_BASE_URL}/casestudies`);
@@ -69,6 +81,7 @@ function transformRelated(item) {
   if (description.length > 90) description = description.slice(0, 90) + "\u2026";
   return {
     id: item._id,
+    slug: item.slug,
     title: item.title || "Untitled Case Study",
     description: description || "Read the full case study.",
     image: toHttps(item.cover) || RELATED_FALLBACK_IMG,
@@ -81,23 +94,56 @@ function transformRelated(item) {
   };
 }
 const FIRST_SECTION_EXTRA = `By centralizing all communication channels into a unified inbox, agents gained full visibility into every customer interaction regardless of where it originated. This eliminated duplicate responses, reduced average handling time, and allowed supervisors to monitor performance in real time. The platform's smart routing also ensured that inquiries were automatically assigned to the most appropriate team member based on topic and availability \u2014 keeping queues balanced and customers satisfied.`;
+/** Head tags + Article schema for one case study (its canonical URL is /resources/case-studies/<slug>). */
+function CaseStudySeo({ record }) {
+  const url = SITE_URL + caseStudyPath(record);
+  const firstText = htmlToText(record.challenge?.[0]?.text || record.sections?.[0]?.text || "").replace(/\s+/g, " ").trim();
+  const description = (record.subtitle || firstText).slice(0, 160);
+  const image = toHttps(record.cover);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: record.title,
+    description,
+    image,
+    url,
+    mainEntityOfPage: url,
+    datePublished: record.createdAt,
+    dateModified: record.updatedAt,
+    author: { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" },
+    publisher: { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" },
+  };
+  return <>
+      <Seo title={`${record.title}: Case Study`} description={description} image={image} url={url} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+    </>;
+}
 function CaseStudyDetailsContent() {
   const searchParams = useSearchParams();
+  const { slug } = useParams();
+  const router = useRouter();
   const id = searchParams.get("id");
   const [study, setStudy] = useState(null);
+  const [record, setRecord] = useState(null);
   const [related, setRelated] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApiData, setIsApiData] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     async function loadCaseStudy() {
-      if (!id) {
+      if (!id && !slug) {
         setIsLoading(false);
         return;
       }
       setIsLoading(true);
-      const apiData = await getCaseStudyById(id);
+      const apiData = slug ? await getCaseStudyBySlug(slug) : await getCaseStudyById(id);
+      // Old ?id= links move to the case study's own URL, the one in the sitemap.
+      if (apiData?.slug && !slug) {
+        router.replace(caseStudyPath(apiData));
+        return;
+      }
       if (apiData) {
+        setRecord(apiData);
         const transformedStudy = {
           title: apiData.title || "Case Study",
           type: "Case Studies",
@@ -112,14 +158,14 @@ function CaseStudyDetailsContent() {
       const all = await getAllCaseStudies();
       if (Array.isArray(all)) {
         setRelated(
-          all.filter((item) => item._id !== id && item.status === "active").slice(0, 4).map(transformRelated)
+          all.filter((item) => item._id !== apiData?._id && item.status === "active").slice(0, 4).map(transformRelated)
         );
       }
       setIsLoading(false);
       setTimeout(() => setMounted(true), 50);
     }
     loadCaseStudy();
-  }, [id]);
+  }, [id, slug]);
   const handlePrintPDF = () => window.print();
   if (isLoading) {
     return <PageLoader />;
@@ -196,6 +242,7 @@ function CaseStudyDetailsContent() {
   />
       </div>
 
+      {record && <CaseStudySeo record={record} />}
       <div><DetailsHeader /></div>
 
 
@@ -390,7 +437,7 @@ function CaseStudyDetailsContent() {
 
                 {related.map((item) => <Link
     key={item.id}
-    href={`/resources/casestudiescarddetails?id=${item.id}`}
+    href={caseStudyPath(item)}
     className="group block rounded-2xl overflow-hidden border border-zinc-100 bg-white hover:shadow-lg transition-shadow"
   >
                     <div className="relative h-[150px] w-full overflow-hidden">

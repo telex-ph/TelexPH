@@ -89,8 +89,8 @@ const UseCaseWhy = () => {
                 <ShieldCheck size={24} />
               </div>
               <h3 className={`font-poppins font-bold text-base md:text-lg mb-2 uppercase tracking-tight`} style={{ color: "#282828" }}>Compliance</h3>
-              <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>Global SOC2 Type II and ISO 27001 certifications.</p>
-              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>Military-Grade Security</span>
+              <p className={`${FONT_CLASSES.rubikRegular} text-[14px] md:text-[16px] text-gray-500 leading-relaxed mb-4`}>GDPR-aligned processes, a certified Data Protection Officer and a Fortinet-protected network.</p>
+              <span className={`${FONT_CLASSES.openSansBold} text-[10px] md:text-[12px] text-gray-400 uppercase tracking-widest`}>Secure by Design</span>
             </div>
 
             <div className="p-10 rounded-[2.5rem] bg-white border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col justify-center min-h-[260px] group cursor-default">
