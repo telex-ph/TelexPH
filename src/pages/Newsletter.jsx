@@ -15,7 +15,7 @@ const API_BASE = getApiBaseUrl();
 const href = (i) => `/resources/newsletter/${i.slug}`;
 
 const cover = (i) => i.coverUrl
-  ? <img src={i.coverUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+  ? <img src={i.coverUrl} alt={`${i.title} newsletter cover`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
   : <span aria-hidden="true" className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1b2538] to-[#a10000] p-4 text-center text-sm font-bold uppercase tracking-widest text-white/80">{i.department}</span>;
 
 function IssueBrowser({ issues }) {

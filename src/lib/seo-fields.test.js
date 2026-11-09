@@ -1,8 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { emptySeo, seoFromRecord, seoError, seoPayload, appendSeo, withoutGeneratedFaq } from "./seo-fields.js";
+import { emptySeo, seoFromRecord, seoError, seoPayload, appendSeo, withoutGeneratedFaq, clipDescription } from "./seo-fields.js";
 
 const seo = (over = {}) => ({ ...emptySeo(), ...over });
+
+test("fullTitle adds the brand only while the title stays within 60 chars", async () => {
+  const { fullTitle } = await import("../data/seo-pages.js");
+  assert.equal(fullTitle("About"), "About | TelexPH");
+  assert.equal(fullTitle("x".repeat(55)), "x".repeat(55));
+  assert.equal(fullTitle("TelexPH Careers"), "TelexPH Careers");
+});
+
+test("clipDescription keeps short text and cuts long text to 155 chars at a word", () => {
+  assert.equal(clipDescription("Short."), "Short.");
+  assert.equal(clipDescription(undefined), undefined);
+  const out = clipDescription("word ".repeat(60).trim());
+  assert.ok(out.length <= 155 && out.endsWith("word…"), out);
+});
 
 test("seoFromRecord copes with records that have none of the fields", () => {
   assert.deepEqual(seoFromRecord({}), emptySeo());

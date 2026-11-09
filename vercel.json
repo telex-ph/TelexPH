@@ -24,7 +24,11 @@
     { "source": "/about-us{/}?", "destination": "/about", "permanent": true },
     { "source": "/blog{/}?", "destination": "/resources/blogs", "permanent": true },
     { "source": "/service{/}?", "destination": "/services", "permanent": true },
-    { "source": "/social-media-management{/}?", "destination": "/services", "permanent": true }
+    { "source": "/social-media-management{/}?", "destination": "/services", "permanent": true },
+    { "source": "/resources/blogs/mastering-business-growth-a-beginners-guide-to-outsourcing-101{/}?", "destination": "/resources/blogs/business-growth-strategy", "permanent": true },
+    { "source": "/resources/blogs/the-healthcare-bpo-revolution-a-comprehensive-guide-to-scaling-patient-centric-medical-operations-in-the-modern-era{/}?", "destination": "/resources/blogs/business-growth-strategy", "permanent": true },
+    { "source": "/resources/blogs/outsourcing-101-the-founders-guide-to-operational-freedom{/}?", "destination": "/resources/blogs/business-growth-strategy", "permanent": true },
+    { "source": "/resources/blogs/unlocking-cx-excellence-the-future-of-customer-service{/}?", "destination": "/resources/blogs/business-growth-strategy", "permanent": true }
   ],
   "rewrites": [
     { "source": "/admin/:path*", "destination": "/app.html" },

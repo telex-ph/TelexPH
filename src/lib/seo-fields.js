@@ -1,8 +1,16 @@
 // Pure helpers behind the admin SEO card (components/SeoFields.jsx). The fields and limits are the same as the
 // posting API's (telexph-admin/src/content-api/seo-fields.js).
 
-export const SEO_MAX = { metaTitle: 70, metaDescription: 170, coverAlt: 200, question: 300, answer: 3000, faq: 20 };
+export const SEO_MAX = { metaTitle: 60, metaDescription: 155, coverAlt: 200, question: 300, answer: 3000, faq: 20 };
 const QUESTION_MIN = 3;
+
+/** A meta description cut to SEO_MAX.metaDescription at a word boundary, for pages that fall back to longer text. */
+export const clipDescription = (text) => {
+  const max = SEO_MAX.metaDescription;
+  if (!text || text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(" ") > 0 ? cut.lastIndexOf(" ") : cut.length).replace(/[\s,;:.]+$/, "")}…`;
+};
 
 export const emptySeo = () => ({ metaTitle: "", metaDescription: "", coverAlt: "", faq: [] });
 

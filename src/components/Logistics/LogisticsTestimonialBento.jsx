@@ -14,7 +14,7 @@ const Stars = ({ color = "#f5a524", size = "w-3 h-3" }) => (
   </div>
 );
 
-const Tile = ({ img, overlay, className = "", children, i = 0 }) => {
+const Tile = ({ img, alt, overlay, className = "", children, i = 0 }) => {
   const reduce = useReducedMotion();
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -32,7 +32,7 @@ const Tile = ({ img, overlay, className = "", children, i = 0 }) => {
       className={`group relative overflow-hidden rounded-3xl text-white shadow-[0_18px_40px_-18px_rgba(40,16,16,.55)] transition-shadow duration-300 hover:shadow-[0_28px_60px_-20px_rgba(161,0,0,.55)] ${className}`}
       style={{ ...poppins, backgroundColor: "#1a1a1a" }}
     >
-      {img && <img src={img} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />}
+      {img && <img src={img} alt={alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />}
       <div aria-hidden className="absolute inset-0" style={{ background: overlay }} />
       {/* cursor-following red glow */}
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(161,0,0,.28), transparent 70%)" }} />
@@ -63,6 +63,7 @@ const LogisticsTestimonialBento = () => (
       <Tile
         i={0}
         img="/images/testimonial-proactive.png"
+        alt="SpeedX customer service supervisor speaking in an interview at the TelexPH office"
         overlay="linear-gradient(180deg, rgba(0,0,0,.05) 25%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.92) 100%)"
         className="md:col-span-5 md:row-span-2 min-h-[460px] flex flex-col justify-between p-6"
       >
@@ -97,6 +98,7 @@ const LogisticsTestimonialBento = () => (
       <Tile
         i={1}
         img="/images/testimonial-rewards.png"
+        alt="SpeedX visitor speaking to TelexPH agents with a microphone during a client visit"
         overlay="linear-gradient(180deg, rgba(20,20,20,.88) 0%, rgba(40,8,8,.75) 55%, rgba(120,0,0,.85) 100%)"
         className="md:col-span-3 min-h-[260px] flex flex-col justify-between p-5"
       >
@@ -113,6 +115,7 @@ const LogisticsTestimonialBento = () => (
       <Tile
         i={2}
         img="/images/testimonial-fast.png"
+        alt="SpeedX visitor with two TelexPH team members in front of the Telex logo"
         overlay="linear-gradient(180deg, rgba(30,30,30,.82), rgba(20,20,20,.9))"
         className="md:col-span-4 min-h-[260px] flex flex-col justify-between p-5"
       >
@@ -131,6 +134,7 @@ const LogisticsTestimonialBento = () => (
       <Tile
         i={3}
         img="/images/testimonial-support.png"
+        alt="Welcome SpeedX, thank you for visiting us sign at the TelexPH office"
         overlay="linear-gradient(180deg, rgba(10,30,60,.55) 0%, rgba(10,10,10,.9) 60%, rgba(10,10,10,.97) 100%)"
         className="md:col-span-3 min-h-[260px] flex flex-col justify-end p-5"
       >
@@ -147,6 +151,7 @@ const LogisticsTestimonialBento = () => (
       <Tile
         i={4}
         img="/images/testimonial-cta.png"
+        alt="TelexPH agents gathered for agent training during a SpeedX client visit"
         overlay="linear-gradient(160deg, rgba(60,40,35,.92), rgba(40,12,12,.95))"
         className="md:col-span-4 min-h-[260px] flex flex-col justify-center p-6"
       >
