@@ -6,7 +6,6 @@ import {
   UserCheck,
   ShieldCheck,
   Star,
-  Zap,
   Clock,
   Database,
   CheckCircle2,
@@ -88,8 +87,7 @@ const UseCaseScenario = () => {
 
             <div className="flex flex-wrap gap-3 mb-8">
               {[
-    { icon: Clock, label: "50% Faster Resolution" },
-    { icon: Zap, label: "99% Data Accuracy" }
+    { icon: Clock, label: "50% Faster Resolution" }
   ].map((pill, idx) => <div key={idx} className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-md border border-gray-100 shadow-sm">
                   <pill.icon size={12} style={{ color: COLORS.primary }} />
                   <span className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase tracking-wider">{pill.label}</span>

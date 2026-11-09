@@ -197,12 +197,6 @@ const OperationsScene = () => {
         initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2.2, delay: 0.6, ease: "easeInOut" }} />
       <motion.circle r="5" fill="#fff" initial={{ cx: 488, cy: 214, opacity: 0 }} animate={reduce ? { cx: 488, cy: 214, opacity: 1 } : { opacity: [0, 1] }} transition={{ delay: 2.8, duration: 0.4 }} />
 
-      {/* side card: tickets resolved */}
-      <rect x="436" y="80" width="76" height="100" rx="10" fill="#262626" />
-      <text x="474" y="118" textAnchor="middle" fontSize="30" fontWeight="700" fill="#fff" style={display}>99%</text>
-      <text x="474" y="138" textAnchor="middle" fontSize="11" letterSpacing="1.5" fill="#9ca3af" style={display}>ACCURACY</text>
-      <Led x="474" y="158" color={RED_LIGHT} r="3.5" />
-
       {/* conversation bubbles with an escalation arrow */}
       <motion.g initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, type: "spring", stiffness: 140, damping: 14 }}>
         <rect x="26" y="150" width="120" height="44" rx="12" fill="#fff" />

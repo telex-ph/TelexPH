@@ -202,7 +202,7 @@ function AboutInfoPage() {
                       </div>
                     )}
                     {s.metrics && (
-                      <div className="relative mt-6 grid grid-cols-3 gap-3">
+                      <div className="relative mt-6 grid gap-3" style={{ gridTemplateColumns: `repeat(${s.metrics.length}, minmax(0, 1fr))` }}>
                         {s.metrics.map((m) => (
                           <div key={m.label} className="rounded-2xl border-2 border-[#a10000] bg-white px-3 py-4 text-center">
                             <p className="text-4xl md:text-5xl font-bold leading-none text-[#a10000]" style={display}>{m.value}</p>
