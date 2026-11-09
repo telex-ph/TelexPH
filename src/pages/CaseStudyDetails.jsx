@@ -93,7 +93,6 @@ function transformRelated(item) {
     }) : ""
   };
 }
-const FIRST_SECTION_EXTRA = `By centralizing all communication channels into a unified inbox, agents gained full visibility into every customer interaction regardless of where it originated. This eliminated duplicate responses, reduced average handling time, and allowed supervisors to monitor performance in real time. The platform's smart routing also ensured that inquiries were automatically assigned to the most appropriate team member based on topic and availability \u2014 keeping queues balanced and customers satisfied.`;
 /** Head tags + Article schema for one case study (its canonical URL is /resources/case-studies/<slug>). */
 function CaseStudySeo({ record }) {
   const url = SITE_URL + caseStudyPath(record);
@@ -308,9 +307,6 @@ function CaseStudyDetailsContent() {
                   {study.body[0].title}
                 </h2>
                 <div className={`drop-cap-p print-overview-desc leading-[1.85] mt-4 text-justify text-[14px] md:text-[16px] ${RICH}`} style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }} dangerouslySetInnerHTML={{ __html: toHtml(study.body[0].text) }} />
-                <p className="print-overview-desc leading-[1.85] mt-6 text-justify text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }}>
-                  {FIRST_SECTION_EXTRA}
-                </p>
               </div>}
 
             <article className="space-y-10">
