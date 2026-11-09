@@ -59,6 +59,11 @@ function AdminSettings() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [keyStatus, setKeyStatus] = useState(null);
+  const [newKey, setNewKey] = useState("");
+  const [keyBusy, setKeyBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const isMainAdmin = userData?.role === 1;
   const showToast = (msg, ok) => {
     setToast({ msg, ok });
     setTimeout(() => setToast(null), 4e3);
@@ -66,6 +71,33 @@ function AdminSettings() {
   useEffect(() => {
     fetchUserData();
   }, []);
+  useEffect(() => {
+    if (activetab !== "apikey" || !isMainAdmin) return;
+    api.get("/settings/api-key").then(({ data }) => setKeyStatus(data)).catch(() => showToast("Could not load the API key status", false));
+  }, [activetab, isMainAdmin]);
+  const generateKey = async () => {
+    if (keyStatus?.configured && !window.confirm("Generate a new key? The current key stops working immediately, so n8n must be updated with the new one.")) return;
+    try {
+      setKeyBusy(true);
+      const { data } = await api.post("/settings/api-key");
+      const { key, ...status } = data;
+      setNewKey(key);
+      setKeyStatus(status);
+      setCopied(false);
+    } catch (err) {
+      showToast(err.response?.data?.message || "Could not generate a new API key", false);
+    } finally {
+      setKeyBusy(false);
+    }
+  };
+  const copyKey = async () => {
+    try {
+      await navigator.clipboard.writeText(newKey);
+      setCopied(true);
+    } catch {
+      showToast("Copy failed. Select the key and copy it manually.", false);
+    }
+  };
   const fetchUserData = async () => {
     try {
       setLoading(true);
@@ -200,7 +232,16 @@ function AdminSettings() {
           <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
         </svg>
-    }
+    },
+    // Main Administrator (role 1) only. The server enforces this too.
+    ...isMainAdmin ? [{
+      id: "apikey",
+      label: "API Key",
+      desc: "Content API for n8n",
+      icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+        </svg>
+    }] : []
   ];
   if (initialLoading) return <DashboardLoader isVisible message="Loading settings…" />;
   return <>
@@ -348,6 +389,7 @@ function AdminSettings() {
         setactivetab(item.id);
         setPasswordError(null);
         setPasswordSuccess(null);
+        setNewKey("");
       }}
       style={{
         width: "100%",
@@ -420,7 +462,7 @@ function AdminSettings() {
                     {navItems.find((n) => n.id === activetab)?.label}
                   </p>
                   <p style={{ fontSize: 11, color: textMuted, margin: "2px 0 0", fontWeight: 400 }}>
-                    {activetab === "profile" ? "Update your personal details and photo" : activetab === "security" ? "Manage your account password" : "Choose how your dashboard looks"}
+                    {activetab === "profile" ? "Update your personal details and photo" : activetab === "security" ? "Manage your account password" : activetab === "apikey" ? "Key that lets n8n send draft posts to the website" : "Choose how your dashboard looks"}
                   </p>
                 </div>
                 <div style={{
@@ -780,6 +822,55 @@ function AdminSettings() {
                   </div>
 
                   <AdminThemeGallery />
+                </div>}
+
+              {
+    /* ═══════════ API KEY TAB (Main Administrator only) ═══════════ */
+  }
+              {activetab === "apikey" && isMainAdmin && <div style={{ padding: "26px 28px" }}>
+                  <div style={{ background: subtleBg, border: `1px solid ${borderColor}`, borderRadius: 14, padding: "14px 18px", marginBottom: 24 }}>
+                    <p style={{ fontSize: 12, fontWeight: 500, color: textPrimary, margin: 0 }}>Content API key</p>
+                    <p style={{ fontSize: 11, color: textMuted, margin: "4px 0 0", fontWeight: 400, lineHeight: 1.6 }}>
+                      n8n sends this key in the <b>x-api-key</b> header to create draft blogs, case studies and newsletters. Nothing it sends goes live until it is approved in this dashboard.
+                    </p>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 14, marginBottom: 24 }}>
+                    {[
+                      ["Status", !keyStatus ? "Loading…" : keyStatus.configured ? "Active" : "No key yet"],
+                      ["Key starts with", keyStatus?.prefix || "—"],
+                      ["Created", keyStatus?.createdAt ? `${new Date(keyStatus.createdAt).toLocaleString()} by ${keyStatus.createdBy}` : keyStatus?.source === "environment" ? "Set on the server" : "—"]
+                    ].map(([label, value]) => <div key={label} style={{ border: `1px solid ${borderColor}`, borderRadius: 14, padding: "12px 16px", minWidth: 0 }}>
+                        <p style={{ fontSize: 10, fontWeight: 500, color: textMuted, margin: "0 0 6px", textTransform: "uppercase" }}>{label}</p>
+                        <p style={{ fontSize: 12, color: textPrimary, margin: 0, fontWeight: 500, overflowWrap: "anywhere" }}>{value}</p>
+                      </div>)}
+                  </div>
+
+                  {newKey && <div role="status" style={{ border: "1.5px solid var(--admin-accent)", borderRadius: 14, padding: "16px 18px", marginBottom: 24 }}>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: textPrimary, margin: "0 0 4px" }}>Copy your new key now</p>
+                      <p style={{ fontSize: 11, color: textMuted, margin: "0 0 12px", fontWeight: 400, lineHeight: 1.6 }}>
+                        This is the only time it is shown. We store just a fingerprint, so it cannot be shown again. Paste it into the n8n credential (Header Auth, name <b>x-api-key</b>).
+                      </p>
+                      <div style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
+                        <input readOnly value={newKey} onFocus={(e) => e.target.select()} aria-label="New API key" style={inp({ fontFamily: "ui-monospace, Consolas, monospace", minWidth: 0 })} />
+                        <button onClick={copyKey} style={{ minHeight: 48, padding: "0 22px", borderRadius: 12, border: "none", background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>
+                          {copied ? "Copied" : "Copy"}
+                        </button>
+                      </div>
+                    </div>}
+
+                  <div style={{ paddingTop: 18, borderTop: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+                    <p style={{ fontSize: 11, color: textMuted, margin: 0, fontWeight: 400, lineHeight: 1.6 }}>
+                      {keyStatus?.configured ? "Generating a new key replaces the current one immediately. Update n8n right after." : "Generate a key, then paste it into n8n."}
+                    </p>
+                    <button onClick={generateKey} disabled={keyBusy || !keyStatus} style={{
+    display: "inline-flex", alignItems: "center", gap: 7, minHeight: 48, padding: "0 24px", borderRadius: 12, border: "none", flexShrink: 0,
+    background: "var(--admin-accent)", color: "#fff", fontSize: 12, fontWeight: 500,
+    cursor: keyBusy || !keyStatus ? "not-allowed" : "pointer", opacity: keyBusy || !keyStatus ? 0.7 : 1
+  }}>
+                      {keyBusy ? <><Spinner size={12} />Generating...</> : keyStatus?.configured ? "Generate new key" : "Generate key"}
+                    </button>
+                  </div>
                 </div>}
 
             </div>
