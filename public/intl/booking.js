@@ -1,22 +1,17 @@
-/* TELEX Global booking modal (intl.telexph.com), moved out of intl/a1-book.html.
-   Edit here, deploy TelexPH, then bump ?v= in intl/a1-book.html. */
 var _telexOpenP;
 
 (function() {
 
-var bookedSlots = {}; /* 'zone|yyyy-mm-dd' -> [[startMs, endMs]] from GHL */
-var myBookings = [];  /* [[startMs, endMs]] booked in this session */
+var bookedSlots = {}; 
+var myBookings = [];  
 var tSlotsFetched = false;
-var tYear, tMonth, tDay = null, tSlot = null; /* client-local date; tSlot = minutes after midnight */
+var tYear, tMonth, tDay = null, tSlot = null;
 var tMN = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 
-/* @tz-core: pure timezone + slot logic (tested in intl/tests/book.test.mjs) */
-/* US, CA, NZ, AU, Iceland + every Europe/Asia country, from IANA zone.tab */
 var TZ_COUNTRIES = 'AD:Europe/Andorra;AE:Asia/Dubai;AF:Asia/Kabul;AL:Europe/Tirane;AM:Asia/Yerevan;AT:Europe/Vienna;AU:Australia/Lord_Howe,Antarctica/Macquarie,Australia/Hobart,Australia/Melbourne,Australia/Sydney,Australia/Broken_Hill,Australia/Brisbane,Australia/Lindeman,Australia/Adelaide,Australia/Darwin,Australia/Perth,Australia/Eucla;AX:Europe/Mariehamn;AZ:Asia/Baku;BA:Europe/Sarajevo;BD:Asia/Dhaka;BE:Europe/Brussels;BG:Europe/Sofia;BH:Asia/Bahrain;BN:Asia/Brunei;BT:Asia/Thimphu;BY:Europe/Minsk;CA:America/St_Johns,America/Halifax,America/Glace_Bay,America/Moncton,America/Goose_Bay,America/Blanc-Sablon,America/Toronto,America/Iqaluit,America/Atikokan,America/Winnipeg,America/Resolute,America/Rankin_Inlet,America/Regina,America/Swift_Current,America/Edmonton,America/Cambridge_Bay,America/Inuvik,America/Vancouver,America/Creston,America/Dawson_Creek,America/Fort_Nelson,America/Whitehorse,America/Dawson;CH:Europe/Zurich;CN:Asia/Shanghai,Asia/Urumqi;CY:Asia/Nicosia,Asia/Famagusta;CZ:Europe/Prague;DE:Europe/Berlin,Europe/Busingen;DK:Europe/Copenhagen;EE:Europe/Tallinn;ES:Europe/Madrid,Africa/Ceuta,Atlantic/Canary;FI:Europe/Helsinki;FR:Europe/Paris;GB:Europe/London;GE:Asia/Tbilisi;GG:Europe/Guernsey;GI:Europe/Gibraltar;GR:Europe/Athens;HK:Asia/Hong_Kong;HR:Europe/Zagreb;HU:Europe/Budapest;ID:Asia/Jakarta,Asia/Pontianak,Asia/Makassar,Asia/Jayapura;IE:Europe/Dublin;IL:Asia/Jerusalem;IM:Europe/Isle_of_Man;IN:Asia/Kolkata;IQ:Asia/Baghdad;IR:Asia/Tehran;IS:Atlantic/Reykjavik;IT:Europe/Rome;JE:Europe/Jersey;JO:Asia/Amman;JP:Asia/Tokyo;KG:Asia/Bishkek;KH:Asia/Phnom_Penh;KP:Asia/Pyongyang;KR:Asia/Seoul;KW:Asia/Kuwait;KZ:Asia/Almaty,Asia/Qyzylorda,Asia/Qostanay,Asia/Aqtobe,Asia/Aqtau,Asia/Atyrau,Asia/Oral;LA:Asia/Vientiane;LB:Asia/Beirut;LI:Europe/Vaduz;LK:Asia/Colombo;LT:Europe/Vilnius;LU:Europe/Luxembourg;LV:Europe/Riga;MC:Europe/Monaco;MD:Europe/Chisinau;ME:Europe/Podgorica;MK:Europe/Skopje;MM:Asia/Yangon;MN:Asia/Ulaanbaatar,Asia/Hovd;MO:Asia/Macau;MT:Europe/Malta;MY:Asia/Kuala_Lumpur,Asia/Kuching;NL:Europe/Amsterdam;NO:Europe/Oslo;NP:Asia/Kathmandu;NZ:Pacific/Auckland,Pacific/Chatham;OM:Asia/Muscat;PH:Asia/Manila;PK:Asia/Karachi;PL:Europe/Warsaw;PS:Asia/Gaza,Asia/Hebron;PT:Europe/Lisbon,Atlantic/Madeira,Atlantic/Azores;QA:Asia/Qatar;RO:Europe/Bucharest;RS:Europe/Belgrade;RU:Europe/Kaliningrad,Europe/Moscow,Europe/Kirov,Europe/Volgograd,Europe/Astrakhan,Europe/Saratov,Europe/Ulyanovsk,Europe/Samara,Asia/Yekaterinburg,Asia/Omsk,Asia/Novosibirsk,Asia/Barnaul,Asia/Tomsk,Asia/Novokuznetsk,Asia/Krasnoyarsk,Asia/Irkutsk,Asia/Chita,Asia/Yakutsk,Asia/Khandyga,Asia/Vladivostok,Asia/Ust-Nera,Asia/Magadan,Asia/Sakhalin,Asia/Srednekolymsk,Asia/Kamchatka,Asia/Anadyr;SA:Asia/Riyadh;SE:Europe/Stockholm;SG:Asia/Singapore;SI:Europe/Ljubljana;SK:Europe/Bratislava;SM:Europe/San_Marino;SY:Asia/Damascus;TH:Asia/Bangkok;TJ:Asia/Dushanbe;TL:Asia/Dili;TM:Asia/Ashgabat;TR:Europe/Istanbul;TW:Asia/Taipei;UA:Europe/Simferopol,Europe/Kyiv;US:America/New_York,America/Detroit,America/Kentucky/Louisville,America/Kentucky/Monticello,America/Indiana/Indianapolis,America/Indiana/Vincennes,America/Indiana/Winamac,America/Indiana/Marengo,America/Indiana/Petersburg,America/Indiana/Vevay,America/Chicago,America/Indiana/Tell_City,America/Indiana/Knox,America/Menominee,America/North_Dakota/Center,America/North_Dakota/New_Salem,America/North_Dakota/Beulah,America/Denver,America/Boise,America/Phoenix,America/Los_Angeles,America/Anchorage,America/Juneau,America/Sitka,America/Metlakatla,America/Yakutat,America/Nome,America/Adak,Pacific/Honolulu;UZ:Asia/Samarkand,Asia/Tashkent;VA:Europe/Vatican;VN:Asia/Ho_Chi_Minh;YE:Asia/Aden';
 var tzCountry = {};
 TZ_COUNTRIES.split(';').forEach(function(e) { var p = e.split(':'); p[1].split(',').forEach(function(z) { tzCountry[z] = p[0]; }); });
 
-/* Clients book 15-minute calls, 09:00–17:45, Mon–Fri, in their own timezone (matches the backend) */
 var CLIENT_SLOTS = [];
 for (var sm = 9 * 60; sm <= 17 * 60 + 45; sm += 15) CLIENT_SLOTS.push(sm);
 var CALL_MS = 15 * 60 * 1000;
@@ -29,7 +24,6 @@ function isNamedZone(z) {
   try { new Intl.DateTimeFormat('en-US', { timeZone: z }); return true; } catch (e) { return false; }
 }
 
-/* Device zone -> listed zone (matches legacy names like Asia/Calcutta); unlisted real zones are kept */
 function resolveZone(raw) {
   if (tzCountry[raw]) return raw;
   if (!isNamedZone(raw)) return 'Asia/Manila';
@@ -39,7 +33,6 @@ function resolveZone(raw) {
   return raw;
 }
 
-/* Wall clock of an instant in a zone: { year, month (1-12), day, hour, minute } */
 function zoneParts(ms, zone) {
   var p = {};
   new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: 'numeric',
@@ -48,7 +41,6 @@ function zoneParts(ms, zone) {
   return p;
 }
 
-/* Wall time (month 0-11) in a zone -> UTC ms, daylight saving included */
 function zoneInstant(zone, y, m, d, h, mi) {
   var want = Date.UTC(y, m, d, h, mi || 0), ms = want;
   for (var i = 0; i < 3; i++) {
@@ -58,7 +50,6 @@ function zoneInstant(zone, y, m, d, h, mi) {
   return ms;
 }
 
-/* State of one client slot. GHL calendar (PH): Mon–Fri all day, Saturday until 12:00, Sunday closed. */
 function slotInfo(zone, y, m, d, t, busy, now) {
   var s = zoneInstant(zone, y, m, d, Math.floor(t / 60), t % 60);
   var ph = new Date(s + 8 * 3600e3), phEnd = ph.getUTCHours() * 60 + ph.getUTCMinutes() + CALL_MS / 60000;
@@ -69,22 +60,19 @@ function slotInfo(zone, y, m, d, t, busy, now) {
     closed: ph.getUTCDay() === 0 || (ph.getUTCDay() === 6 && phEnd > 12 * 60)
   };
 }
-/* Phone in international format (+64210000000) if valid for the chosen country, else ''.
-   Without the phone library (CDN blocked) only "+country number" is accepted; the backend still checks it. */
-/* Typing/pasting: digits, one leading +, dashes; spaces and other characters dropped; at most 15 digits */
+
 function cleanPhoneInput(v) {
   var out = String(v).replace(/[^0-9+-]/g, '').replace(/(?!^)\+/g, ''), digits = 0;
   return out.replace(/[0-9]/g, function(d) { return ++digits > 15 ? '' : d; });
 }
 
-/* Complete and valid: the country's own format (spaces where that country puts them); otherwise as typed */
 function formatPhone(clean, country) {
   if (typeof libphonenumber === 'undefined' || !phoneE164(clean, country)) return clean;
   var p = libphonenumber.parsePhoneNumberFromString(clean.replace(/-/g, ''), country);
   return p.country === country ? p.formatNational() : p.formatInternational();
 }
 
-var PHONE_SHAPE = /^\+?[0-9]{4,15}$/; /* worldwide: optional +, 4 to 15 digits (E.164 maximum) */
+var PHONE_SHAPE = /^\+?[0-9]{4,15}$/; 
 
 function phoneE164(raw, country) {
   raw = String(raw).replace(/[\s().-]/g, '');
@@ -94,7 +82,6 @@ function phoneE164(raw, country) {
   return p && p.isValid() ? p.number : '';
 }
 
-/* Default phone country: the timezone's country, else the browser's region, else the Philippines */
 function defaultPhoneCountry(zone, locale) {
   var known = function(cc) { return cc && typeof libphonenumber !== 'undefined' && libphonenumber.getCountries().indexOf(cc) > -1 ? cc : ''; };
   var region = '';
@@ -102,10 +89,8 @@ function defaultPhoneCountry(zone, locale) {
   return known(tzCountry[zone]) || known(region) || 'PH';
 }
 
-/* "How many support agents do you need?" values; same list as the backend */
 var AGENTS_NEEDED = ['1–4', '5–10', '11–20', '21–50', '51–100', '101+'];
 
-/* Same rules as the backend schema; returns the first invalid field or '' */
 function contactError(c) {
   if (!/^[A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'’\-]{1,100}$/.test(c.firstName)) return 'firstName';
   if (!/^[A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'’\-]{1,100}$/.test(c.lastName)) return 'lastName';
@@ -116,10 +101,8 @@ function contactError(c) {
   return '';
 }
 
-/* Furthest bookable day: the backend accepts up to one year ahead */
 function lastBookableDay(now) { return new Date(now.year, now.month - 1, now.day + 364); }
 
-/* Where the visitor came from; same list and rules as itsjena/boss.html and the backend */
 var CHANNELS = ['facebook', 'linkedin', 'email', 'instagram', 'search', 'chatgpt', 'telexph-website', 'direct', 'other'];
 var FIRST_TOUCH_MS = 30 * 86400e3;
 
@@ -171,7 +154,6 @@ try {
   if (first !== saved) localStorage.setItem('intlFirstChannel', JSON.stringify(first));
   CHANNEL = first.channel;
 } catch (e) {}
-/* Ad attribution for GHL. Safe characters only: a {{macro}} or symbol would trip the backend attack screen and drop the booking */
 var ATTR = {};
 try {
   var ATTR_KEYS = ['utm_source', 'utm_campaign', 'utm_content', 'fbclid'];
@@ -191,7 +173,6 @@ function dayKey() { return clientZone + '|' + tYear + '-' + pad2(tMonth + 1) + '
 function esc(s) { return String(s).replace(/[&<>"']/g, function(c) { return '&#' + c.charCodeAt(0) + ';'; }); }
 function slotState(t) { return slotInfo(clientZone, tYear, tMonth, tDay, t, (bookedSlots[dayKey()] || []).concat(myBookings), Date.now()); }
 
-/* Picker: "Country" or "Country – City", sorted; an unlisted device zone goes first */
 function initTzSelect() {
   var sel = document.getElementById('tTzSel');
   if (!sel) return;
@@ -643,7 +624,6 @@ function chgM(dir){
   tDay=null;rCal();rTime();rDisp();
 }
 
-/* Booked GHL events for the client's local day; replaced on every fetch */
 function fetchBookedSlots() {
   if (!tDay) { rTime(); return; }
   var key = dayKey();
