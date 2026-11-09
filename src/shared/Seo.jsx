@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { SITE_URL, BRAND, BLOG_POST_PATH, CASE_STUDY_PATH, fullTitle, findSeoPage } from "@/data/seo-pages";
+import { clipDescription } from "@/lib/seo-fields";
 
 const BASE_TITLE = BRAND;
 
@@ -54,7 +55,9 @@ const setCanonical = (href) => {
  * nothing but keeps the document head in sync, mirroring the old title
  * template "%s | TelexPH". `noindex` keeps the page out of search results.
  */
-const Seo = ({ title, description, image, url, noindex }) => {
+const Seo = ({ title, description: fullDescription, image, url, noindex }) => {
+  // Blog/case-study fallbacks (short description, first paragraph) can be long; keep every page at 155 chars.
+  const description = clipDescription(fullDescription);
   useEffect(() => {
     const previousTitle = document.title;
     document.title = title ? fullTitle(title) : BASE_TITLE;

@@ -13,7 +13,11 @@ export const SITE_URL = "https://www.telexph.com";
 
 export const BRAND = "TelexPH";
 
-export const fullTitle = (title) => (title.startsWith("Telex") || title.includes(BRAND) ? title : `${title} | ${BRAND}`);
+// The " | TelexPH" suffix is dropped when it would push the title past 60 characters (a 60-char meta title stays 60).
+export const fullTitle = (title) => {
+  const withBrand = `${title} | ${BRAND}`;
+  return title.startsWith("Telex") || title.includes(BRAND) || withBrand.length > 60 ? title : withBrand;
+};
 
 /** One blog post: /resources/blogs/<slug>. Head tags come from the post, not from SEO_PAGES. */
 export const BLOG_POST_PATH = /^\/resources\/blogs\/[^/]+\/?$/i;
@@ -24,12 +28,20 @@ export const CASE_STUDY_PATH = /^\/resources\/case-studies\/[^/]+\/?$/i;
 /** Public URL of a case study; the old ?id= URL only when a record has no slug. */
 export const caseStudyPath = (c) => (c.slug ? `/resources/case-studies/${c.slug}` : `/resources/casestudiescarddetails?id=${c.id ?? c._id}`);
 
+/**
+ * Sitemap <lastmod> for the pages below. Google only trusts lastmod when it moves with real content
+ * changes, so this is NOT the build date. When you change a page's content, give that entry its own
+ * `lastmod: "YYYY-MM-DD"` (or bump this date if the change affects every page).
+ * /resources/blogs and /resources use their newest post's date instead (scripts/prerender.mjs).
+ */
+export const PAGES_LASTMOD = "2026-11-09";
+
 export const SEO_PAGES = [
   {
     path: "/",
     title: "Managed Offshore Support Teams in the Philippines",
     description:
-      "Managed offshore customer support teams for growing businesses, run from 2 delivery centers in the Philippines. Team leads, QA and monthly reporting included.",
+      "Managed offshore customer support teams for growing businesses, run from 2 Philippine delivery centers. Team leads, QA and monthly reporting included.",
   },
   {
     path: "/about",
@@ -53,7 +65,7 @@ export const SEO_PAGES = [
     path: "/location",
     title: "Our Office in Guimba, Nueva Ecija, Philippines",
     description:
-      "Visit the TelexPH office in Guimba, Nueva Ecija, about an hour from Clark. Managed customer support teams for growing businesses. Office visits by appointment.",
+      "Visit the TelexPH office in Guimba, Nueva Ecija, about an hour from Clark. Managed customer support teams for growing businesses. Visits by appointment.",
   },
   {
     path: "/faq",
@@ -131,7 +143,7 @@ export const SEO_PAGES = [
     path: "/logistics",
     title: "Logistics Customer Support Philippines",
     description:
-      "Managed customer support in the Philippines for logistics businesses: shipment enquiries, customer follow-ups and delivery exceptions within your processes.",
+      "Managed customer support in the Philippines for logistics businesses: shipment enquiries, follow-ups and delivery exceptions within your processes.",
   },
   {
     path: "/logistics/privacy-policy",

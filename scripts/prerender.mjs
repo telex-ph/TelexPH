@@ -14,7 +14,7 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs/promises";
 import { preview } from "vite";
-import { SEO_PAGES, SITE_URL } from "../src/data/seo-pages.js";
+import { SEO_PAGES, SITE_URL, PAGES_LASTMOD } from "../src/data/seo-pages.js";
 
 const PORT = 4173;
 const log = (...a) => console.log("[prerender]", ...a);
@@ -39,10 +39,14 @@ const postTitles = new Map([
 log(`${posts.length} blog posts, ${caseStudies.length} case studies`);
 
 // 1. Sitemap + SPA shell first: both must exist even if prerendering fails.
-// Pages without their own `lastmod` get the build date (each deploy ships the current copy).
+// Static pages use their own `lastmod` or PAGES_LASTMOD, never the build date: a date that changes on
+// every deploy without content changes teaches Google to ignore lastmod. The two list pages change
+// whenever one of their posts does, so they take the newest post's date.
 const buildDate = new Date().toISOString().slice(0, 10);
+const newest = (list) => list.map((x) => x.updatedAt?.slice(0, 10)).filter(Boolean).sort().at(-1);
+const listLastmod = { "/resources/blogs": newest(posts), "/resources": newest(caseStudies) };
 const sitemapUrls = [
-  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => [p.path, p.lastmod ?? buildDate]),
+  ...SEO_PAGES.filter((p) => p.sitemap !== false).map((p) => [p.path, p.lastmod ?? listLastmod[p.path] ?? PAGES_LASTMOD]),
   ...posts.map((b) => [`/resources/blogs/${b.slug}`, b.updatedAt?.slice(0, 10) ?? buildDate]),
   ...caseStudies.map((c) => [`/resources/case-studies/${c.slug}`, c.updatedAt?.slice(0, 10) ?? buildDate]),
 ]

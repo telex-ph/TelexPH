@@ -55,7 +55,7 @@ export const ABOUT_PAGES = [
     title: "Compliance & Security",
     seoTitle: "Compliance and Security at TelexPH",
     description:
-      "Security and compliance at TELEX Philippines: GDPR-aligned privacy, role-based access control, enforced NDAs, secure monitoring and Fortinet security controls.",
+      "Security and compliance at TELEX Philippines: GDPR-aligned privacy, role-based access, enforced NDAs, secure monitoring and Fortinet security controls.",
     eyebrow: "About TelexPH",
     scene: "compliance",
     ghost: "COMPLIANCE",

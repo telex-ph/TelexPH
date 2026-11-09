@@ -113,9 +113,17 @@ function CaseStudySeo({ record }) {
     author: { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" },
     publisher: { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" },
   };
+  // FAQPage from the FAQ pairs in the admin SEO card (the same pairs the page's FAQ section is built from).
+  const faq = (record.faq || []).filter((f) => f.question && f.answer);
+  const faqLd = faq.length > 0 && {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: htmlToText(f.answer).trim() } })),
+  };
   return <>
       <Seo title={`${record.title}: Case Study`} description={description} image={image} url={url} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />}
     </>;
 }
 function CaseStudyDetailsContent() {
