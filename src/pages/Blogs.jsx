@@ -120,7 +120,7 @@ function PostSeo({ post }) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
-    description: post.shortDescription,
+    description: post.metaDescription || post.shortDescription,
     image: post.picture,
     url,
     mainEntityOfPage: url,
@@ -130,7 +130,7 @@ function PostSeo({ post }) {
     publisher: { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" },
   };
   return <>
-      <Seo title={post.title} description={post.shortDescription} image={post.picture} url={url} />
+      <Seo title={post.metaTitle || post.title} description={post.metaDescription || post.shortDescription} image={post.picture} url={url} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     </>;
 }

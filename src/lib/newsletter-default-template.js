@@ -29,11 +29,10 @@ const second = () => ({ type: "text", eyebrow: "ALSO THIS MONTH", title: "Growin
 
 const make = (theme, sections, now) => ({ version: 2, theme, sections: [ribbon(now), ...sections, band(theme), footer()] });
 
-// Cover and story on the left, scorecard on the right, the four lines of business across the page.
+// Three even columns: cover + team photos | story, quote, journey | scorecard, big number, lines of business.
 export const spotlightTemplate = (now = new Date()) => make(RED, [
   masthead({ pair: true, brand: "TELEX x PARTNER", label: "EST. LOCATION", sub: "Account Spotlight" }),
-  cols([7, hero(), story()], [5, scorecard(), stat(), quote()]),
-  cols([12, cards()])
+  cols([4, hero(), photos()], [4, story(), quote(), timeline()], [4, scorecard(), stat(), cards()])
 ], now);
 
 // Text-led: the story, a quote and a second article beside the numbers and the journey.
