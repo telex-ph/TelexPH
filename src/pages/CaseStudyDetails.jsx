@@ -102,6 +102,7 @@ function CaseStudyDetailsContent() {
           title: apiData.title || "Case Study",
           type: "Case Studies",
           image: toHttps(apiData.cover) || RELATED_FALLBACK_IMG,
+          imageAlt: apiData.coverAlt || "",
           challenge: Array.isArray(apiData.challenge) && apiData.challenge.length > 0 ? apiData.challenge.map((c) => c.text).join(" ") : "No challenge information available.",
           solution: Array.isArray(apiData.solution) && apiData.solution.length > 0 ? apiData.solution.map((s) => s.text).join(" ") : "No solution information available.",
           body: Array.isArray(apiData.sections) && apiData.sections.length > 0 ? apiData.sections.filter((section) => section.subtitle !== "Customer Inquiry Management").map((section) => ({ title: section.subtitle || "", text: section.text || "" })) : [{ title: apiData.title || "Case Study", text: "Content not available." }]
@@ -187,7 +188,7 @@ function CaseStudyDetailsContent() {
       <div className="hidden print:block max-w-screen-xl mx-auto px-6 md:px-16 pt-2">
         <img
     src={study.image}
-    alt={study.title}
+    alt={study.imageAlt || study.title}
     className="w-full h-[300px] object-cover rounded-2xl"
     onError={(e) => {
       const t = e.target;
@@ -223,7 +224,7 @@ function CaseStudyDetailsContent() {
   >
               <img
     src={study.image}
-    alt={study.title}
+    alt={study.imageAlt || study.title}
     className="w-full h-[240px] sm:h-[320px] md:h-[420px] object-cover"
     onError={(e) => {
       const t = e.target;

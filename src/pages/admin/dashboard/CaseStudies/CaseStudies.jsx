@@ -6,6 +6,7 @@ import RichTextArea from "@/components/RichTextArea";
 import { toHtml } from "@/lib/rich-text";
 import { useDarkMode } from "@/pages/admin/dashboard/Layout";
 import { useBlogAi, caseStudyContext, SparkleIcon, LayersIcon, CS_TITLE_MAX } from "@/components/BlogAiAssist";
+import SeoFields, { emptySeo, seoFromRecord, appendSeo, seoError, withoutGeneratedFaq } from "@/components/SeoFields";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 const PLACEHOLDER_COVERS = [
   "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80",
@@ -33,10 +34,12 @@ const transformBackendRecord = (item) => ({
   // challenge and solution are arrays of { title, text } — extract the text
   challenge: Array.isArray(item.challenge) ? item.challenge.map((c) => c.text || "").join("\n\n") : item.challenge || "",
   solution: Array.isArray(item.solution) ? item.solution.map((s) => s.text || "").join("\n\n") : item.solution || "",
-  sections: Array.isArray(item.sections) ? item.sections.map((s) => ({
+  // The FAQ section built from the FAQ pairs is edited in the SEO card, not as a section.
+  sections: Array.isArray(item.sections) ? withoutGeneratedFaq(item.sections, item, "subtitle").map((s) => ({
     topic: s.subtitle || s.title || s.topic || s.heading || "",
     content: s.text || s.content || s.body || s.description || ""
-  })) : [{ topic: "", content: "" }]
+  })) : [{ topic: "", content: "" }],
+  seo: seoFromRecord(item)
 });
 // AI buttons: same look as the blog forms (admin theme tokens).
 const aiBtnBase = { display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 8, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 };
@@ -71,7 +74,8 @@ const getDefaultForm = () => ({
   scheduleAt: "",
   challenge: "",
   solution: "",
-  sections: [{ topic: "", content: "" }]
+  sections: [{ topic: "", content: "" }],
+  seo: emptySeo()
 });
 const formatAuthors = (authors) => authors.map((a) => a.name).join(", ");
 const getCardCover = (record, allRecords) => {
@@ -612,6 +616,12 @@ function CaseStudies({ mode = "list" }) {
       setShowConfirm(false);
       return;
     }
+    const seoProblem = seoError(form.seo);
+    if (seoProblem) {
+      showToast(seoProblem, "error");
+      setShowConfirm(false);
+      return;
+    }
     if (form.status === "Scheduled" && (!form.scheduleAt || new Date(form.scheduleAt) <= /* @__PURE__ */ new Date())) {
       showToast("Pick a schedule date and time in the future.", "error");
       setShowConfirm(false);
@@ -645,6 +655,7 @@ function CaseStudies({ mode = "list" }) {
         formDataToSend.append(`subtitle${i}`, s.topic);
         formDataToSend.append(`text${i}`, toHtml(s.content));
       });
+      appendSeo(formDataToSend, form.seo);
       if (fileRef.current?.files?.[0]) {
         formDataToSend.append("cover", fileRef.current.files[0]);
       } else if (coverFile) {
@@ -692,7 +703,8 @@ function CaseStudies({ mode = "list" }) {
       scheduleAt: data.scheduleAt,
       challenge: data.challenge,
       solution: data.solution,
-      sections: data.sections.length > 0 ? data.sections : [{ topic: "", content: "" }]
+      sections: data.sections.length > 0 ? data.sections : [{ topic: "", content: "" }],
+      seo: data.seo ?? emptySeo()
     });
     setCoverPreview(data.cover);
     setIsEditMode(true);
@@ -1159,6 +1171,11 @@ function CaseStudies({ mode = "list" }) {
                 </button>}
             </div>
           </div>
+
+          {
+    /* STEP 5 — SEO & search */
+  }
+          <SeoFields n={5} value={form.seo} onChange={(seo) => updateForm("seo", seo)} />
 
           <div className="cs-form-actions" style={{ display: "flex", gap: 10 }}>
             <button onClick={() => {

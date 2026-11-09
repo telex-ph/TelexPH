@@ -445,7 +445,7 @@ function BlogsArticle({ post, onBack, onArticleClick, allBlogs }) {
 
           <main className="lg:col-span-8">
             {post.picture && <div className="mb-10 md:mb-12 rounded-2xl overflow-hidden" style={fade()}>
-                <img src={post.picture} alt={post.title} className="w-full h-[240px] sm:h-[320px] md:h-[420px] object-cover" />
+                <img src={post.picture} alt={post.coverAlt || post.title} className="w-full h-[240px] sm:h-[320px] md:h-[420px] object-cover" />
               </div>}
 
             {/* Overview — short description, like the first block of a case study */}
