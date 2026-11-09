@@ -57,7 +57,7 @@ export const SEO_PAGES = [
   },
   {
     path: "/contact",
-    title: "Contact Us",
+    title: "Contact Telex | Customer Support Outsourcing Philippines",
     description:
       "Tell us what you need and get a custom quote for offshore staff, virtual assistants or GoHighLevel support. Book a discovery call with TelexPH.",
   },

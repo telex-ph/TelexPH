@@ -50,7 +50,7 @@ const UseCaseSolution = () => {
             </h2>
 
             <p className="max-w-2xl leading-relaxed text-gray-500 text-[14px] md:text-[16px]" style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular }}>
-              Our framework integrates cognitive computing with enterprise-grade infrastructure to deliver autonomous operational excellence across every touchpoint.
+              Our framework integrates cognitive computing with reliable infrastructure to deliver autonomous operational excellence across every touchpoint.
             </p>
           </div>
         </div>

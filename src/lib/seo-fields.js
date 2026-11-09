@@ -2,6 +2,8 @@
 // posting API's (telexph-admin/src/content-api/seo-fields.js).
 
 export const SEO_MAX = { metaTitle: 60, metaDescription: 155, coverAlt: 200, question: 300, answer: 3000, faq: 20 };
+/** Newsletter issues: the FAQ becomes part of the page design, so the FAQ limits are tighter. */
+export const NEWSLETTER_SEO_MAX = { ...SEO_MAX, question: 160, answer: 1500, faq: 10 };
 const QUESTION_MIN = 3;
 
 /** A meta description cut to SEO_MAX.metaDescription at a word boundary, for pages that fall back to longer text. */
@@ -25,15 +27,15 @@ export const seoFromRecord = (r) => ({
 const filled = (f) => f.question.trim() && f.answer.trim();
 const touched = (f) => f.question.trim() || f.answer.trim();
 
-/** A readable problem with the SEO fields, or "" when they can be saved. Used to hold back the save button. */
-export function seoError(seo) {
-  if (seo.metaTitle.trim().length > SEO_MAX.metaTitle) return "Meta title is too long.";
-  if (seo.metaDescription.trim().length > SEO_MAX.metaDescription) return "Meta description is too long.";
-  if (seo.coverAlt.trim().length > SEO_MAX.coverAlt) return "Cover image alt text is too long.";
+/** A readable problem with the SEO fields, or "" when they can be saved. Used to hold back the save button. `max` = the limits (SEO_MAX by default). */
+export function seoError(seo, max = SEO_MAX) {
+  if (seo.metaTitle.trim().length > max.metaTitle) return "Meta title is too long.";
+  if (seo.metaDescription.trim().length > max.metaDescription) return "Meta description is too long.";
+  if (seo.coverAlt.trim().length > max.coverAlt) return "Cover image alt text is too long.";
   const rows = seo.faq.filter(touched);
-  if (rows.length > SEO_MAX.faq) return `Use at most ${SEO_MAX.faq} FAQ questions.`;
+  if (rows.length > max.faq) return `Use at most ${max.faq} FAQ questions.`;
   if (rows.some((f) => !filled(f))) return "Fill in both the question and the answer of each FAQ, or remove the empty one.";
-  if (rows.some((f) => f.question.trim().length < QUESTION_MIN || f.question.trim().length > SEO_MAX.question || f.answer.trim().length > SEO_MAX.answer)) return "An FAQ question or answer is too short or too long.";
+  if (rows.some((f) => f.question.trim().length < QUESTION_MIN || f.question.trim().length > max.question || f.answer.trim().length > max.answer)) return "An FAQ question or answer is too short or too long.";
   return "";
 }
 

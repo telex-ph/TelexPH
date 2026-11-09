@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { emptySeo, seoFromRecord, seoError, seoPayload, appendSeo, withoutGeneratedFaq, clipDescription } from "./seo-fields.js";
+import { emptySeo, seoFromRecord, seoError, seoPayload, appendSeo, withoutGeneratedFaq, clipDescription, NEWSLETTER_SEO_MAX } from "./seo-fields.js";
 
 const seo = (over = {}) => ({ ...emptySeo(), ...over });
 
@@ -56,4 +56,11 @@ test("withoutGeneratedFaq hides the FAQ section only when FAQ pairs are stored",
   assert.deepEqual(withoutGeneratedFaq(undefined, {}), []);
   const cs = [{ subtitle: "Intro" }, { subtitle: "Frequently Asked Questions" }];
   assert.equal(withoutGeneratedFaq(cs, { faq: [{ question: "Q?", answer: "A" }] }, "subtitle").length, 1);
+});
+
+test("newsletter limits are tighter than blog limits for the FAQ", () => {
+  const long = seo({ faq: [{ question: "A fair question?", answer: "x".repeat(1600) }] });
+  assert.equal(seoError(long), "", "fine for a blog");
+  assert.match(seoError(long, NEWSLETTER_SEO_MAX), /too short or too long/);
+  assert.match(seoError(seo({ faq: Array.from({ length: 11 }, () => ({ question: "Question?", answer: "Answer" })) }), NEWSLETTER_SEO_MAX), /at most 10/);
 });
