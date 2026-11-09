@@ -6,6 +6,7 @@ import RichTextArea from "@/components/RichTextArea";
 import { htmlToText, toHtml } from "@/lib/rich-text";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { useBlogAi, blogContext, SparkleIcon, LayersIcon, HEADLINE_MAX, TITLE_MAX } from "@/components/BlogAiAssist";
+import SeoFields, { emptySeo, appendSeo, seoError } from "@/components/SeoFields";
 
 const API_BASE = getApiBaseUrl();
 const MAIN_CATEGORIES = {
@@ -95,6 +96,7 @@ function AddBlogs() {
   const [contentSections, setContentSections] = useState([{ title: "", content: "" }]);
   const [status, setStatus] = useState("draft");
   const [scheduledDate, setScheduledDate] = useState("");
+  const [seo, setSeo] = useState(emptySeo());
   const [selectedImage, setSelectedImage] = useState(null);
   const [isCompressing, setIsCompressing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -129,7 +131,7 @@ function AddBlogs() {
       const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
-    }) && (status !== "scheduled" || scheduledDate));
+    }) && (status !== "scheduled" || scheduledDate) && !seoError(seo));
   };
   const compressAndSetImage = (file) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -181,6 +183,7 @@ function AddBlogs() {
     setContentSections([{ title: "", content: "" }]);
     setStatus("draft");
     setScheduledDate("");
+    setSeo(emptySeo());
     setSelectedImage(null);
     setImageError("");
     actualFileRef.current = null;
@@ -211,6 +214,7 @@ function AddBlogs() {
       formData.append("mainContent", JSON.stringify(allMainContent));
       formData.append("status", status);
       formData.append("picture", actualFileRef.current);
+      appendSeo(formData, seo);
       if (status === "scheduled" && scheduledDate) {
         formData.append("scheduledDate", new Date(scheduledDate).toISOString());
       }
@@ -463,6 +467,9 @@ function AddBlogs() {
                 </button>
               </div>
             </div>
+
+            {/* STEP 5 — SEO & search */}
+            <SeoFields n={5} value={seo} onChange={setSeo} />
 
             {/* Actions */}
             <div className="ab-actions" style={{ display: "flex", gap: 10 }}>

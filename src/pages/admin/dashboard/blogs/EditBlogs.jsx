@@ -6,6 +6,7 @@ import RichTextArea from "@/components/RichTextArea";
 import { htmlToText, toHtml } from "@/lib/rich-text";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { useBlogAi, blogContext, SparkleIcon, LayersIcon, HEADLINE_MAX, TITLE_MAX } from "@/components/BlogAiAssist";
+import SeoFields, { seoFromRecord, appendSeo, seoPayload, seoError, withoutGeneratedFaq } from "@/components/SeoFields";
 import {
   MAIN_CATEGORIES, SUBCATEGORIES, HEADLINE_MIN, SHORT_DESC_MIN, MAIN_CONTENT_MIN, ALLOWED_IMAGE_TYPES,
   card, lbl, inp, pillStyle, headerBtnGhost, headerBtnPrimary, ghostAccentBtn, STATUS_OPTIONS, StepHead
@@ -24,10 +25,12 @@ function EditBlogs({ blog, onClose, onSave }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageError, setImageError] = useState("");
   const parseExistingContent = () => {
-    if (!blog.mainContent || !Array.isArray(blog.mainContent) || blog.mainContent.length === 0) {
+    // The FAQ section built from the FAQ pairs is edited in the SEO card, not as a section.
+    const existing = withoutGeneratedFaq(blog.mainContent, blog);
+    if (!Array.isArray(existing) || existing.length === 0) {
       return { mainTitle: "", mainText: "", additionalSections: [{ title: "", content: "" }] };
     }
-    const [first, ...rest] = blog.mainContent;
+    const [first, ...rest] = existing;
     return {
       mainTitle: first?.title || "",
       mainText: first?.content || "",
@@ -44,6 +47,7 @@ function EditBlogs({ blog, onClose, onSave }) {
   const [mainContentText, setMainContentText] = useState(parsed.mainText);
   const [contentSections, setContentSections] = useState(parsed.additionalSections);
   const [status, setStatus] = useState(blog.status?.toLowerCase() || "draft");
+  const [seo, setSeo] = useState(() => seoFromRecord(blog));
   const [scheduledDate, setScheduledDate] = useState(
     blog.scheduledDate ? new Date(blog.scheduledDate).toISOString().slice(0, 16) : ""
   );
@@ -77,7 +81,7 @@ function EditBlogs({ blog, onClose, onSave }) {
       const st = s.title.trim(), sc = htmlToText(s.content);
       if (!st && !sc) return true;
       return (st.length === 0 || st.length >= HEADLINE_MIN && st.length <= HEADLINE_MAX) && (sc.length === 0 || sc.length >= MAIN_CONTENT_MIN);
-    }) && (status !== "scheduled" || scheduledDate));
+    }) && (status !== "scheduled" || scheduledDate) && !seoError(seo));
   };
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -138,6 +142,7 @@ function EditBlogs({ blog, onClose, onSave }) {
         formData.append("mainContent", JSON.stringify(allMainContent));
         formData.append("status", status);
         formData.append("picture", actualFileRef.current);
+        appendSeo(formData, seo);
         if (status === "scheduled" && scheduledDate) formData.append("scheduledDate", new Date(scheduledDate).toISOString());
         const response = await fetch(`${API_BASE}/blogs/${blog._id}`, { method: "PATCH", credentials: "include", body: formData });
         if (!response.ok) {
@@ -145,7 +150,7 @@ function EditBlogs({ blog, onClose, onSave }) {
           throw new Error(e.error || "Failed to update blog");
         }
       } else {
-        const payload = { title: title.trim(), author: authorName.trim(), mainCategory, subcategory, shortDescription: shortDescription.trim(), mainContent: allMainContent, status };
+        const payload = { title: title.trim(), author: authorName.trim(), mainCategory, subcategory, shortDescription: shortDescription.trim(), mainContent: allMainContent, status, ...seoPayload(seo) };
         if (status === "scheduled" && scheduledDate) payload.scheduledDate = new Date(scheduledDate).toISOString();
         const response = await fetch(`${API_BASE}/blogs/${blog._id}`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
         if (!response.ok) {
@@ -413,6 +418,9 @@ function EditBlogs({ blog, onClose, onSave }) {
                 </button>
               </div>
             </div>
+
+            {/* STEP 5 — SEO & search */}
+            <SeoFields n={5} value={seo} onChange={setSeo} />
 
             {/* Actions */}
             <div className="ab-actions" style={{ display: "flex", gap: 10 }}>
