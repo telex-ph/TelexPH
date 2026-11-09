@@ -24,6 +24,9 @@ function getForgotPasswordUrl() {
 function getResetPasswordUrl() {
   return `${getApiBaseUrl()}/auth/reset-password`;
 }
+function getTurnstileExemptUrl() {
+  return `${getApiBaseUrl()}/auth/turnstile-exempt`;
+}
 function getContactAdminUrl() {
   return `${getApiBaseUrl()}/contact-messages`;
 }
@@ -34,6 +37,7 @@ export {
   getContactAdminUrl,
   getForgotPasswordUrl,
   getResetPasswordUrl,
+  getTurnstileExemptUrl,
   getVaAuthenticateUrl,
   getVaVerifyLoginOtpUrl,
   getVerifyLoginOtpUrl
