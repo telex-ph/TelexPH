@@ -5,6 +5,7 @@ import NewsletterDesign from "@/components/NewsletterDesign";
 import NewsletterIssueView from "@/components/NewsletterView";
 import api from "@/lib/api/axios";
 import { TEMPLATES } from "@/lib/newsletter-default-template";
+import SeoFields, { NEWSLETTER_SEO_MAX, emptySeo, seoFromRecord, seoPayload, seoError } from "@/components/SeoFields";
 import { kindOf, imageToUploadFile, pdfToImages, officeToContent, contentFromPages } from "./newsletterFiles";
 
 import { NEWSLETTER_DEPARTMENTS as DEPARTMENTS } from "@/data/newsletter-departments";
@@ -144,6 +145,7 @@ function NewsletterAdmin() {
   const navigate = useNavigate();
   const editParam = useSearchParams()[0].get("edit"); // ?edit=<issue id> from the newsletter list
   const [form, setForm] = useState(EMPTY);
+  const [seo, setSeo] = useState(emptySeo); // meta title, meta description, cover alt text, FAQ pairs (same card as blogs and case studies)
   const [pages, setPages] = useState([]); // every page of the issue: { imageUrl?, width?, height?, layout }. Page 1, Page 2... in this order
   const [startPage, setStartPage] = useState(0); // which page the editor opens on
   const [officeContent, setOfficeContent] = useState(null); // text from PowerPoint/Word
@@ -299,14 +301,16 @@ function NewsletterAdmin() {
     }
   };
 
-  const reset = () => { setForm(EMPTY()); setPages([]); setOfficeContent(null); setVariants(null); setEditId(null); setError(""); };
+  const reset = () => { setForm(EMPTY()); setSeo(emptySeo()); setPages([]); setOfficeContent(null); setVariants(null); setEditId(null); setError(""); };
   const save = async (e) => {
     e.preventDefault();
     if (!pages.length) return setError("Upload a design first.");
+    const seoProblem = seoError(seo, NEWSLETTER_SEO_MAX);
+    if (seoProblem) return setError(seoProblem);
     setBusy(true);
     setError("");
     try {
-      const body = { ...form, pages };
+      const body = { ...form, ...seoPayload(seo), pages };
       await (editId ? api.patch(`/newsletter/admin/issues/${editId}`, body) : api.post("/newsletter/admin/issues", body));
       reset();
       navigate("/admin/dashboard/newsletter/list");
@@ -320,6 +324,7 @@ function NewsletterAdmin() {
     reset();
     setEditId(i._id);
     setForm({ title: i.title, summary: i.summary || "", author: i.author, department: i.department, coverUrl: i.coverUrl || "", period: i.period, status: i.status });
+    setSeo(seoFromRecord(i));
     setPages(i.pages);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -351,7 +356,8 @@ function NewsletterAdmin() {
   };
 
   const check = (n) => n === 2 && !pages.length ? "Add your content first: upload a design, or start from the template."
-    : n === 3 && !(form.title.trim() && form.author.trim() && form.department && form.period) ? "Fill in the title, author, department and month." : "";
+    : n === 3 && !(form.title.trim() && form.author.trim() && form.department && form.period) ? "Fill in the title, author, department and month."
+    : n === 5 ? seoError(seo, NEWSLETTER_SEO_MAX) : "";
   const go = (n) => {
     for (let k = step; k < n; k++) { const m = check(k); if (m) { setError(m); setStep(k); return; } }
     setError("");
@@ -363,7 +369,9 @@ function NewsletterAdmin() {
   const saveFromEditor = async (status) => {
     const m = check(3);
     if (m) { setModalOpen(false); setStep(3); setError(m); return; }
-    const body = { ...form, pages, status };
+    const seoProblem = seoError(seo, NEWSLETTER_SEO_MAX);
+    if (seoProblem) { setModalOpen(false); setStep(5); setError(seoProblem); return; }
+    const body = { ...form, ...seoPayload(seo), pages, status };
     try {
       if (editId) await api.patch(`/newsletter/admin/issues/${editId}`, body);
       else setEditId((await api.post("/newsletter/admin/issues", body)).data._id);
@@ -474,6 +482,7 @@ function NewsletterAdmin() {
     // 5 Summary
     <div key="5" style={{ display: "grid", gap: 16 }}>
             <label style={label}>Short summary (optional, used for search results)<input style={field} value={form.summary} onChange={set("summary")} /></label>
+      <SeoFields value={seo} onChange={setSeo} max={NEWSLETTER_SEO_MAX} />
       <label style={label}>Status
         <select style={field} aria-label="Status" value={form.status} onChange={set("status")}>
           <option value="draft">Draft</option>

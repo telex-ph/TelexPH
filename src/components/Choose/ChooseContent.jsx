@@ -14,7 +14,7 @@ const LEFT_FEATURES = [
   {
     id: 2,
     title: "Data Security",
-    description: "Your sensitive information is protected with enterprise-grade security.",
+    description: "Your sensitive information is protected by our data privacy and security controls.",
     icon: "building"
   },
   {

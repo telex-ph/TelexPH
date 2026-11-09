@@ -15,7 +15,7 @@ const API_BASE = getApiBaseUrl();
 const href = (i) => `/resources/newsletter/${i.slug}`;
 
 const cover = (i) => i.coverUrl
-  ? <img src={i.coverUrl} alt={`${i.title} newsletter cover`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+  ? <img src={i.coverUrl} alt={i.coverAlt || `${i.title} newsletter cover`} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
   : <span aria-hidden="true" className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1b2538] to-[#a10000] p-4 text-center text-sm font-bold uppercase tracking-widest text-white/80">{i.department}</span>;
 
 function IssueBrowser({ issues }) {
@@ -78,6 +78,27 @@ function LikeButton({ likes, liked, onToggle }) {
     </button>;
 }
 
+// Head tags + Article schema (and FAQPage when the issue has FAQ pairs) for one issue.
+function IssueSeo({ issue }) {
+  const url = `${SITE_URL}${href(issue)}`;
+  const description = issue.metaDescription || issue.summary || `${issue.title} - TelexPH newsletter`;
+  const org = { "@id": `${SITE_URL}/#org`, "@type": "Organization", name: "TelexPH" };
+  const article = {
+    "@context": "https://schema.org", "@type": "Article", headline: issue.metaTitle || issue.title, description,
+    image: issue.coverUrl || undefined, url, mainEntityOfPage: url, datePublished: issue.publishedAt || issue.createdAt, dateModified: issue.updatedAt,
+    author: { "@type": "Person", name: issue.author }, publisher: org,
+  };
+  const faq = (issue.faq || []).filter((f) => f.question && f.answer);
+  const faqLd = faq.length > 0 && { "@context": "https://schema.org", "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })) };
+  const ld = (o) => <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(o).replace(/</g, "\\u003c") }} />;
+  return <>
+      <Seo title={issue.metaTitle || issue.title} description={description} image={issue.coverUrl || undefined} url={url} />
+      {ld(article)}
+      {faqLd && ld(faqLd)}
+    </>;
+}
+
 function NewsletterPage() {
   const [showNav, setShowNav] = useState(false);
   const { slug } = useParams();
@@ -108,7 +129,7 @@ function NewsletterPage() {
       <Nav openNav={() => setShowNav(true)} />
       <MobileNav showNav={showNav} closeNav={() => setShowNav(false)} />
       {slug && !loading && !failed && !issue && <Seo noindex />}
-      {slug && issue && <Seo title={issue.title} description={issue.summary || `${issue.title} - TelexPH newsletter`} url={`${SITE_URL}${href(issue)}`} />}
+      {slug && issue && <IssueSeo issue={issue} />}
 
       <main className="px-4 pb-20 pt-32 md:pt-40">
         {slug ? <div className="mb-10 text-center">
