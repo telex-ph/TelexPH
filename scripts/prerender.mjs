@@ -19,17 +19,22 @@ import { SEO_PAGES, SITE_URL, PAGES_LASTMOD } from "../src/data/seo-pages.js";
 const PORT = 4173;
 const log = (...a) => console.log("[prerender]", ...a);
 
+// URLs that vercel.json 301-redirects elsewhere; their posts stay out of the sitemap, llms.txt and prerender.
+const redirected = new Set(
+  JSON.parse(await fs.readFile("vercel.json", "utf8")).redirects.map((r) => r.source.replace("{/}?", ""))
+);
+
 // 0. Published blog posts each get a page (/resources/blogs/<slug>). Needs VITE_API_URL
 //    (the backend's /api URL, same one the app uses); without it, or if the backend is down,
 //    posts are skipped. Slugs are limited to [a-z0-9-] because they become folder names under dist/.
 const posts = await fetch(`${process.env.VITE_API_URL}/blogs`, { signal: AbortSignal.timeout(60000) })
   .then((r) => r.json())
-  .then((all) => all.filter((b) => b.status === "published" && /^[a-z0-9-]+$/.test(b.slug)))
+  .then((all) => all.filter((b) => b.status === "published" && /^[a-z0-9-]+$/.test(b.slug) && !redirected.has(`/resources/blogs/${b.slug}`)))
   .catch((err) => (log("blog posts skipped:", err.message), []));
 // Same for case studies (/resources/case-studies/<slug>): live ones only, never drafts or archived.
 const caseStudies = await fetch(`${process.env.VITE_API_URL}/casestudies`, { signal: AbortSignal.timeout(60000) })
   .then((r) => r.json())
-  .then((all) => all.filter((c) => ["active", "completed"].includes(c.status) && !c.isArchived && /^[a-z0-9-]+$/.test(c.slug)))
+  .then((all) => all.filter((c) => ["active", "completed"].includes(c.status) && !c.isArchived && /^[a-z0-9-]+$/.test(c.slug) && !redirected.has(`/resources/case-studies/${c.slug}`)))
   .catch((err) => (log("case studies skipped:", err.message), []));
 // Detail page route -> its title (the page is snapshotted once that title is in an <h1>).
 const postTitles = new Map([
