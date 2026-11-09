@@ -1,5 +1,6 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getTurnstileExemptUrl } from "@/lib/api-base";
 const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 const SCRIPT_ID = "cf-turnstile-script";
 function loadTurnstileScript() {
@@ -29,8 +30,16 @@ function TurnstileWidget({ onVerify, onExpire, className, theme = "light" }) {
   onVerifyRef.current = onVerify;
   onExpireRef.current = onExpire;
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const [exempt, setExempt] = useState(false);
   useEffect(() => {
-    if (!siteKey || !containerRef.current) return;
+    // Server says this IP skips Turnstile (TURNSTILE_ALLOW_IPS) -> auto-verify, no widget.
+    fetch(getTurnstileExemptUrl(), { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => { if (d.exempt) { setExempt(true); onVerifyRef.current("exempt"); } })
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (exempt || !siteKey || !containerRef.current) return;
     let cancelled = false;
     loadTurnstileScript().then(() => {
       if (cancelled || !window.turnstile || !containerRef.current) return;
@@ -47,7 +56,8 @@ function TurnstileWidget({ onVerify, onExpire, className, theme = "light" }) {
         window.turnstile.remove(widgetIdRef.current);
       }
     };
-  }, [siteKey, theme]);
+  }, [siteKey, theme, exempt]);
+  if (exempt) return null;
   if (!siteKey) {
     return <p className="text-xs text-red-500 font-open-sans">
         Human verification is not configured (missing VITE_TURNSTILE_SITE_KEY).
