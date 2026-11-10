@@ -1,4 +1,10 @@
 import Link from "next/link";
+const SOCIALS = [
+  ["Facebook", "https://www.facebook.com/telexphilippines"],
+  ["LinkedIn", "https://www.linkedin.com/company/telex-ph/"],
+  ["Instagram", "https://www.instagram.com/telexph/"],
+  ["Clutch", "https://clutch.co/profile/telexph"]
+];
 const FooterLinks = () => {
   return <div>
       <div className="mb-4">
@@ -24,8 +30,16 @@ const FooterLinks = () => {
       <p className="text-xs sm:text-sm text-gray-300 mb-2">
         Have Questions?<br /><Link href="/faq" className="text-sm sm:text-base font-medium hover:text-white transition-colors">Frequently Asked Questions</Link>
       </p>
-      <p className="text-xs sm:text-sm text-gray-300">
+      <p className="text-xs sm:text-sm text-gray-300 mb-2">
         Our Location<br /><span className="text-sm sm:text-base font-medium">Guimba, Nueva Ecija, Philippines</span>
+      </p>
+      <p className="text-xs sm:text-sm text-gray-300">
+        Follow Us<br />
+        <span className="flex flex-wrap gap-x-4 gap-y-1 text-sm sm:text-base font-medium">
+          {SOCIALS.map(([label, href]) => (
+            <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{label}</a>
+          ))}
+        </span>
       </p>
     </div>;
 };

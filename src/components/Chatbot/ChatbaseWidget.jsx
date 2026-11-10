@@ -12,19 +12,28 @@ const GHLChatWidget = () => {
       console.log("GHL Chat Widget script already loaded.");
       return;
     }
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.setAttribute("data-resources-url", RESOURCES_URL);
-    script.setAttribute("data-widget-id", WIDGET_ID);
-    script.async = true;
-    script.onload = () => {
-      console.log("GHL Chat Widget loaded successfully.");
+    // Delay the widget until first interaction or 5s so it stays off the LCP/INP critical path.
+    const EVENTS = ["pointerdown", "keydown", "scroll", "touchstart"];
+    let timer;
+    const load = () => {
+      clearTimeout(timer);
+      EVENTS.forEach((e) => window.removeEventListener(e, load));
+      if (document.querySelector(`script[src="${SCRIPT_SRC}"]`)) return;
+      const script = document.createElement("script");
+      script.src = SCRIPT_SRC;
+      script.setAttribute("data-resources-url", RESOURCES_URL);
+      script.setAttribute("data-widget-id", WIDGET_ID);
+      script.async = true;
+      script.onerror = () => {
+        console.error("Failed to load GHL Chat Widget script.");
+      };
+      document.body.appendChild(script);
     };
-    script.onerror = () => {
-      console.error("Failed to load GHL Chat Widget script.");
-    };
-    document.body.appendChild(script);
+    EVENTS.forEach((e) => window.addEventListener(e, load, { once: true, passive: true }));
+    timer = setTimeout(load, 5000);
     return () => {
+      clearTimeout(timer);
+      EVENTS.forEach((e) => window.removeEventListener(e, load));
       const existingScript = document.querySelector(`script[src="${SCRIPT_SRC}"]`);
       if (existingScript && document.body.contains(existingScript)) {
         document.body.removeChild(existingScript);

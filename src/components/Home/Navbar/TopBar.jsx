@@ -27,7 +27,7 @@ const EmailLinks = ({ stacked = false, size = "", icon = "w-4 h-4" }) => (
   </span>
 );
 const TopBar = () => {
-  const facebookLink = "https://www.facebook.com/telexphilippines?mibextid=wwXIfr&rdid=dnj2588eSOaWfMgW&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1BvrjZDJZq%2F%3Fmibextid%3DwwXIfr#";
+  const facebookLink = "https://www.facebook.com/telexphilippines";
   return <>
       <div
     className="hidden lg:block text-white"
