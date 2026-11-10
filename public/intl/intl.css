@@ -4583,6 +4583,41 @@ div:has(>#ft-root){padding:0!important;margin:0!important;line-height:0!importan
 #ft-root .ft-links a{position:relative;padding:6px 0;color:rgba(255,255,255,.72)}
 #ft-root .ft-links a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1.5px;background:linear-gradient(90deg,#A10000,#C8A96E);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.16,1,.3,1)}
 #ft-root .ft-links a:hover::after{transform:scaleX(1)}
+/* footer v2: brand + social row, then legal row. .ft-wrap is a modifier, so the old one-row markup keeps working until a12 is re-pasted */
+#ft-root .ft-wrap{display:block}
+#ft-root .ft-main{display:flex;align-items:center;justify-content:space-between;gap:24px 40px;flex-wrap:wrap;padding-bottom:32px}
+#ft-root .ft-follow{display:flex;align-items:center;gap:18px}
+#ft-root .ft-follow-t{font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#C8A96E}
+#ft-root .ft-social{display:flex;gap:12px}
+#ft-root .ft-soc{
+  display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;
+  color:rgba(255,255,255,.82);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .35s cubic-bezier(.16,1,.3,1),color .25s,background .25s,border-color .25s,box-shadow .35s;
+}
+#ft-root .ft-soc svg{width:18px;height:18px;display:block}
+#ft-root .ft-soc:focus-visible{outline:2px solid #C8A96E;outline-offset:3px}
+@media(hover:hover){
+  #ft-root .ft-soc:hover{
+    transform:translateY(-3px);color:#fff;border-color:transparent;
+    background:linear-gradient(135deg,#B80000 0%,#A10000 45%,#6B0000 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 14px 26px -10px rgba(161,0,0,.8);
+  }
+}
+#ft-root .ft-base{display:flex;align-items:center;justify-content:space-between;gap:16px 40px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(255,255,255,.09)}
+#ft-root .ft-legal{display:flex;flex-direction:column;gap:6px}
+#ft-root .ft-wrap .tg-ft-ops{width:auto;padding:0;text-align:left;font-family:'Open Sans',sans-serif;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.42)}
+@media(max-width:600px){
+  #ft-root .ft-main,#ft-root .ft-base{flex-direction:column;text-align:center}
+  #ft-root .ft-main{gap:26px;padding-bottom:28px}
+  #ft-root .ft-follow{flex-direction:column;gap:14px}
+  #ft-root .ft-soc{width:44px;height:44px}
+  #ft-root .ft-legal{align-items:center}
+  #ft-root .ft-wrap .tg-ft-ops{text-align:center}
+  #ft-root .ft-wrap .ft-links{justify-content:center}
+  #ft-root .ft-wrap{padding-bottom:64px} /* keeps the last line clear of the fixed back-to-top button and chat bubble */
+}
+@media(prefers-reduced-motion:reduce){#ft-root .ft-soc{transition:none}}
 /* back to top */
 #ft-root .ft-top{
   position:fixed;right:clamp(14px,2.4vw,30px);bottom:clamp(14px,2.4vw,30px);z-index:9990;
