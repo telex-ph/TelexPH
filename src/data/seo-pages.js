@@ -39,7 +39,7 @@ export const PAGES_LASTMOD = "2026-11-09";
 export const SEO_PAGES = [
   {
     path: "/",
-    title: "Managed Offshore Support Teams in the Philippines",
+    title: "TelexPH | Managed Offshore Support Teams in the Philippines",
     description:
       "Managed offshore customer support teams for growing businesses, run from 2 Philippine delivery centers. Team leads, QA and monthly reporting included.",
   },
