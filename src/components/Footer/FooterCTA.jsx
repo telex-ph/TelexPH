@@ -28,6 +28,8 @@ const FooterCTA = () => {
         </div>
         <div className="hidden md:block absolute inset-0 h-full w-full pointer-events-none">
           <img
+    loading="lazy"
+    decoding="async"
     src="/images/footer.webp"
     alt="Delivery man on scooter"
     className="

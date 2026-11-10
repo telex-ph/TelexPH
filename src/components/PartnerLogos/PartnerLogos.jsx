@@ -62,6 +62,8 @@ const PartnerLogos = () => {
       onMouseLeave={() => setHoveredIndex(null)}
     >
                 <img
+      loading="lazy"
+      decoding="async"
       src={logo.src}
       alt={logo.alt}
       className={`${baseLogoClasses} ${sizeClasses} max-w-full`}

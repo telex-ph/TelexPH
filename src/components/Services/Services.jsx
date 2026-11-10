@@ -101,7 +101,7 @@ const SERVICE_META = {
   "white-label": { tag: "White Label", detail1: "Full Branding", detail2: "Custom Features", detail3: "Revenue Share", blurb: "Offer our complete platform under your brand with full customization options." }
 };
 const ServiceCard = ({ service, index = 0 }) => {
-  const shouldPrioritize = index < 4;
+  const shouldPrioritize = false; // the Services grid is far below the hero: keep its images lazy so the LCP image gets the bandwidth
   const useNativeImg = service.imageSrc.startsWith("data:image") || service.imageSrc.startsWith("http://") || service.imageSrc.startsWith("https://");
   const meta = SERVICE_META[service.serviceId] || {
     tag: "Service",
@@ -544,7 +544,6 @@ function ServicesGrid() {
   }, []);
   return <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Open+Sans:wght@400&display=swap');
         .sv-dot { border-radius: 999px; height: 7px; cursor: pointer; border: none; transition: width 0.3s ease, background-color 0.3s ease; padding: 0; }
       `}</style>
 

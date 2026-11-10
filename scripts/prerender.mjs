@@ -135,6 +135,18 @@ for (const route of routes) {
     }
     const html = await page.evaluate(() => {
       document.getElementById("root")?.setAttribute("data-prerendered", "");
+      // Below-the-fold and display:none images (e.g. the desktop-only hero photo) must not compete with the hero for bandwidth.
+      // Same files, same quality: they just load when needed. The LCP image carries fetchpriority and is left alone.
+      for (const img of document.querySelectorAll("img:not([loading]):not([fetchpriority])")) {
+        const r = img.getBoundingClientRect();
+        if ((r.width === 0 && r.height === 0) || r.top > innerHeight) {
+          img.setAttribute("loading", "lazy");
+          img.setAttribute("decoding", "async");
+        }
+      }
+      // Vite injects a high-priority modulepreload for every lazy chunk the page used (Footer, Services, 1 KB icon files...).
+      // They are not needed for first paint, so fetch them at idle priority instead of racing the hero.
+      for (const l of document.querySelectorAll('link[rel="modulepreload"][as="script"]')) l.setAttribute("rel", "prefetch");
       return "<!doctype html>\n" + document.documentElement.outerHTML;
     });
     const dir = route === "/" ? "dist" : `dist${route}`;

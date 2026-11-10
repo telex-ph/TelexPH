@@ -3,7 +3,7 @@
  * scripts/generate-image-variants.mjs (writes the files) and
  * src/shared/Image.jsx (points srcSet at them), so the two can't drift.
  */
-export const VARIANT_WIDTHS = [640, 1280, 1920];
+export const VARIANT_WIDTHS = [640, 960, 1280, 1920];
 
 /**
  * "a/post4.webp" + 640 -> "a/post4-webp-640.webp"
