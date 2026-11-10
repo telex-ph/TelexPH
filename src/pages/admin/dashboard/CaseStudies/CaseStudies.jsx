@@ -1122,7 +1122,7 @@ function CaseStudies({ mode = "list" }) {
                 <input type="date" style={inp()} value={form.endDate} onChange={(e) => updateForm("endDate", e.target.value)} />
               </div>
             </div>
-            <div className="cs-form-challenge-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div className="cs-form-challenge-row" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 14 }}>
               <div>
                 <span style={lbl}>Challenge <span style={{ color: "var(--admin-accent)" }}>*</span></span>
                 <RichTextArea placeholder="Describe the challenge or problem..." value={form.challenge} onChange={(html) => updateForm("challenge", html)} minHeight={84} />
