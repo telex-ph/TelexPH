@@ -386,6 +386,17 @@ function Section({ s, t, index, edit }) {
         {s.cols.map((c, ci) => <div key={ci} className={`nl2-span-${c.span}`} style={{ gridColumn: `span ${c.span}`, display: "flex", flexDirection: "column", gap: "1.9em", minWidth: 0, ...(c.bg ? { background: c.bg, borderRadius: "1.2em", padding: "1.5em" } : null) }}>
             {c.blocks.map((b, bi) => {
               const bp = ["sections", index, "cols", ci, "blocks", bi];
+              // Generated FAQ (heading block, then one text block per question): readers get a collapsible list.
+              const faqAt = edit ? -1 : c.blocks.findIndex((x) => x.type === "text" && x.title === "Frequently Asked Questions" && !x.paragraphs?.length);
+              if (faqAt >= 0 && bi > faqAt) {
+                if (bi > faqAt + 1) return null;
+                return <div key={bi} style={{ display: "flex", flexDirection: "column", gap: "0.6em", marginTop: "-1.2em" }}>
+                    {c.blocks.slice(faqAt + 1).filter((q) => q.type === "text").map((q, qi) => <details key={qi} name="nl-faq" style={{ ...card(t), padding: "0 1.2em" }}>
+                        <summary style={{ cursor: "pointer", listStyle: "none", padding: "1em 0", fontWeight: 700, color: t.text, display: "flex", justifyContent: "space-between", gap: "1em" }}>{q.title}<span aria-hidden="true" style={{ color: t.p }}>+</span></summary>
+                        <div style={{ paddingBottom: "1em" }}><Paras items={q.paragraphs} t={t} edit={false} path={bp} /></div>
+                      </details>)}
+                  </div>;
+              }
               const st = boxStyle(b.style);
               const inner = <Block b={b} t={t} path={bp} edit={edit} />;
               return <Sel key={bi} path={bp} kind="block" edit={edit}>{st ? <div style={st}>{inner}</div> : inner}</Sel>;
