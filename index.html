@@ -127,8 +127,9 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&family=Open+Sans:wght@400;600;700&family=Rubik:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
       media="print"
-      onload="this.media='all'"
+      id="gfonts"
     />
+    <!-- media is switched to "all" in src/main.jsx: an inline onload would be blocked by the CSP (no 'unsafe-inline' in script-src). -->
     <noscript>
       <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&family=Open+Sans:wght@400;600;700&family=Rubik:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap"
