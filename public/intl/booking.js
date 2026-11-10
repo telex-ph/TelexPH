@@ -8,6 +8,7 @@ var tSlotsFetched = false;
 var tYear, tMonth, tDay = null, tSlot = null;
 var tMN = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 
+/* @tz-core: pure logic, tested by intl/tests/book.test.mjs */
 var TZ_COUNTRIES = 'AD:Europe/Andorra;AE:Asia/Dubai;AF:Asia/Kabul;AL:Europe/Tirane;AM:Asia/Yerevan;AT:Europe/Vienna;AU:Australia/Lord_Howe,Antarctica/Macquarie,Australia/Hobart,Australia/Melbourne,Australia/Sydney,Australia/Broken_Hill,Australia/Brisbane,Australia/Lindeman,Australia/Adelaide,Australia/Darwin,Australia/Perth,Australia/Eucla;AX:Europe/Mariehamn;AZ:Asia/Baku;BA:Europe/Sarajevo;BD:Asia/Dhaka;BE:Europe/Brussels;BG:Europe/Sofia;BH:Asia/Bahrain;BN:Asia/Brunei;BT:Asia/Thimphu;BY:Europe/Minsk;CA:America/St_Johns,America/Halifax,America/Glace_Bay,America/Moncton,America/Goose_Bay,America/Blanc-Sablon,America/Toronto,America/Iqaluit,America/Atikokan,America/Winnipeg,America/Resolute,America/Rankin_Inlet,America/Regina,America/Swift_Current,America/Edmonton,America/Cambridge_Bay,America/Inuvik,America/Vancouver,America/Creston,America/Dawson_Creek,America/Fort_Nelson,America/Whitehorse,America/Dawson;CH:Europe/Zurich;CN:Asia/Shanghai,Asia/Urumqi;CY:Asia/Nicosia,Asia/Famagusta;CZ:Europe/Prague;DE:Europe/Berlin,Europe/Busingen;DK:Europe/Copenhagen;EE:Europe/Tallinn;ES:Europe/Madrid,Africa/Ceuta,Atlantic/Canary;FI:Europe/Helsinki;FR:Europe/Paris;GB:Europe/London;GE:Asia/Tbilisi;GG:Europe/Guernsey;GI:Europe/Gibraltar;GR:Europe/Athens;HK:Asia/Hong_Kong;HR:Europe/Zagreb;HU:Europe/Budapest;ID:Asia/Jakarta,Asia/Pontianak,Asia/Makassar,Asia/Jayapura;IE:Europe/Dublin;IL:Asia/Jerusalem;IM:Europe/Isle_of_Man;IN:Asia/Kolkata;IQ:Asia/Baghdad;IR:Asia/Tehran;IS:Atlantic/Reykjavik;IT:Europe/Rome;JE:Europe/Jersey;JO:Asia/Amman;JP:Asia/Tokyo;KG:Asia/Bishkek;KH:Asia/Phnom_Penh;KP:Asia/Pyongyang;KR:Asia/Seoul;KW:Asia/Kuwait;KZ:Asia/Almaty,Asia/Qyzylorda,Asia/Qostanay,Asia/Aqtobe,Asia/Aqtau,Asia/Atyrau,Asia/Oral;LA:Asia/Vientiane;LB:Asia/Beirut;LI:Europe/Vaduz;LK:Asia/Colombo;LT:Europe/Vilnius;LU:Europe/Luxembourg;LV:Europe/Riga;MC:Europe/Monaco;MD:Europe/Chisinau;ME:Europe/Podgorica;MK:Europe/Skopje;MM:Asia/Yangon;MN:Asia/Ulaanbaatar,Asia/Hovd;MO:Asia/Macau;MT:Europe/Malta;MY:Asia/Kuala_Lumpur,Asia/Kuching;NL:Europe/Amsterdam;NO:Europe/Oslo;NP:Asia/Kathmandu;NZ:Pacific/Auckland,Pacific/Chatham;OM:Asia/Muscat;PH:Asia/Manila;PK:Asia/Karachi;PL:Europe/Warsaw;PS:Asia/Gaza,Asia/Hebron;PT:Europe/Lisbon,Atlantic/Madeira,Atlantic/Azores;QA:Asia/Qatar;RO:Europe/Bucharest;RS:Europe/Belgrade;RU:Europe/Kaliningrad,Europe/Moscow,Europe/Kirov,Europe/Volgograd,Europe/Astrakhan,Europe/Saratov,Europe/Ulyanovsk,Europe/Samara,Asia/Yekaterinburg,Asia/Omsk,Asia/Novosibirsk,Asia/Barnaul,Asia/Tomsk,Asia/Novokuznetsk,Asia/Krasnoyarsk,Asia/Irkutsk,Asia/Chita,Asia/Yakutsk,Asia/Khandyga,Asia/Vladivostok,Asia/Ust-Nera,Asia/Magadan,Asia/Sakhalin,Asia/Srednekolymsk,Asia/Kamchatka,Asia/Anadyr;SA:Asia/Riyadh;SE:Europe/Stockholm;SG:Asia/Singapore;SI:Europe/Ljubljana;SK:Europe/Bratislava;SM:Europe/San_Marino;SY:Asia/Damascus;TH:Asia/Bangkok;TJ:Asia/Dushanbe;TL:Asia/Dili;TM:Asia/Ashgabat;TR:Europe/Istanbul;TW:Asia/Taipei;UA:Europe/Simferopol,Europe/Kyiv;US:America/New_York,America/Detroit,America/Kentucky/Louisville,America/Kentucky/Monticello,America/Indiana/Indianapolis,America/Indiana/Vincennes,America/Indiana/Winamac,America/Indiana/Marengo,America/Indiana/Petersburg,America/Indiana/Vevay,America/Chicago,America/Indiana/Tell_City,America/Indiana/Knox,America/Menominee,America/North_Dakota/Center,America/North_Dakota/New_Salem,America/North_Dakota/Beulah,America/Denver,America/Boise,America/Phoenix,America/Los_Angeles,America/Anchorage,America/Juneau,America/Sitka,America/Metlakatla,America/Yakutat,America/Nome,America/Adak,Pacific/Honolulu;UZ:Asia/Samarkand,Asia/Tashkent;VA:Europe/Vatican;VN:Asia/Ho_Chi_Minh;YE:Asia/Aden';
 var tzCountry = {};
 TZ_COUNTRIES.split(';').forEach(function(e) { var p = e.split(':'); p[1].split(',').forEach(function(z) { tzCountry[z] = p[0]; }); });
@@ -91,10 +92,13 @@ function defaultPhoneCountry(zone, locale) {
 
 var AGENTS_NEEDED = ['1–4', '5–10', '11–20', '21–50', '51–100', '101+'];
 
+var NAME_RE = /^[A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'’\-]{1,100}$/;
+var EMAIL_RE = /^[A-Za-z0-9._%+\-]{1,64}@[A-Za-z0-9.\-]{1,190}\.[A-Za-z]{2,24}$/;
+
 function contactError(c) {
-  if (!/^[A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'’\-]{1,100}$/.test(c.firstName)) return 'firstName';
-  if (!/^[A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'’\-]{1,100}$/.test(c.lastName)) return 'lastName';
-  if (c.email.length > 254 || !/^[A-Za-z0-9._%+\-]{1,64}@[A-Za-z0-9.\-]{1,190}\.[A-Za-z]{2,24}$/.test(c.email)) return 'email';
+  if (!NAME_RE.test(c.firstName)) return 'firstName';
+  if (!NAME_RE.test(c.lastName)) return 'lastName';
+  if (c.email.length > 254 || !EMAIL_RE.test(c.email)) return 'email';
   if (!phoneE164(c.phoneNumber, c.phoneCountry)) return 'phoneNumber';
   if (AGENTS_NEEDED.indexOf(c.agentsNeeded) < 0) return 'agentsNeeded';
   if (c.notes.length > 1000 || /[<>`"\\{}]/.test(c.notes)) return 'notes';
@@ -133,6 +137,20 @@ function firstTouch(saved, current, now) {
   var keep = CHANNELS.indexOf(saved && saved.channel) >= 0 && age >= 0 && age < FIRST_TOUCH_MS
     && !(saved.channel === 'direct' && current !== 'direct');
   return keep ? saved : { channel: current, at: now };
+}
+/* The 4 qualifying questions; same lists as QUALIFY in website-admin-backend/src/intl/intl.controller.js. */
+var QUALIFY = {
+  role: ['Business owner / decision-maker', 'Employee', 'Looking for a VA job'],
+  need: ['Inbox & admin', 'Customer support', 'Sales support', 'Other'],
+  start: ['This month', 'In 30–60 days', 'Just researching'],
+  budget: ['Under US$1,500', 'US$1,500–2,500', 'US$2,500–4,000', 'US$4,000+']
+};
+
+/* 'book' = calendar, 'careers' = careers page, 'nurture' = thank-you + email follow-up. */
+function qualifyRoute(a) {
+  if (a.role === QUALIFY.role[2]) return 'careers';
+  if (a.role === QUALIFY.role[0] && a.budget !== QUALIFY.budget[0] && a.start !== QUALIFY.start[2]) return 'book';
+  return 'nurture';
 }
 /* @tz-core-end */
 
@@ -353,6 +371,18 @@ function injectCSS() {
     .tPhHint{font-family:'Open Sans',sans-serif;font-size:11px;font-weight:600;color:var(--tcr);}
     .tPhHint:empty{display:none;}
     #tErr{display:none;background:#FFF5F5;border-left:3px solid var(--tcr);padding:11px 16px;margin:0 40px 14px;border-radius:0 10px 10px 0;font-family:'Open Sans',sans-serif;font-size:12px;color:var(--tcr);font-weight:600;}
+    #tOvl.tInline{display:block;position:static;inset:auto;z-index:auto;background:none;backdrop-filter:none;padding:0;}
+    #tOvl.tInline #tMdl{max-height:none;overflow:hidden;animation:none;box-shadow:0 18px 50px rgba(0,0,0,.08);}
+    #tOvl.tInline .tX,#tOvl.tInline #tIntro{display:none!important;}
+    #tQG,#tNG{padding:4px 40px 28px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    .tErrBox{display:none;background:#FFF5F5;border-left:3px solid var(--tcr);padding:11px 16px;margin:0 40px 14px;border-radius:0 10px 10px 0;font-family:'Open Sans',sans-serif;font-size:12px;color:var(--tcr);font-weight:600;}
+    #tNForm .tHdr{padding-top:26px;}
+    #tNDone{padding:64px 40px;text-align:center;}
+    #tNDone .tOkS{margin:10px auto 0;}
+    @media(max-width:720px){
+      #tQG,#tNG{grid-template-columns:1fr;padding:4px 22px 24px;}
+      .tErrBox{margin:0 22px 14px;}
+    }
     @media(max-width:720px){
       #tIntroHead{padding:20px 22px 18px;}
       #tIntroBody{grid-template-columns:1fr;}
@@ -425,8 +455,17 @@ function injectCSS() {
   document.head.appendChild(s);
 }
 
+function qSelect(key, label) {
+  return '<div class="tFGp"><label class="tFL" for="tQ_' + key + '">' + label + ' <span class="tReq">*</span></label>' +
+    '<select id="tQ_' + key + '" class="tFI" required><option value="" selected disabled>Select one</option>' +
+    QUALIFY[key].map(function(o) { return '<option>' + esc(o) + '</option>'; }).join('') + '</select></div>';
+}
+
+var OVL, INLINE = false, QA = null;
+var CAREERS_URL = 'https://www.telexph.com/careers';
+
 function injectHTML() {
-  var d = document.createElement('div');
+  var d = OVL = document.createElement('div');
   d.id = 'tOvl';
   d.innerHTML = `
     <div id="tMdl">
@@ -472,6 +511,33 @@ function injectHTML() {
           </div>
         </div>
       </div>
+      <div id="tQ" style="display:none;">
+        <div class="tTag">Quick check</div>
+        <div class="tHdr">See if it's a fit: 4 quick questions</div>
+        <div class="tSub"></div>
+        <div id="tQErr" class="tErrBox"></div>
+        <div id="tQG">
+          ${qSelect('role', 'I am a')}
+          ${qSelect('need', 'Main need')}
+          ${qSelect('start', 'When do you want to start?')}
+          ${qSelect('budget', 'Monthly budget for a dedicated agent')}
+        </div>
+        <div class="tFT"><button type="button" class="tBN" id="tQN">CONTINUE &#x2192;</button></div>
+      </div>
+      <div id="tNur" style="display:none;">
+        <div id="tNForm">
+          <div class="tHdr">Thanks, you're on our list.</div>
+          <div class="tSub">Leave your name and email and we'll send you a short guide on how a dedicated agent works, plus pricing details.</div>
+          <div id="tNErr" class="tErrBox"></div>
+          <div id="tNG">
+            <div class="tFGp"><label class="tFL" for="tNFN">First Name <span class="tReq">*</span></label><input id="tNFN" class="tFI" type="text" placeholder="Juan" required maxlength="100" autocomplete="given-name" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿÑñ .'’-]/g, '').replace(/ {2,}/g, ' ').replace(/^ /, '')"/></div>
+            <div class="tFGp"><label class="tFL" for="tNEM">Email Address <span class="tReq">*</span></label><input id="tNEM" class="tFI" type="email" placeholder="juan@email.com" required maxlength="254" autocomplete="email" oninput="this.value = this.value.replace(/[^A-Za-z0-9._%+@-]/g, '')"/></div>
+            <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;" aria-hidden="true" tabindex="-1"><input type="text" id="tNHp" autocomplete="off" tabindex="-1"></div>
+          </div>
+          <div class="tFT"><button type="button" class="tBN" id="tNS">SEND ME THE DETAILS</button></div>
+        </div>
+        <div id="tNDone" style="display:none;"><div class="tOkT">Done!</div><div class="tOkS">Check your inbox in a few minutes.</div></div>
+      </div>
       <div id="tStpr" style="display:none;">
         <div class="tSW"><div class="tSC on" id="tC1">1</div><div class="tSL on" id="tL1">Time &amp; Date</div></div>
         <div class="tSLn"></div>
@@ -516,21 +582,87 @@ function injectHTML() {
   document.body.appendChild(d);
 }
 
+function showOnly(id) {
+  ['tIntro', 'tQ', 'tNur', 'tStpr', 'tSt1', 'tSt2'].forEach(function(s) { document.getElementById(s).style.display = 'none'; });
+  document.getElementById('tOk').classList.remove('show');
+  document.getElementById(id).style.display = 'block';
+}
+
 function showIntro() {
   window._formOpenedAt = Date.now();
-  document.getElementById('tIntro').style.display='block';
-  document.getElementById('tStpr').style.display='none';
-  document.getElementById('tSt1').style.display='none';
-  document.getElementById('tSt2').style.display='none';
-  document.getElementById('tOk').classList.remove('show');
+  showOnly('tIntro');
+}
+
+function showQualify() {
+  window._formOpenedAt = window._formOpenedAt || Date.now();
+  showOnly('tQ');
+}
+
+function qualifyNext() {
+  var a = {}, er = document.getElementById('tQErr');
+  for (var k in QUALIFY) {
+    a[k] = document.getElementById('tQ_' + k).value;
+    if (!a[k]) { er.textContent = '⚠️ Please answer all 4 questions.'; er.style.display = 'block'; return; }
+  }
+  er.style.display = 'none';
+  QA = a;
+  var route = qualifyRoute(a);
+  if (route === 'careers') { location.href = CAREERS_URL; return; }
+  if (route === 'nurture') { showOnly('tNur'); return; }
+  /* Meta Lead: qualified visitors only, once per page view, before the calendar */
+  if (window.fbq && !window.__tgLead) { window.__tgLead = 1; fbq('track', 'Lead'); }
+  showCalendar();
+}
+
+async function sendLead() {
+  var fn = document.getElementById('tNFN').value.trim(), em = document.getElementById('tNEM').value.trim();
+  var er = document.getElementById('tNErr'), btn = document.getElementById('tNS');
+  var bad = !NAME_RE.test(fn) ? 'firstName' : (em.length > 254 || !EMAIL_RE.test(em)) ? 'email' : '';
+  if (bad) { er.textContent = '⚠️ ' + FIELD_HELP[bad]; er.style.display = 'block'; return; }
+  er.style.display = 'none';
+  btn.disabled = true;
+  try {
+    var res = await fetch('https://app.telexph.com/api/intl/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: fn, email: em, qualify: QA,
+        utm_source: ATTR.utm_source, utm_campaign: ATTR.utm_campaign, utm_content: ATTR.utm_content,
+        _fax_number: document.getElementById('tNHp').value
+      })
+    });
+    if (!res.ok) { var httpErr = new Error('HTTP ' + res.status); httpErr.status = res.status; throw httpErr; }
+    document.getElementById('tNForm').style.display = 'none';
+    document.getElementById('tNDone').style.display = 'block';
+  } catch (e) {
+    btn.disabled = false;
+    er.textContent = e.status === 429 ? '⚠️ Too many attempts. Please wait 15 minutes and try again.'
+      : e.status === 422 ? '⚠️ Please check your name and email and try again.'
+      : '❌ Something went wrong. Please try again or email business@telexph.com.';
+    er.style.display = 'block';
+  }
+}
+
+/* Inline mode: the booking box lives in the #dedicated-agent section (intl/a1b-dedicated.html).
+   GHL renders some blocks late, so this re-runs a few times, the same pattern as b2-bodyTrack.html. */
+function mountInline() {
+  var box = document.getElementById('daBook');
+  if (!box || box.contains(OVL)) return;
+  OVL.classList.remove('open');
+  document.body.style.overflow = '';
+  OVL.classList.add('tInline');
+  box.appendChild(OVL);
+  if (!INLINE) {
+    INLINE = true;
+    var n = zoneParts(Date.now(), clientZone); tYear = n.year; tMonth = n.month - 1;
+    showQualify();
+  }
 }
 
 function showCalendar() {
   window._formOpenedAt = window._formOpenedAt || Date.now();
-  document.getElementById('tIntro').style.display='none';
+  showOnly('tSt1');
   document.getElementById('tStpr').style.display='flex';
-  document.getElementById('tSt1').style.display='block';
-  document.getElementById('tSt2').style.display='none';
   document.getElementById('tC1').className='tSC on'; document.getElementById('tL1').className='tSL on';
   document.getElementById('tC2').className='tSC off'; document.getElementById('tL2').className='tSL off';
   rCal(); rTime(); rDisp();
@@ -545,7 +677,11 @@ function bindEvents() {
   document.getElementById('tBk').onclick = go1;
   document.getElementById('tCB').onclick = submit;
   document.getElementById('tIntroCancel').onclick = closeP;
-  document.getElementById('tIntroStart').onclick = showCalendar;
+  document.getElementById('tIntroStart').onclick = showQualify;
+  document.getElementById('tQN').onclick = qualifyNext;
+  document.getElementById('tNS').onclick = sendLead;
+  /* a1-book.html's exit popup stays away once the visitor starts the form */
+  document.getElementById('tMdl').addEventListener('change', function() { window.tgFormStarted = 1; });
 
   var days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
   var hdEl=document.getElementById('tCHd');
@@ -567,6 +703,8 @@ function bindEvents() {
 }
 
 function openP(){
+  var sec=document.getElementById('dedicated-agent');
+  if(INLINE&&sec){sec.scrollIntoView({behavior:'smooth',block:'start'});return;}
   var n=zoneParts(Date.now(),clientZone);tYear=n.year;tMonth=n.month-1;tDay=null;
   tSlot=null;
   showIntro();
@@ -575,6 +713,7 @@ function openP(){
 }
 
 function closeP(){
+  if(INLINE)return;
   document.getElementById('tOvl').classList.remove('open');
   document.body.style.overflow='';
   document.getElementById('tErr').style.display='none';
@@ -820,6 +959,7 @@ async function submit(){
     utm_campaign:ATTR.utm_campaign,
     utm_content:ATTR.utm_content,
     fbclid:ATTR.fbclid,
+    qualify:QA||undefined,
     _fax_number: document.getElementById('tHpField') ? document.getElementById('tHpField').value : '',
     _time_to_fill: window._formOpenedAt ? (Date.now() - window._formOpenedAt) : 0
   };
@@ -869,6 +1009,9 @@ function init(){
   window.openTelexBooking = openP;
   window.soOpenModal = openP;
   window.soCloseModal = closeP;
+  mountInline();
+  [300, 1500, 4000, 8000].forEach(function(ms) { setTimeout(mountInline, ms); });
+  window.addEventListener('load', mountInline);
 }
 
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
