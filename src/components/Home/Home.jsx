@@ -1,14 +1,16 @@
 import Hero from "./Hero/Hero";
-import WhatWeOffer from "@/components/About/WhatWeOffer";
-import Footer from "@/components/Footer/Footer";
-import Partners from "../Partners/Partners";
-import AboutUs from "../AboutUs/AboutUs";
-import PartnerLogos from "../PartnerLogos/PartnerLogos";
-import ServicesGrid from "../Services/Services";
-import Industries from "../Industries/Industries";
-import ContactSupport from "../ContactSupport/ContactSupport";
-import Process from "../Process/Process";
-import PageViewsAnalyticsSection from "../PageViewsAnalytics/PageViewsAnalytics";
+import { lazy, Suspense } from "react";
+// Below-the-fold sections load in separate chunks so the hero paints first.
+const WhatWeOffer = lazy(() => import("@/components/About/WhatWeOffer"));
+const Footer = lazy(() => import("@/components/Footer/Footer"));
+const Partners = lazy(() => import("../Partners/Partners"));
+const AboutUs = lazy(() => import("../AboutUs/AboutUs"));
+const PartnerLogos = lazy(() => import("../PartnerLogos/PartnerLogos"));
+const ServicesGrid = lazy(() => import("../Services/Services"));
+const Industries = lazy(() => import("../Industries/Industries"));
+const ContactSupport = lazy(() => import("../ContactSupport/ContactSupport"));
+const Process = lazy(() => import("../Process/Process"));
+const PageViewsAnalyticsSection = lazy(() => import("../PageViewsAnalytics/PageViewsAnalytics"));
 const Home = () => {
   return <div className="overflow-hidden">
       
@@ -19,6 +21,7 @@ const Home = () => {
         <Hero />
       </div>
 
+      <Suspense fallback={null}>
       {
     /* 2. Partners Section - ID: partners */
   }
@@ -76,6 +79,7 @@ const Home = () => {
       </div>
 
       <Footer />
+      </Suspense>
     </div>;
 };
 var stdin_default = Home;

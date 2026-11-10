@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Mail, MapPin, Phone, Twitter, Youtube } from "lucide-react";
 import Container from "@/components/Container/Container";
 
-const FACEBOOK = "https://www.facebook.com/telexphilippines?mibextid=wwXIfr&rdid=dnj2588eSOaWfMgW&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1BvrjZDJZq%2F%3Fmibextid%3DwwXIfr#";
+const FACEBOOK = "https://www.facebook.com/telexphilippines";
 
 const Item = ({ href, Icon, children }) => {
   const body = (

@@ -79,12 +79,18 @@ const FLOATING_CARDS = [
 const Hero = () => {
   return <div
     id="home"
-    className={`relative w-full ${RESPONSIVE_HEIGHT.hero} [@media(max-height:500px)]:h-auto [@media(max-height:500px)]:min-h-[520px] bg-cover bg-center overflow-hidden ${poppins.variable} ${openSans.variable}`}
-    style={{
-      backgroundImage: `url(${HERO_BG_IMAGE})`,
-      backgroundAttachment: "fixed"
-    }}
+    className={`relative w-full ${RESPONSIVE_HEIGHT.hero} [@media(max-height:500px)]:h-auto [@media(max-height:500px)]:min-h-[520px] overflow-hidden ${poppins.variable} ${openSans.variable}`}
   >
+      {
+    /* LCP image: real <img> so the browser discovers it early (was a CSS background). */
+  }
+      <img
+    src={HERO_BG_IMAGE}
+    alt=""
+    fetchPriority="high"
+    decoding="async"
+    className="absolute inset-0 w-full h-full object-cover"
+  />
       {
     /* Overlay */
   }
@@ -100,19 +106,13 @@ const Hero = () => {
     /* Left Section */
   }
             <div className="lg:col-span-12 xl:col-span-5 lg:pl-20 px-4 sm:px-0 xl:max-w-xl">
-              <motion.h1
-    initial={{ opacity: 0, y: 30 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.2 }}
+              <h1
     className="text-[30px] sm:text-[36px] md:text-[42px] lg:text-[46px] text-white font-poppins-black leading-tight mb-4 sm:mb-5"
   >
                 Managed Offshore Teams for Growing Businesses
-              </motion.h1>
+              </h1>
 
-              <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.4 }}
+              <div
     className="text-white text-xs sm:text-sm leading-relaxed max-w-xl mb-5 sm:mb-6 font-poppins space-y-3"
   >
                 <p>
@@ -121,12 +121,9 @@ const Hero = () => {
                 <p>
                   For businesses around the world, we help shape the right support model around your workflows, service hours, and customer needs.
                 </p>
-              </motion.div>
+              </div>
 
-              <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.6 }}
+              <div
     className="mb-5 sm:mb-6"
   >
                 <a
@@ -137,15 +134,12 @@ const Hero = () => {
   >
                   Book a 15-Minute Discovery Call
                 </a>
-              </motion.div>
+              </div>
 
               {
     /* Reviews */
   }
-              <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.8, delay: 0.8 }}
+              <div
     className="flex items-center"
   >
                 <div className="flex -space-x-2 mr-4">
@@ -160,7 +154,7 @@ const Hero = () => {
   />
                     </div>)}
                 </div>
-              </motion.div>
+              </div>
             </div>
 
             {
