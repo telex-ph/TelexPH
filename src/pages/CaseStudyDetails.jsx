@@ -12,6 +12,7 @@ import { FaFilePdf } from "react-icons/fa";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
 import { htmlToText, toHtml } from "@/lib/rich-text";
 import PageLoader from "@/components/PageLoader";
+import { FaqSection, isFaqSection } from "@/components/FaqSection";
 
 // Inner markup of formatted case-study text (toolbar output).
 const RICH = "[&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_li]:mb-1 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-current [&_blockquote]:pl-4 [&_blockquote]:mb-4 [&_blockquote]:italic [&_h3]:font-bold [&_h3]:text-[1.15em] [&_h3]:mt-4 [&_h3]:mb-2";
@@ -310,7 +311,7 @@ function CaseStudyDetailsContent() {
               </div>}
 
             <article className="space-y-10">
-              {study.body.slice(1).map((item, idx) => <div
+              {study.body.slice(1).map((item, idx) => isFaqSection(item.title) ? <FaqSection key={idx} content={toHtml(item.text)} sectionTitle={item.title} schema={false} /> : <div
     key={idx}
     className="group"
     style={{
