@@ -65,7 +65,6 @@ const ProcessStepItem = ({ step, index = 0 }) => {
     width={500}
     height={400}
     className="w-full h-80 sm:h-96 md:h-56 object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110"
-    priority={true}
   />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0f1623]/55 via-transparent to-[#0f1623]/10" />
         <div className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/20 text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:bg-white group-hover:text-[#a10000] group-hover:rotate-12 group-hover:scale-110">

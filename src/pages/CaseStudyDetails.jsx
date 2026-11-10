@@ -6,7 +6,6 @@ import { SITE_URL, caseStudyPath } from "@/data/seo-pages";
 import Link from "next/link";
 import Footer from "@/components/Footer/Footer";
 import PrintWatermark from "@/shared/PrintWatermark";
-import InsightWallet from "@/components/InsightWallet";
 import DetailsHeader from "./Resources/DetailsHeader";
 import { FaFilePdf } from "react-icons/fa";
 import { FONTS, TYPOGRAPHY, FONT_WEIGHTS } from "@/constant/styles";
@@ -33,6 +32,14 @@ const T = {
   textBody: "rgba(0,0,0,0.60)",
   textHint: "rgba(0,0,0,0.30)"
 };
+// Challenge + Solution, always visible (sidebar on screen, after the article in print).
+// Plain sections, same look as Overview / What made the difference.
+function InsightCards({ study }) {
+  return [["Challenge", study.challenge], ["Solution", study.solution]].map(([title, text]) => <div key={title}>
+      <h2 className="text-[22px] md:text-[30px] mb-4 tracking-tight uppercase" style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, color: T.textDark, lineHeight: 1.25 }}>{title}:</h2>
+      <div className={`leading-[1.85] text-[14px] md:text-[16px] ${RICH}`} style={{ fontFamily: FONTS.rubik, fontWeight: FONT_WEIGHTS.regular, color: T.textBody }} dangerouslySetInnerHTML={{ __html: toHtml(text) }} />
+    </div>);
+}
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 async function getCaseStudyById(id) {
   try {
@@ -334,56 +341,7 @@ function CaseStudyDetailsContent() {
     /* ── Print-only Challenge & Solution cards (hidden on screen, visible in PDF) ── */
   }
             <div className="hidden print:block mt-16 pt-10 border-t border-zinc-100 space-y-6">
-              {
-    /* Challenge */
-  }
-              <div
-    style={{
-      backgroundColor: T.primaryDark,
-      borderRadius: "16px",
-      padding: "28px 32px"
-    }}
-  >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                  <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.whiteAlpha40 }}>The Problem</span>
-                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.pinkLight, display: "inline-block" }} />
-                </div>
-                <h3 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.white, marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                  Challenge
-                </h3>
-                <div style={{ height: "2px", backgroundColor: T.pinkLight, width: "2rem", marginBottom: "14px" }} />
-                <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.whiteAlpha75, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.challenge) }} />
-                <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.whiteAlpha10}` }}>
-                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.whiteAlpha30 }}>Industry Intelligence · 2026</span>
-                </div>
-              </div>
-
-              {
-    /* Solution */
-  }
-              <div
-    style={{
-      backgroundColor: T.white,
-      border: `1px solid ${T.borderLight}`,
-      borderRadius: "16px",
-      padding: "28px 32px",
-      boxShadow: "0 2px 16px rgba(0,0,0,0.06)"
-    }}
-  >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                  <span style={{ fontFamily: FONTS.openSans, fontWeight: FONT_WEIGHTS.medium, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: T.textMuted }}>The Resolution</span>
-                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: T.primary, display: "inline-block" }} />
-                </div>
-                <h3 style={{ fontFamily: FONTS.poppins, fontWeight: FONT_WEIGHTS.bold, fontSize: "20px", color: T.textDark, marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                  Solution
-                </h3>
-                <div style={{ height: "2px", backgroundColor: T.primary, width: "2rem", marginBottom: "14px" }} />
-                <div className={RICH} style={{ fontFamily: FONTS.rubik, fontSize: "14px", lineHeight: "1.85", color: T.textBody, textAlign: "justify", margin: 0 }} dangerouslySetInnerHTML={{ __html: toHtml(study.solution) }} />
-                <div style={{ marginTop: "20px", paddingTop: "14px", borderTop: `1px solid ${T.borderLight}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: T.textHint }}>Industry Intelligence · 2026</span>
-                  <span style={{ fontFamily: FONTS.openSans, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: T.primary, fontWeight: FONT_WEIGHTS.medium }}>Resolved ✓</span>
-                </div>
-              </div>
+              <InsightCards study={study} />
             </div>
 
             <div
@@ -411,12 +369,9 @@ function CaseStudyDetailsContent() {
             {
     /* ══ Challenge + Solution — original wallet/credit-card design ══ */
   }
-            <InsightWallet
-    mounted={mounted}
-    pocketText="2 Insights"
-    a={{ label: "Challenge", kicker: "The Problem", preview: `${htmlToText(study.challenge).slice(0, 52)}…`, html: toHtml(study.challenge) }}
-    b={{ label: "Solution", kicker: "The Resolution", preview: `${htmlToText(study.solution).slice(0, 52)}…`, html: toHtml(study.solution), footer: "Resolved ✓" }}
-  />
+            <div className="space-y-6 mb-8">
+              <InsightCards study={study} />
+            </div>
 
             <div
     style={{

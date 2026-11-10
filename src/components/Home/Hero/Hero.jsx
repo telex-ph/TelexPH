@@ -18,10 +18,10 @@ const openSans = Open_Sans({
 });
 const HERO_BG_IMAGE = "/images/background.webp";
 const AVATARS = [
-  "/images/avatar1.webp",
-  "/images/avatar2.webp",
-  "/images/avatar3.webp",
-  "/images/avatar4.webp"
+  "/avatars/avatar1.webp",
+  "/avatars/avatar2.webp",
+  "/avatars/avatar3.webp",
+  "/avatars/avatar4.webp"
 ];
 const FLOATING_CARDS = [
   {
@@ -166,6 +166,8 @@ const Hero = () => {
     style={{ bottom: "-260px" }}
   >
                 <img
+    loading="lazy"
+    decoding="async"
     src="/images/hpic.webp"
     alt="Customer Service Representatives"
     className="w-auto h-auto object-contain object-bottom"

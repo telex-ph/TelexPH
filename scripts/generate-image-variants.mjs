@@ -48,7 +48,7 @@ const CACHE_OUT = path.join(CACHE, "out");
 const MANIFEST = path.join(CACHE, "manifest.json");
 const QUALITY = 80;
 // Bump when the output naming or encoding changes, to invalidate the cache.
-const VERSION = 2;
+const VERSION = 3;
 
 const walk = (dir) =>
   fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {

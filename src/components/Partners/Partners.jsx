@@ -65,7 +65,6 @@ const Partners = ({
       fill
       className="object-cover"
       sizes="(max-width: 768px) 100vw, 1200px"
-      priority
     />
           </div>
 

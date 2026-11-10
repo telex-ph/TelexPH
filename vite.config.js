@@ -28,9 +28,8 @@ export default defineConfig(({ command, mode }) => {
           // Split heavy, rarely-changing libraries into their own chunks so a
 
           manualChunks: {
+            // charts/pdf are admin-only: forcing them into manual chunks made the entry import (and run) them on every public page.
             react: ["react", "react-dom", "react-router-dom"],
-            charts: ["recharts", "chart.js", "react-chartjs-2"],
-            pdf: ["jspdf", "html2canvas"],
           },
         },
       },

@@ -3,6 +3,8 @@ const FooterLogo = () => {
   return <div>
       <div className="flex flex-col items-start">
         <img
+    loading="lazy"
+    decoding="async"
     src={localImage("/images/telexlogo.webp", 640)}
     alt="Telex Logo"
     width={200}
