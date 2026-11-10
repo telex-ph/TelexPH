@@ -4704,3 +4704,27 @@ div:has(>#ft-root){padding:0!important;margin:0!important;line-height:0!importan
   #ft-root .lg-body table{display:block;overflow-x:auto}
 }
 @media(prefers-reduced-motion:reduce){#ft-root .lg-ov,#ft-root .lg-box{transition:none}#ft-root .lg-body{scroll-behavior:auto}}
+
+/* a1b-dedicated.html: Tier 1 section for ads (#dedicated-agent); booking.js mounts the form + calendar in #daBook */
+#da-root .da{padding:72px 20px 84px;background:linear-gradient(180deg,#fff 0%,#fbf4f3 100%);scroll-margin-top:88px}
+#da-root .da-in{max-width:1020px;margin:0 auto}
+#da-root .da-offer{display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:center;margin-bottom:36px}
+#da-root .da-ey{display:inline-block;font:700 12px Poppins,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#A10000;margin-bottom:14px}
+#da-root .da-title{font:800 40px/1.15 Poppins,sans-serif;color:#141414;letter-spacing:-.02em;margin:0 0 16px}
+#da-root .da-title em{font-style:italic;color:#A10000}
+#da-root .da-desc{font:400 17px/1.7 'Open Sans',Poppins,sans-serif;color:#444;margin:0}
+#da-root .da-card{background:#fff;border:1px solid #E8E4DF;border-top:4px solid #A10000;border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.08);padding:28px 30px}
+#da-root .da-price{display:flex;align-items:baseline;gap:10px}
+#da-root .da-amt{font:800 46px/1 Poppins,sans-serif;letter-spacing:-.04em;color:#141414}
+#da-root .da-per{font:600 15px 'Open Sans',sans-serif;color:#6B6560}
+#da-root .da-min{font:600 14px 'Open Sans',sans-serif;color:#A10000;margin:10px 0 18px}
+#da-root .da-feats{list-style:none;margin:0;padding:18px 0 0;border-top:1px solid #E8E4DF}
+#da-root .da-feats li{position:relative;padding-left:28px;margin:0 0 10px;font:500 15px/1.5 Poppins,sans-serif;color:#222}
+#da-root .da-feats li::before{content:'\2713';position:absolute;left:0;top:0;color:#A10000;font-weight:700}
+@media (max-width:860px){
+#da-root .da{padding:56px 16px 64px}
+#da-root .da-offer{grid-template-columns:1fr;gap:24px;margin-bottom:28px}
+#da-root .da-title{font-size:30px}
+#da-root .da-desc{font-size:16px}
+#da-root .da-card{padding:24px 22px}
+}
