@@ -545,7 +545,7 @@ function injectHTML() {
           <div id="tNG">
             <div class="tFGp"><label class="tFL" for="tNFN">First Name <span class="tReq">*</span></label><input id="tNFN" class="tFI" type="text" placeholder="Juan" required maxlength="100" autocomplete="given-name" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿÑñ .'’-]/g, '').replace(/ {2,}/g, ' ').replace(/^ /, '')"/></div>
             <div class="tFGp"><label class="tFL" for="tNEM">Email Address <span class="tReq">*</span></label><input id="tNEM" class="tFI" type="email" placeholder="juan@email.com" required maxlength="254" autocomplete="email" oninput="this.value = this.value.replace(/[^A-Za-z0-9._%+@-]/g, '')"/></div>
-            <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;" aria-hidden="true" tabindex="-1"><input type="text" id="tNHp" autocomplete="off" tabindex="-1"></div>
+            <div style="display:none;" aria-hidden="true" tabindex="-1"><input type="text" id="tNHp" autocomplete="off" tabindex="-1"></div>
           </div>
           <div class="tFT"><button type="button" class="tBN" id="tNS">SEND ME THE DETAILS</button></div>
         </div>
@@ -585,7 +585,7 @@ function injectHTML() {
           <div class="tFGp full"><label class="tFL" for="tAG">How many support agents do you need? <span class="tReq">*</span></label><select id="tAG" class="tFI" required><option value="" selected disabled>Select a range</option><option value="1–4">1–4</option><option value="5–10">5–10</option><option value="11–20">11–20</option><option value="21–50">21–50</option><option value="51–100">51–100</option><option value="101+">101+</option></select></div>
           <div class="tFGp full"><label class="tFL">Notes / Questions (Optional)</label><input id="tNT" class="tFI" type="text" placeholder="Any specific topics you'd like to discuss..." maxlength="1000" oninput="this.value = this.value.replace(/[^A-Za-z0-9À-ÖØ-öø-ÿÑñ .,?!'()-]/g, '')" title="Letters, numbers, spaces and basic punctuation, up to 1000 characters."/></div>
           <!-- Honeypot -->
-          <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;" aria-hidden="true" tabindex="-1">
+          <div style="display:none;" aria-hidden="true" tabindex="-1">
             <input type="text" id="tHpField" name="t_hp_field" autocomplete="off" tabindex="-1">
           </div>
         </div>
