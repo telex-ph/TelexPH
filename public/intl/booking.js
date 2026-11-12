@@ -138,6 +138,21 @@ function firstTouch(saved, current, now) {
     && !(saved.channel === 'direct' && current !== 'direct');
   return keep ? saved : { channel: current, at: now };
 }
+
+var ATTR_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+var ATTR_RE = /^[A-Za-z0-9 _.\-+:,()]{1,300}$/;
+/* First-touch UTMs: the first tagged visit is kept for 30 days and later tags never overwrite it.
+   Returns the record to keep ({ at, utm_*... }) or null when neither the saved record nor the URL has any. */
+function firstAttr(saved, q, now) {
+  var age = saved ? now - saved.at : NaN;
+  if (age >= 0 && age < FIRST_TOUCH_MS && ATTR_KEYS.some(function (k) { return saved[k]; })) return saved;
+  var rec = { at: now }, any = false;
+  ATTR_KEYS.forEach(function (k) {
+    var v = String(q.get(k) || '').trim();
+    if (ATTR_RE.test(v)) { rec[k] = v; any = true; }
+  });
+  return any ? rec : null;
+}
 /* The 4 qualifying questions; same lists as QUALIFY in website-admin-backend/src/intl/intl.controller.js. */
 var QUALIFY = {
   role: ['Business owner / decision-maker', 'Employee', 'Looking for a VA job'],
@@ -174,15 +189,13 @@ try {
 } catch (e) {}
 var ATTR = {};
 try {
-  var ATTR_KEYS = ['utm_source', 'utm_campaign', 'utm_content', 'fbclid'];
-  var fromUrl = ATTR_KEYS.some(function (k) { return q.get(k); });
-  var savedAttr = JSON.parse(sessionStorage.getItem('intlAttr') || '{}');
-  ATTR_KEYS.forEach(function (k) {
-    var v = String((fromUrl ? q.get(k) : savedAttr[k]) || '').trim();
-    if (/^[A-Za-z0-9 _.\-+:,()]{1,300}$/.test(v)) ATTR[k] = v;
-  });
-  sessionStorage.setItem('intlAttr', JSON.stringify(ATTR));
+  var savedAttr = null;
+  try { savedAttr = JSON.parse(localStorage.getItem('intlFirstAttr')); } catch (e) {}
+  var firstA = firstAttr(savedAttr, q, Date.now());
+  if (firstA && firstA !== savedAttr) localStorage.setItem('intlFirstAttr', JSON.stringify(firstA));
+  if (firstA) ATTR = firstA;
 } catch (e) {}
+if (!ATTR.utm_source) ATTR.utm_source = 'direct';
 
 var clientZone = 'Asia/Manila';
 try { clientZone = resolveZone(Intl.DateTimeFormat().resolvedOptions().timeZone || ''); } catch (e) {}
@@ -627,7 +640,8 @@ async function sendLead() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         first_name: fn, email: em, qualify: QA,
-        utm_source: ATTR.utm_source, utm_campaign: ATTR.utm_campaign, utm_content: ATTR.utm_content,
+        utm_source: ATTR.utm_source, utm_medium: ATTR.utm_medium, utm_campaign: ATTR.utm_campaign,
+        utm_content: ATTR.utm_content, utm_term: ATTR.utm_term,
         _fax_number: document.getElementById('tNHp').value
       })
     });
@@ -956,8 +970,10 @@ async function submit(){
     fbp:ck('_fbp')||undefined,
     fbc:ck('_fbc')||undefined,
     utm_source:ATTR.utm_source,
+    utm_medium:ATTR.utm_medium,
     utm_campaign:ATTR.utm_campaign,
     utm_content:ATTR.utm_content,
+    utm_term:ATTR.utm_term,
     fbclid:ATTR.fbclid,
     qualify:QA||undefined,
     _fax_number: document.getElementById('tHpField') ? document.getElementById('tHpField').value : '',
