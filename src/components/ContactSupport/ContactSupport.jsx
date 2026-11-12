@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { FONT_CLASSES } from "@/constant/styles";
 import { DEFAULT_MAX_WIDTH_CLASS } from "@/constant/layout";
 import { LOGISTICS_CTA_URL } from "@/constant/links";
+import { withFirstTouch } from "@/lib/utm-forward";
 const CONTACT_ITEMS = [
   { Icon: Phone, label: "Call Us Directly?", value: "0443252836", href: "tel:+63443252836" },
   { Icon: Mail, label: "For Support?", value: "business@telexph.com", href: "mailto:business@telexph.com" },
@@ -64,7 +65,7 @@ const ContactSupport = () => {
             <div className="flex w-full md:justify-end md:mt-auto">
               <button
     type="button"
-    onClick={() => window.open(LOGISTICS_CTA_URL, "_blank")}
+    onClick={() => window.open(withFirstTouch(LOGISTICS_CTA_URL), "_blank")}
     className="group inline-flex w-full md:w-auto items-center justify-center gap-2 rounded-lg bg-[#a10000] px-6 py-2.5 text-sm sm:text-base font-open-sans-bold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#8a0000] hover:shadow-lg cursor-pointer"
   >
                 Book a 15-minute call

@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { getOrCreateVisitorSessionId, getVisitId, getVisitorEmail } from "@/lib/page-view-session";
+import { saveFirstTouch, forwardClick } from "@/lib/utm-forward";
 const EXCLUDED_PREFIXES = [
   "/admin",
   "/client",
@@ -13,6 +14,18 @@ const EXCLUDED_PREFIXES = [
 function SitePageViewTracker() {
   const pathname = usePathname();
   const lastSent = useRef(null);
+  // First-touch UTMs travel to intl.telexph.com links, so a booking there keeps where the visitor came from.
+  useEffect(() => {
+    document.addEventListener("click", forwardClick, true);
+    document.addEventListener("auxclick", forwardClick, true);
+    return () => {
+      document.removeEventListener("click", forwardClick, true);
+      document.removeEventListener("auxclick", forwardClick, true);
+    };
+  }, []);
+  useEffect(() => {
+    saveFirstTouch(window.location.search);
+  }, [pathname]);
   useEffect(() => {
     if (!pathname || navigator.webdriver) return; // skip the build-time prerender browser
     if (EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p))) return;
