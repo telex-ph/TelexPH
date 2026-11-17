@@ -1252,8 +1252,8 @@ function TabPlatforms({ onTabSwitch }) {
     </>;
 }
 const TOOL_CARDS = [
-  { cat: "catalog", thumb: "pink", abbr: "Bb", cat_label: "Catalog", name: "Babel", desc: "Translation and localization for multilingual catalog content.", image: "/images/Tools Logo/babel.png" },
-  { cat: "comms", thumb: "dark", abbr: "Br", cat_label: "Communication", name: "Bria", desc: "VoIP communication tool for client-facing and internal calls.", image: "/images/Tools Logo/bria.png" },
+  { cat: "catalog", thumb: "pink", abbr: "Bb", cat_label: "Catalog", name: "Babel", desc: "Translation and localization for multilingual catalog content.", image: "/images/Platform Logos/babel.png" },
+  { cat: "comms", thumb: "dark", abbr: "Br", cat_label: "Communication", name: "Bria", desc: "VoIP communication tool for client-facing and internal calls.", image: "/images/Platform Logos/bria.png" },
   { cat: "security", thumb: "pink", abbr: "Cv", cat_label: "Security", name: "CATO VPN", desc: "Cloud-native network security and secure access edge.", image: "/images/Tools Logo/cato.png" },
   { cat: "security", thumb: "red", abbr: "Cx", cat_label: "Security", name: "Citrix", desc: "Secure virtual desktop infrastructure for remote operations.", image: "/images/Tools Logo/citrix.png" },
   { cat: "infra", thumb: "light", abbr: "Ec", cat_label: "Infrastructure", name: "ENC Max", desc: "Enterprise platform used by our teams in day-to-day operations.", image: "/images/Tools Logo/enc.jpg" },
@@ -1268,7 +1268,7 @@ const TOOL_CARDS = [
   { cat: "security", thumb: "red", abbr: "Sp", cat_label: "Security", name: "Sailpoint", desc: "Identity governance and access control for enterprise security.", image: "/images/Tools Logo/sail.png" },
   { cat: "catalog", thumb: "dark", abbr: "Sf", cat_label: "Catalog", name: "Salsify", desc: "Product experience management (PXM) for content syndication.", image: "/images/Tools Logo/salsify.png" },
   { cat: "comms", thumb: "light", abbr: "Sl", cat_label: "Communication", name: "Slack", desc: "Channel-based team communication and instant messaging.", image: "/images/Tools Logo/slack.png" },
-  { cat: "infra", thumb: "red", abbr: "Nx", cat_label: "Infrastructure", name: "Nexus", desc: "Repository manager for artifact storage and build pipelines.", image: "/images/Tools Logo/nexus.png" },
+  { cat: "infra", thumb: "red", abbr: "Nx", cat_label: "Infrastructure", name: "Nexus", desc: "Repository manager for artifact storage and build pipelines.", image: "/images/Platform Logos/nexus.png" },
   { cat: "comms", thumb: "dark", abbr: "Tm", cat_label: "Communication", name: "Teams", desc: "Real-time messaging and video collaboration across departments.", image: "/images/Tools Logo/teams.png" },
   { cat: "catalog", thumb: "red", abbr: "Wd", cat_label: "Catalog", name: "Word", desc: "Document creation and SOP documentation for operations teams.", image: "/images/Tools Logo/word.png" },
   { cat: "comms", thumb: "dark", abbr: "Zd", cat_label: "Communication", name: "Zendesk", desc: "Customer support ticketing and communication management.", image: "/images/Tools Logo/zendesk.png" }
@@ -1324,8 +1324,8 @@ function makeSVGLogo(name, bg, fg) {
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 const TOOLS_MOSAIC_ITEMS = [
-  { name: "Babel", bg: "#f9eded", fg: "#a10000", src: "/images/Tools Logo/babel.png" },
-  { name: "Bria", bg: "#282828", fg: "#ffffff", src: "/images/Tools Logo/bria.png" },
+  { name: "Babel", bg: "#f9eded", fg: "#a10000", src: "/images/Platform Logos/babel.png" },
+  { name: "Bria", bg: "#282828", fg: "#ffffff", src: "/images/Platform Logos/bria.png" },
   { name: "CATO VPN", bg: "#f9eded", fg: "#a10000", src: "/images/Tools Logo/cato.png" },
   { name: "Citrix", bg: "#1e3a5f", fg: "#ffffff", src: "/images/Tools Logo/citrix.png" },
   { name: "ENC Max", bg: "#f0f0f0", fg: "#282828", src: "/images/Tools Logo/enc.jpg" },
@@ -1339,7 +1339,7 @@ const TOOLS_MOSAIC_ITEMS = [
   { name: "Sailpoint", bg: "#a10000", fg: "#ffffff", src: "/images/Tools Logo/sail.png" },
   { name: "Salsify", bg: "#6e40c9", fg: "#ffffff", src: "/images/Tools Logo/salsify.png" },
   { name: "Slack", bg: "#4a154b", fg: "#ffffff", src: "/images/Tools Logo/slack.png" },
-  { name: "Nexus", bg: "#a10000", fg: "#ffffff", src: "/images/Tools Logo/nexus.png" }
+  { name: "Nexus", bg: "#a10000", fg: "#ffffff", src: "/images/Platform Logos/nexus.png" }
 ];
 const thumbClass = {
   red: "bg-[#a10000] text-white",
